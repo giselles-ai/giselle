@@ -1,8 +1,7 @@
 import * as Accordion from "@radix-ui/react-accordion";
-import { ChevronDownIcon, ChevronsLeftIcon } from "lucide-react";
+import { ChevronDownIcon } from "lucide-react";
 import { useMemo } from "react";
 import { CreateAppButton } from "./create-app-button";
-import { MenuButton } from "./menu-button";
 import type { NavigationItem } from "./navigation-items";
 import { navigationItems, navigationItemsFooter } from "./navigation-items";
 import { NavigationList } from "./navigation-list";
@@ -10,15 +9,12 @@ import { NavigationListItem } from "./navigation-list-item";
 import { NavigationRailContainer } from "./navigation-rail-container";
 import { NavigationRailContentsContainer } from "./navigation-rail-contents-container";
 import { NavigationRailHeader } from "./navigation-rail-header";
-import { SessionHistoryAccordion } from "./session-history-accordion";
 import type { UserDataForNavigationRail } from "./types";
 
 export function NavigationRailExpanded({
-	onCollapseButtonClick,
 	user: _userPromise,
 	currentPath,
 }: {
-	onCollapseButtonClick: () => void;
 	user: Promise<UserDataForNavigationRail>;
 	currentPath?: string;
 }) {
@@ -68,14 +64,7 @@ export function NavigationRailExpanded({
 	return (
 		<NavigationRailContainer variant="expanded">
 			<NavigationRailHeader>
-				<div className="flex items-center justify-end w-full">
-					<MenuButton
-						onClick={() => onCollapseButtonClick()}
-						className="cursor-w-resize"
-					>
-						<ChevronsLeftIcon className="size-5 text-link-muted stroke-1" />
-					</MenuButton>
-				</div>
+				{/* Header content removed - no collapse button */}
 			</NavigationRailHeader>
 			<NavigationRailContentsContainer>
 				<NavigationList>
@@ -89,21 +78,14 @@ export function NavigationRailExpanded({
 					{groupedItems.map((group) => {
 						if (!group.section) {
 							// Render non-section items directly
-							return group.items.map((item) => {
-								if (item.id === "nav-task") {
-									return (
-										<SessionHistoryAccordion key={item.id} variant="expanded" />
-									);
-								}
-								return (
-									<NavigationListItem
-										key={item.id}
-										{...item}
-										variant="expanded"
-										currentPath={currentPath}
-									/>
-								);
-							});
+							return group.items.map((item) => (
+								<NavigationListItem
+									key={item.id}
+									{...item}
+									variant="expanded"
+									currentPath={currentPath}
+								/>
+							));
 						}
 
 						const section = group.section;
@@ -125,24 +107,15 @@ export function NavigationRailExpanded({
 											<ChevronDownIcon className="size-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
 										</Accordion.Trigger>
 										<Accordion.Content className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-											{group.items.map((item) => {
-												if (item.id === "nav-task") {
-													return (
-														<SessionHistoryAccordion
-															key={item.id}
-															variant="expanded"
-														/>
-													);
-												}
-												return (
-													<NavigationListItem
-														key={item.id}
-														{...item}
-														variant="expanded"
-														currentPath={currentPath}
-													/>
-												);
-											})}
+											{group.items.map((item) => (
+												<NavigationListItem
+													key={item.id}
+													{...item}
+													variant="expanded"
+													currentPath={currentPath}
+													hideIcon={true}
+												/>
+											))}
 										</Accordion.Content>
 									</Accordion.Item>
 								</Accordion.Root>

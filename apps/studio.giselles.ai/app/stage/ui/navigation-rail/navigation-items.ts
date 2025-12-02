@@ -3,6 +3,7 @@ import {
 	Activity,
 	Blocks,
 	Bolt,
+	Clock,
 	Globe,
 	LibraryIcon,
 	Play,
@@ -104,7 +105,6 @@ export const navigationItems = [
 		href: "/stage/acts",
 		isActive: (p: string) => p.startsWith("/stage/acts"),
 	},
-	{ id: "divider-1", type: "divider" },
 	// Studio - Build Apps
 	{
 		id: "section-studio",
@@ -136,6 +136,13 @@ export const navigationItems = [
 		label: "Vector Stores",
 		href: "/settings/team/vector-stores",
 		isActive: (p: string) => p.startsWith("/settings/team/vector-stores"),
+	},
+	{
+		id: "nav-action-history",
+		type: "link",
+		icon: Clock,
+		label: "Action History",
+		href: "#",
 	},
 	{ id: "divider-2", type: "divider" },
 	// Manage

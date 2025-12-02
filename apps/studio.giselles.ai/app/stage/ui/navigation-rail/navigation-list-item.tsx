@@ -10,6 +10,7 @@ export function NavigationListItem(
 	props: NavigationItem & {
 		variant: NavigationRailState;
 		currentPath?: string;
+		hideIcon?: boolean;
 	},
 ) {
 	const [mounted, setMounted] = useState(false);
@@ -29,7 +30,7 @@ export function NavigationListItem(
 					className={`${linkClass} text-sm flex items-center py-0.5 rounded-lg px-1`}
 				>
 					<div className="size-8 flex items-center justify-center">
-						<props.icon className="size-4" />
+						{!props.hideIcon && <props.icon className="size-4" />}
 					</div>
 					{props.variant === "expanded" && props.label}
 				</Link>
@@ -44,11 +45,12 @@ export function NavigationListItem(
 					className="text-link-muted text-sm flex items-center py-0.5 hover:text-accent rounded-lg px-1"
 				>
 					<div className="size-8 flex items-center justify-center">
-						{"icon" in props && props.icon ? (
-							<props.icon className="size-4" />
-						) : (
-							<span className="size-4" />
-						)}
+						{!props.hideIcon &&
+							("icon" in props && props.icon ? (
+								<props.icon className="size-4" />
+							) : (
+								<span className="size-4" />
+							))}
 					</div>
 					{props.variant === "expanded" && props.label}
 				</a>
@@ -68,7 +70,13 @@ export function NavigationListItem(
 				<div className="h-[35.5px]" />
 			);
 		case "divider":
-			return <div className="h-px bg-border/20 my-1 mx-2" />;
+			return (
+				<div
+					className={`h-px my-1 mx-2 ${
+						props.id === "divider-2" ? "bg-border/80" : "bg-border/20"
+					}`}
+				/>
+			);
 		case "action":
 			// Action items are not currently used in navigationItems
 			return null;

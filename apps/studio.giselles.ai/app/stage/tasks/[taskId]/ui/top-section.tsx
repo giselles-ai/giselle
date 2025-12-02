@@ -41,6 +41,10 @@ export function TopSection({ data }: { data: Promise<TopSectionData> }) {
 						</div>
 					</Link>
 				</div>
+				{/* App summary heading */}
+				<div className="flex items-center justify-between text-text-muted text-[13px] font-semibold mb-2 w-full">
+					<span className="block">App summary:</span>
+				</div>
 				{/* Description placeholder */}
 				<p className="text-[14px] font-normal text-inverse">
 					{/* App summary description will be displayed here */}
