@@ -39,7 +39,6 @@
 		"@giselles-ai/react": "workspace:*",
 		"@giselles-ai/supabase-driver": "workspace:*",
 		"@giselles-ai/utils": "workspace:*",
-		"@giselles-ai/workspace-utils": "workspace:*",
 		"@icons-pack/react-simple-icons": "10.0.0",
 		"@next/env": "catalog:",
 		"@next/third-parties": "catalog:",

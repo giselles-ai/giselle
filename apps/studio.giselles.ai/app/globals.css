@@ -378,6 +378,50 @@
 	}
 }
 
+/* Stage chat input fluid blob animations */
+@keyframes blob1 {
+	0%,
+	100% {
+		transform: translateY(-50%) translateX(0);
+	}
+	50% {
+		transform: translateY(-30%) translateX(20px);
+	}
+}
+
+@keyframes blob2 {
+	0%,
+	100% {
+		transform: translateX(0) translateY(0);
+	}
+	33% {
+		transform: translateX(30px) translateY(20px);
+	}
+	66% {
+		transform: translateX(-20px) translateY(10px);
+	}
+}
+
+@keyframes blob3 {
+	0%,
+	100% {
+		transform: translateX(-50%) scale(1);
+	}
+	50% {
+		transform: translateX(-40%) scale(1.1);
+	}
+}
+
+@keyframes blob4 {
+	0%,
+	100% {
+		transform: translateX(0) translateY(0);
+	}
+	50% {
+		transform: translateX(-15px) translateY(-20px);
+	}
+}
+
 @keyframes slideIn {
 	from {
 		transform: translateX(var(--slide-from));
@@ -397,6 +441,15 @@
 	to {
 		transform: translateX(var(--slide-to));
 		opacity: 0;
+	}
+}
+
+@keyframes border-glow-rotate {
+	0% {
+		background-position: 0% 0%;
+	}
+	100% {
+		background-position: 200% 0%;
 	}
 }
 
