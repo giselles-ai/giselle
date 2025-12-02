@@ -13,7 +13,6 @@
 		"./dialog": "./components/dialog.tsx",
 		"./button": "./components/button.tsx",
 		"./select": "./components/select.tsx",
-		"./glass-dialog": "./components/glass-dialog.tsx",
 		"./note": "./components/note.tsx",
 		"./dropdown-menu": "./components/dropdown-menu.tsx",
 		"./popover": "./components/popover.tsx",
