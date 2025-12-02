@@ -136,4 +136,5 @@ export const giselle = NextGiselle({
 		secret: process.env.VAULT_SECRET,
 	}),
 	experimental_contentGenerationNode: true,
+	logger: console,
 });
