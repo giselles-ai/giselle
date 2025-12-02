@@ -33,7 +33,14 @@ const config: KnipConfig = {
 	},
 	workspaces: {
 		"apps/playground": {
-			ignoreDependencies: [],
+			ignoreDependencies: [
+				"@aws-sdk/client-s3",
+				"@supabase/realtime-js",
+				"@supabase/supabase-js",
+				"happy-dom",
+				"jsdom",
+				"pg",
+			],
 		},
 		"apps/studio.giselles.ai": {
 			entry: ["tests/e2e/global-setup.ts", "emails/**/*.tsx"],
