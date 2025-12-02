@@ -7,7 +7,7 @@ import type { TeamWithSubscription } from "@/services/teams";
  */
 export function buildAiGatewayHeaders(
 	team: TeamWithSubscription | null,
-): Record<string, string> | undefined {
+): Record<string, string> {
 	const headers: Record<string, string> = {
 		"http-referer":
 			process.env.AI_GATEWAY_HTTP_REFERER ?? "https://giselles.ai",
