@@ -40,10 +40,6 @@ export function createPostgresTool({
              ORDER BY table_name, ordinal_position;`,
 						);
 						client.release();
-						context.waitUntil(async () => {
-							await pool.end();
-							context.logger.debug("Postgres tool ended");
-						});
 						return JSON.stringify(res.rows);
 					},
 				});
@@ -60,11 +56,6 @@ export function createPostgresTool({
 							return res.rows;
 						} catch (e) {
 							return e;
-						} finally {
-							context.waitUntil(async () => {
-								await pool.end();
-								context.logger.debug("Postgres tool ended");
-							});
 						}
 					},
 				});
@@ -75,5 +66,11 @@ export function createPostgresTool({
 			}
 		}
 	}
-	return toolSet;
+	return {
+		toolSet,
+		cleanup: async () => {
+			await pool.end();
+			context.logger.debug("Postgres tool ended");
+		},
+	};
 }
