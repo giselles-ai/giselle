@@ -2,14 +2,13 @@
 
 
 ## Summary
-* 935 MIT
+* 934 MIT
 * 188 Apache 2.0
 * 48 ISC
 * 28 New BSD
 * 18 Simplified BSD
 * 6 BlueOak-1.0.0
 * 3 MIT OR Apache-2.0
-* 3 Mozilla Public License 2.0
 * 2 MIT-0
 * 2 Unknown
 * 2 Mozilla Public License 2.0
