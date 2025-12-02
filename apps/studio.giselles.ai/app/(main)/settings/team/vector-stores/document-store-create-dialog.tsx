@@ -11,7 +11,6 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@giselle-internal/ui/dialog";
-import { FormField } from "@giselle-internal/ui/form-field";
 import { DEFAULT_EMBEDDING_PROFILE_ID } from "@giselles-ai/protocol";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import { Plus, X } from "lucide-react";
@@ -26,6 +25,7 @@ import { GlassButton } from "@/components/ui/glass-button";
 import { Button } from "../../components/button";
 import { DOCUMENT_EMBEDDING_PROFILES } from "./document-embedding-profiles";
 import type { ActionResult } from "./types";
+import { FormField } from "./ui/form-field";
 
 type DocumentVectorStoreCreateDialogProps = {
 	createAction: (

@@ -1,9 +1,9 @@
+import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
+import type { SelectOption } from "@giselle-internal/ui/select";
 import clsx from "clsx/lite";
 import { Ellipsis } from "lucide-react";
 import { DropdownMenu } from "radix-ui";
 import { useCallback, useState } from "react";
-import { GlassSurfaceLayers } from "./glass-surface";
-import type { SelectOption } from "./select";
 
 export type RepoAction = SelectOption & {
 	onSelect?: () => void;

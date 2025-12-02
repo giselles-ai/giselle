@@ -1,6 +1,6 @@
 import clsx from "clsx/lite";
 
-export type Status = "idle" | "running" | "completed" | "failed" | "pending";
+type Status = "idle" | "running" | "completed" | "failed" | "pending";
 
 interface StatusIndicatorProps {
 	status: Status;

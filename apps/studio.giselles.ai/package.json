@@ -96,6 +96,7 @@
 		"pg": "catalog:",
 		"pino": "catalog:",
 		"posthog-js": "1.194.2",
+		"radix-ui": "catalog:",
 		"react": "catalog:",
 		"react-dom": "catalog:",
 		"react-email": "4.3.2",

@@ -1,6 +1,5 @@
 "use client";
 
-import { AccentLink } from "@giselle-internal/ui/accent-link";
 import {
 	Dialog,
 	DialogBody,
@@ -11,13 +10,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@giselle-internal/ui/dialog";
-import { GlassCard } from "@giselle-internal/ui/glass-card";
-import {
-	type RepoAction,
-	RepoActionMenu,
-} from "@giselle-internal/ui/repo-action-menu";
 import { StatusBadge } from "@giselle-internal/ui/status-badge";
-import { StatusIndicator } from "@giselle-internal/ui/status-indicator";
 import { formatTimestamp } from "@giselles-ai/lib/utils";
 import { RefreshCw, Settings, Trash, X } from "lucide-react";
 import { useCallback, useMemo, useState, useTransition } from "react";
@@ -34,6 +27,10 @@ import { DiagnosticModal } from "./diagnostic-modal";
 import { getErrorMessage } from "./error-messages";
 import { GITHUB_EMBEDDING_PROFILES } from "./github-embedding-profiles";
 import type { DocumentLoaderErrorCode } from "./types";
+import { AccentLink } from "./ui/accent-link";
+import { GlassCard } from "./ui/glass-card";
+import { type RepoAction, RepoActionMenu } from "./ui/repo-action-menu";
+import { StatusIndicator } from "./ui/status-indicator";
 
 type RepositoryItemProps = {
 	repositoryData: RepositoryWithStatuses;
