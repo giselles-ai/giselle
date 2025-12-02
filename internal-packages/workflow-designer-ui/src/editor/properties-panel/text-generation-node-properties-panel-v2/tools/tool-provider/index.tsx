@@ -1,0 +1,64 @@
+import type { LanguageModelToolName } from "@giselles-ai/language-model-registry";
+import type { ContentGenerationNode } from "@giselles-ai/protocol";
+import { DatabaseIcon, GlobeIcon } from "lucide-react";
+import type { ReactNode } from "react";
+import { GitHubIcon } from "../../../../../icons";
+import { AnthropicWebSearchToolConfigurationDialog } from "./anthropic-web-search";
+import { GitHubToolConfigurationDialog } from "./github";
+import { GoogleWebSearchToolConfigurationDialog } from "./google-web-search";
+import { OpenAiWebSearchToolConfigurationDialog } from "./openai-web-search";
+import { PostgresToolConfigurationDialog } from "./postgres";
+
+interface ToolProviderDescriptor {
+	toolName: LanguageModelToolName;
+	label: string;
+	icon: ReactNode;
+	renderConfiguration: (node: ContentGenerationNode) => ReactNode;
+	requirement?: (node: ContentGenerationNode) => boolean;
+}
+
+export const toolProviders: ToolProviderDescriptor[] = [
+	{
+		toolName: "github-api",
+		label: "GitHub",
+		icon: <GitHubIcon data-tool-icon />,
+		renderConfiguration: (node) => (
+			<GitHubToolConfigurationDialog node={node} />
+		),
+	},
+	{
+		toolName: "postgres",
+		label: "PostgreSQL",
+		icon: <DatabaseIcon data-tool-icon />,
+		renderConfiguration: (node) => (
+			<PostgresToolConfigurationDialog node={node} />
+		),
+	},
+	{
+		toolName: "anthropic-web-search",
+		label: "Anthropic Web Search",
+		icon: <GlobeIcon data-tool-icon />,
+		renderConfiguration: (node) => (
+			<AnthropicWebSearchToolConfigurationDialog node={node} />
+		),
+		requirement: (node) => node.content.languageModel.provider === "anthropic",
+	},
+	{
+		toolName: "openai-web-search",
+		label: "OpenAI Web Search",
+		icon: <GlobeIcon data-tool-icon />,
+		renderConfiguration: (node) => (
+			<OpenAiWebSearchToolConfigurationDialog node={node} />
+		),
+		requirement: (node) => node.content.languageModel.provider === "openai",
+	},
+	{
+		toolName: "google-web-search",
+		label: "Google Web Search",
+		icon: <GlobeIcon data-tool-icon />,
+		renderConfiguration: (node) => (
+			<GoogleWebSearchToolConfigurationDialog node={node} />
+		),
+		requirement: (node) => node.content.languageModel.provider === "google",
+	},
+];
