@@ -11,7 +11,7 @@ export function InputArea({ appId: _appId, teamId: _teamId }: InputAreaProps) {
 	return (
 		<div className="mt-8 pt-8 border-t border-border">
 			<div className="mb-4">
-				<h2 className="text-[16px] font-medium text-text">
+				<h2 className="text-text-muted text-[13px] font-semibold block">
 					Request new tasks in a new session
 				</h2>
 			</div>

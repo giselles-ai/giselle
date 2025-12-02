@@ -8,11 +8,10 @@ import { TaskId } from "@giselles-ai/protocol";
 import { giselle } from "@/app/giselle";
 
 export default async function ({
-	children,
 	params,
-}: React.PropsWithChildren<{
+}: {
 	params: Promise<{ taskId: string }>;
-}>) {
+}) {
 	const { taskId: taskIdParam } = await params;
 
 	const result = TaskId.safeParse(taskIdParam);
@@ -38,7 +37,7 @@ export default async function ({
 
 				{/* Main Content Area - Request new tasks section */}
 				<div className="mt-8 pt-8 border-t border-border">
-					<h2 className="text-[16px] font-medium text-text mb-4">
+					<h2 className="text-text-muted text-[13px] font-semibold block mb-4">
 						Request new tasks in a new session
 					</h2>
 					{/* Input area will be added here */}
@@ -50,9 +49,6 @@ export default async function ({
 						/>
 					</div>
 				</div>
-
-				{/* Children (step detail pages) */}
-				{children}
 			</div>
 		</div>
 	);
