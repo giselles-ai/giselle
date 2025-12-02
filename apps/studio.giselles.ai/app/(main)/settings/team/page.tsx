@@ -8,8 +8,7 @@ import { upgradeTeam } from "@/services/teams/actions/upgrade-team";
 import type { CurrentTeam } from "@/services/teams/types";
 import { Button } from "../components/button";
 import { Card } from "../components/card";
-import { getSubscription } from "./actions";
-import { LocalDateTime } from "./components/local-date-time";
+import { CancelSubscriptionButton } from "./cancel-subscription-button";
 import { DeleteTeam } from "./delete-team";
 import { TeamProfile } from "./team-profile";
 
@@ -131,20 +130,20 @@ function BillingInfoForProPlan({ team }: BillingInfoProps) {
 						Learn about plans and pricing
 					</a>
 				</p>
-				{team.activeSubscriptionId && (
-					<Suspense fallback={<Skeleton className="h-5 w-[300px] mt-2" />}>
-						<CancellationNotice subscriptionId={team.activeSubscriptionId} />
-					</Suspense>
-				)}
 			</div>
 			{team.activeSubscriptionId && (
-				<form>
-					<Suspense
-						fallback={<Skeleton className="h-10 w-[120px] rounded-md" />}
-					>
-						<UpdateButton subscriptionId={team.activeSubscriptionId} />
-					</Suspense>
-				</form>
+				<div className="flex flex-col items-end gap-2">
+					<form>
+						<Suspense
+							fallback={<Skeleton className="h-10 w-[120px] rounded-md" />}
+						>
+							<UpdateButton subscriptionId={team.activeSubscriptionId} />
+						</Suspense>
+					</form>
+					<CancelSubscriptionButton
+						subscriptionId={team.activeSubscriptionId}
+					/>
+				</div>
 			)}
 		</div>
 	);
@@ -174,29 +173,5 @@ function UpdateButton({ subscriptionId }: { subscriptionId: string }) {
 		>
 			Manage Subscription
 		</Button>
-	);
-}
-
-type CancellationNoticeProps = {
-	subscriptionId: string;
-};
-
-async function CancellationNotice({ subscriptionId }: CancellationNoticeProps) {
-	const result = await getSubscription(subscriptionId);
-
-	if (!result.success || !result.data) {
-		console.error("Failed to fetch subscription:", result.error);
-		return null;
-	}
-
-	const subscription = result.data;
-	if (!subscription.cancelAtPeriodEnd || !subscription.cancelAt) {
-		return null;
-	}
-
-	return (
-		<p className="mt-2 font-medium text-sm leading-[20.4px] text-warning-900 font-geist">
-			Subscription will end on <LocalDateTime date={subscription.cancelAt} />
-		</p>
 	);
 }

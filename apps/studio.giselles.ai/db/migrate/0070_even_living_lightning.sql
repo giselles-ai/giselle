@@ -1,0 +1,1 @@
+DROP TABLE "subscription_histories" CASCADE;
