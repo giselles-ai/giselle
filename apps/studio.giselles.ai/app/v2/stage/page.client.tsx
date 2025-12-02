@@ -2,15 +2,8 @@
 
 import { Select, type SelectOption } from "@giselle-internal/ui/select";
 import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
-import { GitHubIcon } from "@giselles-ai/icons/github";
 import type { GenerationContextInput, TaskId } from "@giselles-ai/protocol";
-import {
-	ArrowUpIcon,
-	FileIcon,
-	Image as ImageIcon,
-	Search,
-	XIcon,
-} from "lucide-react";
+import { ArrowUpIcon, Image as ImageIcon, Search } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import { useRouter } from "next/navigation";
 import {
@@ -24,7 +17,6 @@ import {
 } from "react";
 import { TopLightOverlay } from "@/app/(main)/lobby/components/top-light-overlay";
 import { AgentCard } from "@/app/(main)/workspaces/components/agent-card";
-import { LLMProviderIcon } from "@/app/(main)/workspaces/components/llm-provider-icon";
 import type { LoaderData } from "./data-loader";
 import type { StageApp } from "./types";
 
@@ -88,18 +80,11 @@ function AppCard({
 }
 
 interface StageTopCardProps {
-	selectedApp?: StageApp;
 	runningApp?: StageApp;
 	runStatus: "idle" | "running" | "completed";
-	onDeselect?: () => void;
 }
 
-function StageTopCard({
-	selectedApp,
-	runningApp,
-	runStatus,
-	onDeselect,
-}: StageTopCardProps) {
+function StageTopCard({ runningApp, runStatus }: StageTopCardProps) {
 	return (
 		<div className="relative flex w-full max-w-[960px] min-w-[320px] mx-auto flex-col overflow-hidden">
 			{runningApp && runStatus === "running" && (
@@ -107,139 +92,46 @@ function StageTopCard({
 					<TopLightOverlay />
 				</div>
 			)}
-			{selectedApp ? (
-				<div className="relative flex items-center gap-4 px-4 py-[32px] rounded-lg bg-card/40">
-					{/* Close button */}
-					<button
-						type="button"
-						onClick={onDeselect}
-						className="absolute top-2 right-2 p-1 rounded-md text-foreground/50 hover:text-foreground hover:bg-white/10 transition-all cursor-pointer"
-					>
-						<XIcon className="h-4 w-4" />
-					</button>
-					{/* App icon */}
-					<div
-						className="relative flex h-[80px] w-[80px] flex-shrink-0 items-center justify-center overflow-hidden rounded-md border transition-all bg-[color-mix(in_srgb,hsl(192,73%,84%)_14%,transparent)] border-[hsl(192,73%,84%)]"
-						style={{
-							boxShadow: "0 0 10px rgb(0,135,246), 0 0 20px rgb(0,135,246)",
-						}}
-					>
-						<DynamicIcon
-							name={selectedApp.iconName}
-							className="relative z-[1] h-8 w-8 stroke-1 text-[hsl(192,73%,84%)]"
-						/>
-					</div>
-					{/* App details */}
-					<div className="min-w-0 flex-1">
-						<div className="flex items-center gap-2">
-							<h3 className="text-lg font-semibold text-foreground">
-								{selectedApp.name}
-							</h3>
-							{runningApp && runStatus === "running" && (
-								<span className="text-sm text-text-muted">Generating...</span>
-							)}
-						</div>
-						{selectedApp.description ? (
-							<p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
-								{selectedApp.description}
-							</p>
-						) : null}
-						<div className="mt-2 flex flex-col gap-2 text-xs">
-							<div className="flex items-center gap-4">
-								<div className="flex items-center gap-2">
-									<span className="font-medium text-text-muted">
-										Workspace:
-									</span>
-									<span className="text-text">{selectedApp.workspaceName}</span>
-								</div>
-								<div className="flex items-center gap-2">
-									<span className="font-medium text-text-muted">LLM:</span>
-									<div className="flex items-center gap-1">
-										{selectedApp.llmProviders.length > 0 ? (
-											selectedApp.llmProviders.map((provider) => (
-												<div
-													key={provider}
-													className="flex h-5 w-5 items-center justify-center rounded bg-[color:var(--color-inverse)]/10"
-												>
-													<LLMProviderIcon
-														provider={provider}
-														className="h-3 w-3"
-													/>
-												</div>
-											))
-										) : (
-											<span className="text-text">-</span>
-										)}
-									</div>
+			<div className="w-full h-[144px] flex justify-center items-center">
+				<div className="flex flex-col items-center relative z-10">
+					{runningApp && runStatus === "completed" ? (
+						<>
+							<p className="font-[800] text-green-500">Completed</p>
+							<div className="mt-2 flex items-center gap-3">
+								<div className="relative flex h-[40px] w-[40px] flex-shrink-0 items-center justify-center overflow-hidden rounded-md border border-[hsl(192,73%,84%)] bg-[color-mix(in_srgb,hsl(192,73%,84%)_14%,transparent)] shadow-[0_0_22px_rgba(0,135,246,0.95)]">
+									<DynamicIcon
+										name={runningApp.iconName}
+										className="relative z-[1] h-6 w-6 stroke-1 text-[hsl(192,73%,84%)]"
+									/>
 								</div>
 							</div>
-							{(selectedApp.vectorStoreRepositories.length > 0 ||
-								selectedApp.vectorStoreFiles.length > 0) && (
-								<div className="flex items-center gap-2">
-									<span className="font-medium text-text-muted">
-										Vector Store:
-									</span>
-									<div className="flex flex-wrap items-center gap-2">
-										{selectedApp.vectorStoreRepositories.map((repo) => (
-											<div key={repo} className="flex items-center gap-1.5">
-												<GitHubIcon className="w-3 h-3 text-text/60 flex-shrink-0" />
-												<span className="truncate text-text">{repo}</span>
-											</div>
-										))}
-										{selectedApp.vectorStoreFiles.map((file) => (
-											<div key={file} className="flex items-center gap-1.5">
-												<FileIcon className="w-3 h-3 text-text/60 flex-shrink-0" />
-												<span className="truncate text-text">{file}</span>
-											</div>
-										))}
-									</div>
+						</>
+					) : runningApp && runStatus === "running" ? (
+						<>
+							<p className="font-[800] text-text/60">Creating task...</p>
+							<p className="text-text-muted text-[12px] text-center leading-5"></p>
+							<div className="mt-2 flex items-center gap-3">
+								<div className="stage-running-icon relative flex h-[40px] w-[40px] flex-shrink-0 items-center justify-center overflow-hidden rounded-md border border-[hsl(192,73%,84%)] bg-[color-mix(in_srgb,hsl(192,73%,84%)_14%,transparent)] shadow-[0_0_22px_rgba(0,135,246,0.95)]">
+									<DynamicIcon
+										name={runningApp.iconName}
+										className="relative z-[1] h-6 w-6 stroke-1 text-[hsl(192,73%,84%)]"
+									/>
 								</div>
-							)}
-						</div>
-					</div>
+							</div>
+						</>
+					) : (
+						<p
+							className="font-thin text-[36px] font-sans text-[hsl(192,73%,84%)] text-center"
+							style={{
+								textShadow:
+									"0 0 15px rgb(0,135,246), 0 0 30px rgb(0,135,246), 0 0 45px rgb(0,135,246), 0 0 70px rgb(0,135,246)",
+							}}
+						>
+							Request tasks and Giselle-powered agents will execute them
+						</p>
+					)}
 				</div>
-			) : (
-				<div className="w-full h-[144px] flex justify-center items-center">
-					<div className="flex flex-col items-center relative z-10">
-						{runningApp && runStatus === "completed" ? (
-							<>
-								<p className="font-[800] text-green-500">Completed</p>
-								<div className="mt-2 flex items-center gap-3">
-									<div className="relative flex h-[40px] w-[40px] flex-shrink-0 items-center justify-center overflow-hidden rounded-md border border-[hsl(192,73%,84%)] bg-[color-mix(in_srgb,hsl(192,73%,84%)_14%,transparent)] shadow-[0_0_22px_rgba(0,135,246,0.95)]">
-										<DynamicIcon
-											name={runningApp.iconName}
-											className="relative z-[1] h-6 w-6 stroke-1 text-[hsl(192,73%,84%)]"
-										/>
-									</div>
-								</div>
-							</>
-						) : runningApp && runStatus === "running" ? (
-							<>
-								<p className="font-[800] text-text/60">Creating task...</p>
-								<p className="text-text-muted text-[12px] text-center leading-5"></p>
-								<div className="mt-2 flex items-center gap-3">
-									<div className="stage-running-icon relative flex h-[40px] w-[40px] flex-shrink-0 items-center justify-center overflow-hidden rounded-md border border-[hsl(192,73%,84%)] bg-[color-mix(in_srgb,hsl(192,73%,84%)_14%,transparent)] shadow-[0_0_22px_rgba(0,135,246,0.95)]">
-										<DynamicIcon
-											name={runningApp.iconName}
-											className="relative z-[1] h-6 w-6 stroke-1 text-[hsl(192,73%,84%)]"
-										/>
-									</div>
-								</div>
-							</>
-						) : (
-							<p
-								className="font-thin text-[36px] font-sans text-[hsl(192,73%,84%)] text-center"
-								style={{
-									textShadow:
-										"0 0 15px rgb(0,135,246), 0 0 30px rgb(0,135,246), 0 0 45px rgb(0,135,246), 0 0 70px rgb(0,135,246)",
-								}}
-							>
-								Request tasks and Giselle-powered agents will execute them
-							</p>
-						)}
-					</div>
-				</div>
-			)}
+			</div>
 		</div>
 	);
 }
@@ -473,12 +365,7 @@ export function Page({
 				<div className="flex-1 min-w-0 flex flex-col px-[24px] pt-[24px]">
 					{/* Top section: app info + chat input */}
 					<div className="space-y-6 pb-6">
-						<StageTopCard
-							selectedApp={selectedApp}
-							runningApp={runningApp}
-							runStatus={runStatus}
-							onDeselect={() => setSelectedAppId(undefined)}
-						/>
+						<StageTopCard runningApp={runningApp} runStatus={runStatus} />
 
 						{/* Chat-style input area */}
 						<ChatInputArea

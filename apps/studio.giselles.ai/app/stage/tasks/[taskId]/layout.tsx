@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { getTopSectionData } from "./lib/data";
+import { InputAreaPlaceholder } from "./ui/input-area-placeholder";
 import { StepsSection } from "./ui/steps-section";
 import { TopSection } from "./ui/top-section";
 import "./mobile-scroll.css";
@@ -41,15 +42,7 @@ export default async function ({
 						Request new tasks in a new session
 					</h2>
 					{/* TODO: Input area will be added here - placeholder for future functionality */}
-					<div className="rounded-lg border border-border bg-white/5 p-4">
-						<input
-							type="text"
-							placeholder="Ask anything—powered by Giselle docs"
-							className="w-full bg-transparent border-0 outline-none text-text placeholder:text-text-muted"
-							disabled
-							aria-label="Input area placeholder (not yet functional)"
-						/>
-					</div>
+					<InputAreaPlaceholder />
 				</div>
 			</div>
 		</div>
