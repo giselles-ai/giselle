@@ -17,9 +17,6 @@ export function createPostgresTool({
 }) {
 	const pool = new Pool({ connectionString });
 
-	context.waitUntil(async () => {
-		await pool.end();
-	});
 	const toolSet: ToolSet = {};
 
 	for (const toolDef of toolDefs) {
@@ -33,6 +30,7 @@ export function createPostgresTool({
 						"Returns database table structure sorted by table and position.",
 					inputSchema: z.object({}),
 					execute: async () => {
+						context.logger.debug("Getting table structure");
 						const client = await pool.connect();
 						const res = await client.query(
 							`
@@ -42,6 +40,10 @@ export function createPostgresTool({
              ORDER BY table_name, ordinal_position;`,
 						);
 						client.release();
+						context.waitUntil(async () => {
+							await pool.end();
+							context.logger.debug("Postgres tool ended");
+						});
 						return JSON.stringify(res.rows);
 					},
 				});
@@ -58,6 +60,11 @@ export function createPostgresTool({
 							return res.rows;
 						} catch (e) {
 							return e;
+						} finally {
+							context.waitUntil(async () => {
+								await pool.end();
+								context.logger.debug("Postgres tool ended");
+							});
 						}
 					},
 				});
