@@ -24,7 +24,7 @@ export function Header({
 				<Link href="/" aria-label="Go to home" className="group">
 					<GiselleLogo className="w-[72px] h-auto fill-inverse group-hover:fill-primary-100 transition-colors" />
 				</Link>
-				<div className="h-6 w-px bg-border" />
+				<div className="h-6 w-px bg-border rotate-12" />
 				{user.allTeams && (
 					<TeamSelectionForm
 						allTeams={user.allTeams}

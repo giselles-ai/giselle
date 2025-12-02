@@ -1,6 +1,5 @@
 "use client";
 
-import { DocsLink } from "@giselle-internal/ui/docs-link";
 import { Select, type SelectOption } from "@giselle-internal/ui/select";
 import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
 import { GitHubIcon } from "@giselles-ai/icons/github";
@@ -258,7 +257,7 @@ function StageTopCard({
 										"0 0 15px rgb(0,135,246), 0 0 30px rgb(0,135,246), 0 0 45px rgb(0,135,246), 0 0 70px rgb(0,135,246)",
 								}}
 							>
-								Select an app to run in Stage.
+								Request tasks and Giselle-powered agents will execute them
 							</p>
 						)}
 					</div>
@@ -598,17 +597,6 @@ export function Page({
 			<div className="flex items-stretch gap-4 min-w-0 flex-1 overflow-hidden">
 				{/* Main content: apps area */}
 				<div className="relative flex-1 min-w-0 flex flex-col px-[24px] pt-[24px] overflow-hidden">
-					{/* About Stage docs link */}
-					<div className="absolute top-4 right-6">
-						<DocsLink
-							href="https://docs.giselles.ai/features/stage"
-							target="_blank"
-							rel="noopener noreferrer"
-							tone="muted"
-						>
-							About Stage
-						</DocsLink>
-					</div>
 					{/* Sticky top section: app info + chat input */}
 					<div className="flex-shrink-0 space-y-6 pb-6">
 						<StageTopCard
