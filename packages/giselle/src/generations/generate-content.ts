@@ -625,7 +625,7 @@ function generateContentV2({
 				stopWhen: ({ steps }) => {
 					logger.debug(steps, "stopWhen");
 					const lastStep = steps[steps.length - 1];
-					return lastStep.finishReason === "stop";
+					return lastStep.finishReason !== "tool-calls";
 				},
 				onChunk: async () => {
 					const currentGeneration = await getGeneration({
