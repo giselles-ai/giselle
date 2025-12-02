@@ -4,7 +4,13 @@ import { Select, type SelectOption } from "@giselle-internal/ui/select";
 import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
 import { GitHubIcon } from "@giselles-ai/icons/github";
 import type { GenerationContextInput, TaskId } from "@giselles-ai/protocol";
-import { ArrowUpIcon, FileIcon, Image as ImageIcon, XIcon } from "lucide-react";
+import {
+	ArrowUpIcon,
+	FileIcon,
+	Image as ImageIcon,
+	Search,
+	XIcon,
+} from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import { useRouter } from "next/navigation";
 import {
@@ -17,6 +23,7 @@ import {
 	useTransition,
 } from "react";
 import { TopLightOverlay } from "@/app/(main)/lobby/components/top-light-overlay";
+import { AgentCard } from "@/app/(main)/workspaces/components/agent-card";
 import { LLMProviderIcon } from "@/app/(main)/workspaces/components/llm-provider-icon";
 import type { LoaderData } from "./data-loader";
 import type { StageApp } from "./types";
@@ -57,7 +64,7 @@ import type { StageApp } from "./types";
 function AppCard({
 	app,
 	onSelect,
-	isSelected = false,
+	isSelected: _isSelected = false,
 }: {
 	app: StageApp;
 	onSelect?: () => void;
@@ -66,37 +73,16 @@ function AppCard({
 	return (
 		<button
 			type="button"
-			className={`flex flex-col w-[140px] flex-shrink-0 rounded-[12px] p-3 text-left group cursor-pointer transition-all ${
-				isSelected
-					? "bg-[color-mix(in_srgb,hsl(192,73%,84%)_14%,transparent)] border border-[hsl(192,73%,84%)] shadow-[0_0_22px_rgba(0,135,246,0.95)]"
-					: "bg-card/40 border border-white/15 hover:bg-card/60 hover:border-white/30"
-			}`}
+			className="rounded-lg border border-white px-4 py-3 flex items-center gap-3 text-left"
 			onClick={onSelect}
 		>
-			{/* App icon area */}
-			<div
-				className={`w-full aspect-square rounded-[8px] mb-3 flex items-center justify-center transition-colors ${
-					isSelected
-						? "bg-[color-mix(in_srgb,hsl(192,73%,84%)_20%,transparent)]"
-						: "bg-card/60"
-				}`}
-			>
-				<DynamicIcon
-					name={app.iconName}
-					className={`h-8 w-8 stroke-1 ${
-						isSelected ? "text-[hsl(192,73%,84%)]" : "text-foreground"
-					}`}
-				/>
+			<div className="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center shrink-0">
+				<span className="text-white text-sm font-semibold">A</span>
 			</div>
-			{/* App info */}
-			<h3 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-2 mb-1">
-				{app.name}
-			</h3>
-			{app.description && (
-				<p className="text-xs text-muted-foreground line-clamp-2">
-					{app.description}
-				</p>
-			)}
+			<div className="flex flex-col">
+				<span className="text-text font-medium text-[14px]">{app.name}</span>
+				<span className="text-text/60 text-[12px]">{app.teamName}</span>
+			</div>
 		</button>
 	);
 }
@@ -514,44 +500,50 @@ export function Page({
 							<div className="grid grid-cols-3 gap-3 pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
 								<button
 									type="button"
-									className="rounded-lg bg-gray-200 border border-gray-300 px-4 py-3 flex items-center gap-3 text-left hover:bg-gray-300 transition-colors"
+									className="rounded-lg border border-white px-4 py-3 flex items-center gap-3 text-left"
 								>
 									<div className="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center shrink-0">
 										<span className="text-white text-sm font-semibold">A</span>
 									</div>
 									<div className="flex flex-col">
-										<span className="text-gray-800 font-medium text-sm">
+										<span className="text-text font-medium text-[14px]">
 											Customer Support
 										</span>
-										<span className="text-gray-600 text-xs">Giselle Team</span>
+										<span className="text-text/60 text-[12px]">
+											Giselle Team
+										</span>
 									</div>
 								</button>
 								<button
 									type="button"
-									className="rounded-lg bg-gray-200 border border-gray-300 px-4 py-3 flex items-center gap-3 text-left hover:bg-gray-300 transition-colors"
+									className="rounded-lg border border-white px-4 py-3 flex items-center gap-3 text-left"
 								>
 									<div className="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center shrink-0">
 										<span className="text-white text-sm font-semibold">A</span>
 									</div>
 									<div className="flex flex-col">
-										<span className="text-gray-800 font-medium text-sm">
+										<span className="text-text font-medium text-[14px]">
 											Tech Support
 										</span>
-										<span className="text-gray-600 text-xs">Giselle Team</span>
+										<span className="text-text/60 text-[12px]">
+											Giselle Team
+										</span>
 									</div>
 								</button>
 								<button
 									type="button"
-									className="rounded-lg bg-gray-200 border border-gray-300 px-4 py-3 flex items-center gap-3 text-left hover:bg-gray-300 transition-colors"
+									className="rounded-lg border border-white px-4 py-3 flex items-center gap-3 text-left"
 								>
 									<div className="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center shrink-0">
 										<span className="text-white text-sm font-semibold">A</span>
 									</div>
 									<div className="flex flex-col">
-										<span className="text-gray-800 font-medium text-sm">
+										<span className="text-text font-medium text-[14px]">
 											Product Manager
 										</span>
-										<span className="text-gray-600 text-xs">Giselle Team</span>
+										<span className="text-text/60 text-[12px]">
+											Giselle Team
+										</span>
 									</div>
 								</button>
 							</div>
@@ -559,21 +551,25 @@ export function Page({
 
 						{/* Section 2: Select an Apps to Run */}
 						<div className="flex flex-col">
-							<h2 className="text-inverse text-[14px] max-w-[960px] mx-auto w-full text-center">
-								Select an Apps to Run
-							</h2>
+							<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-4">
+								<h2 className="text-inverse text-[16px]">
+									Select an Apps to Run
+								</h2>
+								<div className="relative">
+									<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
+									<input
+										type="text"
+										placeholder="Search"
+										className="pl-9 pr-4 py-2 rounded-lg border border-white bg-transparent text-text placeholder:text-text-muted text-sm focus:outline-none focus:ring-2 focus:ring-white/20"
+									/>
+								</div>
+							</div>
 							{teamApps.length === 0 ? (
 								<p className="text-sm text-muted-foreground max-w-[960px] mx-auto w-full">
 									No apps available.
 								</p>
 							) : (
-								<div
-									className="flex gap-4 overflow-x-auto pt-4 pb-4 max-w-[960px] mx-auto w-full px-4"
-									style={{
-										scrollbarWidth: "none",
-										msOverflowStyle: "none",
-									}}
-								>
+								<div className="grid grid-cols-3 gap-3 pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
 									{teamApps.map((app) => (
 										<AppCard
 											app={app}
@@ -592,33 +588,49 @@ export function Page({
 
 						{/* Section 3: Team apps */}
 						<div className="flex flex-col">
-							<h2 className="text-inverse text-[14px] max-w-[960px] mx-auto w-full text-center">
-								Edit Apps in Studio
-							</h2>
+							<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-4">
+								<h2 className="text-inverse text-[16px]">
+									Edit Apps in Studio
+								</h2>
+								<div className="relative">
+									<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
+									<input
+										type="text"
+										placeholder="Search"
+										className="pl-9 pr-4 py-2 rounded-lg border border-white bg-transparent text-text placeholder:text-text-muted text-sm focus:outline-none focus:ring-2 focus:ring-white/20"
+									/>
+								</div>
+							</div>
 							{teamApps.length === 0 ? (
 								<p className="text-sm text-muted-foreground max-w-[960px] mx-auto w-full">
 									No apps found in Team apps.
 								</p>
 							) : (
-								<div
-									className="flex gap-4 overflow-x-auto pt-4 pb-4 max-w-[960px] mx-auto w-full px-4"
-									style={{
-										scrollbarWidth: "none",
-										msOverflowStyle: "none",
-									}}
-								>
-									{teamApps.map((app) => (
-										<AppCard
-											app={app}
-											key={app.id}
-											isSelected={
-												selectedAppId === app.id || runningAppId === app.id
-											}
-											onSelect={() => {
-												setSelectedAppId(app.id);
-											}}
-										/>
-									))}
+								<div className="grid grid-cols-[repeat(auto-fill,minmax(267px,1fr))] gap-4 pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
+									{teamApps.map((app) => {
+										// Convert StageApp to AgentCard format
+										const agentCardData = {
+											id: app.id,
+											name: app.name,
+											description: app.description,
+											workspaceId: app.workspaceId,
+											githubRepositories: app.vectorStoreRepositories,
+											documentVectorStoreFiles: app.vectorStoreFiles,
+											llmProviders: app.llmProviders,
+											creator: null,
+											executionCount: 0,
+										};
+										return (
+											<AgentCard
+												key={app.id}
+												agent={
+													agentCardData as Parameters<
+														typeof AgentCard
+													>[0]["agent"]
+												}
+											/>
+										);
+									})}
 								</div>
 							)}
 						</div>
