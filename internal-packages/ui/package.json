@@ -21,7 +21,6 @@
 		"./search-input": "./components/search-input.tsx",
 		"./toast": "./components/toast.tsx",
 		"./status-badge": "./components/status-badge.tsx",
-		"./tabs": "./components/tabs.tsx",
 		"./tab-navigation": "./components/tab-navigation.tsx",
 		"./glass-card": "./components/glass-card.tsx",
 		"./page-heading": "./components/page-heading.tsx",
