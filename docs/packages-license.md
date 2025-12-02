@@ -12328,7 +12328,7 @@ Unknown manually approved
 
 
 <a name="swr"></a>
-### swr v2.2.5
+### swr v2.3.6
 #### 
 
 ##### Paths
