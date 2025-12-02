@@ -36,7 +36,7 @@ export default async function ({
 				</Suspense>
 
 				{/* Main Content Area - Request new tasks section */}
-				<div className="mt-8 pt-8 border-t border-border">
+				<div className="mt-8 pt-8">
 					<h2 className="text-text-muted text-[13px] font-semibold block mb-4">
 						Request new tasks in a new session
 					</h2>

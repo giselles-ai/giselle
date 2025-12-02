@@ -15,7 +15,7 @@ export function TopSection({ data }: { data: Promise<TopSectionData> }) {
 	const resolvedData = use(data);
 
 	return (
-		<div className="w-full border-b border-border pb-6">
+		<div className="w-full pb-6">
 			{/* App Summary Section */}
 			<div>
 				{/* Title placeholder */}
