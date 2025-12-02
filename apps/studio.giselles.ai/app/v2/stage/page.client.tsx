@@ -511,7 +511,7 @@ export function Page({
 											<AgentCard
 												key={app.id}
 												agent={
-													agentCardData as Parameters<
+													agentCardData as unknown as Parameters<
 														typeof AgentCard
 													>[0]["agent"]
 												}
