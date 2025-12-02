@@ -18,7 +18,7 @@ import {
 	RefreshCw,
 	XIcon,
 } from "lucide-react";
-import { use, useCallback, useEffect, useState } from "react";
+import { use, useCallback, useEffect, useRef, useState } from "react";
 import { getAssistantTextFromGeneration } from "../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-text";
 import { GenerationView } from "../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-view";
 import { fetchGenerationData } from "../actions";
@@ -98,12 +98,18 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 	const [stepGenerations, setStepGenerations] = useState<
 		Record<string, Generation>
 	>({});
+	const stepGenerationsRef = useRef(stepGenerations);
 	const [expandedSteps, setExpandedSteps] = useState<Set<string>>(new Set());
 	const [isStepsExpanded, setIsStepsExpanded] = useState(true);
 
 	const updateTask = useCallback<StreamDataEventHandler>((data) => {
 		setTask(data.task);
 	}, []);
+
+	// Keep ref in sync with state
+	useEffect(() => {
+		stepGenerationsRef.current = stepGenerations;
+	}, [stepGenerations]);
 
 	// Fetch generation data for completed steps
 	useEffect(() => {
@@ -115,7 +121,10 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 
 			task.sequences.forEach((sequence) => {
 				sequence.steps.forEach((step) => {
-					if (step.status === "completed" && !stepGenerations[step.id]) {
+					if (
+						step.status === "completed" &&
+						!stepGenerationsRef.current[step.id]
+					) {
 						generationsToFetch.push({
 							stepId: step.id,
 							generationId: step.generationId,
@@ -142,7 +151,6 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 		fetchGenerations().catch((error) => {
 			console.error("Failed to fetch generations:", error);
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [task]);
 
 	// Count completed steps
