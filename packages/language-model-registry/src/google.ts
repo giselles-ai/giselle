@@ -4,10 +4,11 @@ import {
 	defineLanguageModel,
 	definePricing,
 } from "./language-model";
+import { googleProvider } from "./providers";
 
 export const google = {
 	"google/gemini-3-pro-preview": defineLanguageModel({
-		provider: "google",
+		provider: googleProvider,
 		id: "google/gemini-3-pro-preview",
 		name: "Gemini 3 Pro Preview",
 		description:
@@ -43,7 +44,7 @@ export const google = {
 		url: "https://ai.google.dev/gemini-api/docs/models",
 	}),
 	"google/gemini-2.5-pro": defineLanguageModel({
-		provider: "google",
+		provider: googleProvider,
 		id: "google/gemini-2.5-pro",
 		name: "Gemini 2.5 Pro",
 		description:
@@ -78,7 +79,7 @@ export const google = {
 		url: "https://ai.google.dev/gemini-api/docs/models",
 	}),
 	"google/gemini-2.5-flash": defineLanguageModel({
-		provider: "google",
+		provider: googleProvider,
 		id: "google/gemini-2.5-flash",
 		name: "Gemini 2.5 Flash",
 		description:
@@ -113,7 +114,7 @@ export const google = {
 		url: "https://ai.google.dev/gemini-api/docs/models",
 	}),
 	"google/gemini-2.5-flash-lite": defineLanguageModel({
-		provider: "google",
+		provider: googleProvider,
 		id: "google/gemini-2.5-flash-lite",
 		name: "Gemini 2.5 Flash Lite",
 		description:

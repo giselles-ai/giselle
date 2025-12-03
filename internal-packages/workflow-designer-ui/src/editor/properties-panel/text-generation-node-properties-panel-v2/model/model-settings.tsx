@@ -34,7 +34,7 @@ export function ModelSettings({
 			onContentGenerationContentChange?.({
 				languageModel: {
 					id: languageModel.id,
-					provider: languageModel.provider,
+					provider: languageModel.providerId,
 					configuration: languageModel.defaultConfiguration,
 				},
 			});

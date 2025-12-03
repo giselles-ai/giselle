@@ -35,9 +35,9 @@ export function LanguageModelV2ToggleGroup({
 		return registryLanguageModels.filter((model) => {
 			const matchesName = model.name.toLowerCase().includes(normalizedQuery);
 			const matchesId = model.id.toLowerCase().includes(normalizedQuery);
-			const matchesProvider = model.provider
-				.toLowerCase()
-				.includes(normalizedQuery);
+			const matchesProvider =
+				model.provider.title.toLowerCase().includes(normalizedQuery) ||
+				model.providerId.toLowerCase().includes(normalizedQuery);
 			return matchesName || matchesId || matchesProvider;
 		});
 	}, [query]);

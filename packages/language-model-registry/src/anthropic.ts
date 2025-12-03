@@ -4,10 +4,11 @@ import {
 	defineLanguageModel,
 	definePricing,
 } from "./language-model";
+import { anthropicProvider } from "./providers";
 
 export const anthropic = {
 	"anthropic/claude-opus-4.5": defineLanguageModel({
-		provider: "anthropic",
+		provider: anthropicProvider,
 		id: "anthropic/claude-opus-4.5",
 		name: "Claude Opus 4.5",
 		description:
@@ -42,7 +43,7 @@ export const anthropic = {
 		url: "https://www.anthropic.com/claude/opus",
 	}),
 	"anthropic/claude-opus-4.1": defineLanguageModel({
-		provider: "anthropic",
+		provider: anthropicProvider,
 		id: "anthropic/claude-opus-4.1",
 		name: "Claude Opus 4.1",
 		description:
@@ -77,7 +78,7 @@ export const anthropic = {
 		url: "https://www.anthropic.com/claude/opus",
 	}),
 	"anthropic/claude-sonnet-4-5": defineLanguageModel({
-		provider: "anthropic",
+		provider: anthropicProvider,
 		id: "anthropic/claude-sonnet-4-5",
 		name: "Claude Sonnet 4.5",
 		description:
@@ -112,7 +113,7 @@ export const anthropic = {
 		url: "https://www.anthropic.com/claude/sonnet",
 	}),
 	"anthropic/claude-haiku-4-5": defineLanguageModel({
-		provider: "anthropic",
+		provider: anthropicProvider,
 		id: "anthropic/claude-haiku-4-5",
 		name: "Claude Haiku 4.5",
 		description:

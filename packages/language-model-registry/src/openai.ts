@@ -4,6 +4,7 @@ import {
 	defineLanguageModel,
 	definePricing,
 } from "./language-model";
+import { openaiProvider } from "./providers";
 
 const reasoningEffortDescription =
 	"Constrains effort on reasoning for reasoning models. Reducing reasoning effort can result in faster responses and fewer tokens used on reasoning in a response.";
@@ -12,7 +13,7 @@ const textVerbosityDescription =
 
 export const openai = {
 	"openai/gpt-5.1-thinking": defineLanguageModel({
-		provider: "openai",
+		provider: openaiProvider,
 		id: "openai/gpt-5.1-thinking",
 		name: "GPT-5.1",
 		description:
@@ -42,7 +43,7 @@ export const openai = {
 		url: "https://platform.openai.com/docs/models/gpt-5.1",
 	}),
 	"openai/gpt-5.1-codex": defineLanguageModel({
-		provider: "openai",
+		provider: openaiProvider,
 		id: "openai/gpt-5.1-codex",
 		name: "GPT-5.1 Codex",
 		description:
@@ -73,7 +74,7 @@ export const openai = {
 	}),
 
 	"openai/gpt-5": defineLanguageModel({
-		provider: "openai",
+		provider: openaiProvider,
 		id: "openai/gpt-5",
 		name: "GPT-5",
 		description:
@@ -104,7 +105,7 @@ export const openai = {
 	}),
 
 	"openai/gpt-5-codex": defineLanguageModel({
-		provider: "openai",
+		provider: openaiProvider,
 		id: "openai/gpt-5-codex",
 		name: "GPT-5-Codex",
 		description:
@@ -135,7 +136,7 @@ export const openai = {
 	}),
 
 	"openai/gpt-5-mini": defineLanguageModel({
-		provider: "openai",
+		provider: openaiProvider,
 		id: "openai/gpt-5-mini",
 		name: "GPT-5 mini",
 		description:
@@ -166,7 +167,7 @@ export const openai = {
 	}),
 
 	"openai/gpt-5-nano": defineLanguageModel({
-		provider: "openai",
+		provider: openaiProvider,
 		id: "openai/gpt-5-nano",
 		name: "GPT-5 nano",
 		description:

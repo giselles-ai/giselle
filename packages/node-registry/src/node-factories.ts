@@ -696,7 +696,7 @@ const contentGenerationFactoryImpl = {
 				version: "v1",
 				prompt: "",
 				languageModel: {
-					provider: languageModel.provider,
+					provider: languageModel.providerId,
 					id: languageModel.id,
 					configuration: languageModel.defaultConfiguration,
 				},
