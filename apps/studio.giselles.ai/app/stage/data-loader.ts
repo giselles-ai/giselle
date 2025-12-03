@@ -1,5 +1,6 @@
 import { stageFlag } from "@/flags";
 import { fetchCurrentTeam, fetchUserTeams, isProPlan } from "@/services/teams";
+import { canCreateFreeTeam } from "@/services/teams/plan-features/free-team-creation";
 import type { Team, TeamId } from "@/services/teams/types";
 import { getAccountInfo } from "../(main)/settings/account/actions";
 
@@ -10,6 +11,7 @@ export async function dataLoader() {
 		const allTeams = await fetchUserTeams();
 		const isPro = isProPlan(currentTeam);
 		const enableStage = await stageFlag();
+
 		return {
 			enableStage,
 			displayName: accountInfo.displayName ?? undefined,
@@ -29,6 +31,10 @@ export async function dataLoader() {
 				plan: t.plan,
 				isPro: isProPlan(t),
 			})),
+			canCreateFreeTeam: canCreateFreeTeam(
+				accountInfo.email,
+				allTeams.map((t) => t.plan),
+			),
 		};
 	} catch (error) {
 		// Gracefully degrade the navigation rail when team/account loading fails
@@ -53,6 +59,7 @@ export async function dataLoader() {
 			avatarUrl: undefined,
 			currentTeam: fallbackTeam,
 			allTeams: [fallbackTeam],
+			canCreateFreeTeam: false,
 		};
 	}
 }

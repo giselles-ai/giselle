@@ -3,15 +3,24 @@ import {
 	type LanguageModelToolName,
 } from "@giselles-ai/language-model-registry";
 import type { ContentGenerationNode } from "@giselles-ai/protocol";
+import { useFeatureFlag } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { CheckIcon } from "lucide-react";
 import { type PropsWithChildren, type ReactNode, useMemo } from "react";
 import { toolProviders } from "./tool-provider";
 
 export function ToolsPanel({ node }: { node: ContentGenerationNode }) {
+	const { privatePreviewTools } = useFeatureFlag();
+	const filteredProviders = useMemo(
+		() =>
+			toolProviders.filter(
+				(provider) => provider.toolName !== "postgres" || privatePreviewTools,
+			),
+		[privatePreviewTools],
+	);
 	return (
 		<div className="text-inverse space-y-[8px]">
-			{toolProviders.map(
+			{filteredProviders.map(
 				(provider) =>
 					(provider.requirement === undefined ||
 						provider.requirement(node)) && (

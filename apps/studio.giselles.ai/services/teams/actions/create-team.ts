@@ -13,6 +13,8 @@ import {
 	DRAFT_TEAM_NAME_METADATA_KEY,
 	DRAFT_TEAM_USER_DB_ID_METADATA_KEY,
 } from "../constants";
+import { fetchUserTeams } from "../fetch-user-teams";
+import { canCreateFreeTeam } from "../plan-features/free-team-creation";
 import { setCurrentTeam } from "../set-current-team";
 import { createTeamId } from "../utils";
 import { createCheckoutSession } from "./create-checkout-session";
@@ -36,6 +38,14 @@ export async function createTeam(formData: FormData) {
 	}
 
 	if (selectedPlan === "free") {
+		const userTeams = await fetchUserTeams();
+		const isEligible = canCreateFreeTeam(
+			supabaseUser.email,
+			userTeams.map((t) => t.plan),
+		);
+		if (!isEligible) {
+			throw new Error("You are not eligible to create a free team");
+		}
 		const teamId = await createFreeTeam(supabaseUser, teamName);
 		await setCurrentTeam(teamId);
 		redirect("/settings/team");
