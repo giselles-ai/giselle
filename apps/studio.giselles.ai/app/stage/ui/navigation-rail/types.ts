@@ -8,4 +8,5 @@ export interface UserDataForNavigationRail {
 	avatarUrl: string | undefined;
 	currentTeam: Team;
 	allTeams?: Team[];
+	canCreateFreeTeam: boolean;
 }
