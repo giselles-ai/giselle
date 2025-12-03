@@ -12,7 +12,7 @@ import {
 	users,
 	workspaces,
 } from "@/db";
-import { isEmailFromRoute06 } from "@/lib/utils";
+import { isInternalUserEmail } from "@/lib/utils";
 import { createTeamId } from "@/services/teams/utils";
 
 export const initializeAccount = async (
@@ -36,7 +36,7 @@ export const initializeAccount = async (
 			userDbId: user.dbId,
 			supabaseUserId,
 		});
-		const internalAccount = isEmailFromRoute06(supabaseUserEmail ?? "");
+		const internalAccount = isInternalUserEmail(supabaseUserEmail ?? "");
 		const [team] = await tx
 			.insert(teams)
 			.values({
