@@ -120,6 +120,44 @@ describe("parseConfiguration", () => {
 		});
 	});
 
+	describe("with openai/gpt-5", () => {
+		const model = openai["openai/gpt-5"];
+
+		it("should have correct default values (medium reasoning effort)", () => {
+			const unknownData: Record<string, unknown> = {};
+
+			const result = parseConfiguration(model, unknownData);
+
+			// According to OpenAI docs: "All models before gpt-5.1 default to medium reasoning effort"
+			expect(result.reasoningEffort).toBe("medium");
+			expect(result.textVerbosity).toBe("medium");
+		});
+
+		it("should parse valid enum values", () => {
+			const unknownData: Record<string, unknown> = {
+				reasoningEffort: "high",
+				textVerbosity: "low",
+			};
+
+			const result = parseConfiguration(model, unknownData);
+
+			expect(result.reasoningEffort).toBe("high");
+			expect(result.textVerbosity).toBe("low");
+		});
+
+		it("should fallback to default when enum value is invalid", () => {
+			const unknownData: Record<string, unknown> = {
+				reasoningEffort: "invalid", // invalid enum value
+				textVerbosity: "medium",
+			};
+
+			const result = parseConfiguration(model, unknownData);
+
+			expect(result.reasoningEffort).toBe("medium"); // falls back to default
+			expect(result.textVerbosity).toBe("medium");
+		});
+	});
+
 	describe("with google/gemini-3-pro-preview", () => {
 		const model = google["google/gemini-3-pro-preview"];
 

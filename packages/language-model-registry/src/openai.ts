@@ -97,7 +97,7 @@ export const openai = {
 			},
 		},
 		defaultConfiguration: {
-			reasoningEffort: "minimal",
+			reasoningEffort: "medium",
 			textVerbosity: "medium",
 		},
 		url: "https://platform.openai.com/docs/models/gpt-5",
