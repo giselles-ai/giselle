@@ -21,15 +21,15 @@ describe("isInternalUserEmail", () => {
 			expect(isInternalUserEmail("user@example.com")).toBe(true);
 		});
 
-		test("returns true for email with subdomain ending with the configured domain", () => {
-			expect(isInternalUserEmail("user@sub.example.com")).toBe(true);
+		test("returns false for email with subdomain", () => {
+			expect(isInternalUserEmail("user@sub.example.com")).toBe(false);
 		});
 
 		test("returns false for email with different domain", () => {
 			expect(isInternalUserEmail("user@other.com")).toBe(false);
 		});
 
-		test("returns false for email with domain that contains but does not end with configured domain", () => {
+		test("returns false for email with domain that contains configured domain as prefix", () => {
 			expect(isInternalUserEmail("user@example.com.fake")).toBe(false);
 		});
 
