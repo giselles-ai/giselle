@@ -1,4 +1,5 @@
 import { fetchCurrentTeam, fetchUserTeams, isProPlan } from "@/services/teams";
+import { canCreateFreeTeam } from "@/services/teams/plan-features/free-team-creation";
 import type { Team, TeamId } from "@/services/teams/types";
 import { getAccountInfo } from "../(main)/settings/account/actions";
 
@@ -8,6 +9,7 @@ export async function dataLoader() {
 		const currentTeam = await fetchCurrentTeam();
 		const allTeams = await fetchUserTeams();
 		const isPro = isProPlan(currentTeam);
+
 		return {
 			displayName: accountInfo.displayName ?? undefined,
 			email: accountInfo.email ?? undefined,
@@ -26,6 +28,10 @@ export async function dataLoader() {
 				plan: t.plan,
 				isPro: isProPlan(t),
 			})),
+			canCreateFreeTeam: canCreateFreeTeam(
+				accountInfo.email,
+				allTeams.map((t) => t.plan),
+			),
 		};
 	} catch (error) {
 		// Gracefully degrade the navigation rail when team/account loading fails
@@ -49,6 +55,7 @@ export async function dataLoader() {
 			avatarUrl: undefined,
 			currentTeam: fallbackTeam,
 			allTeams: [fallbackTeam],
+			canCreateFreeTeam: false,
 		};
 	}
 }
