@@ -10,7 +10,7 @@ export function cn(...inputs: ClassValue[]) {
  * Internal users are treated as having team.type === "internal".
  *
  * @param email - The email address to check
- * @returns true if the email domain matches INTERNAL_USER_EMAIL_DOMAIN env var
+ * @returns true if the email domain exactly matches INTERNAL_USER_EMAIL_DOMAIN env var
  */
 export const isInternalUserEmail = (email: string): boolean => {
 	const internalDomain = process.env.INTERNAL_USER_EMAIL_DOMAIN;
@@ -18,7 +18,7 @@ export const isInternalUserEmail = (email: string): boolean => {
 		return false;
 	}
 	const domain = email.split("@")[1];
-	return domain ? domain.endsWith(internalDomain) : false;
+	return domain === internalDomain;
 };
 
 /**
