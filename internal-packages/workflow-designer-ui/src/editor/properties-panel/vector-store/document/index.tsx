@@ -252,7 +252,7 @@ export function DocumentVectorStoreNodePropertiesPanel({
 					<Select
 						options={documentStores.map((store) => ({
 							value: store.id,
-							label: store.name,
+							label: store.isOfficial ? `${store.name} (Official)` : store.name,
 						}))}
 						value={selectedStoreId ?? ""}
 						onValueChange={
