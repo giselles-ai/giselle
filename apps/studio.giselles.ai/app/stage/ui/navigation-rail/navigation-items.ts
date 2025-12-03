@@ -87,7 +87,7 @@ export const navigationItems = [
 		type: "link",
 		icon: Play,
 		label: "Playground",
-		href: "/stage",
+		href: "/playground",
 	},
 	{
 		id: "nav-showcase",
