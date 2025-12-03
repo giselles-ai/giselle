@@ -6,7 +6,7 @@ import type { RepositoryWithStatuses } from "@/lib/vector-stores/github";
 export type { DocumentVectorStoreWithProfiles } from "@/lib/vector-stores/document/queries";
 export {
 	getDocumentVectorStores,
-	getPublicDocumentVectorStores,
+	getOfficialDocumentVectorStores,
 } from "@/lib/vector-stores/document/queries";
 
 import { getGitHubIdentityState } from "@/services/accounts";

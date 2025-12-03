@@ -6,7 +6,7 @@ import {
 	documentVectorStores,
 } from "@/db";
 import { fetchCurrentTeam } from "@/services/teams";
-import { publicVectorStoreConfig } from "../public-config";
+import { officialVectorStoreConfig } from "../official-config";
 
 export type DocumentVectorStoreWithProfiles =
 	typeof documentVectorStores.$inferSelect & {
@@ -90,13 +90,13 @@ export async function getDocumentVectorStores(
 }
 
 /**
- * Get publicly accessible (official) Document Vector Stores.
- * Returns empty array if public feature is disabled.
+ * Get official Document Vector Stores.
+ * Returns empty array if official feature is disabled.
  */
-export function getPublicDocumentVectorStores(): Promise<
+export function getOfficialDocumentVectorStores(): Promise<
 	DocumentVectorStoreWithProfiles[]
 > {
-	const { teamDbId, documentStoreIds } = publicVectorStoreConfig;
+	const { teamDbId, documentStoreIds } = officialVectorStoreConfig;
 	if (teamDbId === null || documentStoreIds.length === 0) {
 		return Promise.resolve([]);
 	}

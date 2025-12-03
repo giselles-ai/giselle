@@ -2,14 +2,14 @@ import { NextResponse } from "next/server";
 
 import {
 	getDocumentVectorStores,
-	getPublicDocumentVectorStores,
+	getOfficialDocumentVectorStores,
 } from "@/lib/vector-stores/document/queries";
 
 export async function GET() {
 	try {
-		const [stores, publicStores] = await Promise.all([
+		const [stores, officialStores] = await Promise.all([
 			getDocumentVectorStores(),
-			getPublicDocumentVectorStores(),
+			getOfficialDocumentVectorStores(),
 		]);
 
 		const formatStore = (
@@ -28,14 +28,14 @@ export async function GET() {
 			isOfficial,
 		});
 
-		// Deduplicate: exclude public stores that are already in user's stores
-		const publicStoreIds = new Set(publicStores.map((s) => s.id));
+		// Deduplicate: exclude official stores that are already in user's stores
+		const officialStoreIds = new Set(officialStores.map((s) => s.id));
 		const userStoreIds = new Set(stores.map((s) => s.id));
 		const mergedStores = [
 			...stores.map((store) =>
-				formatStore(store, publicStoreIds.has(store.id)),
+				formatStore(store, officialStoreIds.has(store.id)),
 			),
-			...publicStores
+			...officialStores
 				.filter((store) => !userStoreIds.has(store.id))
 				.map((store) => formatStore(store, true)),
 		];

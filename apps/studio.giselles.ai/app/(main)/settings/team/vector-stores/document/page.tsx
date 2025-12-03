@@ -7,7 +7,7 @@ import {
 } from "../actions";
 import {
 	getDocumentVectorStores,
-	getPublicDocumentVectorStores,
+	getOfficialDocumentVectorStores,
 } from "../data";
 import { DocumentVectorStoreCreateDialog } from "../document-store-create-dialog";
 import { DocumentVectorStoreList } from "../document-vector-store-list";
@@ -15,7 +15,7 @@ import { DocumentVectorStoreList } from "../document-vector-store-list";
 export default async function DocumentVectorStorePage() {
 	const [vectorStores, officialStores, team] = await Promise.all([
 		getDocumentVectorStores(),
-		getPublicDocumentVectorStores(),
+		getOfficialDocumentVectorStores(),
 		fetchCurrentTeam(),
 	]);
 	const quota = getDocumentVectorStoreQuota(team.plan);
