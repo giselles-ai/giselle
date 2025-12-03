@@ -3,13 +3,15 @@ import {
 	Activity,
 	Blocks,
 	Bolt,
-	Crown,
+	Clock,
 	Globe,
 	LibraryIcon,
-	Megaphone,
+	Play,
 	Puzzle,
+	Settings,
 	SparklesIcon,
 	SquareLibrary,
+	Workflow,
 } from "lucide-react";
 import { MemberIcon } from "./icons/member";
 
@@ -34,6 +36,8 @@ interface SectionNavigationItem {
 	id: string;
 	type: "section";
 	label: string;
+	icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+	collapsible?: boolean;
 }
 
 interface DividerNavigationItem {
@@ -70,28 +74,26 @@ export type NavigationItem =
 	| SubMenuNavigationItem;
 
 export const navigationItems = [
-	// Agent
-	{ id: "section-agent", type: "section", label: "Agent" },
+	// Stage - Run Apps
+	{
+		id: "section-agent",
+		type: "section",
+		label: "Stage - Run Apps",
+		icon: SparklesIcon,
+		collapsible: true,
+	},
 	{
 		id: "nav-stage",
 		type: "link",
-		icon: SparklesIcon,
-		label: "Stage",
+		icon: Play,
+		label: "Playground",
 		href: "/stage",
-	},
-	{
-		id: "nav-studio",
-		type: "link",
-		icon: Blocks,
-		label: "Workspace Studio",
-		href: "/workspaces",
-		isActive: (p: string) => p.startsWith("/workspaces"),
 	},
 	{
 		id: "nav-showcase",
 		type: "link",
 		icon: LibraryIcon,
-		label: "App Showcase",
+		label: "Stage Apps",
 		href: "/stage/showcase",
 		isActive: (p: string) => p === "/stage/showcase",
 	},
@@ -99,20 +101,25 @@ export const navigationItems = [
 		id: "nav-task",
 		type: "link",
 		icon: WilliIcon,
-		label: "Job",
+		label: "Session History",
 		href: "/stage/acts",
 		isActive: (p: string) => p.startsWith("/stage/acts"),
 	},
-	{ id: "divider-1", type: "divider" },
-	// Manage
-	{ id: "section-manage", type: "section", label: "Manage" },
+	// Studio - Build Apps
 	{
-		id: "nav-member",
+		id: "section-studio",
+		type: "section",
+		label: "Studio - Build Apps",
+		icon: Blocks,
+		collapsible: true,
+	},
+	{
+		id: "nav-studio",
 		type: "link",
-		icon: MemberIcon,
-		label: "Member",
-		href: "/settings/team/members",
-		isActive: (p: string) => p.startsWith("/settings/team/members"),
+		icon: Workflow,
+		label: "Workspaces",
+		href: "/workspaces",
+		isActive: (p: string) => p.startsWith("/workspaces"),
 	},
 	{
 		id: "nav-integration",
@@ -129,6 +136,30 @@ export const navigationItems = [
 		label: "Vector Stores",
 		href: "/settings/team/vector-stores",
 		isActive: (p: string) => p.startsWith("/settings/team/vector-stores"),
+	},
+	{
+		id: "nav-action-history",
+		type: "link",
+		icon: Clock,
+		label: "Action History",
+		href: "#",
+	},
+	{ id: "divider-2", type: "divider" },
+	// Manage
+	{
+		id: "section-manage",
+		type: "section",
+		label: "Manage",
+		icon: Settings,
+		collapsible: true,
+	},
+	{
+		id: "nav-member",
+		type: "link",
+		icon: MemberIcon,
+		label: "Member",
+		href: "/settings/team/members",
+		isActive: (p: string) => p.startsWith("/settings/team/members"),
 	},
 	{
 		id: "nav-usage",
@@ -151,19 +182,10 @@ export const navigationItems = [
 			!p.includes("/vector-stores") &&
 			!p.includes("/usage"),
 	},
-	{ id: "divider-2", type: "divider" },
-	// Upgrade button
-	{ id: "nav-upgrade", type: "action", icon: Crown, label: "Upgrade" },
-	// Spacer section above Docs
-	{ id: "section-others", type: "section", label: "" },
+] satisfies NavigationItem[];
+
+export const navigationItemsFooter = [
 	// Others
-	{
-		id: "nav-whats-new",
-		type: "external",
-		icon: Megaphone,
-		label: "What's New",
-		href: "https://docs.giselles.ai/en/releases/release-notes",
-	},
 	{
 		id: "nav-more",
 		type: "submenu",

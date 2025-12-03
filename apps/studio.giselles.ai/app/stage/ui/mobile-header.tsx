@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
-import { Suspense, use, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { GiselleLogo } from "@/components/giselle-logo";
 import { navigationItems } from "./navigation-rail/navigation-items";
 import { NavigationList } from "./navigation-rail/navigation-list";
@@ -114,9 +114,6 @@ function MobileDrawerContent({
 	currentPath?: string;
 	onClose: () => void;
 }) {
-	const user = use(dataLoader);
-	const isPro = user.currentTeam.isPro;
-
 	return (
 		<>
 			{/* Header */}
@@ -143,9 +140,6 @@ function MobileDrawerContent({
 				</div>
 				<NavigationList>
 					{navigationItems.map((navigationItem) => {
-						if (navigationItem.type === "action" && isPro) {
-							return null;
-						}
 						return (
 							<NavigationListItem
 								key={navigationItem.id}
