@@ -66,9 +66,13 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 	]);
 
 	// Merge stores with isOfficial flag, deduplicating public stores already in team stores
+	const publicStoreIds = new Set(publicDocumentStores.map((s) => s.id));
 	const teamStoreIds = new Set(teamDocumentStores.map((s) => s.id));
 	const documentVectorStores = [
-		...teamDocumentStores.map((store) => ({ ...store, isOfficial: false })),
+		...teamDocumentStores.map((store) => ({
+			...store,
+			isOfficial: publicStoreIds.has(store.id),
+		})),
 		...publicDocumentStores
 			.filter((store) => !teamStoreIds.has(store.id))
 			.map((store) => ({ ...store, isOfficial: true })),

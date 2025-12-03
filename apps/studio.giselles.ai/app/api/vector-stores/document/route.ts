@@ -29,9 +29,12 @@ export async function GET() {
 		});
 
 		// Deduplicate: exclude public stores that are already in user's stores
+		const publicStoreIds = new Set(publicStores.map((s) => s.id));
 		const userStoreIds = new Set(stores.map((s) => s.id));
 		const mergedStores = [
-			...stores.map((store) => formatStore(store, false)),
+			...stores.map((store) =>
+				formatStore(store, publicStoreIds.has(store.id)),
+			),
 			...publicStores
 				.filter((store) => !userStoreIds.has(store.id))
 				.map((store) => formatStore(store, true)),
