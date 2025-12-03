@@ -12,7 +12,10 @@ import {
 	webSearchActionFlag,
 } from "@/flags";
 import { logger } from "@/lib/logger";
-import { getDocumentVectorStores } from "@/lib/vector-stores/document/queries";
+import {
+	getDocumentVectorStores,
+	getPublicDocumentVectorStores,
+} from "@/lib/vector-stores/document/queries";
 import { getGitHubRepositoryIndexes } from "@/lib/vector-stores/github";
 import { getGitHubIntegrationState } from "@/packages/lib/github";
 import { getUsageLimitsForTeam } from "@/packages/lib/usage-limits";
@@ -57,9 +60,19 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 	const googleUrlContext = await googleUrlContextFlag();
 	const data = await giselle.getWorkspace(workspaceId);
 	const generateContentNode = await generateContentNodeFlag();
-	const documentVectorStores = await getDocumentVectorStores(
-		workspaceTeam.dbId,
-	);
+	const [teamDocumentStores, publicDocumentStores] = await Promise.all([
+		getDocumentVectorStores(workspaceTeam.dbId),
+		getPublicDocumentVectorStores(),
+	]);
+
+	// Merge stores with isOfficial flag, deduplicating public stores already in team stores
+	const teamStoreIds = new Set(teamDocumentStores.map((s) => s.id));
+	const documentVectorStores = [
+		...teamDocumentStores.map((store) => ({ ...store, isOfficial: false })),
+		...publicDocumentStores
+			.filter((store) => !teamStoreIds.has(store.id))
+			.map((store) => ({ ...store, isOfficial: true })),
+	];
 
 	return {
 		currentUser,
