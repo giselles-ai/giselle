@@ -193,3 +193,23 @@ export const generateContentNodeFlag = flag<boolean>({
 		{ value: true, label: "Enable" },
 	],
 });
+
+export const privatePreviewToolsFlag = flag<boolean>({
+	key: "private-preview-tools",
+	async decide() {
+		if (process.env.NODE_ENV === "development") {
+			return takeLocalEnv("PRIVATE_PREVIEW_TOOLS_FLAG");
+		}
+		const edgeConfig = await get(`flag__${this.key}`);
+		if (edgeConfig === undefined) {
+			return false;
+		}
+		return edgeConfig === true || edgeConfig === "true";
+	},
+	description: "Enable private preview tools (PostgreSQL, etc.)",
+	options: [
+		{ value: false, label: "disable" },
+		{ value: true, label: "Enable" },
+	],
+	defaultValue: false,
+});

@@ -5,6 +5,7 @@ import { Suspense, use } from "react";
 import { Button } from "@/app/(main)/settings/components/button";
 import { GiselleLogo } from "@/components/giselle-logo";
 import { upgradeCurrentTeam } from "@/services/teams/actions/upgrade-current-team";
+import { TeamCreationForm } from "@/services/teams/components/team-creation-form";
 import { TeamSelectionForm } from "@/services/teams/components/team-selection-form";
 import { NavigationRailFooterMenu } from "./navigation-rail/navigation-rail-footer-menu";
 import type { UserDataForNavigationRail } from "./navigation-rail/types";
@@ -29,7 +30,16 @@ export function Header({
 					<TeamSelectionForm
 						allTeams={user.allTeams}
 						currentTeam={user.currentTeam}
-						teamCreation={<span>Create team</span>}
+						teamCreation={
+							<TeamCreationForm
+								canCreateFreeTeam={user.canCreateFreeTeam}
+								proPlanPrice="$20"
+							>
+								<span className="text-inverse font-medium text-[14px] leading-[20.4px] font-sans">
+									Create team
+								</span>
+							</TeamCreationForm>
+						}
 						triggerClassName="max-w-none"
 					/>
 				)}

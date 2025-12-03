@@ -21,6 +21,7 @@ export function Page({ dataLoader }: Props) {
 				aiGatewayUnsupportedModels: false,
 				googleUrlContext: false,
 				generateContentNode: true,
+				privatePreviewTools: true,
 			}}
 			usageLimits={{
 				featureTier: "pro",
