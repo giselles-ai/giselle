@@ -5,7 +5,6 @@ import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import invariant from "tiny-invariant";
 import { db, supabaseUserMappings, teamMemberships, teams, users } from "@/db";
-import { stripeV2Flag } from "@/flags";
 import { updateGiselleSession } from "@/lib/giselle-session";
 import { getUser } from "@/lib/supabase";
 import { isEmailFromRoute06 } from "@/lib/utils";
@@ -15,7 +14,6 @@ import {
 } from "../constants";
 import { setCurrentTeam } from "../set-current-team";
 import { createTeamId } from "../utils";
-import { createCheckoutSession } from "./create-checkout-session";
 import { createCheckoutSessionV2 } from "./create-checkout-session-v2";
 
 export async function createTeam(formData: FormData) {
@@ -66,10 +64,11 @@ async function createCheckout(userDbId: number, teamName: string) {
 		[DRAFT_TEAM_NAME_METADATA_KEY]: teamName,
 	};
 
-	const useStripeV2 = await stripeV2Flag();
-	const checkoutSession = useStripeV2
-		? await createCheckoutSessionV2(subscriptionMetadata, successUrl, cancelUrl)
-		: await createCheckoutSession(subscriptionMetadata, successUrl, cancelUrl);
+	const checkoutSession = await createCheckoutSessionV2(
+		subscriptionMetadata,
+		successUrl,
+		cancelUrl,
+	);
 
 	// set checkout id on the session to be able to retrieve it later
 	await updateGiselleSession({ checkoutSessionId: checkoutSession.id });
