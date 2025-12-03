@@ -28,11 +28,11 @@ const proRecommendedLanguageModelIds: LanguageModelId[] = [
 export function ModelPickerV2({
 	value,
 	onChange,
-	userTier = "free",
+	userTier,
 }: {
 	value: LanguageModelId;
 	onChange?: (modelId: LanguageModelId) => void;
-	userTier?: LanguageModelTier;
+	userTier: LanguageModelTier;
 }) {
 	const [open, setOpen] = useState(false);
 	const [query, setQuery] = useState("");
