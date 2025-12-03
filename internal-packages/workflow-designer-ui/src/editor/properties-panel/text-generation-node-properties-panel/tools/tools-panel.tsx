@@ -1,7 +1,8 @@
 import type { TextGenerationNode, ToolSet } from "@giselles-ai/protocol";
+import { useFeatureFlag } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { CheckIcon } from "lucide-react";
-import type { PropsWithChildren, ReactNode } from "react";
+import { type PropsWithChildren, type ReactNode, useMemo } from "react";
 import { toolProviders } from "./tool-provider";
 
 function ensureTools(key: keyof ToolSet, node: TextGenerationNode): string[] {
@@ -13,9 +14,17 @@ function ensureTools(key: keyof ToolSet, node: TextGenerationNode): string[] {
 }
 
 export function ToolsPanel({ node }: { node: TextGenerationNode }) {
+	const { privatePreviewTools } = useFeatureFlag();
+	const filteredProviders = useMemo(
+		() =>
+			toolProviders.filter(
+				(provider) => provider.key !== "postgres" || privatePreviewTools,
+			),
+		[privatePreviewTools],
+	);
 	return (
 		<div className="text-inverse space-y-[8px]">
-			{toolProviders.map(
+			{filteredProviders.map(
 				(provider) =>
 					(provider.requirement === undefined ||
 						provider.requirement(node)) && (

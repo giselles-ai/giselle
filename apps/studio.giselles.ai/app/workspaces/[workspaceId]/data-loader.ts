@@ -8,6 +8,7 @@ import {
 	generateContentNodeFlag,
 	googleUrlContextFlag,
 	layoutV3Flag,
+	privatePreviewToolsFlag,
 	stageFlag,
 	webSearchActionFlag,
 } from "@/flags";
@@ -57,6 +58,7 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 	const googleUrlContext = await googleUrlContextFlag();
 	const data = await giselle.getWorkspace(workspaceId);
 	const generateContentNode = await generateContentNodeFlag();
+	const privatePreviewTools = await privatePreviewToolsFlag();
 	const documentVectorStores = await getDocumentVectorStores(
 		workspaceTeam.dbId,
 	);
@@ -84,6 +86,7 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 			aiGatewayUnsupportedModels,
 			googleUrlContext,
 			generateContentNode,
+			privatePreviewTools,
 		},
 	};
 }
