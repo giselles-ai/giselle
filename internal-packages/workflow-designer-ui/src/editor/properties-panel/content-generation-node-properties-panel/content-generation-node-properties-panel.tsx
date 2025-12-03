@@ -84,7 +84,7 @@ export function ContentGenerationNodePropertiesPanel({
 	const { updateNodeData, updateNodeDataContent, deleteNode, data } =
 		useWorkflowDesigner();
 	const usageLimits = useUsageLimits();
-	const userTier = usageLimits?.featureTier ?? "free";
+	const userTier = usageLimits?.featureTier;
 	const languageModel = useMemo(
 		() => getEntry(node.content.languageModel.id),
 		[node.content.languageModel.id],

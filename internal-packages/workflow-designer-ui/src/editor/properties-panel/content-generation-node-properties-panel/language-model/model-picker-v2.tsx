@@ -32,7 +32,7 @@ export function ModelPickerV2({
 }: {
 	value: LanguageModelId;
 	onChange?: (modelId: LanguageModelId) => void;
-	userTier: LanguageModelTier;
+	userTier: LanguageModelTier | undefined;
 }) {
 	const [open, setOpen] = useState(false);
 	const [query, setQuery] = useState("");
@@ -51,9 +51,11 @@ export function ModelPickerV2({
 		});
 	}, [query]);
 	const recommendedLanguageModelIds =
-		userTier === "free"
-			? freeRecommendedLanguageModelIds
-			: proRecommendedLanguageModelIds;
+		userTier === undefined
+			? []
+			: userTier === "free"
+				? freeRecommendedLanguageModelIds
+				: proRecommendedLanguageModelIds;
 	const recommendedLanguageModels = useMemo(
 		() =>
 			languageModels.filter((model) =>
