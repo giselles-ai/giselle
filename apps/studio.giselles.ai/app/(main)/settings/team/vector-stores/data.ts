@@ -4,7 +4,10 @@ import { db, githubRepositoryContentStatus, githubRepositoryIndex } from "@/db";
 import type { RepositoryWithStatuses } from "@/lib/vector-stores/github";
 
 export type { DocumentVectorStoreWithProfiles } from "@/lib/vector-stores/document/queries";
-export { getDocumentVectorStores } from "@/lib/vector-stores/document/queries";
+export {
+	getDocumentVectorStores,
+	getPublicDocumentVectorStores,
+} from "@/lib/vector-stores/document/queries";
 
 import { getGitHubIdentityState } from "@/services/accounts";
 import { fetchCurrentTeam } from "@/services/teams";
