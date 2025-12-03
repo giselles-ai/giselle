@@ -17,7 +17,7 @@ const config: KnipConfig = {
 			],
 		},
 		"apps/studio.giselles.ai": {
-			entry: ["emails/**/*.tsx"],
+			entry: ["tests/e2e/global-setup.ts", "emails/**/*.tsx"],
 			ignore: [
 				"scripts/**",
 				"trigger.config.ts",
@@ -34,8 +34,12 @@ const config: KnipConfig = {
 				"pino-pretty",
 			],
 		},
-		"apps/ui.giselles.ai": {},
-		"internal-packages/ui": {},
+		"apps/ui.giselles.ai": {
+			ignoreDependencies: ["tailwindcss"],
+		},
+		"internal-packages/ui": {
+			ignoreDependencies: ["tailwindcss"],
+		},
 		"internal-packages/workflow-designer-ui": {
 			ignoreDependencies: ["tailwindcss"],
 			ignore: [
