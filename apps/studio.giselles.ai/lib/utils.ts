@@ -5,9 +5,20 @@ export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
 
-export const isEmailFromRoute06 = (email: string): boolean => {
+/**
+ * Checks if the email belongs to an internal user based on the configured domain.
+ * Internal users are treated as having team.type === "internal".
+ *
+ * @param email - The email address to check
+ * @returns true if the email domain matches INTERNAL_USER_EMAIL_DOMAIN env var
+ */
+export const isInternalUserEmail = (email: string): boolean => {
+	const internalDomain = process.env.INTERNAL_USER_EMAIL_DOMAIN;
+	if (!internalDomain) {
+		return false;
+	}
 	const domain = email.split("@")[1];
-	return domain ? domain.endsWith("route06.co.jp") : false;
+	return domain ? domain.endsWith(internalDomain) : false;
 };
 
 /**
