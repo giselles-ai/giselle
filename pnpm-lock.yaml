@@ -805,6 +805,9 @@ importers:
       '@xyflow/react':
         specifier: 'catalog:'
         version: 12.9.0(@types/react@19.1.10)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      boring-avatars:
+        specifier: 1.11.1
+        version: 1.11.1
       clsx:
         specifier: 'catalog:'
         version: 2.1.1
