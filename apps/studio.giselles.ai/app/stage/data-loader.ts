@@ -1,3 +1,4 @@
+import { stageFlag } from "@/flags";
 import { fetchCurrentTeam, fetchUserTeams, isProPlan } from "@/services/teams";
 import type { Team, TeamId } from "@/services/teams/types";
 import { getAccountInfo } from "../(main)/settings/account/actions";
@@ -8,7 +9,9 @@ export async function dataLoader() {
 		const currentTeam = await fetchCurrentTeam();
 		const allTeams = await fetchUserTeams();
 		const isPro = isProPlan(currentTeam);
+		const enableStage = await stageFlag();
 		return {
+			enableStage,
 			displayName: accountInfo.displayName ?? undefined,
 			email: accountInfo.email ?? undefined,
 			avatarUrl: accountInfo.avatarUrl ?? undefined,
@@ -44,6 +47,7 @@ export async function dataLoader() {
 		};
 
 		return {
+			enableStage: false,
 			displayName: undefined,
 			email: undefined,
 			avatarUrl: undefined,

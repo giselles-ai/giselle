@@ -11,15 +11,29 @@ import { NavigationRailContentsContainer } from "./navigation-rail-contents-cont
 import { NavigationRailHeader } from "./navigation-rail-header";
 import type { UserDataForNavigationRail } from "./types";
 
+const stageOnlyItemIds = new Set([
+	"section-agent",
+	"nav-stage",
+	"nav-showcase",
+	"nav-task",
+	"nav-action-history",
+]);
+
 export function NavigationRailExpanded({
 	user: _userPromise,
 	currentPath,
+	enableStage,
 }: {
 	user: Promise<UserDataForNavigationRail>;
 	currentPath?: string;
+	enableStage: boolean;
 }) {
 	// Group navigation items by sections
 	const groupedItems = useMemo(() => {
+		const filteredItems = enableStage
+			? navigationItems
+			: navigationItems.filter((item) => !stageOnlyItemIds.has(item.id));
+
 		const groups: Array<
 			| {
 					section: NavigationItem & { type: "section" };
@@ -33,7 +47,7 @@ export function NavigationRailExpanded({
 		let currentSection: (NavigationItem & { type: "section" }) | null = null;
 		let currentItems: NavigationItem[] = [];
 
-		for (const item of navigationItems) {
+		for (const item of filteredItems) {
 			if (item.type === "section") {
 				if (currentSection) {
 					groups.push({ section: currentSection, items: currentItems });
@@ -59,7 +73,7 @@ export function NavigationRailExpanded({
 		}
 
 		return groups;
-	}, []);
+	}, [enableStage]);
 
 	return (
 		<NavigationRailContainer variant="expanded">
@@ -69,12 +83,9 @@ export function NavigationRailExpanded({
 			<NavigationRailContentsContainer>
 				<NavigationList>
 					{/* Create App button before first section */}
-					{groupedItems.length > 0 &&
-					groupedItems[0]?.section?.id === "section-agent" ? (
-						<div className="px-1 pt-3 pb-1">
-							<CreateAppButton variant="expanded" />
-						</div>
-					) : null}
+					<div className="px-1 pt-3 pb-1">
+						<CreateAppButton variant="expanded" />
+					</div>
 					{groupedItems.map((group) => {
 						if (!group.section) {
 							// Render non-section items directly
