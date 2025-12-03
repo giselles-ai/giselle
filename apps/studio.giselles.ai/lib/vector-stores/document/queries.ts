@@ -1,5 +1,4 @@
-import { desc, eq, inArray } from "drizzle-orm";
-
+import { and, desc, eq, inArray } from "drizzle-orm";
 import {
 	db,
 	documentEmbeddingProfiles,
@@ -7,6 +6,7 @@ import {
 	documentVectorStores,
 } from "@/db";
 import { fetchCurrentTeam } from "@/services/teams";
+import { publicVectorStoreConfig } from "../public-config";
 
 export type DocumentVectorStoreWithProfiles =
 	typeof documentVectorStores.$inferSelect & {
@@ -33,6 +33,86 @@ export async function getDocumentVectorStores(
 			),
 		)
 		.where(eq(documentVectorStores.teamDbId, targetTeamDbId))
+		.orderBy(desc(documentVectorStores.createdAt));
+
+	const storeMap = new Map<number, DocumentVectorStoreWithProfiles>();
+
+	for (const record of records) {
+		const { store, embeddingProfileId } = record;
+		const existing = storeMap.get(store.dbId);
+		if (!existing) {
+			storeMap.set(store.dbId, {
+				...store,
+				embeddingProfileIds:
+					embeddingProfileId !== null && embeddingProfileId !== undefined
+						? [embeddingProfileId]
+						: [],
+				sources: [],
+			});
+			continue;
+		}
+		if (embeddingProfileId !== null && embeddingProfileId !== undefined) {
+			existing.embeddingProfileIds.push(embeddingProfileId);
+		}
+	}
+
+	const storeDbIds = Array.from(storeMap.keys());
+	if (storeDbIds.length === 0) {
+		return [];
+	}
+
+	const sourceRecords = await db
+		.select({
+			storeDbId: documentVectorStoreSources.documentVectorStoreDbId,
+			source: documentVectorStoreSources,
+		})
+		.from(documentVectorStoreSources)
+		.where(
+			inArray(documentVectorStoreSources.documentVectorStoreDbId, storeDbIds),
+		)
+		.orderBy(desc(documentVectorStoreSources.createdAt));
+
+	for (const record of sourceRecords) {
+		const store = storeMap.get(record.storeDbId);
+		if (store) {
+			store.sources.push(record.source);
+		}
+	}
+
+	return Array.from(storeMap.values());
+}
+
+/**
+ * Get publicly accessible (official) Document Vector Stores.
+ * Returns empty array if public feature is disabled.
+ */
+export async function getPublicDocumentVectorStores(): Promise<
+	DocumentVectorStoreWithProfiles[]
+> {
+	const { teamDbId, documentStoreIds } = publicVectorStoreConfig;
+	if (teamDbId === null || documentStoreIds.length === 0) {
+		return [];
+	}
+
+	const records = await db
+		.select({
+			store: documentVectorStores,
+			embeddingProfileId: documentEmbeddingProfiles.embeddingProfileId,
+		})
+		.from(documentVectorStores)
+		.leftJoin(
+			documentEmbeddingProfiles,
+			eq(
+				documentEmbeddingProfiles.documentVectorStoreDbId,
+				documentVectorStores.dbId,
+			),
+		)
+		.where(
+			and(
+				eq(documentVectorStores.teamDbId, teamDbId),
+				inArray(documentVectorStores.id, documentStoreIds),
+			),
+		)
 		.orderBy(desc(documentVectorStores.createdAt));
 
 	const storeMap = new Map<number, DocumentVectorStoreWithProfiles>();
