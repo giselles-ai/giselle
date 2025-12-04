@@ -1,7 +1,7 @@
-import { SectionHeader } from "@giselle-internal/ui/section-header";
 import { Card } from "@/components/ui/card";
 import type { RepositoryWithStatuses } from "@/lib/vector-stores/github";
 import { OfficialRepositoryItem } from "./official-repository-item";
+import { SectionHeader } from "./ui/section-header";
 
 type OfficialRepositorySectionProps = {
 	repositories: RepositoryWithStatuses[];
