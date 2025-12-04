@@ -2,16 +2,17 @@
 
 
 ## Summary
-* 934 MIT
-* 188 Apache 2.0
+* 935 MIT
+* 189 Apache 2.0
 * 48 ISC
 * 28 New BSD
 * 18 Simplified BSD
 * 6 BlueOak-1.0.0
 * 3 MIT OR Apache-2.0
+* 3 Mozilla Public License 2.0
 * 2 MIT-0
+* 2 LGPL-3.0-or-later
 * 2 Unknown
-* 2 Mozilla Public License 2.0
 * 1 BSD
 * 1 (MIT OR CC0-1.0)
 * 1 BSD Zero Clause License
@@ -21,7 +22,6 @@
 * 1 CC-BY-4.0
 * 1 Python-2.0
 * 1 (Apache-2.0 AND BSD-3-Clause)
-* 1 LGPL-3.0-or-later
 
 
 
@@ -1282,8 +1282,30 @@ LGPL-3.0-or-later permitted
 
 
 
+<a name="@img/sharp-libvips-linuxmusl-x64"></a>
+### @img/sharp-libvips-linuxmusl-x64 v1.2.3
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+LGPL-3.0-or-later permitted
+
+
+
 <a name="@img/sharp-linux-x64"></a>
 ### @img/sharp-linux-x64 v0.34.4
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
+
+
+
+<a name="@img/sharp-linuxmusl-x64"></a>
+### @img/sharp-linuxmusl-x64 v0.34.4
 #### 
 
 ##### Paths
@@ -1536,7 +1558,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@next/third-parties"></a>
-### @next/third-parties v15.5.2
+### @next/third-parties v15.5.7
 #### 
 
 ##### Paths
@@ -3462,6 +3484,17 @@ LGPL-3.0-or-later permitted
 
 <a name="@rollup/rollup-linux-x64-gnu"></a>
 ### @rollup/rollup-linux-x64-gnu v4.35.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@rollup/rollup-linux-x64-musl"></a>
+### @rollup/rollup-linux-x64-musl v4.35.0
 #### 
 
 ##### Paths
@@ -8922,6 +8955,17 @@ BlueOak-1.0.0 permitted
 
 <a name="lightningcss-linux-x64-gnu"></a>
 ### lightningcss-linux-x64-gnu v1.30.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="https://www.mozilla.org/media/MPL/2.0/index.815ca599c9df.txt">Mozilla Public License 2.0</a> permitted
+
+
+
+<a name="lightningcss-linux-x64-musl"></a>
+### lightningcss-linux-x64-musl v1.30.1
 #### 
 
 ##### Paths
