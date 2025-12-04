@@ -44,10 +44,7 @@ export function OfficialRepositoryItem({
 			{/* Cards grid */}
 			<div className="grid grid-cols-3 gap-3 w-full">
 				{embeddingProfileIds.map((profileId) => {
-					const profile =
-						GITHUB_EMBEDDING_PROFILES[
-							profileId as keyof typeof GITHUB_EMBEDDING_PROFILES
-						];
+					const profile = GITHUB_EMBEDDING_PROFILES[profileId];
 					return (
 						<OfficialEmbeddingModelCard
 							key={profileId}
