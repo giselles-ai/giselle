@@ -46,8 +46,6 @@
 	"pnpm": {
 		"overrides": {
 			"@electric-sql/client": "1.0.10",
-			"@types/react": "19.1.10",
-			"@types/react-dom": "19.1.7",
 			"cookie": "1.0.2",
 			"vite": "7.1.3"
 		}
