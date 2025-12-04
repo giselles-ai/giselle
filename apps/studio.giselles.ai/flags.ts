@@ -194,21 +194,22 @@ export const generateContentNodeFlag = flag<boolean>({
 	],
 });
 
-export const stripeV2Flag = flag<boolean>({
-	key: "stripe-v2",
+export const privatePreviewToolsFlag = flag<boolean>({
+	key: "private-preview-tools",
 	async decide() {
 		if (process.env.NODE_ENV === "development") {
-			return takeLocalEnv("STRIPE_V2_FLAG");
+			return takeLocalEnv("PRIVATE_PREVIEW_TOOLS_FLAG");
 		}
 		const edgeConfig = await get(`flag__${this.key}`);
 		if (edgeConfig === undefined) {
-			return true;
+			return false;
 		}
 		return edgeConfig === true || edgeConfig === "true";
 	},
-	description: "Enable Stripe V2",
+	description: "Enable private preview tools (PostgreSQL, etc.)",
 	options: [
 		{ value: false, label: "disable" },
 		{ value: true, label: "Enable" },
 	],
+	defaultValue: false,
 });

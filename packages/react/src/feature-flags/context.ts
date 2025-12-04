@@ -8,6 +8,7 @@ export interface FeatureFlagContextValue {
 	aiGatewayUnsupportedModels: boolean;
 	googleUrlContext: boolean;
 	generateContentNode: boolean;
+	privatePreviewTools: boolean;
 }
 export const FeatureFlagContext = createContext<
 	FeatureFlagContextValue | undefined
