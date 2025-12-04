@@ -5,7 +5,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const glassButtonVariants = cva(
-	"group relative overflow-hidden rounded-lg px-4 py-2 text-white transition-all duration-300 hover:scale-[1.01] active:scale-95 inline-flex items-center gap-1.5 font-sans text-[14px] font-medium",
+	"group relative overflow-hidden rounded-lg px-4 py-2 text-white transition-all duration-300 hover:scale-[1.01] active:scale-95 inline-flex items-center justify-center gap-1.5 font-sans text-[14px] font-medium",
 	{
 		variants: {
 			variant: {
@@ -89,7 +89,7 @@ const GlassButton = React.forwardRef<HTMLButtonElement, GlassButtonProps>(
 				</span>
 
 				{/* Hover overlay */}
-				<div className="absolute inset-0 rounded-lg bg-gradient-to-t from-transparent to-white/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+				<div className="absolute inset-0 rounded-lg bg-gradient-to-t from-transparent to-white/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-center justify-center" />
 			</button>
 		);
 	},

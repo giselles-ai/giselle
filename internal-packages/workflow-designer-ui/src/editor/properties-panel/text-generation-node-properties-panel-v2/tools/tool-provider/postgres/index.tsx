@@ -256,6 +256,19 @@ function PostgresToolConfigurationDialogInternal({
 	node: ContentGenerationNode;
 }) {
 	const { updateNodeDataContent } = useWorkflowDesigner();
+	const selectedPostgresTools = (() => {
+		const postgresToolConfiguration = node.content.tools.find(
+			(tool) => tool.name === "postgres",
+		)?.configuration;
+		if (
+			postgresToolConfiguration &&
+			"useTools" in postgresToolConfiguration &&
+			Array.isArray(postgresToolConfiguration.useTools)
+		) {
+			return new Set<string>(postgresToolConfiguration.useTools as string[]);
+		}
+		return new Set<string>();
+	})();
 
 	const updateAvailableTools = useCallback<
 		React.FormEventHandler<HTMLFormElement>
@@ -335,20 +348,18 @@ function PostgresToolConfigurationDialogInternal({
 								{category.label}
 							</div>
 							<div className="flex flex-col gap-1 border border-border-variant rounded-[4px] overflow-hidden">
-								{category.tools.map((tool) => (
+								{category.tools.map((toolName) => (
 									<label
-										key={tool}
+										key={toolName}
 										className="flex items-center justify-between p-3 hover:bg-bg-800/30 cursor-pointer transition-colors"
-										htmlFor={tool}
+										htmlFor={toolName}
 									>
 										<div className="flex items-center flex-1">
 											<Checkbox.Root
 												className="group appearance-none size-[18px] rounded border flex items-center justify-center transition-colors outline-none data-[state=checked]:border-primary-900 data-[state=checked]:bg-primary-900"
-												value={tool}
-												id={tool}
-												defaultChecked={node.content.tools?.some(
-													(tool) => tool.name === "postgres",
-												)}
+												value={toolName}
+												id={toolName}
+												defaultChecked={selectedPostgresTools.has(toolName)}
 												name="tools"
 											>
 												<Checkbox.Indicator className="text-background">
@@ -356,7 +367,7 @@ function PostgresToolConfigurationDialogInternal({
 												</Checkbox.Indicator>
 											</Checkbox.Root>
 											<p className="text-sm text-text flex-1 pl-[8px]">
-												{tool}
+												{toolName}
 											</p>
 										</div>
 									</label>

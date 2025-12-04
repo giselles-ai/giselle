@@ -1,80 +1,172 @@
-import { ChevronsLeftIcon } from "lucide-react";
-import Link from "next/link";
-import type { ReactNode } from "react";
-import { Suspense, use } from "react";
-import { GiselleLogo } from "@/components/giselle-logo";
-import { MenuButton } from "./menu-button";
-import { navigationItems } from "./navigation-items";
+import * as Accordion from "@radix-ui/react-accordion";
+import { ChevronDownIcon } from "lucide-react";
+import { useMemo } from "react";
+import { CreateAppButton } from "./create-app-button";
+import type { NavigationItem } from "./navigation-items";
+import { navigationItems, navigationItemsFooter } from "./navigation-items";
 import { NavigationList } from "./navigation-list";
 import { NavigationListItem } from "./navigation-list-item";
 import { NavigationRailContainer } from "./navigation-rail-container";
 import { NavigationRailContentsContainer } from "./navigation-rail-contents-container";
-import { NavigationRailFooter } from "./navigation-rail-footer";
-import { NavigationRailFooterMenu } from "./navigation-rail-footer-menu";
 import { NavigationRailHeader } from "./navigation-rail-header";
-import { TeamSelectionCompact } from "./team-selection-compact";
 import type { UserDataForNavigationRail } from "./types";
 
+const stageOnlyItemIds = new Set([
+	"section-agent",
+	"nav-stage",
+	"nav-showcase",
+	"nav-task",
+	"nav-action-history",
+]);
+
 export function NavigationRailExpanded({
-	onCollapseButtonClick,
-	user: userPromise,
-	teamSelectionSlot,
+	user: _userPromise,
 	currentPath,
+	enableStage,
 }: {
-	onCollapseButtonClick: () => void;
 	user: Promise<UserDataForNavigationRail>;
-	teamSelectionSlot?: ReactNode;
 	currentPath?: string;
+	enableStage: boolean;
 }) {
-	const user = use(userPromise);
-	const isPro = user.currentTeam.isPro;
+	// Group navigation items by sections
+	const groupedItems = useMemo(() => {
+		const filteredItems = enableStage
+			? navigationItems
+			: navigationItems.filter((item) => !stageOnlyItemIds.has(item.id));
+
+		const groups: Array<
+			| {
+					section: NavigationItem & { type: "section" };
+					items: NavigationItem[];
+			  }
+			| {
+					section: null;
+					items: NavigationItem[];
+			  }
+		> = [];
+		let currentSection: (NavigationItem & { type: "section" }) | null = null;
+		let currentItems: NavigationItem[] = [];
+
+		for (const item of filteredItems) {
+			if (item.type === "section") {
+				if (currentSection) {
+					groups.push({ section: currentSection, items: currentItems });
+				}
+				currentSection = item;
+				currentItems = [];
+			} else if (item.type === "divider") {
+				if (currentSection) {
+					groups.push({ section: currentSection, items: currentItems });
+					currentSection = null;
+					currentItems = [];
+				}
+				groups.push({ section: null, items: [item] });
+			} else if (currentSection) {
+				currentItems.push(item);
+			} else {
+				groups.push({ section: null, items: [item] });
+			}
+		}
+
+		if (currentSection) {
+			groups.push({ section: currentSection, items: currentItems });
+		}
+
+		return groups;
+	}, [enableStage]);
 
 	return (
 		<NavigationRailContainer variant="expanded">
 			<NavigationRailHeader>
-				<div className="flex items-center justify-between w-full pt-6 pb-4">
-					<Link href="/" aria-label="Go to home" className="group">
-						<GiselleLogo className="w-[96px] h-auto fill-inverse group-hover:fill-primary-100 transition-colors" />
-					</Link>
-					<MenuButton
-						onClick={() => onCollapseButtonClick()}
-						className="cursor-w-resize"
-					>
-						<ChevronsLeftIcon className="size-5 text-link-muted stroke-1" />
-					</MenuButton>
-				</div>
+				{/* Header content removed - no collapse button */}
 			</NavigationRailHeader>
 			<NavigationRailContentsContainer>
-				<div className="my-2 px-0 w-full">
-					{teamSelectionSlot ?? (
-						<TeamSelectionCompact userPromise={userPromise} />
-					)}
-				</div>
 				<NavigationList>
-					{navigationItems.map((navigationItem) => {
-						if (navigationItem.type === "action" && isPro) {
-							return null;
+					{/* Create App button before first section */}
+					<div className="px-1 pt-3 pb-1">
+						<CreateAppButton variant="expanded" />
+					</div>
+					{groupedItems.map((group) => {
+						if (!group.section) {
+							// Render non-section items directly
+							return group.items.map((item) => (
+								<NavigationListItem
+									key={item.id}
+									{...item}
+									variant="expanded"
+									currentPath={currentPath}
+								/>
+							));
 						}
+
+						const section = group.section;
+						if (section.collapsible) {
+							return (
+								<Accordion.Root
+									key={section.id}
+									type="single"
+									collapsible
+									defaultValue={section.id}
+									className="w-full"
+								>
+									<Accordion.Item value={section.id} className="w-full">
+										<Accordion.Trigger className="group w-full text-text-muted text-[13px] font-semibold px-2 pt-3 pb-1 flex items-center gap-2 hover:text-text transition-colors outline-none">
+											{section.icon ? (
+												<section.icon className="size-4" />
+											) : null}
+											<span className="flex-1 text-left">{section.label}</span>
+											<ChevronDownIcon className="size-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+										</Accordion.Trigger>
+										<Accordion.Content className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+											{group.items.map((item) => (
+												<NavigationListItem
+													key={item.id}
+													{...item}
+													variant="expanded"
+													currentPath={currentPath}
+													hideIcon={true}
+												/>
+											))}
+										</Accordion.Content>
+									</Accordion.Item>
+								</Accordion.Root>
+							);
+						}
+
+						// Non-collapsible section
 						return (
-							<NavigationListItem
-								key={navigationItem.id}
-								{...navigationItem}
-								variant="expanded"
-								currentPath={currentPath}
-							/>
+							<div key={section.id}>
+								<NavigationListItem
+									{...section}
+									variant="expanded"
+									currentPath={currentPath}
+								/>
+								{group.items.map((item) => (
+									<NavigationListItem
+										key={item.id}
+										{...item}
+										variant="expanded"
+										currentPath={currentPath}
+									/>
+								))}
+							</div>
 						);
 					})}
 				</NavigationList>
+				{/* Footer items */}
+				<div className="mt-auto pt-4">
+					<NavigationList>
+						{navigationItemsFooter.map((item) => (
+							<NavigationListItem
+								key={item.id}
+								{...item}
+								variant="expanded"
+								currentPath={currentPath}
+							/>
+						))}
+					</NavigationList>
+				</div>
 			</NavigationRailContentsContainer>
-			<NavigationRailFooter>
-				<Suspense
-					fallback={
-						<div className="w-full bg-black-800 animate-pulse h-full rounded-md" />
-					}
-				>
-					<NavigationRailFooterMenu user={userPromise} variant="expanded" />
-				</Suspense>
-			</NavigationRailFooter>
 		</NavigationRailContainer>
 	);
 }

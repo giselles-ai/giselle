@@ -144,15 +144,7 @@ export function GenerationPanel({
 						<p data-header-text>Generating...</p>
 					)}
 					{currentGeneration.status === "completed" && (
-						<p data-header-text>
-							Result{" "}
-							<span className="text-[12px] font-normal">
-								from {(() => {
-									const modelInfo = getGenerationModelInfo(currentGeneration);
-									return `${getProviderDisplayName(modelInfo.provider)} ${modelInfo.modelId}`;
-								})()}
-							</span>
-						</p>
+						<p data-header-text>Result</p>
 					)}
 					{currentGeneration.status === "failed" && (
 						<p data-header-text>Error</p>
