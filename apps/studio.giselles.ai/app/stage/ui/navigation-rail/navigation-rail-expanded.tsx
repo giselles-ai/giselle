@@ -78,14 +78,99 @@ export function NavigationRailExpanded({
 	const collapsibleSectionIds = useMemo(() => {
 		return groupedItems
 			.filter(
-				(group): group is { section: NavigationItem & { type: "section" }; items: NavigationItem[] } =>
-					group.section !== null && group.section.collapsible === true,
+				(
+					group,
+				): group is {
+					section: NavigationItem & { type: "section" };
+					items: NavigationItem[];
+				} => group.section !== null && group.section.collapsible === true,
 			)
 			.map((group) => group.section.id);
 	}, [groupedItems]);
 
 	const [mounted, setMounted] = useState(false);
 	useEffect(() => setMounted(true), []);
+
+	// Render navigation items (shared logic for SSR and client)
+	const renderGroup = (
+		group: (typeof groupedItems)[number],
+		useAccordion: boolean,
+	) => {
+		if (!group.section) {
+			return group.items.map((item) => (
+				<NavigationListItem
+					key={item.id}
+					{...item}
+					variant="expanded"
+					currentPath={currentPath}
+				/>
+			));
+		}
+
+		const section = group.section;
+		if (section.collapsible && useAccordion) {
+			return (
+				<Accordion.Item key={section.id} value={section.id} className="w-full">
+					<Accordion.Trigger className="group w-full text-text-muted text-[13px] font-semibold px-2 pt-3 pb-3 flex items-center gap-2 hover:text-text transition-colors outline-none">
+						{section.icon ? <section.icon className="size-4" /> : null}
+						<span className="flex-1 text-left">{section.label}</span>
+						<ChevronDownIcon className="size-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+					</Accordion.Trigger>
+					<Accordion.Content className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+						{group.items.map((item) => (
+							<NavigationListItem
+								key={item.id}
+								{...item}
+								variant="expanded"
+								currentPath={currentPath}
+								hideIcon={true}
+							/>
+						))}
+					</Accordion.Content>
+				</Accordion.Item>
+			);
+		}
+
+		if (section.collapsible && !useAccordion) {
+			return (
+				<div key={section.id}>
+					<div className="group w-full text-text-muted text-[13px] font-semibold px-2 pt-3 pb-3 flex items-center gap-2">
+						{section.icon ? <section.icon className="size-4" /> : null}
+						<span className="flex-1 text-left">{section.label}</span>
+						<ChevronDownIcon className="size-4" />
+					</div>
+					{group.items.map((item) => (
+						<NavigationListItem
+							key={item.id}
+							{...item}
+							variant="expanded"
+							currentPath={currentPath}
+							hideIcon={true}
+						/>
+					))}
+				</div>
+			);
+		}
+
+		// Non-collapsible section
+		return (
+			<div key={section.id}>
+				<NavigationListItem
+					{...section}
+					variant="expanded"
+					currentPath={currentPath}
+				/>
+				{group.items.map((item) => (
+					<NavigationListItem
+						key={item.id}
+						{...item}
+						variant="expanded"
+						currentPath={currentPath}
+					/>
+				))}
+			</div>
+		);
+	};
 
 	return (
 		<NavigationRailContainer variant="expanded">
@@ -101,123 +186,11 @@ export function NavigationRailExpanded({
 							defaultValue={collapsibleSectionIds}
 							className="w-full"
 						>
-						{groupedItems.map((group) => {
-							if (!group.section) {
-								// Render non-section items directly
-								return group.items.map((item) => (
-									<NavigationListItem
-										key={item.id}
-										{...item}
-										variant="expanded"
-										currentPath={currentPath}
-									/>
-								));
-							}
-
-							const section = group.section;
-							if (section.collapsible) {
-								return (
-									<Accordion.Item key={section.id} value={section.id} className="w-full">
-										<Accordion.Trigger className="group w-full text-text-muted text-[13px] font-semibold px-2 pt-3 pb-3 flex items-center gap-2 hover:text-text transition-colors outline-none">
-											{section.icon ? (
-												<section.icon className="size-4" />
-											) : null}
-											<span className="flex-1 text-left">{section.label}</span>
-											<ChevronDownIcon className="size-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
-										</Accordion.Trigger>
-										<Accordion.Content className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-											{group.items.map((item) => (
-												<NavigationListItem
-													key={item.id}
-													{...item}
-													variant="expanded"
-													currentPath={currentPath}
-													hideIcon={true}
-												/>
-											))}
-										</Accordion.Content>
-									</Accordion.Item>
-								);
-							}
-
-							// Non-collapsible section
-							return (
-								<div key={section.id}>
-									<NavigationListItem
-										{...section}
-										variant="expanded"
-										currentPath={currentPath}
-									/>
-									{group.items.map((item) => (
-										<NavigationListItem
-											key={item.id}
-											{...item}
-											variant="expanded"
-											currentPath={currentPath}
-										/>
-									))}
-								</div>
-							);
-						})}
+							{groupedItems.map((group) => renderGroup(group, true))}
 						</Accordion.Root>
 					) : (
 						// Render without Accordion during SSR to avoid hydration mismatch
-						<>
-							{groupedItems.map((group) => {
-								if (!group.section) {
-									return group.items.map((item) => (
-										<NavigationListItem
-											key={item.id}
-											{...item}
-											variant="expanded"
-											currentPath={currentPath}
-										/>
-									));
-								}
-
-								const section = group.section;
-								if (section.collapsible) {
-									return (
-										<div key={section.id}>
-											<div className="group w-full text-text-muted text-[13px] font-semibold px-2 pt-3 pb-3 flex items-center gap-2">
-												{section.icon ? (
-													<section.icon className="size-4" />
-												) : null}
-												<span className="flex-1 text-left">{section.label}</span>
-												<ChevronDownIcon className="size-4" />
-											</div>
-											{group.items.map((item) => (
-												<NavigationListItem
-													key={item.id}
-													{...item}
-													variant="expanded"
-													currentPath={currentPath}
-													hideIcon={true}
-												/>
-											))}
-										</div>
-									);
-								}
-
-								return (
-									<div key={section.id}>
-										<NavigationListItem
-											{...section}
-											variant="expanded"
-											currentPath={currentPath}
-										/>
-										{group.items.map((item) => (
-											<NavigationListItem
-												key={item.id}
-												{...item}
-												variant="expanded"
-												currentPath={currentPath}
-											/>
-										))}
-									</div>
-								);
-							})}
-						</>
+						groupedItems.map((group) => renderGroup(group, false))
 					)}
 				</NavigationList>
 				{/* Footer items */}

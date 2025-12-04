@@ -79,27 +79,27 @@ export function NavigationListItem(
 		case "action":
 			// Action items are not currently used in navigationItems
 			return null;
-		case "submenu":
+		case "submenu": {
+			const buttonContent = (
+				<>
+					<props.icon className="size-4 shrink-0" />
+					<span className="flex-1 text-left">{props.label}</span>
+					<ChevronRight className="size-3 ml-auto" />
+				</>
+			);
+			const buttonClassName =
+				"text-link-muted text-sm flex items-center gap-2 py-0.5 hover:text-accent rounded-lg px-1 w-full cursor-pointer outline-none";
+
 			return props.variant === "expanded" ? (
 				!mounted ? (
-					<button
-						type="button"
-						className="text-link-muted text-sm flex items-center gap-2 py-0.5 hover:text-accent rounded-lg px-1 w-full cursor-pointer outline-none"
-					>
-						<props.icon className="size-4 shrink-0" />
-						<span className="flex-1 text-left">{props.label}</span>
-						<ChevronRight className="size-3 ml-auto" />
+					<button type="button" className={buttonClassName}>
+						{buttonContent}
 					</button>
 				) : (
 					<DropdownMenuPrimitive.Root>
 						<DropdownMenuPrimitive.Trigger asChild>
-							<button
-								type="button"
-								className="text-link-muted text-sm flex items-center gap-2 py-0.5 hover:text-accent rounded-lg px-1 w-full cursor-pointer outline-none"
-							>
-								<props.icon className="size-4 shrink-0" />
-								<span className="flex-1 text-left">{props.label}</span>
-								<ChevronRight className="size-3 ml-auto" />
+							<button type="button" className={buttonClassName}>
+								{buttonContent}
 							</button>
 						</DropdownMenuPrimitive.Trigger>
 						<DropdownMenuPrimitive.Portal>
@@ -151,6 +151,7 @@ export function NavigationListItem(
 					<props.icon className="size-4 shrink-0" />
 				</a>
 			);
+		}
 		default: {
 			const _exhaustiveCheck: never = props;
 			throw new Error(`Unhandled type: ${_exhaustiveCheck}`);
