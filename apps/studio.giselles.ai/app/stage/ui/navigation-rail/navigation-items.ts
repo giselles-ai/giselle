@@ -3,7 +3,6 @@ import {
 	Activity,
 	Blocks,
 	Bolt,
-	Clock,
 	LibraryIcon,
 	Play,
 	Puzzle,
