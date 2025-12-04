@@ -7,7 +7,12 @@ import {
 	triggerManualIngest,
 	updateRepositoryIndex,
 } from "./actions";
-import { getGitHubRepositoryIndexes, getInstallationsWithRepos } from "./data";
+import {
+	getGitHubRepositoryIndexes,
+	getInstallationsWithRepos,
+	getOfficialGitHubRepositoryIndexes,
+} from "./data";
+import { OfficialRepositorySection } from "./official-repository-section";
 import { RepositoryList } from "./repository-list";
 import { RepositoryRegistrationDialog } from "./repository-registration-dialog";
 import {
@@ -17,25 +22,41 @@ import {
 } from "./status-cards";
 
 export default async function TeamVectorStorePage() {
-	const githubIdentityState = await getGitHubIdentityState();
+	const [githubIdentityState, officialRepositoryIndexes] = await Promise.all([
+		getGitHubIdentityState(),
+		getOfficialGitHubRepositoryIndexes(),
+	]);
 
 	if (
 		githubIdentityState.status === "unauthorized" ||
 		githubIdentityState.status === "invalid-credential"
 	) {
-		return <GitHubAuthRequiredCard />;
+		return (
+			<div className="flex flex-col gap-[24px]">
+				<GitHubAuthRequiredCard />
+				<OfficialRepositorySection repositories={officialRepositoryIndexes} />
+			</div>
+		);
 	}
 
 	if (githubIdentityState.status === "error") {
 		return (
-			<GitHubAuthErrorCard errorMessage={githubIdentityState.errorMessage} />
+			<div className="flex flex-col gap-[24px]">
+				<GitHubAuthErrorCard errorMessage={githubIdentityState.errorMessage} />
+				<OfficialRepositorySection repositories={officialRepositoryIndexes} />
+			</div>
 		);
 	}
 
 	const userClient = githubIdentityState.gitHubUserClient;
 	const installationData = await userClient.getInstallations();
 	if (installationData.total_count === 0) {
-		return <GitHubAppInstallRequiredCard />;
+		return (
+			<div className="flex flex-col gap-[24px]">
+				<GitHubAppInstallRequiredCard />
+				<OfficialRepositorySection repositories={officialRepositoryIndexes} />
+			</div>
+		);
 	}
 
 	const [installationsWithRepos, repositoryIndexes, team] = await Promise.all([
@@ -67,6 +88,7 @@ export default async function TeamVectorStorePage() {
 			</div>
 			<RepositoryList
 				repositories={repositoryIndexes}
+				officialRepositories={officialRepositoryIndexes}
 				deleteRepositoryIndexAction={deleteRepositoryIndex}
 				triggerManualIngestAction={triggerManualIngest}
 				updateRepositoryIndexAction={updateRepositoryIndex}
