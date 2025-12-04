@@ -3,8 +3,6 @@ import {
 	Activity,
 	Blocks,
 	Bolt,
-	Clock,
-	Globe,
 	LibraryIcon,
 	Play,
 	Puzzle,
@@ -93,7 +91,7 @@ export const navigationItems = [
 		id: "nav-showcase",
 		type: "link",
 		icon: LibraryIcon,
-		label: "Stage Apps",
+		label: "Apps",
 		href: "/stage/showcase",
 		isActive: (p: string) => p === "/stage/showcase",
 	},
@@ -137,13 +135,6 @@ export const navigationItems = [
 		href: "/settings/team/vector-stores",
 		isActive: (p: string) => p.startsWith("/settings/team/vector-stores"),
 	},
-	{
-		id: "nav-action-history",
-		type: "link",
-		icon: Clock,
-		label: "Action History",
-		href: "#",
-	},
 	{ id: "divider-2", type: "divider" },
 	// Manage
 	{
@@ -184,32 +175,4 @@ export const navigationItems = [
 	},
 ] satisfies NavigationItem[];
 
-export const navigationItemsFooter = [
-	// Others
-	{
-		id: "nav-more",
-		type: "submenu",
-		icon: Globe,
-		label: "More from Giselle",
-		items: [
-			{
-				label: "Blog",
-				href: "https://giselles.ai/blog",
-				external: true,
-				disabled: false,
-			},
-			{
-				label: "Career",
-				href: "",
-				external: false,
-				disabled: true,
-			},
-			{
-				label: "Feedback",
-				href: "",
-				external: false,
-				disabled: true,
-			},
-		],
-	},
-] satisfies NavigationItem[];
+export const navigationItemsFooter = [] satisfies NavigationItem[];
