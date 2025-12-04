@@ -17,7 +17,7 @@ const config: KnipConfig = {
 			],
 		},
 		"apps/studio.giselles.ai": {
-			entry: ["tests/e2e/global-setup.ts", "emails/**/*.tsx"],
+			entry: ["emails/**/*.tsx"],
 			ignore: [
 				"scripts/**",
 				"trigger.config.ts",
@@ -35,10 +35,10 @@ const config: KnipConfig = {
 			],
 		},
 		"apps/ui.giselles.ai": {
-			ignoreDependencies: ["tailwindcss"],
+			ignoreDependencies: [],
 		},
 		"internal-packages/ui": {
-			ignoreDependencies: ["tailwindcss"],
+			ignoreDependencies: [],
 		},
 		"internal-packages/workflow-designer-ui": {
 			ignoreDependencies: ["tailwindcss"],
