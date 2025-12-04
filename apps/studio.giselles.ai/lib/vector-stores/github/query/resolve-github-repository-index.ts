@@ -1,6 +1,10 @@
 import type { GitHubQueryContext } from "@giselles-ai/giselle";
 import { and, eq } from "drizzle-orm";
 import { agents, db, githubRepositoryIndex, teams } from "@/db";
+import {
+	isOfficialGitHubRepositoryIndex,
+	officialVectorStoreConfig,
+} from "../../official-config";
 
 /**
  * Resolves GitHub repository index from workspace context
@@ -10,6 +14,37 @@ export async function resolveGitHubRepositoryIndex(
 	context: GitHubQueryContext,
 ): Promise<number> {
 	const { workspaceId, owner, repo } = context;
+
+	// === Official Vector Store bypass ===
+	// Check if there's an official repository index matching owner/repo
+	if (officialVectorStoreConfig.teamDbId !== null) {
+		const repositoryIndex = await db
+			.select({
+				dbId: githubRepositoryIndex.dbId,
+				id: githubRepositoryIndex.id,
+			})
+			.from(githubRepositoryIndex)
+			.where(
+				and(
+					eq(
+						githubRepositoryIndex.teamDbId,
+						officialVectorStoreConfig.teamDbId,
+					),
+					eq(githubRepositoryIndex.owner, owner),
+					eq(githubRepositoryIndex.repo, repo),
+				),
+			)
+			.limit(1);
+
+		// Check if the found repository index is in the official list
+		if (
+			repositoryIndex.length > 0 &&
+			isOfficialGitHubRepositoryIndex(repositoryIndex[0].id)
+		) {
+			return repositoryIndex[0].dbId;
+		}
+		// Fall through to normal flow if not found or not in official list
+	}
 
 	// Input validation
 	if (!workspaceId || workspaceId.trim().length === 0) {
