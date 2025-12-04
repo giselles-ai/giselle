@@ -81,7 +81,7 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 			.filter((repo) => !teamGitHubIds.has(repo.id))
 			.map((repo) => ({ ...repo, isOfficial: true })),
 	];
-	
+
 	const [teamDocumentStores, officialDocumentStores] = await Promise.all([
 		getDocumentVectorStores(workspaceTeam.dbId),
 		getOfficialDocumentVectorStores(),
