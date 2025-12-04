@@ -707,12 +707,6 @@ importers:
 
   internal-packages/ui:
     dependencies:
-      '@giselles-ai/react':
-        specifier: workspace:*
-        version: link:../../packages/react
-      '@giselles-ai/text-editor':
-        specifier: workspace:^
-        version: link:../../packages/text-editor
       clsx:
         specifier: 'catalog:'
         version: 2.1.1

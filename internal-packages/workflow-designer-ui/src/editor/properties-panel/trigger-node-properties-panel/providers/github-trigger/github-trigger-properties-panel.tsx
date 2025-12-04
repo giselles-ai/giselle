@@ -1,7 +1,3 @@
-import {
-	SettingDetail,
-	SettingLabel,
-} from "@giselle-internal/ui/setting-label";
 import type { GitHubIntegrationInstallation } from "@giselles-ai/giselle";
 import {
 	type Output,
@@ -35,6 +31,7 @@ import {
 import { Tooltip } from "../../../../../ui/tooltip";
 import { isPromptEmpty as isEmpty } from "../../../../lib/validate-prompt";
 import { GitHubInvalidCredential, SelectRepository } from "../../../ui";
+import { SettingDetail, SettingLabel } from "../../../ui/setting-label";
 import { usePanelScrollMode } from "../../index";
 import { GitHubTriggerConfiguredView } from "../../ui";
 import { GitHubTriggerReconfiguringView } from "../../ui/reconfiguring-views/github-trigger-reconfiguring-view";

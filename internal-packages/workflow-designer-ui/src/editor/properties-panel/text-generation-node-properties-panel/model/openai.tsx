@@ -1,5 +1,4 @@
 import { Select } from "@giselle-internal/ui/select";
-import { SettingRow } from "@giselle-internal/ui/setting-row";
 import { Toggle } from "@giselle-internal/ui/toggle";
 import {
 	Capability,
@@ -9,6 +8,7 @@ import {
 import { OpenAILanguageModelData, type ToolSet } from "@giselles-ai/protocol";
 import { useUsageLimits } from "@giselles-ai/react";
 import { useMemo } from "react";
+import { SettingRow } from "../../ui/setting-row";
 import {
 	FrequencyPenaltySlider,
 	PresencePenaltySlider,

@@ -1,8 +1,4 @@
 import { Select } from "@giselle-internal/ui/select";
-import {
-	SettingDetail,
-	SettingLabel,
-} from "@giselle-internal/ui/setting-label";
 import type {
 	EmbeddingProfileId,
 	GitHubVectorStoreSource,
@@ -19,6 +15,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { TriangleAlert } from "../../../../icons";
 import { useGitHubVectorStoreStatus } from "../../../lib/use-github-vector-store-status";
+import { SettingDetail, SettingLabel } from "../../ui/setting-label";
 
 type GitHubVectorStoreNodePropertiesPanelProps = {
 	node: VectorStoreNode;

@@ -1,5 +1,3 @@
-import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
-import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
 import type { LanguageModelTier } from "@giselles-ai/language-model-registry";
 import { convertContentGenerationToTextGeneration } from "@giselles-ai/node-registry";
@@ -22,6 +20,8 @@ import { isPromptEmpty } from "../../lib/validate-prompt";
 import { PropertiesPanelRoot } from "../ui";
 import { GenerateCtaButton } from "../ui/generate-cta-button";
 import { NodePanelHeader } from "../ui/node-panel-header";
+import { PromptEditor } from "../ui/prompt-editor";
+import { SettingLabel } from "../ui/setting-label";
 import { AdvancedOptions } from "./advanced-options";
 import { GenerationPanel } from "./generation-panel";
 import { ModelSettings } from "./model";
@@ -142,7 +142,7 @@ export function TextGenerationNodePropertiesPanelV2({
 				<PromptEditor
 					placeholder="Write your prompt... Use @ to reference other nodes"
 					value={node.content.prompt}
-					onValueChange={(value) => {
+					onValueChange={(value: string) => {
 						updateNodeDataContent(node, { prompt: value });
 					}}
 					connections={connections}
