@@ -16,6 +16,7 @@ export interface DocumentVectorStore {
 		ingestStatus: DocumentVectorStoreIngestStatus;
 		ingestErrorCode: string | null;
 	}>;
+	isOfficial: boolean;
 }
 
 interface DocumentVectorStoresResponse {

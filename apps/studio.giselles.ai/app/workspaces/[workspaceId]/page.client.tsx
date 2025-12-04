@@ -45,6 +45,7 @@ export function Page({
 						ingestStatus: source.ingestStatus,
 						ingestErrorCode: source.ingestErrorCode,
 					})),
+					isOfficial: store.isOfficial,
 				})),
 			}}
 			usageLimits={data.usageLimits}

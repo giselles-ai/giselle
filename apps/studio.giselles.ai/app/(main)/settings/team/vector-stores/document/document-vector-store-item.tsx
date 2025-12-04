@@ -10,8 +10,6 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@giselle-internal/ui/dialog";
-import { GlassCard } from "@giselle-internal/ui/glass-card";
-import { RepoActionMenu } from "@giselle-internal/ui/repo-action-menu";
 import { useToasts } from "@giselle-internal/ui/toast";
 import { DEFAULT_EMBEDDING_PROFILE_ID } from "@giselles-ai/protocol";
 import * as Tooltip from "@radix-ui/react-tooltip";
@@ -49,6 +47,8 @@ import { Button } from "../../../components/button";
 import type { DocumentVectorStoreWithProfiles } from "../data";
 import { DOCUMENT_EMBEDDING_PROFILES } from "../document-embedding-profiles";
 import type { ActionResult, DocumentVectorStoreUpdateInput } from "../types";
+import { GlassCard } from "../ui/glass-card";
+import { RepoActionMenu } from "../ui/repo-action-menu";
 
 const DOCUMENT_UPLOAD_ACCEPT = [
 	...DOCUMENT_VECTOR_STORE_SUPPORTED_MIME_TYPES,
