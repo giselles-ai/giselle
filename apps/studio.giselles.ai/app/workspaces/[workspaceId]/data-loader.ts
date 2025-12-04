@@ -14,7 +14,10 @@ import {
 } from "@/flags";
 import { logger } from "@/lib/logger";
 import { getDocumentVectorStores } from "@/lib/vector-stores/document/queries";
-import { getGitHubRepositoryIndexes } from "@/lib/vector-stores/github";
+import {
+	getGitHubRepositoryIndexes,
+	getOfficialGitHubRepositoryIndexes,
+} from "@/lib/vector-stores/github";
 import { getGitHubIntegrationState } from "@/packages/lib/github";
 import { getUsageLimitsForTeam } from "@/packages/lib/usage-limits";
 import { fetchCurrentUser } from "@/services/accounts";
@@ -47,9 +50,6 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 	}
 
 	const usageLimits = await getUsageLimitsForTeam(workspaceTeam);
-	const gitHubRepositoryIndexes = await getGitHubRepositoryIndexes(
-		workspaceTeam.dbId,
-	);
 	const webSearchAction = await webSearchActionFlag();
 	const layoutV3 = await layoutV3Flag();
 	const stage = await stageFlag();
@@ -62,6 +62,24 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 	const documentVectorStores = await getDocumentVectorStores(
 		workspaceTeam.dbId,
 	);
+	const [teamGitHubRepositoryIndexes, officialGitHubRepositoryIndexes] =
+		await Promise.all([
+			getGitHubRepositoryIndexes(workspaceTeam.dbId),
+			getOfficialGitHubRepositoryIndexes(),
+		]);
+
+	// Merge with isOfficial flag (same pattern as Document Vector Store)
+	const officialIds = new Set(officialGitHubRepositoryIndexes.map((r) => r.id));
+	const userIds = new Set(teamGitHubRepositoryIndexes.map((r) => r.id));
+	const gitHubRepositoryIndexes = [
+		...teamGitHubRepositoryIndexes.map((repo) => ({
+			...repo,
+			isOfficial: officialIds.has(repo.id),
+		})),
+		...officialGitHubRepositoryIndexes
+			.filter((repo) => !userIds.has(repo.id))
+			.map((repo) => ({ ...repo, isOfficial: true })),
+	];
 
 	return {
 		currentUser,

@@ -68,7 +68,9 @@ export function GitHubVectorStoreNodePropertiesPanel({
 	const repositoryOptions = useMemo(() => {
 		return allRepositories.map((repo) => ({
 			value: `${repo.owner}/${repo.repo}`,
-			label: `${repo.owner}/${repo.repo}`,
+			label: repo.isOfficial
+				? `${repo.owner}/${repo.repo} (Official)`
+				: `${repo.owner}/${repo.repo}`,
 		}));
 	}, [allRepositories]);
 

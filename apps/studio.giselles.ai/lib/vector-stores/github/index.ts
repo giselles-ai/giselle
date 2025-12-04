@@ -1,4 +1,7 @@
-export { getGitHubRepositoryIndexes } from "./get-github-repository-indexes";
+export {
+	getGitHubRepositoryIndexes,
+	getOfficialGitHubRepositoryIndexes,
+} from "./get-github-repository-indexes";
 export {
 	createCronIngestTrigger,
 	createManualIngestTrigger,
