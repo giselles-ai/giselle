@@ -35,9 +35,9 @@ export function ModelPickerV2({
 		return registryLanguageModels.filter((model) => {
 			const matchesName = model.name.toLowerCase().includes(normalizedQuery);
 			const matchesId = model.id.toLowerCase().includes(normalizedQuery);
-			const matchesProvider = model.provider
-				.toLowerCase()
-				.includes(normalizedQuery);
+			const matchesProvider =
+				model.provider.title.toLowerCase().includes(normalizedQuery) ||
+				model.providerId.toLowerCase().includes(normalizedQuery);
 			return matchesName || matchesId || matchesProvider;
 		});
 	}, [query]);
@@ -52,19 +52,27 @@ export function ModelPickerV2({
 	const languageModelGroupByProvider = useMemo(() => {
 		const grouped = languageModels.reduce(
 			(acc, model) => {
-				const provider = model.provider;
-				if (!acc[provider]) {
-					acc[provider] = [];
+				const providerId = model.providerId as LanguageModelProvider;
+				if (!acc[providerId]) {
+					acc[providerId] = {
+						provider: model.provider,
+						providerId,
+						models: [],
+					};
 				}
-				acc[provider].push(model);
+				acc[providerId].models.push(model);
 				return acc;
 			},
-			{} as Record<LanguageModelProvider, LanguageModel[]>,
+			{} as Record<
+				LanguageModelProvider,
+				{
+					provider: LanguageModel["provider"];
+					providerId: LanguageModelProvider;
+					models: LanguageModel[];
+				}
+			>,
 		);
-		return Object.entries(grouped).map(([provider, models]) => ({
-			provider: provider as LanguageModelProvider,
-			models,
-		}));
+		return Object.values(grouped);
 	}, [languageModels]);
 
 	return (
@@ -177,9 +185,12 @@ export function ModelPickerV2({
 									</div>
 								)}
 								{languageModelGroupByProvider.map((group) => (
-									<div key={group.provider} className="flex flex-col gap-[4px]">
+									<div
+										key={group.providerId}
+										className="flex flex-col gap-[4px]"
+									>
 										<div className="text-[11px] text-link-muted px-[4px]">
-											{group.provider}
+											{group.provider.title}
 										</div>
 										{group.models.map((model) => (
 											<button

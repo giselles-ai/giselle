@@ -1,5 +1,17 @@
 import type * as z from "zod/v4";
 
+export type LanguageModelProviderMetadata = Record<string, unknown>;
+
+export interface LanguageModelProviderDefinition<
+	Id extends string = string,
+	Metadata extends
+		LanguageModelProviderMetadata = LanguageModelProviderMetadata,
+> {
+	id: Id;
+	title: string;
+	metadata?: Metadata;
+}
+
 interface PricingUnit {
 	perToken: number;
 	perK: number;
@@ -60,11 +72,13 @@ export type ConfigurationOptions = Record<
 
 export interface LanguageModel<
 	C extends ConfigurationOptions = ConfigurationOptions,
-	Provider extends string = string,
+	Provider extends
+		LanguageModelProviderDefinition = LanguageModelProviderDefinition,
 	Id extends string = string,
 > {
 	registryVersion: "1";
 	provider: Provider;
+	providerId: Provider["id"];
 	id: Id;
 	name: string;
 	description: string;
@@ -83,17 +97,26 @@ export interface LanguageModel<
 	};
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: library use
-export type AnyLanguageModel = LanguageModel<any, any, any>;
+export type AnyLanguageModel = LanguageModel<
+	// biome-ignore lint/suspicious/noExplicitAny: library use
+	any,
+	LanguageModelProviderDefinition,
+	// biome-ignore lint/suspicious/noExplicitAny: library use
+	any
+>;
 
 export function defineLanguageModel<
 	const C extends Record<string, ConfigurationOption<z.ZodTypeAny>>,
-	const Provider extends string,
+	const Provider extends LanguageModelProviderDefinition,
 	const Id extends string,
 >(
-	model: Omit<LanguageModel<C, Provider, Id>, "registryVersion">,
+	model: Omit<LanguageModel<C, Provider, Id>, "registryVersion" | "providerId">,
 ): LanguageModel<C, Provider, Id> {
-	return { ...model, registryVersion: "1" };
+	return {
+		...model,
+		providerId: model.provider.id,
+		registryVersion: "1",
+	};
 }
 
 /**

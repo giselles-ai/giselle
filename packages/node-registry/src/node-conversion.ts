@@ -111,7 +111,7 @@ export function convertTextGenerationToContentGeneration(
 	const languageModelEntry = getEntry(languageModelId);
 
 	const languageModel = {
-		provider: languageModelEntry.provider,
+		provider: languageModelEntry.providerId,
 		id: languageModelEntry.id,
 		configuration: languageModelEntry.defaultConfiguration,
 	};
@@ -193,7 +193,7 @@ export function convertContentGenerationToTextGeneration(
 	);
 	let llm: TextGenerationNode["content"]["llm"] | undefined;
 
-	switch (languageModelEntry.provider) {
+	switch (languageModelEntry.providerId) {
 		case "anthropic":
 			llm = {
 				provider: "anthropic",

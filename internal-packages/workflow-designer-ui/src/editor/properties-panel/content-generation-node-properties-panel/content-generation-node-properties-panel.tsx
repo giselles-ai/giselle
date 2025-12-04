@@ -15,7 +15,6 @@ import {
 	Node,
 } from "@giselles-ai/protocol";
 import { useNodeGenerations, useWorkflowDesigner } from "@giselles-ai/react";
-import { titleCase } from "@giselles-ai/utils";
 import clsx from "clsx/lite";
 import { PlusIcon, Settings2Icon, XIcon } from "lucide-react";
 import { Tooltip as TooltipPrimitive } from "radix-ui";
@@ -133,11 +132,11 @@ export function ContentGenerationNodePropertiesPanel({
 		[configuredTools],
 	);
 	const toolsGroupByProvider = useMemo(() => {
-		const makeItems = (provider: string) =>
+		const makeItems = (providerId: string) =>
 			languageModelTools
 				.filter(
 					(tool: LanguageModelTool) =>
-						tool.provider === provider && !configuredToolNames.has(tool.name),
+						tool.provider === providerId && !configuredToolNames.has(tool.name),
 				)
 				.map((tool: LanguageModelTool) => ({
 					value: tool.name,
@@ -151,12 +150,16 @@ export function ContentGenerationNodePropertiesPanel({
 				items: makeItems("giselle"),
 			},
 			{
-				groupId: languageModel.provider,
-				groupLabel: `${titleCase(languageModel.provider)} Provides`,
-				items: makeItems(languageModel.provider),
+				groupId: languageModel.providerId,
+				groupLabel: `${languageModel.provider.title} Provides`,
+				items: makeItems(languageModel.providerId),
 			},
 		].filter((group) => group.items.length > 0);
-	}, [configuredToolNames, languageModel.provider]);
+	}, [
+		configuredToolNames,
+		languageModel.providerId,
+		languageModel.provider.title,
+	]);
 
 	const handleToolSelect = (_e: unknown, item: { value: string }) => {
 		const toolName = item.value;
@@ -297,7 +300,7 @@ export function ContentGenerationNodePropertiesPanel({
 				content: {
 					...node.content,
 					languageModel: {
-						provider: newLanguageModel.provider,
+						provider: newLanguageModel.providerId,
 						id: newLanguageModel.id,
 						configuration: newLanguageModel.defaultConfiguration,
 					},
