@@ -105,6 +105,8 @@ const nextConfig: NextConfig = {
 	},
 	experimental: {
 		typedEnv: true,
+		webpackMemoryOptimizations: true,
+		webpackBuildWorker: true,
 	},
 	...pdfiumTracingConfig,
 };
