@@ -1,11 +1,11 @@
 "use client";
 
-import { AccentLink } from "@giselle-internal/ui/accent-link";
-import { GlassCard } from "@giselle-internal/ui/glass-card";
 import { useMemo } from "react";
 import type { RepositoryWithStatuses } from "@/lib/vector-stores/github";
 import { GITHUB_EMBEDDING_PROFILES } from "./github-embedding-profiles";
 import { OfficialEmbeddingModelCard } from "./official-embedding-model-card";
+import { AccentLink } from "./ui/accent-link";
+import { GlassCard } from "./ui/glass-card";
 
 type OfficialRepositoryItemProps = {
 	repositoryData: RepositoryWithStatuses;
