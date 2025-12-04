@@ -15,8 +15,6 @@ const anthropicProvider = {
 	},
 } as const satisfies LanguageModelProviderDefinition<"anthropic">;
 
-export { anthropicProvider };
-
 export const anthropic = {
 	"anthropic/claude-opus-4.5": defineLanguageModel({
 		provider: anthropicProvider,

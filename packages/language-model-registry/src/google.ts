@@ -15,8 +15,6 @@ const googleProvider = {
 	},
 } as const satisfies LanguageModelProviderDefinition<"google">;
 
-export { googleProvider };
-
 export const google = {
 	"google/gemini-3-pro-preview": defineLanguageModel({
 		provider: googleProvider,
