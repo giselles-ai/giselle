@@ -112,14 +112,8 @@ function StageTopCard({ runningApp, runStatus }: StageTopCardProps) {
 							</div>
 						</>
 					) : (
-						<p
-							className="font-thin text-[36px] font-sans text-[hsl(192,73%,84%)] text-center"
-							style={{
-								textShadow:
-									"0 0 15px rgb(0,135,246), 0 0 30px rgb(0,135,246), 0 0 45px rgb(0,135,246), 0 0 70px rgb(0,135,246)",
-							}}
-						>
-							Request tasks and Giselle-powered agents will execute them
+						<p className="font-thin text-[36px] font-sans text-blue-muted text-center">
+							What's the task? Your agent's on it.
 						</p>
 					)}
 				</div>
