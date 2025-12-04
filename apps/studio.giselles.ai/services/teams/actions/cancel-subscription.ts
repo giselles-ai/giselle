@@ -17,7 +17,7 @@ function isV2PricingPlanSubscription(subscriptionId: string): boolean {
 /**
  * Cancel a v2 pricing plan subscription using Stripe Billing Intent API
  *
- * Uses the deactivate action to cancel the subscription immediately.
+ * Uses the deactivate action to cancel the subscription at the end of the current billing period.
  */
 async function cancelV2Subscription(subscriptionId: string): Promise<void> {
 	// Step 1: Create a billing intent with deactivate action
@@ -30,6 +30,9 @@ async function cancelV2Subscription(subscriptionId: string): Promise<void> {
 					type: "pricing_plan_subscription_details",
 					pricing_plan_subscription_details: {
 						pricing_plan_subscription: subscriptionId,
+					},
+					effective_at: {
+						type: "current_billing_period_end",
 					},
 				},
 			},
