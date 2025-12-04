@@ -1,5 +1,4 @@
 import { EmptyState } from "@giselle-internal/ui/empty-state";
-import { SectionHeader } from "@giselle-internal/ui/section-header";
 import Link from "next/link";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card } from "@/components/ui/card";
@@ -9,6 +8,7 @@ import type { DocumentVectorStoreWithProfiles } from "./data";
 import { DocumentVectorStoreItem } from "./document/document-vector-store-item";
 import { DocumentVectorStoreItemReadonly } from "./document/document-vector-store-item-readonly";
 import type { ActionResult, DocumentVectorStoreUpdateInput } from "./types";
+import { SectionHeader } from "./ui/section-header";
 
 type DocumentVectorStoreListProps = {
 	stores: DocumentVectorStoreWithProfiles[];
