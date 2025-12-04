@@ -13,16 +13,14 @@ import {
 	webSearchActionFlag,
 } from "@/flags";
 import { logger } from "@/lib/logger";
-import { getDocumentVectorStores } from "@/lib/vector-stores/document/queries";
-import {
-	getGitHubRepositoryIndexes,
-	getOfficialGitHubRepositoryIndexes,
-} from "@/lib/vector-stores/github";
 import {
 	getDocumentVectorStores,
 	getOfficialDocumentVectorStores,
 } from "@/lib/vector-stores/document/queries";
-import { getGitHubRepositoryIndexes } from "@/lib/vector-stores/github";
+import {
+	getGitHubRepositoryIndexes,
+	getOfficialGitHubRepositoryIndexes,
+} from "@/lib/vector-stores/github";
 import { getGitHubIntegrationState } from "@/packages/lib/github";
 import { getUsageLimitsForTeam } from "@/packages/lib/usage-limits";
 import { fetchCurrentUser } from "@/services/accounts";
@@ -64,16 +62,15 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 	const data = await giselle.getWorkspace(workspaceId);
 	const generateContentNode = await generateContentNodeFlag();
 	const privatePreviewTools = await privatePreviewToolsFlag();
-	const documentVectorStores = await getDocumentVectorStores(
-		workspaceTeam.dbId,
-	);
 	const [teamGitHubRepositoryIndexes, officialGitHubRepositoryIndexes] =
 		await Promise.all([
 			getGitHubRepositoryIndexes(workspaceTeam.dbId),
 			getOfficialGitHubRepositoryIndexes(),
 		]);
 
-	const officiaGitHublds = new Set(officialGitHubRepositoryIndexes.map((r) => r.id));
+	const officiaGitHublds = new Set(
+		officialGitHubRepositoryIndexes.map((r) => r.id),
+	);
 	const teamGitHubIds = new Set(teamGitHubRepositoryIndexes.map((r) => r.id));
 	const gitHubRepositoryIndexes = [
 		...teamGitHubRepositoryIndexes.map((repo) => ({
@@ -83,7 +80,8 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 		...officialGitHubRepositoryIndexes
 			.filter((repo) => !teamGitHubIds.has(repo.id))
 			.map((repo) => ({ ...repo, isOfficial: true })),
-	]
+	];
+	
 	const [teamDocumentStores, officialDocumentStores] = await Promise.all([
 		getDocumentVectorStores(workspaceTeam.dbId),
 		getOfficialDocumentVectorStores(),
