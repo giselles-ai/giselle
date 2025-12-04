@@ -11,7 +11,7 @@
 		"dev-debug": "LOGLEVEL=debug pnpm run dev",
 		"email:dev": "email dev --dir emails --port 3333",
 		"email:export": "email export --dir emails --outDir out",
-		"build": "next build",
+		"build": "next build --turbo",
 		"build:analyze": "ANALYZE=true next build",
 		"start": "next start",
 		"format": "biome check --write .",
@@ -56,7 +56,7 @@
 		"@radix-ui/react-toast": "1.2.15",
 		"@radix-ui/react-tooltip": "1.2.8",
 		"@react-email/components": "1.0.1",
-		"@sentry/nextjs": "9.30.0",
+		"@sentry/nextjs": "10.28.0",
 		"@supabase/auth-js": "catalog:",
 		"@supabase/ssr": "catalog:",
 		"@supabase/supabase-js": "catalog:",
@@ -122,6 +122,6 @@
 		"vitest": "catalog:"
 	},
 	"trustedDependencies": [
-		"@sentry/cli"
+		"sentry/cli"
 	]
 }
