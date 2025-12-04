@@ -51,16 +51,6 @@ export const officialVectorStoreConfig = {
 	),
 };
 
-/** Check if the official Vector Store feature is enabled */
-export function isOfficialVectorStoreEnabled(): boolean {
-	return officialVectorStoreConfig.teamDbId !== null;
-}
-
-/** Check if a Document Vector Store is official */
-export function isOfficialDocumentVectorStore(id: DocumentVectorStoreId) {
-	return officialVectorStoreConfig.documentStoreIds.includes(id);
-}
-
 /** Check if a GitHub Repository Index is official */
 export function isOfficialGitHubRepositoryIndex(
 	id: GitHubRepositoryIndexId,
