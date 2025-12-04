@@ -3,8 +3,19 @@ import {
 	type AnyLanguageModel,
 	defineLanguageModel,
 	definePricing,
+	type LanguageModelProviderDefinition,
 } from "./language-model";
-import { anthropicProvider } from "./providers";
+
+const anthropicProvider = {
+	id: "anthropic",
+	title: "Anthropic",
+	metadata: {
+		website: "https://www.anthropic.com/",
+		documentationUrl: "https://platform.claude.com/docs/en/api/overview",
+	},
+} as const satisfies LanguageModelProviderDefinition<"anthropic">;
+
+export { anthropicProvider };
 
 export const anthropic = {
 	"anthropic/claude-opus-4.5": defineLanguageModel({

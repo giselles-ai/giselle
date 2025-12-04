@@ -3,8 +3,19 @@ import {
 	type AnyLanguageModel,
 	defineLanguageModel,
 	definePricing,
+	type LanguageModelProviderDefinition,
 } from "./language-model";
-import { googleProvider } from "./providers";
+
+const googleProvider = {
+	id: "google",
+	title: "Google",
+	metadata: {
+		website: "https://ai.google.dev",
+		documentationUrl: "https://ai.google.dev/gemini-api/docs",
+	},
+} as const satisfies LanguageModelProviderDefinition<"google">;
+
+export { googleProvider };
 
 export const google = {
 	"google/gemini-3-pro-preview": defineLanguageModel({

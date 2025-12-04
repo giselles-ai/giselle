@@ -3,8 +3,19 @@ import {
 	type AnyLanguageModel,
 	defineLanguageModel,
 	definePricing,
+	type LanguageModelProviderDefinition,
 } from "./language-model";
-import { openaiProvider } from "./providers";
+
+const openaiProvider = {
+	id: "openai",
+	title: "OpenAI",
+	metadata: {
+		website: "https://openai.com",
+		documentationUrl: "https://platform.openai.com/docs/overview",
+	},
+} as const satisfies LanguageModelProviderDefinition<"openai">;
+
+export { openaiProvider };
 
 const reasoningEffortDescription =
 	"Constrains effort on reasoning for reasoning models. Reducing reasoning effort can result in faster responses and fewer tokens used on reasoning in a response.";
