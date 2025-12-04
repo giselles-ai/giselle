@@ -122,6 +122,6 @@
 		"vitest": "catalog:"
 	},
 	"trustedDependencies": [
-		"sentry/cli"
+		"@sentry/cli"
 	]
 }
