@@ -1,6 +1,6 @@
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDownIcon } from "lucide-react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CreateAppButton } from "./create-app-button";
 import type { NavigationItem } from "./navigation-items";
 import { navigationItems, navigationItemsFooter } from "./navigation-items";
@@ -8,7 +8,6 @@ import { NavigationList } from "./navigation-list";
 import { NavigationListItem } from "./navigation-list-item";
 import { NavigationRailContainer } from "./navigation-rail-container";
 import { NavigationRailContentsContainer } from "./navigation-rail-contents-container";
-import { NavigationRailHeader } from "./navigation-rail-header";
 import type { UserDataForNavigationRail } from "./types";
 
 const stageOnlyItemIds = new Set([
@@ -85,22 +84,23 @@ export function NavigationRailExpanded({
 			.map((group) => group.section.id);
 	}, [groupedItems]);
 
+	const [mounted, setMounted] = useState(false);
+	useEffect(() => setMounted(true), []);
+
 	return (
 		<NavigationRailContainer variant="expanded">
-			<NavigationRailHeader>
-				{/* Header content removed - no collapse button */}
-			</NavigationRailHeader>
 			<NavigationRailContentsContainer>
 				<NavigationList>
 					{/* Create App button before first section */}
-					<div className="px-1 pt-3 pb-1">
+					<div className="px-1 pt-3 pb-3">
 						<CreateAppButton variant="expanded" />
 					</div>
-					<Accordion.Root
-						type="multiple"
-						defaultValue={collapsibleSectionIds}
-						className="w-full"
-					>
+					{mounted ? (
+						<Accordion.Root
+							type="multiple"
+							defaultValue={collapsibleSectionIds}
+							className="w-full"
+						>
 						{groupedItems.map((group) => {
 							if (!group.section) {
 								// Render non-section items directly
@@ -118,7 +118,7 @@ export function NavigationRailExpanded({
 							if (section.collapsible) {
 								return (
 									<Accordion.Item key={section.id} value={section.id} className="w-full">
-										<Accordion.Trigger className="group w-full text-text-muted text-[13px] font-semibold px-2 pt-3 pb-1 flex items-center gap-2 hover:text-text transition-colors outline-none">
+										<Accordion.Trigger className="group w-full text-text-muted text-[13px] font-semibold px-2 pt-3 pb-3 flex items-center gap-2 hover:text-text transition-colors outline-none">
 											{section.icon ? (
 												<section.icon className="size-4" />
 											) : null}
@@ -159,21 +159,82 @@ export function NavigationRailExpanded({
 								</div>
 							);
 						})}
-					</Accordion.Root>
+						</Accordion.Root>
+					) : (
+						// Render without Accordion during SSR to avoid hydration mismatch
+						<>
+							{groupedItems.map((group) => {
+								if (!group.section) {
+									return group.items.map((item) => (
+										<NavigationListItem
+											key={item.id}
+											{...item}
+											variant="expanded"
+											currentPath={currentPath}
+										/>
+									));
+								}
+
+								const section = group.section;
+								if (section.collapsible) {
+									return (
+										<div key={section.id}>
+											<div className="group w-full text-text-muted text-[13px] font-semibold px-2 pt-3 pb-3 flex items-center gap-2">
+												{section.icon ? (
+													<section.icon className="size-4" />
+												) : null}
+												<span className="flex-1 text-left">{section.label}</span>
+												<ChevronDownIcon className="size-4" />
+											</div>
+											{group.items.map((item) => (
+												<NavigationListItem
+													key={item.id}
+													{...item}
+													variant="expanded"
+													currentPath={currentPath}
+													hideIcon={true}
+												/>
+											))}
+										</div>
+									);
+								}
+
+								return (
+									<div key={section.id}>
+										<NavigationListItem
+											{...section}
+											variant="expanded"
+											currentPath={currentPath}
+										/>
+										{group.items.map((item) => (
+											<NavigationListItem
+												key={item.id}
+												{...item}
+												variant="expanded"
+												currentPath={currentPath}
+											/>
+										))}
+									</div>
+								);
+							})}
+						</>
+					)}
 				</NavigationList>
 				{/* Footer items */}
-				<div className="mt-auto pt-4">
-					<NavigationList>
-						{navigationItemsFooter.map((item) => (
-							<NavigationListItem
-								key={item.id}
-								{...item}
-								variant="expanded"
-								currentPath={currentPath}
-							/>
-						))}
-					</NavigationList>
-				</div>
+				{navigationItemsFooter.length > 0 && (
+					<div className="mt-auto pt-4">
+						<NavigationList>
+							{(navigationItemsFooter as NavigationItem[]).map((item) => (
+								<NavigationListItem
+									key={item.id}
+									{...item}
+									variant="expanded"
+									currentPath={currentPath}
+								/>
+							))}
+						</NavigationList>
+					</div>
+				)}
 			</NavigationRailContentsContainer>
 		</NavigationRailContainer>
 	);

@@ -27,11 +27,13 @@ export function NavigationListItem(
 			return (
 				<Link
 					href={props.href}
-					className={`${linkClass} text-sm flex items-center py-0.5 rounded-lg px-1`}
+					className={`${linkClass} text-sm flex items-center gap-2 h-[34px] rounded-lg px-1`}
 				>
-					<div className="size-8 flex items-center justify-center">
-						{!props.hideIcon && <props.icon className="size-4" />}
-					</div>
+					{!props.hideIcon ? (
+						<props.icon className="size-4 shrink-0" />
+					) : (
+						<span className="w-4 shrink-0" />
+					)}
 					{props.variant === "expanded" && props.label}
 				</Link>
 			);
@@ -42,16 +44,13 @@ export function NavigationListItem(
 					href={props.href}
 					target="_blank"
 					rel="noopener"
-					className="text-link-muted text-sm flex items-center py-0.5 hover:text-accent rounded-lg px-1"
+					className="text-link-muted text-sm flex items-center gap-2 py-0.5 hover:text-accent rounded-lg px-1"
 				>
-					<div className="size-8 flex items-center justify-center">
-						{!props.hideIcon &&
-							("icon" in props && props.icon ? (
-							<props.icon className="size-4" />
-						) : (
-							<span className="size-4" />
-							))}
-					</div>
+					{!props.hideIcon && "icon" in props && props.icon ? (
+						<props.icon className="size-4 shrink-0" />
+					) : (
+						<span className="w-4 shrink-0" />
+					)}
 					{props.variant === "expanded" && props.label}
 				</a>
 			);
@@ -59,10 +58,10 @@ export function NavigationListItem(
 			return props.variant === "expanded" ? (
 				<div className="text-text-muted text-[13px] font-semibold px-2 pt-3 pb-1 flex items-center gap-2">
 					{"icon" in props && props.icon ? (
-					<div className="size-8 flex items-center justify-center">
-						<props.icon className="size-4" />
-					</div>
-					) : null}
+						<props.icon className="size-4 shrink-0" />
+					) : (
+						<span className="w-4 shrink-0" />
+					)}
 					{props.label}
 				</div>
 			) : (
@@ -72,7 +71,7 @@ export function NavigationListItem(
 		case "divider":
 			return (
 				<div
-					className={`h-px my-1 mx-2 ${
+					className={`h-px my-2 mx-2 ${
 						props.id === "divider-2" ? "bg-border/80" : "bg-border/20"
 					}`}
 				/>
@@ -85,11 +84,9 @@ export function NavigationListItem(
 				!mounted ? (
 					<button
 						type="button"
-						className="text-link-muted text-sm flex items-center py-0.5 hover:text-accent rounded-lg px-1 w-full cursor-pointer outline-none"
+						className="text-link-muted text-sm flex items-center gap-2 py-0.5 hover:text-accent rounded-lg px-1 w-full cursor-pointer outline-none"
 					>
-						<div className="size-8 flex items-center justify-center">
-							<props.icon className="size-4" />
-						</div>
+						<props.icon className="size-4 shrink-0" />
 						<span className="flex-1 text-left">{props.label}</span>
 						<ChevronRight className="size-3 ml-auto" />
 					</button>
@@ -98,11 +95,9 @@ export function NavigationListItem(
 						<DropdownMenuPrimitive.Trigger asChild>
 							<button
 								type="button"
-								className="text-link-muted text-sm flex items-center py-0.5 hover:text-accent rounded-lg px-1 w-full cursor-pointer outline-none"
+								className="text-link-muted text-sm flex items-center gap-2 py-0.5 hover:text-accent rounded-lg px-1 w-full cursor-pointer outline-none"
 							>
-								<div className="size-8 flex items-center justify-center">
-									<props.icon className="size-4" />
-								</div>
+								<props.icon className="size-4 shrink-0" />
 								<span className="flex-1 text-left">{props.label}</span>
 								<ChevronRight className="size-3 ml-auto" />
 							</button>
@@ -151,11 +146,9 @@ export function NavigationListItem(
 					href={props.items[0]?.href || "#"}
 					target="_blank"
 					rel="noopener"
-					className="text-link-muted text-sm flex items-center py-0.5 hover:text-accent rounded-lg px-1"
+					className="text-link-muted text-sm flex items-center gap-2 py-0.5 hover:text-accent rounded-lg px-1"
 				>
-					<div className="size-8 flex items-center justify-center">
-						<props.icon className="size-4" />
-					</div>
+					<props.icon className="size-4 shrink-0" />
 				</a>
 			);
 		default: {

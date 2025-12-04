@@ -4,7 +4,6 @@ import {
 	Blocks,
 	Bolt,
 	Clock,
-	Globe,
 	LibraryIcon,
 	Play,
 	Puzzle,
@@ -177,32 +176,4 @@ export const navigationItems = [
 	},
 ] satisfies NavigationItem[];
 
-export const navigationItemsFooter = [
-	// Others
-	{
-		id: "nav-more",
-		type: "submenu",
-		icon: Globe,
-		label: "More from Giselle",
-		items: [
-			{
-				label: "Blog",
-				href: "https://giselles.ai/blog",
-				external: true,
-				disabled: false,
-			},
-			{
-				label: "Career",
-				href: "",
-				external: false,
-				disabled: true,
-			},
-			{
-				label: "Feedback",
-				href: "",
-				external: false,
-				disabled: true,
-			},
-		],
-	},
-] satisfies NavigationItem[];
+export const navigationItemsFooter: NavigationItem[] = [];

@@ -14,7 +14,7 @@ export function NavigationRail({
 	const data = use(dataLoader);
 	return (
 		<>
-			<div className="hidden md:block fixed top-14 left-0 h-[calc(100vh-3.5rem)]">
+			<div className="hidden md:block fixed top-[48px] left-0 h-[calc(100vh-48px)]">
 				<NavigationRailExpanded
 					user={dataLoader}
 					currentPath={pathname}

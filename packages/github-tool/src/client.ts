@@ -11,11 +11,11 @@ export async function graphql(authConfig: GitHubAuthConfig) {
 				privateKey: authConfig.privateKey,
 				installationId: authConfig.installationId,
 			});
-			const installationAcessTokenAuthentication = await auth({
+			const installationAccessTokenAuthentication = await auth({
 				type: "installation",
 				installationId: authConfig.installationId,
 			});
-			token = installationAcessTokenAuthentication.token;
+			token = installationAccessTokenAuthentication.token;
 			break;
 		}
 		case "app": {

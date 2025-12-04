@@ -80,21 +80,11 @@ export function Header({
 						<div className="w-8 h-8 bg-black-800 animate-pulse rounded-full" />
 					}
 				>
-					<HeaderUserMenu user={dataLoader} />
+					<div className="flex items-center">
+						<NavigationRailFooterMenu user={dataLoader} variant="expanded" />
+					</div>
 				</Suspense>
 			</div>
 		</header>
-	);
-}
-
-function HeaderUserMenu({
-	user: userPromise,
-}: {
-	user: Promise<UserDataForNavigationRail>;
-}) {
-	return (
-		<div className="flex items-center">
-			<NavigationRailFooterMenu user={userPromise} variant="expanded" />
-		</div>
 	);
 }
