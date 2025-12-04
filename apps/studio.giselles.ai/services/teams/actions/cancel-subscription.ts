@@ -38,12 +38,28 @@ async function cancelV2Subscription(subscriptionId: string): Promise<void> {
 			},
 		],
 	});
+	logger.debug(
+		{ billingIntent },
+		"[cancel-subscription] Billing intent created",
+	);
 
 	// Step 2: Reserve the billing intent (draft -> pending)
-	await stripe.v2.billing.intents.reserve(billingIntent.id);
+	const reservedIntent = await stripe.v2.billing.intents.reserve(
+		billingIntent.id,
+	);
+	logger.debug(
+		{ reservedIntent },
+		"[cancel-subscription] Billing intent reserved",
+	);
 
 	// Step 3: Commit the billing intent to execute the deactivation
-	await stripe.v2.billing.intents.commit(billingIntent.id);
+	const committedIntent = await stripe.v2.billing.intents.commit(
+		billingIntent.id,
+	);
+	logger.debug(
+		{ committedIntent },
+		"[cancel-subscription] Billing intent committed",
+	);
 }
 
 export type CancelSubscriptionResult =
