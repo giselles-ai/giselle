@@ -1,7 +1,9 @@
 import type { components } from "@octokit/openapi-types";
-import { desc, eq } from "drizzle-orm";
+import type { SQL } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import { db, githubRepositoryContentStatus, githubRepositoryIndex } from "@/db";
 import type { RepositoryWithStatuses } from "@/lib/vector-stores/github";
+import { officialVectorStoreConfig } from "@/lib/vector-stores/official-config";
 
 export type { DocumentVectorStoreWithProfiles } from "@/lib/vector-stores/document/queries";
 export { getDocumentVectorStores } from "@/lib/vector-stores/document/queries";
@@ -10,10 +12,16 @@ import { getGitHubIdentityState } from "@/services/accounts";
 import { fetchCurrentTeam } from "@/services/teams";
 import type { InstallationWithRepos } from "./types";
 
-export async function getGitHubRepositoryIndexes(): Promise<
-	RepositoryWithStatuses[]
-> {
-	const team = await fetchCurrentTeam();
+/**
+ * Internal function to fetch repository indexes by team DB ID with optional additional conditions
+ */
+async function fetchRepositoryIndexes(
+	teamDbId: number,
+	additionalCondition?: SQL,
+): Promise<RepositoryWithStatuses[]> {
+	const whereCondition = additionalCondition
+		? and(eq(githubRepositoryIndex.teamDbId, teamDbId), additionalCondition)
+		: eq(githubRepositoryIndex.teamDbId, teamDbId);
 
 	const records = await db
 		.select({
@@ -28,7 +36,7 @@ export async function getGitHubRepositoryIndexes(): Promise<
 				githubRepositoryIndex.dbId,
 			),
 		)
-		.where(eq(githubRepositoryIndex.teamDbId, team.dbId))
+		.where(whereCondition)
 		.orderBy(desc(githubRepositoryIndex.dbId));
 
 	// Group by repository
@@ -53,6 +61,32 @@ export async function getGitHubRepositoryIndexes(): Promise<
 	}
 
 	return Array.from(repositoryMap.values());
+}
+
+export async function getGitHubRepositoryIndexes(): Promise<
+	RepositoryWithStatuses[]
+> {
+	const team = await fetchCurrentTeam();
+	return fetchRepositoryIndexes(team.dbId);
+}
+
+/**
+ * Get official GitHub Repository Indexes.
+ * Returns empty array if official feature is disabled.
+ */
+export async function getOfficialGitHubRepositoryIndexes(): Promise<
+	RepositoryWithStatuses[]
+> {
+	const { teamDbId, githubRepositoryIndexIds } = officialVectorStoreConfig;
+
+	if (teamDbId === null || githubRepositoryIndexIds.length === 0) {
+		return [];
+	}
+
+	return await fetchRepositoryIndexes(
+		teamDbId,
+		inArray(githubRepositoryIndex.id, githubRepositoryIndexIds),
+	);
 }
 
 export async function getInstallationsWithRepos(): Promise<
