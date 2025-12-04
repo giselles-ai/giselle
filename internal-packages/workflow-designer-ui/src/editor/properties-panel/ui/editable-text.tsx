@@ -99,6 +99,7 @@ export function EditableText({
 					"!pt-[2px] !pr-[8px] !pb-[2px] !pl-[12px]",
 					"data-[size=medium]:text-[14px] data-[size=large]:text-[16px]",
 					"cursor-default w-full overflow-hidden text-ellipsis whitespace-nowrap",
+					"font-medium",
 					!className && "text-inverse",
 					className,
 				)}

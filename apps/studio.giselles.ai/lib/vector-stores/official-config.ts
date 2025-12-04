@@ -55,5 +55,10 @@ export const officialVectorStoreConfig = {
 export function isOfficialGitHubRepositoryIndex(
 	id: GitHubRepositoryIndexId,
 ): boolean {
-	return officialVectorStoreConfig.githubRepositoryIndexIds.includes(id);
+  return officialVectorStoreConfig.githubRepositoryIndexIds.includes(id);
+}
+
+/** Check if a Document Vector Store is official */
+export function isOfficialDocumentVectorStore(id: DocumentVectorStoreId) {
+	return officialVectorStoreConfig.documentStoreIds.includes(id);
 }

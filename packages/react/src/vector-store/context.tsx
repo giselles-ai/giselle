@@ -22,6 +22,7 @@ export interface VectorStoreContextValue {
 			ingestStatus: "idle" | "running" | "completed" | "failed";
 			ingestErrorCode: string | null;
 		}>;
+		isOfficial: boolean;
 	}[];
 	documentSettingPath?: string;
 	githubSettingPath?: string;

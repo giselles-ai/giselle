@@ -1,5 +1,4 @@
-import { desc, eq, inArray } from "drizzle-orm";
-
+import { and, desc, eq, inArray, type SQL } from "drizzle-orm";
 import {
 	db,
 	documentEmbeddingProfiles,
@@ -7,6 +6,7 @@ import {
 	documentVectorStores,
 } from "@/db";
 import { fetchCurrentTeam } from "@/services/teams";
+import { officialVectorStoreConfig } from "../official-config";
 
 export type DocumentVectorStoreWithProfiles =
 	typeof documentVectorStores.$inferSelect & {
@@ -14,11 +14,9 @@ export type DocumentVectorStoreWithProfiles =
 		sources: (typeof documentVectorStoreSources.$inferSelect)[];
 	};
 
-export async function getDocumentVectorStores(
-	teamDbId?: number,
+async function fetchDocumentVectorStoresWithCondition(
+	whereCondition: SQL | undefined,
 ): Promise<DocumentVectorStoreWithProfiles[]> {
-	const targetTeamDbId = teamDbId ?? (await fetchCurrentTeam()).dbId;
-
 	const records = await db
 		.select({
 			store: documentVectorStores,
@@ -32,7 +30,7 @@ export async function getDocumentVectorStores(
 				documentVectorStores.dbId,
 			),
 		)
-		.where(eq(documentVectorStores.teamDbId, targetTeamDbId))
+		.where(whereCondition)
 		.orderBy(desc(documentVectorStores.createdAt));
 
 	const storeMap = new Map<number, DocumentVectorStoreWithProfiles>();
@@ -80,4 +78,33 @@ export async function getDocumentVectorStores(
 	}
 
 	return Array.from(storeMap.values());
+}
+
+export async function getDocumentVectorStores(
+	teamDbId?: number,
+): Promise<DocumentVectorStoreWithProfiles[]> {
+	const targetTeamDbId = teamDbId ?? (await fetchCurrentTeam()).dbId;
+	return fetchDocumentVectorStoresWithCondition(
+		eq(documentVectorStores.teamDbId, targetTeamDbId),
+	);
+}
+
+/**
+ * Get official Document Vector Stores.
+ * Returns empty array if official feature is disabled.
+ */
+export function getOfficialDocumentVectorStores(): Promise<
+	DocumentVectorStoreWithProfiles[]
+> {
+	const { teamDbId, documentStoreIds } = officialVectorStoreConfig;
+	if (teamDbId === null || documentStoreIds.length === 0) {
+		return Promise.resolve([]);
+	}
+
+	return fetchDocumentVectorStoresWithCondition(
+		and(
+			eq(documentVectorStores.teamDbId, teamDbId),
+			inArray(documentVectorStores.id, documentStoreIds),
+		),
+	);
 }

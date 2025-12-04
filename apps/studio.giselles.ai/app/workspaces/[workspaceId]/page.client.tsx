@@ -45,6 +45,7 @@ export function Page({
 						ingestStatus: source.ingestStatus,
 						ingestErrorCode: source.ingestErrorCode,
 					})),
+					isOfficial: store.isOfficial,
 				})),
 			}}
 			usageLimits={data.usageLimits}
@@ -64,7 +65,11 @@ export function Page({
 		>
 			<ZustandBridgeProvider data={data.data}>
 				<div className="flex flex-col h-screen bg-black-900">
-					<Editor onFlowNameChange={workspaceNameUpdateAction} />
+					<Editor
+						onFlowNameChange={workspaceNameUpdateAction}
+						teamName={data.workspaceTeam.name}
+						teamAvatarUrl={data.workspaceTeam.avatarUrl}
+					/>
 				</div>
 			</ZustandBridgeProvider>
 		</WorkspaceProvider>

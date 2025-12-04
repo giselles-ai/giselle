@@ -18,6 +18,11 @@ import {
 	getGitHubRepositoryIndexes,
 	getOfficialGitHubRepositoryIndexes,
 } from "@/lib/vector-stores/github";
+import {
+	getDocumentVectorStores,
+	getOfficialDocumentVectorStores,
+} from "@/lib/vector-stores/document/queries";
+import { getGitHubRepositoryIndexes } from "@/lib/vector-stores/github";
 import { getGitHubIntegrationState } from "@/packages/lib/github";
 import { getUsageLimitsForTeam } from "@/packages/lib/usage-limits";
 import { fetchCurrentUser } from "@/services/accounts";
@@ -68,17 +73,33 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 			getOfficialGitHubRepositoryIndexes(),
 		]);
 
-	// Merge with isOfficial flag (same pattern as Document Vector Store)
-	const officialIds = new Set(officialGitHubRepositoryIndexes.map((r) => r.id));
-	const userIds = new Set(teamGitHubRepositoryIndexes.map((r) => r.id));
+	const officiaGitHublds = new Set(officialGitHubRepositoryIndexes.map((r) => r.id));
+	const teamGitHubIds = new Set(teamGitHubRepositoryIndexes.map((r) => r.id));
 	const gitHubRepositoryIndexes = [
 		...teamGitHubRepositoryIndexes.map((repo) => ({
 			...repo,
-			isOfficial: officialIds.has(repo.id),
+			isOfficial: officiaGitHublds.has(repo.id),
 		})),
 		...officialGitHubRepositoryIndexes
-			.filter((repo) => !userIds.has(repo.id))
+			.filter((repo) => !teamGitHubIds.has(repo.id))
 			.map((repo) => ({ ...repo, isOfficial: true })),
+	]
+	const [teamDocumentStores, officialDocumentStores] = await Promise.all([
+		getDocumentVectorStores(workspaceTeam.dbId),
+		getOfficialDocumentVectorStores(),
+	]);
+
+	// Merge stores with isOfficial flag, deduplicating official stores already in team stores
+	const officialStoreIds = new Set(officialDocumentStores.map((s) => s.id));
+	const teamStoreIds = new Set(teamDocumentStores.map((s) => s.id));
+	const documentVectorStores = [
+		...teamDocumentStores.map((store) => ({
+			...store,
+			isOfficial: officialStoreIds.has(store.id),
+		})),
+		...officialDocumentStores
+			.filter((store) => !teamStoreIds.has(store.id))
+			.map((store) => ({ ...store, isOfficial: true })),
 	];
 
 	return {
