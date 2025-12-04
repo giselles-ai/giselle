@@ -14,10 +14,14 @@ export function V2Placeholder({
 	isReadOnly = false,
 	userRole = "viewer",
 	onNameChange,
+	teamName,
+	teamAvatarUrl,
 }: {
 	isReadOnly?: boolean;
 	userRole?: "viewer" | "guest" | "editor" | "owner";
 	onNameChange?: (name: string) => Promise<void>;
+	teamName?: string;
+	teamAvatarUrl?: string | null;
 }) {
 	const defaultTour = useWorkflowDesignerStore(
 		useShallow((s) => s.workspace.nodes.length === 0),
@@ -72,7 +76,11 @@ export function V2Placeholder({
 			)}
 
 			<RootProvider>
-				<V2Header onNameChange={onNameChange} />
+				<V2Header
+					onNameChange={onNameChange}
+					teamName={teamName}
+					teamAvatarUrl={teamAvatarUrl}
+				/>
 				{layoutV3 ? (
 					<>
 						<V2Container

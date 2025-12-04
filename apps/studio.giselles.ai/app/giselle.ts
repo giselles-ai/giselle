@@ -11,7 +11,6 @@ import { tasks as jobs } from "@trigger.dev/sdk";
 import { eq } from "drizzle-orm";
 import { apps, db, tasks } from "@/db";
 import { generateContentNodeFlag } from "@/flags";
-import { waitForLangfuseFlush } from "@/instrumentation.node";
 import { GenerationMetadata } from "@/lib/generation-metadata";
 import { logger } from "@/lib/logger";
 import { traceGenerationForTeam } from "@/lib/trace";
@@ -162,10 +161,6 @@ export const giselle = NextGiselle({
 	storage,
 	llmProviders: ["openai", "anthropic", "google"],
 	onConsumeAgentTime,
-	telemetry: {
-		isEnabled: true,
-		waitForFlushFn: waitForLangfuseFlush,
-	},
 	fetchUsageLimitsFn: fetchUsageLimits,
 	sampleAppWorkspaceIds,
 	integrationConfigs: {

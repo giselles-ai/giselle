@@ -26,6 +26,7 @@
 		"@giselles-ai/trigger-registry": "workspace:*",
 		"@giselles-ai/utils": "workspace:*",
 		"@xyflow/react": "catalog:",
+		"boring-avatars": "1.11.1",
 		"clsx": "catalog:",
 		"fast-levenshtein": "catalog:",
 		"lucide-react": "catalog:",

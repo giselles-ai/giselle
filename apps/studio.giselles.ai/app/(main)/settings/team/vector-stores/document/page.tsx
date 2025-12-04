@@ -5,13 +5,17 @@ import {
 	deleteDocumentVectorStore,
 	updateDocumentVectorStore,
 } from "../actions";
-import { getDocumentVectorStores } from "../data";
+import {
+	getDocumentVectorStores,
+	getOfficialDocumentVectorStores,
+} from "../data";
 import { DocumentVectorStoreCreateDialog } from "../document-store-create-dialog";
 import { DocumentVectorStoreList } from "../document-vector-store-list";
 
 export default async function DocumentVectorStorePage() {
-	const [vectorStores, team] = await Promise.all([
+	const [vectorStores, officialStores, team] = await Promise.all([
 		getDocumentVectorStores(),
+		getOfficialDocumentVectorStores(),
 		fetchCurrentTeam(),
 	]);
 	const quota = getDocumentVectorStoreQuota(team.plan);
@@ -36,6 +40,7 @@ export default async function DocumentVectorStorePage() {
 			</div>
 			<DocumentVectorStoreList
 				stores={vectorStores}
+				officialStores={officialStores}
 				deleteAction={deleteDocumentVectorStore}
 				updateAction={updateDocumentVectorStore}
 				hasAccess={hasAccess}

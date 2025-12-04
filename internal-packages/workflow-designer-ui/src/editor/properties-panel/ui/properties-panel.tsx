@@ -65,6 +65,8 @@ function getNodeIconBackground(node: NodeLike): string {
 		switch (node.content.type) {
 			case "textGeneration":
 				return "bg-generation-node-1";
+			case "contentGeneration":
+				return "bg-generation-node-1";
 			case "imageGeneration":
 				return "bg-image-generation-node-1";
 			case "appEntry":
@@ -74,8 +76,10 @@ function getNodeIconBackground(node: NodeLike): string {
 				return "bg-action-node-1";
 			case "query":
 				return "bg-query-node-1";
-			default:
-				return "bg-bg-900";
+			default: {
+				const _exhaustiveCheck: never = node.content.type;
+				throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
+			}
 		}
 	}
 	if (node.type === "variable") {

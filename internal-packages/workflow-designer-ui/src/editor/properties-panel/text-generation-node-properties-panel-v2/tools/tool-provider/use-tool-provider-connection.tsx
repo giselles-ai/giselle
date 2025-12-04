@@ -133,16 +133,18 @@ export function useToolProviderConnection<
 
 	const currentSecretId = useMemo(() => {
 		const tool = node.content.tools.find((tool) => tool.name === toolName);
-		if (!tool) return undefined;
-
-		if ("secretId" in tool && tool.configuration) {
-			const result = SecretId.safeParse(tool.secretId);
-			if (result.error) {
-				return undefined;
-			}
-			return result.data;
+		if (!tool || !tool.configuration) {
+			return undefined;
 		}
-		return undefined;
+		const secretIdValue = tool.configuration.secretId as unknown;
+		if (typeof secretIdValue !== "string") {
+			return undefined;
+		}
+		const result = SecretId.safeParse(secretIdValue);
+		if (!result.success) {
+			return undefined;
+		}
+		return result.data;
 	}, [node, toolName]);
 
 	return {
