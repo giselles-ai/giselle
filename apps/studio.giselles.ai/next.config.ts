@@ -33,10 +33,6 @@ const pdfiumTracingConfig = {
 };
 
 const nextConfig: NextConfig = {
-	transpilePackages: [
-		"@giselle-internal/ui",
-		"@giselle-internal/workflow-designer-ui",
-	],
 	eslint: {
 		// Warning: This allows production builds to successfully complete even if
 		// your project has ESLint errors.
