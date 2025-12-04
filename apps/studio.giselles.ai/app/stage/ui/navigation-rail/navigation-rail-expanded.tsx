@@ -75,6 +75,15 @@ export function NavigationRailExpanded({
 		return groups;
 	}, [enableStage]);
 
+	const collapsibleSections = useMemo(
+		() =>
+			groupedItems
+				.filter((group) => group.section?.collapsible)
+				.map((group) => group.section?.id)
+				.filter(Boolean) as string[],
+		[groupedItems],
+	);
+
 	return (
 		<NavigationRailContainer variant="expanded">
 			<NavigationRailHeader>
@@ -86,30 +95,31 @@ export function NavigationRailExpanded({
 					<div className="px-1 pt-3 pb-1">
 						<CreateAppButton variant="expanded" />
 					</div>
-					{groupedItems.map((group) => {
-						if (!group.section) {
-							// Render non-section items directly
-							return group.items.map((item) => (
-								<NavigationListItem
-									key={item.id}
-									{...item}
-									variant="expanded"
-									currentPath={currentPath}
-								/>
-							));
-						}
+					<Accordion.Root
+						type="multiple"
+						defaultValue={collapsibleSections}
+						className="w-full"
+					>
+						{groupedItems.map((group) => {
+							if (!group.section) {
+								return group.items.map((item) => (
+									<NavigationListItem
+										key={item.id}
+										{...item}
+										variant="expanded"
+										currentPath={currentPath}
+									/>
+								));
+							}
 
-						const section = group.section;
-						if (section.collapsible) {
-							return (
-								<Accordion.Root
-									key={section.id}
-									type="single"
-									collapsible
-									defaultValue={section.id}
-									className="w-full"
-								>
-									<Accordion.Item value={section.id} className="w-full">
+							const section = group.section;
+							if (section.collapsible) {
+								return (
+									<Accordion.Item
+										key={section.id}
+										value={section.id}
+										className="w-full"
+									>
 										<Accordion.Trigger className="group w-full text-text-muted text-[13px] font-semibold px-2 pt-3 pb-1 flex items-center gap-2 hover:text-text transition-colors outline-none">
 											{section.icon ? (
 												<section.icon className="size-4" />
@@ -129,29 +139,28 @@ export function NavigationRailExpanded({
 											))}
 										</Accordion.Content>
 									</Accordion.Item>
-								</Accordion.Root>
-							);
-						}
+								);
+							}
 
-						// Non-collapsible section
-						return (
-							<div key={section.id}>
-								<NavigationListItem
-									{...section}
-									variant="expanded"
-									currentPath={currentPath}
-								/>
-								{group.items.map((item) => (
+							return (
+								<div key={section.id}>
 									<NavigationListItem
-										key={item.id}
-										{...item}
+										{...section}
 										variant="expanded"
 										currentPath={currentPath}
 									/>
-								))}
-							</div>
-						);
-					})}
+									{group.items.map((item) => (
+										<NavigationListItem
+											key={item.id}
+											{...item}
+											variant="expanded"
+											currentPath={currentPath}
+										/>
+									))}
+								</div>
+							);
+						})}
+					</Accordion.Root>
 				</NavigationList>
 				{/* Footer items */}
 				<div className="mt-auto pt-4">

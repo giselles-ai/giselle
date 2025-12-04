@@ -84,7 +84,7 @@ function StageTopCard({ runningApp, runStatus }: StageTopCardProps) {
 					<TopLightOverlay />
 				</div>
 			)}
-			<div className="w-full h-[144px] flex justify-center items-center">
+			<div className="w-full flex justify-center items-center py-2">
 				<div className="flex flex-col items-center relative z-10">
 					{runningApp && runStatus === "completed" ? (
 						<>
@@ -112,7 +112,7 @@ function StageTopCard({ runningApp, runStatus }: StageTopCardProps) {
 							</div>
 						</>
 					) : (
-						<p className="font-thin text-[36px] font-sans text-blue-muted text-center">
+						<p className="font-thin text-[36px] font-sans text-blue-muted/50 text-center">
 							What's the task? Your agent's on it.
 						</p>
 					)}
@@ -195,8 +195,8 @@ function ChatInputArea({
 	};
 
 	return (
-		<div className="relative w-full max-w-[960px] min-w-[320px] mx-auto">
-			<div className="border border-white rounded-[14px] pt-4 px-4 pb-2">
+		<div className="relative w-full max-w-[640px] min-w-[320px] mx-auto">
+			<div className="bg-blue-muted/10 backdrop-blur-md rounded-[14px] pt-4 px-4 pb-2">
 				{/* Textarea */}
 				<textarea
 					ref={textareaRef}
@@ -206,7 +206,7 @@ function ChatInputArea({
 					placeholder="Ask anything—powered by Giselle docs"
 					rows={1}
 					disabled={isRunning}
-					className="w-full resize-none bg-transparent text-[15px] text-foreground placeholder:text-foreground/40 outline-none disabled:cursor-not-allowed"
+					className="w-full resize-none bg-transparent text-[15px] text-foreground placeholder:text-blue-muted/50 outline-none disabled:cursor-not-allowed min-h-[2.75em] pt-0 pb-[0.7em]"
 				/>
 
 				{/* Bottom row: App selector and buttons */}
@@ -219,6 +219,7 @@ function ChatInputArea({
 							value={selectedApp?.id}
 							onValueChange={onAppSelect}
 							widthClassName="w-full"
+							triggerClassName="border-none !bg-blue-muted/10 hover:!bg-[rgba(131,157,195,0.15)]"
 						/>
 					</div>
 
@@ -226,9 +227,9 @@ function ChatInputArea({
 					<div className="flex items-center gap-2">
 						<button
 							type="button"
-							className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[5px] border border-white"
+							className="flex h-6 w-6 flex-shrink-0 items-center justify-center"
 						>
-							<ImageIcon className="h-3 w-3 stroke-white" />
+							<ImageIcon className="h-5 w-5 stroke-white" />
 						</button>
 						<button
 							type="button"
