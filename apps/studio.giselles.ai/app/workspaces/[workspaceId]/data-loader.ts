@@ -68,14 +68,14 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 			getOfficialGitHubRepositoryIndexes(),
 		]);
 
-	const officiaGitHublds = new Set(
+	const officiaGitHubIds = new Set(
 		officialGitHubRepositoryIndexes.map((r) => r.id),
 	);
 	const teamGitHubIds = new Set(teamGitHubRepositoryIndexes.map((r) => r.id));
 	const gitHubRepositoryIndexes = [
 		...teamGitHubRepositoryIndexes.map((repo) => ({
 			...repo,
-			isOfficial: officiaGitHublds.has(repo.id),
+			isOfficial: officiaGitHubIds.has(repo.id),
 		})),
 		...officialGitHubRepositoryIndexes
 			.filter((repo) => !teamGitHubIds.has(repo.id))
