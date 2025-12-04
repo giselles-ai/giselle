@@ -2,8 +2,10 @@
 
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
 import { useFeatureFlag, useWorkflowDesigner } from "@giselles-ai/react";
+import Avatar from "boring-avatars";
 import clsx from "clsx/lite";
 import { ChevronDownIcon } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRef } from "react";
 import { GiselleIcon } from "../../../icons";
@@ -12,9 +14,11 @@ import { RunButton } from "./run-button";
 
 export function V2Header({
 	teamName,
+	teamAvatarUrl,
 	onNameChange,
 }: {
 	teamName?: string;
+	teamAvatarUrl?: string | null;
 	onNameChange?: (name: string) => Promise<void>;
 }) {
 	const { data, updateName } = useWorkflowDesigner();
@@ -53,14 +57,50 @@ export function V2Header({
 				</span>
 
 				{/* Team / App names */}
-				<div className="flex items-center gap-[3px] min-w-0 ml-[6px]">
+				<div className="flex items-center gap-[3px] min-w-0">
 					{teamName && (
-						<span className="text-[#6B8FF0] text-[13px] truncate max-w-[160px]">
-							{teamName}
-						</span>
+						<Link
+							href="/workspaces"
+							className="flex items-center gap-[6px] overflow-hidden text-ellipsis whitespace-nowrap max-w-[160px] !pt-[2px] !pr-[8px] !pb-[2px] !pl-[12px] hover:opacity-80 transition-opacity"
+						>
+							{teamAvatarUrl ? (
+								<div
+									className="relative rounded-full overflow-hidden shrink-0"
+									style={{ width: 16, height: 16 }}
+								>
+									<Image
+										src={teamAvatarUrl}
+										alt={teamName}
+										fill
+										sizes="16px"
+										className="object-cover"
+										style={{ objectPosition: "center" }}
+									/>
+								</div>
+							) : (
+								<div className="shrink-0" style={{ width: 16, height: 16 }}>
+									<Avatar
+										name={teamName}
+										variant="marble"
+										width={16}
+										height={16}
+										colors={[
+											"#2563eb",
+											"#7c3aed",
+											"#dc2626",
+											"#ea580c",
+											"#16a34a",
+										]}
+									/>
+								</div>
+							)}
+							<span className="text-inverse text-[14px] font-medium overflow-hidden text-ellipsis whitespace-nowrap">
+								{teamName}
+							</span>
+						</Link>
 					)}
 					{teamName && (
-						<span className="text-inverse text-[18px] font-[250] leading-none">
+						<span className="text-inverse/20 text-[18px] font-[250] leading-none ml-[4px]">
 							/
 						</span>
 					)}
@@ -72,7 +112,7 @@ export function V2Header({
 							fallbackValue="Untitled"
 							onChange={handleUpdateName}
 							value={data.name}
-							className="text-[#6B8FF0] text-[13px] font-medium"
+							className="text-[#6B8FF0] font-medium"
 						/>
 					</div>
 					{/* dropdown menu */}

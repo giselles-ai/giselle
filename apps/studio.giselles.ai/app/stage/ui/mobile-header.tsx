@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
-import { Suspense, use, useEffect, useRef, useState } from "react";
+import { Suspense, use, useEffect, useMemo, useRef, useState } from "react";
 import { GiselleLogo } from "@/components/giselle-logo";
 import { navigationItems } from "./navigation-rail/navigation-items";
 import { NavigationList } from "./navigation-rail/navigation-list";
@@ -13,6 +13,14 @@ import { NavigationListItem } from "./navigation-rail/navigation-list-item";
 import { NavigationRailFooterMenu } from "./navigation-rail/navigation-rail-footer-menu";
 import { TeamSelectionCompact } from "./navigation-rail/team-selection-compact";
 import type { UserDataForNavigationRail } from "./navigation-rail/types";
+
+const stageOnlyItemIds = new Set([
+	"section-agent",
+	"nav-stage",
+	"nav-showcase",
+	"nav-task",
+	"nav-action-history",
+]);
 
 type MobileHeaderProps = {
 	dataLoader: Promise<UserDataForNavigationRail>;
@@ -25,6 +33,7 @@ export function MobileHeader({
 }: MobileHeaderProps) {
 	const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 	const pathname = usePathname();
+	const data = use(dataLoader);
 	const prevPathnameRef = useRef(pathname);
 
 	// Close drawer when pathname changes
@@ -93,6 +102,7 @@ export function MobileHeader({
 								dataLoader={dataLoader}
 								teamSelectionSlot={teamSelectionSlot}
 								currentPath={pathname}
+								enableStage={data.enableStage}
 								onClose={() => setIsDrawerOpen(false)}
 							/>
 						</motion.div>
@@ -107,15 +117,20 @@ function MobileDrawerContent({
 	dataLoader,
 	teamSelectionSlot,
 	currentPath,
+	enableStage,
 	onClose,
 }: {
 	dataLoader: Promise<UserDataForNavigationRail>;
 	teamSelectionSlot?: ReactNode;
 	currentPath?: string;
+	enableStage: boolean;
 	onClose: () => void;
 }) {
-	const user = use(dataLoader);
-	const isPro = user.currentTeam.isPro;
+	const filteredItems = useMemo(() => {
+		return enableStage
+			? navigationItems
+			: navigationItems.filter((item) => !stageOnlyItemIds.has(item.id));
+	}, [enableStage]);
 
 	return (
 		<>
@@ -142,10 +157,7 @@ function MobileDrawerContent({
 					)}
 				</div>
 				<NavigationList>
-					{navigationItems.map((navigationItem) => {
-						if (navigationItem.type === "action" && isPro) {
-							return null;
-						}
+					{filteredItems.map((navigationItem) => {
 						return (
 							<NavigationListItem
 								key={navigationItem.id}

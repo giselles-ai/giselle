@@ -1,7 +1,9 @@
 import { and, eq } from "drizzle-orm";
-
 import { agents, db, documentVectorStores, teams } from "@/db";
-
+import {
+	isOfficialDocumentVectorStore,
+	officialVectorStoreConfig,
+} from "../../official-config";
 import type { DocumentVectorStoreQueryContext } from "./context";
 
 export async function resolveDocumentVectorStoreDbId(
@@ -15,6 +17,30 @@ export async function resolveDocumentVectorStoreDbId(
 		throw new Error("Document vector store ID is required");
 	}
 
+	// Official Vector Store bypass: if the store is in the official list,
+	// verify it belongs to the official team and return its dbId
+	if (
+		officialVectorStoreConfig.teamDbId !== null &&
+		isOfficialDocumentVectorStore(documentVectorStoreId)
+	) {
+		const officialStoreRecords = await db
+			.select({ dbId: documentVectorStores.dbId })
+			.from(documentVectorStores)
+			.where(
+				and(
+					eq(documentVectorStores.teamDbId, officialVectorStoreConfig.teamDbId),
+					eq(documentVectorStores.id, documentVectorStoreId),
+				),
+			)
+			.limit(1);
+
+		if (officialStoreRecords.length > 0) {
+			return officialStoreRecords[0].dbId;
+		}
+		// If not found in official team, fall through to normal authorization
+	}
+
+	// Standard authorization: resolve workspace -> team -> store
 	const teamRecords = await db
 		.select({ dbId: teams.dbId })
 		.from(teams)

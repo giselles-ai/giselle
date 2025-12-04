@@ -6,11 +6,13 @@ import type { TeamPlan } from "@/db/schema";
 import type { DocumentVectorStoreId } from "@/packages/types";
 import type { DocumentVectorStoreWithProfiles } from "./data";
 import { DocumentVectorStoreItem } from "./document/document-vector-store-item";
+import { DocumentVectorStoreItemReadonly } from "./document/document-vector-store-item-readonly";
 import type { ActionResult, DocumentVectorStoreUpdateInput } from "./types";
 import { SectionHeader } from "./ui/section-header";
 
 type DocumentVectorStoreListProps = {
 	stores: DocumentVectorStoreWithProfiles[];
+	officialStores: DocumentVectorStoreWithProfiles[];
 	deleteAction: (
 		documentVectorStoreId: DocumentVectorStoreId,
 	) => Promise<ActionResult>;
@@ -25,6 +27,7 @@ type DocumentVectorStoreListProps = {
 
 export function DocumentVectorStoreList({
 	stores,
+	officialStores,
 	deleteAction,
 	updateAction,
 	hasAccess,
@@ -68,6 +71,21 @@ export function DocumentVectorStoreList({
 					<DocumentVectorStoreLockedCard />
 				)}
 			</Card>
+
+			{officialStores.length > 0 && (
+				<Card className="rounded-[8px] bg-transparent p-6 border-0">
+					<SectionHeader
+						title="Official Document Vector Stores"
+						description="These are provided by Giselle and available to all users. Read-only."
+						className="mb-4"
+					/>
+					<div className="space-y-4">
+						{officialStores.map((store) => (
+							<DocumentVectorStoreItemReadonly key={store.id} store={store} />
+						))}
+					</div>
+				</Card>
+			)}
 		</div>
 	);
 }

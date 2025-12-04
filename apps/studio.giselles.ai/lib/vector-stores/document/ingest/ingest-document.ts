@@ -11,6 +11,7 @@ import { and, eq, lt, or } from "drizzle-orm";
 import { db, documentVectorStoreSources } from "@/db";
 import type { TeamWithSubscription } from "@/services/teams";
 import { fetchTeamByDbId } from "@/services/teams/fetch-team";
+import { buildAiGatewayHeaders } from "../../shared/ai-gateway-headers";
 import {
 	deleteDocumentEmbeddingsByProfiles,
 	getDocumentVectorStoreSource,
@@ -115,30 +116,6 @@ async function resolveEmbeddingTelemetryContext(
 		);
 		return null;
 	}
-}
-
-function buildAiGatewayHeaders(
-	telemetryContext: DocumentEmbeddingTelemetryContext | null,
-): Record<string, string> | undefined {
-	const headers: Record<string, string> = {
-		"http-referer":
-			process.env.AI_GATEWAY_HTTP_REFERER ?? "https://giselles.ai",
-		"x-title": process.env.AI_GATEWAY_X_TITLE ?? "Giselle",
-	};
-
-	const stripeCustomerId = telemetryContext?.team.activeCustomerId ?? undefined;
-	const teamPlan = telemetryContext?.team.plan;
-	if (stripeCustomerId !== undefined) {
-		headers["stripe-customer-id"] = stripeCustomerId;
-		headers["stripe-restricted-access-key"] =
-			process.env.STRIPE_AI_GATEWAY_RESTRICTED_ACCESS_KEY ?? "";
-	} else if (teamPlan === "pro" || teamPlan === "team") {
-		console.warn(
-			`Stripe customer ID not found for document ingest (team: ${telemetryContext?.team.id})`,
-		);
-	}
-
-	return headers;
 }
 
 /**
@@ -289,7 +266,9 @@ export async function ingestDocument(
 		const insertedProfileIds: EmbeddingProfileId[] = [];
 
 		// Build AI Gateway headers for billing attribution
-		const aiGatewayHeaders = buildAiGatewayHeaders(telemetryContext);
+		const aiGatewayHeaders = buildAiGatewayHeaders(
+			telemetryContext?.team ?? null,
+		);
 
 		try {
 			for (const embeddingProfileId of embeddingProfileIds) {

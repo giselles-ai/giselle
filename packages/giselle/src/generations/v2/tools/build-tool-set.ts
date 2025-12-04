@@ -22,8 +22,12 @@ export async function buildToolSet({
 	generationId: string;
 	nodeId: string;
 	tools: ContentGenerationContent["tools"];
-}): Promise<ToolSet> {
+}): Promise<{
+	toolSet: ToolSet;
+	cleanupFunctions: Array<() => void | Promise<void>>;
+}> {
 	const toolSet: ToolSet = {};
+	const cleanupFunctions: Array<() => void | Promise<void>> = [];
 	for (const tool of tools) {
 		const languageModelTool = getLanguageModelTool(tool.name);
 		switch (languageModelTool.name) {
@@ -163,7 +167,8 @@ export async function buildToolSet({
 					context,
 				});
 
-				Object.assign(toolSet, postgresTools);
+				Object.assign(toolSet, postgresTools.toolSet);
+				cleanupFunctions.push(postgresTools.cleanup);
 				break;
 			}
 			default: {
@@ -172,5 +177,5 @@ export async function buildToolSet({
 			}
 		}
 	}
-	return toolSet;
+	return { toolSet, cleanupFunctions };
 }

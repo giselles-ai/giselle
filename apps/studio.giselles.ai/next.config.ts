@@ -12,7 +12,6 @@ const pdfiumWasmPath = moduleRequire.resolve("@embedpdf/pdfium/pdfium.wasm");
 
 export const serverExternalPackages = [
 	"@embedpdf/pdfium",
-	"@opentelemetry/sdk-node",
 	"pino",
 	"pino-pretty",
 	"happy-dom",
@@ -33,10 +32,6 @@ const pdfiumTracingConfig = {
 };
 
 const nextConfig: NextConfig = {
-	transpilePackages: [
-		"@giselle-internal/ui",
-		"@giselle-internal/workflow-designer-ui",
-	],
 	eslint: {
 		// Warning: This allows production builds to successfully complete even if
 		// your project has ESLint errors.
@@ -105,6 +100,8 @@ const nextConfig: NextConfig = {
 	},
 	experimental: {
 		typedEnv: true,
+		webpackMemoryOptimizations: true,
+		webpackBuildWorker: true,
 	},
 	...pdfiumTracingConfig,
 };
