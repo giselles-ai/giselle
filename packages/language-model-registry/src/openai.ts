@@ -58,7 +58,7 @@ export const openai = {
 		configurationOptions: {
 			reasoningEffort: {
 				description: reasoningEffortDescription,
-				schema: z.enum(["minimal", "low", "medium", "high"]),
+				schema: z.enum(["none", "low", "medium", "high"]),
 			},
 			textVerbosity: {
 				description: textVerbosityDescription,
@@ -66,7 +66,7 @@ export const openai = {
 			},
 		},
 		defaultConfiguration: {
-			reasoningEffort: "minimal",
+			reasoningEffort: "none",
 			textVerbosity: "medium",
 		},
 		url: "https://platform.openai.com/docs/models/gpt-5.1-codex",
@@ -97,7 +97,7 @@ export const openai = {
 			},
 		},
 		defaultConfiguration: {
-			reasoningEffort: "minimal",
+			reasoningEffort: "medium",
 			textVerbosity: "medium",
 		},
 		url: "https://platform.openai.com/docs/models/gpt-5",
