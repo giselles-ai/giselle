@@ -89,8 +89,8 @@ export function CancelSubscriptionButton({
 								Subscription Cancelled
 							</DialogTitle>
 							<DialogDescription className="font-geist mt-2 text-[14px] text-white-50">
-								Your subscription has been cancelled. The page will refresh
-								shortly.
+								Your subscription has been cancelled and will end at the end of
+								your current billing period. The page will refresh shortly.
 							</DialogDescription>
 						</DialogHeader>
 						<DialogBody />
@@ -109,7 +109,8 @@ export function CancelSubscriptionButton({
 							</div>
 							<DialogDescription className="font-geist mt-2 text-[14px] text-error-900/50">
 								Are you sure you want to cancel your subscription? Your team
-								will be downgraded to the Free plan immediately.
+								will be downgraded to the Free plan at the end of your current
+								billing period.
 							</DialogDescription>
 						</DialogHeader>
 						{error && (
