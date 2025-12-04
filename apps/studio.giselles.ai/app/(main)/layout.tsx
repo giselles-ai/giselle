@@ -20,7 +20,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 					/>
 					<NavigationRail dataLoader={user} />
 				</Suspense>
-				<main className="flex-1 overflow-y-auto pt-14 md:pt-14">
+				<main className="flex-1 overflow-y-auto pt-[48px] md:pt-[48px]">
 					{children}
 				</main>
 			</div>
