@@ -197,7 +197,7 @@ export function NavigationRailExpanded({
 				{navigationItemsFooter.length > 0 && (
 					<div className="mt-auto pt-4">
 						<NavigationList>
-							{(navigationItemsFooter as NavigationItem[]).map((item) => (
+							{navigationItemsFooter.map((item) => (
 								<NavigationListItem
 									key={item.id}
 									{...item}

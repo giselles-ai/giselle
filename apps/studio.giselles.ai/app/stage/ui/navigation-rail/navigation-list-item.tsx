@@ -44,7 +44,7 @@ export function NavigationListItem(
 					href={props.href}
 					target="_blank"
 					rel="noopener"
-					className="text-link-muted text-sm flex items-center gap-2 py-0.5 hover:text-accent rounded-lg px-1"
+					className="text-link-muted text-sm flex items-center gap-2 h-[34px] hover:text-accent rounded-lg px-1"
 				>
 					{!props.hideIcon && "icon" in props && props.icon ? (
 						<props.icon className="size-4 shrink-0" />
@@ -146,7 +146,7 @@ export function NavigationListItem(
 					href={props.items[0]?.href || "#"}
 					target="_blank"
 					rel="noopener"
-					className="text-link-muted text-sm flex items-center gap-2 py-0.5 hover:text-accent rounded-lg px-1"
+					className="text-link-muted text-sm flex items-center gap-2 h-[34px] hover:text-accent rounded-lg px-1"
 				>
 					<props.icon className="size-4 shrink-0" />
 				</a>

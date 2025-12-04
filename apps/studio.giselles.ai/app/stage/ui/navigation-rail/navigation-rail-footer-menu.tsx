@@ -42,7 +42,7 @@ export function NavigationRailFooterMenu({
 	variant: _variant,
 }: {
 	user: Promise<UserDataForNavigationRail>;
-	variant: NavigationRailState;
+	variant?: NavigationRailState;
 }) {
 	const user = use(userPromise);
 	const [mounted, setMounted] = useState(false);
@@ -56,15 +56,13 @@ export function NavigationRailFooterMenu({
 					className="w-full hover:bg-ghost-element-hover h-full rounded-[8px] cursor-pointer outline-none px-1 py-1.5 flex items-center justify-center"
 					type="button"
 				>
-					<div className="flex items-center justify-center shrink-0">
-						<AvatarImage
-							className="rounded-full"
-							avatarUrl={user.avatarUrl ?? null}
-							width={30}
-							height={30}
-							alt={user.displayName || user.email || "User"}
-						/>
-					</div>
+					<AvatarImage
+						className="rounded-full"
+						avatarUrl={user.avatarUrl ?? null}
+						width={30}
+						height={30}
+						alt={user.displayName || user.email || "User"}
+					/>
 				</button>
 			</DropdownMenuPrimitive.Trigger>
 			<DropdownMenuPrimitive.Portal>

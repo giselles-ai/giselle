@@ -81,7 +81,7 @@ export function Header({
 					}
 				>
 					<div className="flex items-center">
-						<NavigationRailFooterMenu user={dataLoader} variant="expanded" />
+						<NavigationRailFooterMenu user={dataLoader} />
 					</div>
 				</Suspense>
 			</div>
