@@ -2,11 +2,11 @@
 
 
 ## Summary
-* 903 MIT
-* 177 Apache 2.0
-* 42 ISC
+* 902 MIT
+* 179 Apache 2.0
+* 41 ISC
 * 27 New BSD
-* 17 Simplified BSD
+* 16 Simplified BSD
 * 6 BlueOak-1.0.0
 * 2 MIT OR Apache-2.0
 * 2 MIT-0
@@ -140,6 +140,28 @@
 
 <a name="@ampproject/remapping"></a>
 ### @ampproject/remapping v2.3.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
+
+
+
+<a name="@apm-js-collab/code-transformer"></a>
+### @apm-js-collab/code-transformer v0.8.2
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
+
+
+
+<a name="@apm-js-collab/tracing-hooks"></a>
+### @apm-js-collab/tracing-hooks v0.3.1
 #### 
 
 ##### Paths
@@ -579,7 +601,7 @@
 
 
 <a name="@babel/code-frame"></a>
-### @babel/code-frame v7.26.2
+### @babel/code-frame v7.27.1
 #### 
 
 ##### Paths
@@ -612,7 +634,7 @@
 
 
 <a name="@babel/generator"></a>
-### @babel/generator v7.26.5
+### @babel/generator v7.28.5
 #### 
 
 ##### Paths
@@ -667,7 +689,7 @@
 
 
 <a name="@babel/helper-string-parser"></a>
-### @babel/helper-string-parser v7.25.9
+### @babel/helper-string-parser v7.27.1
 #### 
 
 ##### Paths
@@ -678,7 +700,7 @@
 
 
 <a name="@babel/helper-validator-identifier"></a>
-### @babel/helper-validator-identifier v7.25.9
+### @babel/helper-validator-identifier v7.28.5
 #### 
 
 ##### Paths
@@ -711,7 +733,7 @@
 
 
 <a name="@babel/parser"></a>
-### @babel/parser v7.26.7
+### @babel/parser v7.28.5
 #### 
 
 ##### Paths
@@ -733,7 +755,7 @@
 
 
 <a name="@babel/template"></a>
-### @babel/template v7.25.9
+### @babel/template v7.27.2
 #### 
 
 ##### Paths
@@ -744,7 +766,7 @@
 
 
 <a name="@babel/traverse"></a>
-### @babel/traverse v7.26.7
+### @babel/traverse v7.28.5
 #### 
 
 ##### Paths
@@ -755,7 +777,7 @@
 
 
 <a name="@babel/types"></a>
-### @babel/types v7.26.7
+### @babel/types v7.28.5
 #### 
 
 ##### Paths
@@ -1712,7 +1734,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/api-logs"></a>
-### @opentelemetry/api-logs v0.57.2
+### @opentelemetry/api-logs v0.203.0
 #### 
 
 ##### Paths
@@ -1723,7 +1745,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/context-async-hooks"></a>
-### @opentelemetry/context-async-hooks v1.30.1
+### @opentelemetry/context-async-hooks v2.0.1
 #### 
 
 ##### Paths
@@ -1734,7 +1756,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/core"></a>
-### @opentelemetry/core v1.30.1
+### @opentelemetry/core v2.0.1
 #### 
 
 ##### Paths
@@ -1767,7 +1789,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation"></a>
-### @opentelemetry/instrumentation v0.57.2
+### @opentelemetry/instrumentation v0.203.0
 #### 
 
 ##### Paths
@@ -1778,7 +1800,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-amqplib"></a>
-### @opentelemetry/instrumentation-amqplib v0.46.1
+### @opentelemetry/instrumentation-amqplib v0.55.0
 #### 
 
 ##### Paths
@@ -1789,7 +1811,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-connect"></a>
-### @opentelemetry/instrumentation-connect v0.43.1
+### @opentelemetry/instrumentation-connect v0.52.0
 #### 
 
 ##### Paths
@@ -1800,7 +1822,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-dataloader"></a>
-### @opentelemetry/instrumentation-dataloader v0.16.1
+### @opentelemetry/instrumentation-dataloader v0.26.0
 #### 
 
 ##### Paths
@@ -1811,7 +1833,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-express"></a>
-### @opentelemetry/instrumentation-express v0.47.1
+### @opentelemetry/instrumentation-express v0.57.0
 #### 
 
 ##### Paths
@@ -1822,7 +1844,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-fs"></a>
-### @opentelemetry/instrumentation-fs v0.19.1
+### @opentelemetry/instrumentation-fs v0.28.0
 #### 
 
 ##### Paths
@@ -1833,7 +1855,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-generic-pool"></a>
-### @opentelemetry/instrumentation-generic-pool v0.43.1
+### @opentelemetry/instrumentation-generic-pool v0.52.0
 #### 
 
 ##### Paths
@@ -1844,7 +1866,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-graphql"></a>
-### @opentelemetry/instrumentation-graphql v0.47.1
+### @opentelemetry/instrumentation-graphql v0.56.0
 #### 
 
 ##### Paths
@@ -1855,7 +1877,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-hapi"></a>
-### @opentelemetry/instrumentation-hapi v0.45.2
+### @opentelemetry/instrumentation-hapi v0.55.0
 #### 
 
 ##### Paths
@@ -1866,7 +1888,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-http"></a>
-### @opentelemetry/instrumentation-http v0.57.2
+### @opentelemetry/instrumentation-http v0.208.0
 #### 
 
 ##### Paths
@@ -1877,7 +1899,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-ioredis"></a>
-### @opentelemetry/instrumentation-ioredis v0.47.1
+### @opentelemetry/instrumentation-ioredis v0.56.0
 #### 
 
 ##### Paths
@@ -1888,7 +1910,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-kafkajs"></a>
-### @opentelemetry/instrumentation-kafkajs v0.7.1
+### @opentelemetry/instrumentation-kafkajs v0.18.0
 #### 
 
 ##### Paths
@@ -1899,7 +1921,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-knex"></a>
-### @opentelemetry/instrumentation-knex v0.44.1
+### @opentelemetry/instrumentation-knex v0.53.0
 #### 
 
 ##### Paths
@@ -1910,7 +1932,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-koa"></a>
-### @opentelemetry/instrumentation-koa v0.47.1
+### @opentelemetry/instrumentation-koa v0.57.0
 #### 
 
 ##### Paths
@@ -1921,7 +1943,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-lru-memoizer"></a>
-### @opentelemetry/instrumentation-lru-memoizer v0.44.1
+### @opentelemetry/instrumentation-lru-memoizer v0.53.0
 #### 
 
 ##### Paths
@@ -1932,7 +1954,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-mongodb"></a>
-### @opentelemetry/instrumentation-mongodb v0.52.0
+### @opentelemetry/instrumentation-mongodb v0.61.0
 #### 
 
 ##### Paths
@@ -1943,7 +1965,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-mongoose"></a>
-### @opentelemetry/instrumentation-mongoose v0.46.1
+### @opentelemetry/instrumentation-mongoose v0.55.0
 #### 
 
 ##### Paths
@@ -1954,7 +1976,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-mysql"></a>
-### @opentelemetry/instrumentation-mysql v0.45.1
+### @opentelemetry/instrumentation-mysql v0.54.0
 #### 
 
 ##### Paths
@@ -1965,7 +1987,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-mysql2"></a>
-### @opentelemetry/instrumentation-mysql2 v0.45.2
+### @opentelemetry/instrumentation-mysql2 v0.55.0
 #### 
 
 ##### Paths
@@ -1976,7 +1998,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-pg"></a>
-### @opentelemetry/instrumentation-pg v0.51.1
+### @opentelemetry/instrumentation-pg v0.61.0
 #### 
 
 ##### Paths
@@ -1986,8 +2008,8 @@ LGPL-3.0-or-later permitted
 
 
 
-<a name="@opentelemetry/instrumentation-redis-4"></a>
-### @opentelemetry/instrumentation-redis-4 v0.46.1
+<a name="@opentelemetry/instrumentation-redis"></a>
+### @opentelemetry/instrumentation-redis v0.57.0
 #### 
 
 ##### Paths
@@ -1998,7 +2020,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-tedious"></a>
-### @opentelemetry/instrumentation-tedious v0.18.1
+### @opentelemetry/instrumentation-tedious v0.27.0
 #### 
 
 ##### Paths
@@ -2009,7 +2031,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/instrumentation-undici"></a>
-### @opentelemetry/instrumentation-undici v0.10.1
+### @opentelemetry/instrumentation-undici v0.19.0
 #### 
 
 ##### Paths
@@ -2042,7 +2064,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/redis-common"></a>
-### @opentelemetry/redis-common v0.36.2
+### @opentelemetry/redis-common v0.38.2
 #### 
 
 ##### Paths
@@ -2053,7 +2075,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/resources"></a>
-### @opentelemetry/resources v1.30.1
+### @opentelemetry/resources v2.0.1
 #### 
 
 ##### Paths
@@ -2086,7 +2108,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/sdk-trace-base"></a>
-### @opentelemetry/sdk-trace-base v1.30.1
+### @opentelemetry/sdk-trace-base v2.0.1
 #### 
 
 ##### Paths
@@ -2108,7 +2130,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/semantic-conventions"></a>
-### @opentelemetry/semantic-conventions v1.28.0
+### @opentelemetry/semantic-conventions v1.36.0
 #### 
 
 ##### Paths
@@ -2119,7 +2141,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@opentelemetry/sql-common"></a>
-### @opentelemetry/sql-common v0.40.1
+### @opentelemetry/sql-common v0.41.2
 #### 
 
 ##### Paths
@@ -2196,7 +2218,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@prisma/instrumentation"></a>
-### @prisma/instrumentation v6.8.2
+### @prisma/instrumentation v6.19.0
 #### 
 
 ##### Paths
@@ -3274,7 +3296,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@rollup/rollup-linux-x64-gnu"></a>
-### @rollup/rollup-linux-x64-gnu v4.35.0
+### @rollup/rollup-linux-x64-gnu v4.49.0
 #### 
 
 ##### Paths
@@ -3307,7 +3329,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry-internal/browser-utils"></a>
-### @sentry-internal/browser-utils v9.30.0
+### @sentry-internal/browser-utils v10.28.0
 #### 
 
 ##### Paths
@@ -3318,7 +3340,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry-internal/feedback"></a>
-### @sentry-internal/feedback v9.30.0
+### @sentry-internal/feedback v10.28.0
 #### 
 
 ##### Paths
@@ -3329,7 +3351,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry-internal/replay"></a>
-### @sentry-internal/replay v9.30.0
+### @sentry-internal/replay v10.28.0
 #### 
 
 ##### Paths
@@ -3340,7 +3362,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry-internal/replay-canvas"></a>
-### @sentry-internal/replay-canvas v9.30.0
+### @sentry-internal/replay-canvas v10.28.0
 #### 
 
 ##### Paths
@@ -3351,7 +3373,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry/babel-plugin-component-annotate"></a>
-### @sentry/babel-plugin-component-annotate v3.5.0
+### @sentry/babel-plugin-component-annotate v4.6.1
 #### 
 
 ##### Paths
@@ -3362,7 +3384,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry/browser"></a>
-### @sentry/browser v9.30.0
+### @sentry/browser v10.28.0
 #### 
 
 ##### Paths
@@ -3373,7 +3395,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry/bundler-plugin-core"></a>
-### @sentry/bundler-plugin-core v3.5.0
+### @sentry/bundler-plugin-core v4.6.1
 #### 
 
 ##### Paths
@@ -3384,7 +3406,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry/cli"></a>
-### @sentry/cli v2.42.2
+### @sentry/cli v2.58.2
 #### 
 
 ##### Paths
@@ -3395,7 +3417,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry/cli-linux-x64"></a>
-### @sentry/cli-linux-x64 v2.42.2
+### @sentry/cli-linux-x64 v2.58.2
 #### 
 
 ##### Paths
@@ -3406,7 +3428,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry/core"></a>
-### @sentry/core v9.30.0
+### @sentry/core v10.28.0
 #### 
 
 ##### Paths
@@ -3417,7 +3439,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry/nextjs"></a>
-### @sentry/nextjs v9.30.0
+### @sentry/nextjs v10.28.0
 #### 
 
 ##### Paths
@@ -3428,7 +3450,18 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry/node"></a>
-### @sentry/node v9.30.0
+### @sentry/node v10.28.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@sentry/node-core"></a>
+### @sentry/node-core v10.28.0
 #### 
 
 ##### Paths
@@ -3439,7 +3472,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry/opentelemetry"></a>
-### @sentry/opentelemetry v9.30.0
+### @sentry/opentelemetry v10.28.0
 #### 
 
 ##### Paths
@@ -3450,7 +3483,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry/react"></a>
-### @sentry/react v9.30.0
+### @sentry/react v10.28.0
 #### 
 
 ##### Paths
@@ -3461,7 +3494,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry/vercel-edge"></a>
-### @sentry/vercel-edge v9.30.0
+### @sentry/vercel-edge v10.28.0
 #### 
 
 ##### Paths
@@ -3472,7 +3505,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@sentry/webpack-plugin"></a>
-### @sentry/webpack-plugin v3.5.0
+### @sentry/webpack-plugin v4.6.1
 #### 
 
 ##### Paths
@@ -4715,7 +4748,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@types/estree"></a>
-### @types/estree v1.0.6
+### @types/estree v1.0.8
 #### 
 
 ##### Paths
@@ -4825,7 +4858,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@types/mysql"></a>
-### @types/mysql v2.15.26
+### @types/mysql v2.15.27
 #### 
 
 ##### Paths
@@ -4858,7 +4891,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@types/pg"></a>
-### @types/pg v8.6.1
+### @types/pg v8.11.6
 #### 
 
 ##### Paths
@@ -4914,17 +4947,6 @@ LGPL-3.0-or-later permitted
 
 <a name="@types/react-dom"></a>
 ### @types/react-dom v19.2.3
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="@types/shimmer"></a>
-### @types/shimmer v1.2.0
 #### 
 
 ##### Paths
@@ -5940,7 +5962,7 @@ CC-BY-4.0 permitted
 
 
 <a name="chalk"></a>
-### chalk v3.0.0
+### chalk v5.6.2
 #### 
 
 ##### Paths
@@ -7402,17 +7424,6 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="fs.realpath"></a>
-### fs.realpath v1.0.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://en.wikipedia.org/wiki/ISC_license">ISC</a> permitted
-
-
-
 <a name="function-bind"></a>
 ### function-bind v1.1.2
 #### 
@@ -7524,7 +7535,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="glob"></a>
-### glob v9.3.5
+### glob v10.4.5
 #### 
 
 ##### Paths
@@ -7553,17 +7564,6 @@ BlueOak-1.0.0 permitted
 * /home/runner/work/giselle/giselle
 
 <a href="http://opensource.org/licenses/bsd-license">Simplified BSD</a> permitted
-
-
-
-<a name="globals"></a>
-### globals v11.12.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
 
 
 
@@ -9405,7 +9405,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="minimatch"></a>
-### minimatch v8.0.4
+### minimatch v9.0.5
 #### 
 
 ##### Paths
@@ -9427,7 +9427,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="minipass"></a>
-### minipass v4.2.8
+### minipass v7.1.2
 #### 
 
 ##### Paths
@@ -11077,7 +11077,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="rollup"></a>
-### rollup v4.35.0
+### rollup v4.49.0
 #### 
 
 ##### Paths
@@ -11271,17 +11271,6 @@ BlueOak-1.0.0 permitted
 * /home/runner/work/giselle/giselle
 
 <a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="shimmer"></a>
-### shimmer v1.2.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/bsd-license">Simplified BSD</a> permitted
 
 
 
@@ -11752,7 +11741,7 @@ Unknown manually approved
 
 
 <a name="supports-color"></a>
-### supports-color v7.2.0
+### supports-color v8.1.1
 #### 
 
 ##### Paths
@@ -12823,7 +12812,7 @@ Unknown manually approved
 
 
 <a name="webpack-sources"></a>
-### webpack-sources v3.2.3
+### webpack-sources v3.3.3
 #### 
 
 ##### Paths
