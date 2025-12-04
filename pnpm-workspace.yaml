@@ -103,3 +103,8 @@ catalog:
   zustand: 5.0.8
 
 minimumReleaseAge: 1440
+minimumReleaseAgeExclude:
+  - react
+  - react-dom
+  - '@types/react'
+  - '@types/react-dom'
