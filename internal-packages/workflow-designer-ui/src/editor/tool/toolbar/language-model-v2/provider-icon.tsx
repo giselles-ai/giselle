@@ -14,7 +14,7 @@ export function ProviderIcon({
 	className = "w-[18px] h-[18px]",
 }: ProviderIconProps) {
 	const languageModel = getEntry(modelId);
-	switch (languageModel.provider) {
+	switch (languageModel.providerId) {
 		case "anthropic":
 			return <AnthropicIcon className={className} data-icon />;
 		case "openai":

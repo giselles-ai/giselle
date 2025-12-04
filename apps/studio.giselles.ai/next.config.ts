@@ -12,7 +12,6 @@ const pdfiumWasmPath = moduleRequire.resolve("@embedpdf/pdfium/pdfium.wasm");
 
 export const serverExternalPackages = [
 	"@embedpdf/pdfium",
-	"@opentelemetry/sdk-node",
 	"pino",
 	"pino-pretty",
 	"happy-dom",

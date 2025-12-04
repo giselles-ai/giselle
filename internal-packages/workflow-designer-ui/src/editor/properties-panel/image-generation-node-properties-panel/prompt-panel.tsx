@@ -1,8 +1,3 @@
-import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
-import {
-	SettingDetail,
-	SettingLabel,
-} from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
 import {
 	falLanguageModels,
@@ -24,6 +19,8 @@ import {
 import { useCallback, useMemo } from "react";
 import { ModelPicker } from "../../../ui/model-picker";
 import { ProTag } from "../../tool/toolbar/components/pro-tag";
+import { PromptEditor } from "../ui/prompt-editor";
+import { SettingDetail, SettingLabel } from "../ui/setting-label";
 import { createDefaultModelData, updateModelId } from "./model-defaults";
 import { FalModelPanel, OpenAIImageModelPanel } from "./models";
 import { useConnectedSources } from "./sources";
@@ -168,7 +165,7 @@ export function PromptPanel({ node }: { node: ImageGenerationNode }) {
 		<PromptEditor
 			placeholder="Write your prompt... Use @ to reference other nodes"
 			value={node.content.prompt}
-			onValueChange={(value) => {
+			onValueChange={(value: string) => {
 				updateNodeDataContent(node, { prompt: value });
 			}}
 			connections={connections}

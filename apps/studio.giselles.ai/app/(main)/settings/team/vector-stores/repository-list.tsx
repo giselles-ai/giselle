@@ -1,5 +1,4 @@
 import { EmptyState } from "@giselle-internal/ui/empty-state";
-import { SectionHeader } from "@giselle-internal/ui/section-header";
 import Link from "next/link";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card } from "@/components/ui/card";
@@ -9,6 +8,7 @@ import type { RepositoryWithStatuses } from "@/lib/vector-stores/github";
 import type { GitHubRepositoryIndexId } from "@/packages/types";
 import { OfficialRepositorySection } from "./official-repository-section";
 import { RepositoryItem } from "./repository-item";
+import { SectionHeader } from "./ui/section-header";
 
 type RepositoryListProps = {
 	repositories: RepositoryWithStatuses[];

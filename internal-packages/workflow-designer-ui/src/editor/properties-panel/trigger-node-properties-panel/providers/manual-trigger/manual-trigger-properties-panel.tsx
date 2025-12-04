@@ -1,10 +1,5 @@
 import { Button } from "@giselle-internal/ui/button";
 import { Select } from "@giselle-internal/ui/select";
-import {
-	SettingDetail,
-	SettingLabel,
-} from "@giselle-internal/ui/setting-label";
-import { SettingRow } from "@giselle-internal/ui/setting-row";
 import { Toggle } from "@giselle-internal/ui/toggle";
 import {
 	ManualTriggerParameter,
@@ -27,6 +22,8 @@ import {
 	useTransition,
 } from "react";
 import { SpinnerIcon } from "../../../../../icons";
+import { SettingDetail, SettingLabel } from "../../../ui/setting-label";
+import { SettingRow } from "../../../ui/setting-row";
 import { ManualTriggerConfiguredView } from "../../ui";
 
 const TYPE_OPTIONS = [

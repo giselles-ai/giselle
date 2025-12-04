@@ -1,5 +1,5 @@
-import { GlassCard } from "@giselle-internal/ui/glass-card";
 import type { DocumentVectorStoreWithProfiles } from "../data";
+import { GlassCard } from "../ui/glass-card";
 
 type DocumentVectorStoreItemReadonlyProps = {
 	store: DocumentVectorStoreWithProfiles;

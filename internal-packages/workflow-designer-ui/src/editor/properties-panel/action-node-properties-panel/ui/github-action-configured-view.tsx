@@ -1,9 +1,5 @@
 import { Button } from "@giselle-internal/ui/button";
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
-import {
-	SettingDetail,
-	SettingLabel,
-} from "@giselle-internal/ui/setting-label";
 import { githubActions } from "@giselles-ai/action-registry";
 import { defaultName } from "@giselles-ai/node-registry";
 import type {
@@ -30,6 +26,7 @@ import {
 	PullRequestReviewCommentCreatedIcon,
 } from "../../trigger-node-properties-panel/providers/github-trigger/components/icons";
 import { GitHubRepositoryBlock } from "../../trigger-node-properties-panel/ui";
+import { SettingDetail, SettingLabel } from "../../ui/setting-label";
 import { type InputWithConnectedOutput, useConnectedInputs } from "../lib";
 
 // Default icon for actions without specific icons

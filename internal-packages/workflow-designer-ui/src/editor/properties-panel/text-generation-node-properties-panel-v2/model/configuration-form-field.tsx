@@ -1,10 +1,10 @@
 import { Select } from "@giselle-internal/ui/select";
-import { SettingRow } from "@giselle-internal/ui/setting-row";
 import { Toggle } from "@giselle-internal/ui/toggle";
 import type { ConfigurationOption } from "@giselles-ai/language-model-registry";
 import { titleCase } from "@giselles-ai/utils";
 import type * as z from "zod/v4";
 import { Slider } from "../../../../ui/slider";
+import { SettingRow } from "../../ui/setting-row";
 
 function getEnumValues(schema: z.ZodTypeAny): string[] {
 	const def = schema.def;
