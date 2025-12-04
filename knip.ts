@@ -27,7 +27,6 @@ const config: KnipConfig = {
 			ignoreDependencies: [
 				"@aws-sdk/client-s3",
 				"@embedpdf/pdfium",
-				"@opentelemetry/sdk-node",
 				"import-in-the-middle",
 				"require-in-the-middle",
 				"@react-email/preview-server",

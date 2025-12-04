@@ -45,7 +45,6 @@
 		"@octokit/auth-app": "catalog:",
 		"@octokit/core": "catalog:",
 		"@opentelemetry/api": "1.9.0",
-		"@opentelemetry/sdk-node": "0.51.1",
 		"@paralleldrive/cuid2": "2.2.2",
 		"@radix-ui/react-accordion": "1.2.2",
 		"@radix-ui/react-dropdown-menu": "2.1.16",
