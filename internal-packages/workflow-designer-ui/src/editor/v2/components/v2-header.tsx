@@ -95,8 +95,8 @@ export function V2Header({
 								</div>
 							)}
 							<span className="text-inverse text-[14px] font-medium overflow-hidden text-ellipsis whitespace-nowrap">
-								{teamName}
-							</span>
+							{teamName}
+						</span>
 						</Link>
 					)}
 					{teamName && (

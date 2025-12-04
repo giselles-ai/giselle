@@ -56,12 +56,12 @@ export function NavigationRailFooterMenu({
 					className="w-full hover:bg-ghost-element-hover h-full rounded-[8px] cursor-pointer outline-none px-1 py-1.5 flex items-center justify-center"
 					type="button"
 				>
-					<div className="size-8 flex items-center justify-center shrink-0">
+					<div className="flex items-center justify-center shrink-0">
 						<AvatarImage
-							className="rounded-full w-8 h-8"
+							className="rounded-full"
 							avatarUrl={user.avatarUrl ?? null}
-							width={32}
-							height={32}
+							width={30}
+							height={30}
 							alt={user.displayName || user.email || "User"}
 						/>
 					</div>

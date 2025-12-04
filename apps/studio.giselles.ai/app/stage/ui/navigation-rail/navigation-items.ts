@@ -93,7 +93,7 @@ export const navigationItems = [
 		id: "nav-showcase",
 		type: "link",
 		icon: LibraryIcon,
-		label: "Stage Apps",
+		label: "Apps",
 		href: "/stage/showcase",
 		isActive: (p: string) => p === "/stage/showcase",
 	},
@@ -136,13 +136,6 @@ export const navigationItems = [
 		label: "Vector Stores",
 		href: "/settings/team/vector-stores",
 		isActive: (p: string) => p.startsWith("/settings/team/vector-stores"),
-	},
-	{
-		id: "nav-action-history",
-		type: "link",
-		icon: Clock,
-		label: "Action History",
-		href: "#",
 	},
 	{ id: "divider-2", type: "divider" },
 	// Manage

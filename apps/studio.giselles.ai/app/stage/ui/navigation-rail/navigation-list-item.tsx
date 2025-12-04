@@ -47,9 +47,9 @@ export function NavigationListItem(
 					<div className="size-8 flex items-center justify-center">
 						{!props.hideIcon &&
 							("icon" in props && props.icon ? (
-								<props.icon className="size-4" />
-							) : (
-								<span className="size-4" />
+							<props.icon className="size-4" />
+						) : (
+							<span className="size-4" />
 							))}
 					</div>
 					{props.variant === "expanded" && props.label}
@@ -59,9 +59,9 @@ export function NavigationListItem(
 			return props.variant === "expanded" ? (
 				<div className="text-text-muted text-[13px] font-semibold px-2 pt-3 pb-1 flex items-center gap-2">
 					{"icon" in props && props.icon ? (
-						<div className="size-8 flex items-center justify-center">
-							<props.icon className="size-4" />
-						</div>
+					<div className="size-8 flex items-center justify-center">
+						<props.icon className="size-4" />
+					</div>
 					) : null}
 					{props.label}
 				</div>

@@ -19,13 +19,15 @@ export function Header({
 	const isPro = user.currentTeam.isPro;
 
 	return (
-		<header className="fixed top-0 left-0 right-0 h-14 border-b border-border z-30 flex items-center justify-between px-4 bg-background">
+		<header className="fixed top-0 left-0 right-0 h-[48px] border-b border-border z-30 flex items-center justify-between px-4 bg-background">
 			{/* Left side: Logo + Team Selection */}
-			<div className="flex items-center gap-3">
+			<div className="flex items-center gap-[3px]">
 				<Link href="/" aria-label="Go to home" className="group">
-					<GiselleLogo className="w-[72px] h-auto fill-inverse group-hover:fill-primary-100 transition-colors" />
+					<GiselleLogo className="h-[24px] w-auto fill-inverse group-hover:fill-primary-100 transition-colors" />
 				</Link>
-				<div className="h-6 w-px bg-border rotate-12" />
+				<span className="text-inverse/20 text-[18px] font-[250] leading-none ml-[4px]">
+					/
+				</span>
 				{user.allTeams && (
 					<TeamSelectionForm
 						allTeams={user.allTeams}
