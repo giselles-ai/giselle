@@ -428,6 +428,16 @@ function GitHubToolConfigurationDialogInternal({
 	currentSecretId: string | undefined;
 }) {
 	const { updateNodeDataContent } = useWorkflowDesigner();
+	const githubToolConfiguration = node.content.tools.find(
+		(tool) => tool.name === "github-api",
+	)?.configuration;
+	const configuredGitHubToolsRaw = githubToolConfiguration?.useTools as unknown;
+	const configuredGitHubTools = Array.isArray(configuredGitHubToolsRaw)
+		? configuredGitHubToolsRaw.filter(
+				(toolName): toolName is string => typeof toolName === "string",
+			)
+		: [];
+	const selectedGitHubTools = new Set<string>(configuredGitHubTools);
 
 	const updateAvailableTools = useCallback<
 		React.FormEventHandler<HTMLFormElement>
@@ -536,6 +546,7 @@ function GitHubToolConfigurationDialogInternal({
 												value={tool}
 												id={tool}
 												name="tools"
+												defaultChecked={selectedGitHubTools.has(tool)}
 											>
 												<Checkbox.Indicator className="text-background">
 													<CheckIcon className="size-[16px]" />
