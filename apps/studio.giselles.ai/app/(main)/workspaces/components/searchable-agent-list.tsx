@@ -22,6 +22,7 @@ type AgentWithMetadata = typeof dbAgents.$inferSelect & {
 	githubRepositories: string[];
 	documentVectorStoreFiles: string[];
 	llmProviders: string[];
+	hasGithubIntegration: boolean;
 };
 
 export function SearchableAgentList({
@@ -134,10 +135,9 @@ export function SearchableAgentList({
 												className="w-4 h-4"
 											/>
 										))}
-										{agent.githubRepositories &&
-											agent.githubRepositories.length > 0 && (
-												<GitHubIcon className="w-4 h-4 text-text/60" />
-											)}
+										{agent.hasGithubIntegration && (
+											<GitHubIcon className="w-4 h-4 text-text/60" />
+										)}
 										{agent.documentVectorStoreFiles &&
 											agent.documentVectorStoreFiles.length > 0 && (
 												<File className="w-4 h-4 text-text/60" />
