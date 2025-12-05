@@ -50,21 +50,21 @@ export function TeamSelectionForm({
 			>
 				<SelectTrigger
 					className={clsx(
-						"w-full border-0 flex justify-between items-center data-[state=open]:border-0 data-[state=open]:ring-0 focus:ring-0 focus-visible:ring-0 focus:ring-offset-0 outline-none px-0.5 py-1.5 bg-transparent",
+						"w-full border-0 flex justify-between items-center data-[state=open]:border-0 data-[state=open]:ring-0 focus:ring-0 focus-visible:ring-0 focus:ring-offset-0 outline-none pt-[2px] pr-[8px] pb-[2px] pl-[12px] bg-transparent",
 						triggerClassName,
 					)}
 				>
-					<div className="flex items-center gap-1.5 flex-1 min-w-0">
+					<div className="flex items-center gap-[6px] flex-1 min-w-0">
 						<TeamAvatarImage
 							avatarUrl={currentTeam.avatarUrl}
 							teamName={currentTeam.name}
-							width={32}
-							height={32}
-							className="w-8 h-8 shrink-0"
+							width={16}
+							height={16}
+							className="shrink-0"
 							alt={currentTeam.name}
 						/>
 						<span
-							className="text-[14px] font-geist text-inverse truncate"
+							className="text-inverse text-[14px] font-medium overflow-hidden text-ellipsis whitespace-nowrap"
 							title={currentTeam.name}
 						>
 							{currentTeam.name}
