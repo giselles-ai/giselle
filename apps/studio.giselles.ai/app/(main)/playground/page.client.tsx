@@ -7,7 +7,6 @@ import { ArrowUpIcon, Image as ImageIcon, Search } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import { useRouter } from "next/navigation";
 import { use, useCallback, useRef, useState, useTransition } from "react";
-import { TopLightOverlay } from "@/app/(main)/lobby/components/top-light-overlay";
 import type { LoaderData } from "./data-loader";
 import type { StageApp } from "./types";
 
@@ -75,46 +74,14 @@ interface StageTopCardProps {
 	runStatus: "idle" | "running" | "completed";
 }
 
-function StageTopCard({ runningApp, runStatus }: StageTopCardProps) {
+function StageTopCard(_props: StageTopCardProps) {
 	return (
 		<div className="relative flex w-full max-w-[960px] min-w-[320px] mx-auto flex-col overflow-hidden">
-			{runningApp && runStatus === "running" && (
-				<div className="pointer-events-none absolute inset-0 z-0">
-					<TopLightOverlay />
-				</div>
-			)}
 			<div className="w-full flex justify-center items-center py-2">
 				<div className="flex flex-col items-center relative z-10">
-					{runningApp && runStatus === "completed" ? (
-						<>
-							<p className="font-[800] text-green-500">Completed</p>
-							<div className="mt-2 flex items-center gap-3">
-								<div className="relative flex h-[40px] w-[40px] flex-shrink-0 items-center justify-center overflow-hidden rounded-md border border-[hsl(192,73%,84%)] bg-[color-mix(in_srgb,hsl(192,73%,84%)_14%,transparent)] shadow-[0_0_22px_rgba(0,135,246,0.95)]">
-									<DynamicIcon
-										name={runningApp.iconName}
-										className="relative z-[1] h-6 w-6 stroke-1 text-[hsl(192,73%,84%)]"
-									/>
-								</div>
-							</div>
-						</>
-					) : runningApp && runStatus === "running" ? (
-						<>
-							<p className="font-[800] text-text/60">Creating task...</p>
-							<p className="text-text-muted text-[12px] text-center leading-5"></p>
-							<div className="mt-2 flex items-center gap-3">
-								<div className="stage-running-icon relative flex h-[40px] w-[40px] flex-shrink-0 items-center justify-center overflow-hidden rounded-md border border-[hsl(192,73%,84%)] bg-[color-mix(in_srgb,hsl(192,73%,84%)_14%,transparent)] shadow-[0_0_22px_rgba(0,135,246,0.95)]">
-									<DynamicIcon
-										name={runningApp.iconName}
-										className="relative z-[1] h-6 w-6 stroke-1 text-[hsl(192,73%,84%)]"
-									/>
-								</div>
-							</div>
-						</>
-					) : (
-						<p className="font-thin text-[36px] font-sans text-blue-muted/50 text-center">
-							What's the task? Your agent's on it.
-						</p>
-					)}
+					<p className="font-thin text-[36px] font-sans text-blue-muted/50 text-center">
+						What's the task? Your agent's on it.
+					</p>
 				</div>
 			</div>
 		</div>
@@ -315,6 +282,16 @@ export function Page({
 	const [runStatus, setRunStatus] = useState<"idle" | "running" | "completed">(
 		"idle",
 	);
+	const [appSearchQuery, setAppSearchQuery] = useState("");
+	const [isSearchActive, setIsSearchActive] = useState(false);
+	const appSearchInputRef = useRef<HTMLInputElement | null>(null);
+
+	const filteredTeamApps =
+		appSearchQuery.trim().length === 0
+			? teamApps
+			: teamApps.filter((app) =>
+					app.name.toLowerCase().includes(appSearchQuery.toLowerCase()),
+				);
 
 	// Validate selectedAppId during render - if invalid, treat as undefined
 	const selectedApp = selectedAppId
@@ -387,9 +364,11 @@ export function Page({
 					<div className="flex flex-col gap-8 w-full pb-8 pt-12">
 						{/* Section 1: Sample apps from Giselle team */}
 						<div className="flex flex-col">
-							<h2 className="text-inverse text-[14px] max-w-[960px] mx-auto w-full text-center">
-								Sample apps from Giselle team
-							</h2>
+							<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-4">
+								<h2 className="text-inverse text-[14px]">
+									Sample apps from Giselle team
+								</h2>
+							</div>
 							<div className="grid grid-cols-3 gap-3 pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
 								<button
 									type="button"
@@ -446,24 +425,56 @@ export function Page({
 						<div className="flex flex-col">
 							<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-4">
 								<h2 className="text-inverse text-[16px]">
-									Select an App to Run
+									Select Your App to Run
 								</h2>
 								<div className="relative">
-									<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
-									<input
-										type="text"
-										placeholder="Search"
-										className="pl-9 pr-4 py-2 rounded-lg border border-white bg-transparent text-text placeholder:text-text-muted text-sm focus:outline-none focus:ring-2 focus:ring-white/20"
-									/>
+									{isSearchActive ? (
+										<div className="flex items-center gap-2 rounded-full bg-white/5 px-3 py-1 text-[13px] text-text shadow-[0_0_0_1px_rgba(255,255,255,0.12)] transition-all duration-150">
+											<input
+												ref={appSearchInputRef}
+												type="text"
+												value={appSearchQuery}
+												onChange={(event) => {
+													setAppSearchQuery(event.target.value);
+												}}
+												onBlur={() => {
+													if (appSearchQuery.trim().length === 0) {
+														setIsSearchActive(false);
+													}
+												}}
+												placeholder="Search apps"
+												className="w-[160px] bg-transparent text-[13px] text-text placeholder:text-text-muted outline-none border-none"
+											/>
+											<Search className="h-4 w-4 text-text-muted" />
+										</div>
+									) : (
+										<button
+											type="button"
+											onClick={() => {
+												setIsSearchActive(true);
+												requestAnimationFrame(() => {
+													appSearchInputRef.current?.focus();
+												});
+											}}
+											className="group flex items-center gap-2 rounded-full px-3 py-1 text-[13px] text-text-muted transition-colors hover:bg-white/5"
+										>
+											<Search className="h-4 w-4 text-text-muted group-hover:text-text" />
+											<span>Search apps</span>
+										</button>
+									)}
 								</div>
 							</div>
 							{teamApps.length === 0 ? (
 								<p className="text-sm text-muted-foreground max-w-[960px] mx-auto w-full">
 									No apps available.
 								</p>
+							) : filteredTeamApps.length === 0 ? (
+								<p className="text-sm text-muted-foreground max-w-[960px] mx-auto w-full">
+									No apps match your search.
+								</p>
 							) : (
 								<div className="grid grid-cols-3 gap-3 pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
-									{teamApps.map((app) => (
+									{filteredTeamApps.map((app) => (
 										<AppCard
 											app={app}
 											key={app.id}
