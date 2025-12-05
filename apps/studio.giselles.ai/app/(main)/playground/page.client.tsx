@@ -1,12 +1,15 @@
 "use client";
 
+import { AppIcon } from "@giselle-internal/ui/app-icon";
 import { Select, type SelectOption } from "@giselle-internal/ui/select";
 import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
 import type { GenerationContextInput, TaskId } from "@giselles-ai/protocol";
 import { ArrowUpIcon, Image as ImageIcon, Search } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import { useRouter } from "next/navigation";
+import type { ReactNode } from "react";
 import { use, useCallback, useRef, useState, useTransition } from "react";
+import { LLMProviderIcon } from "@/app/(main)/workspaces/components/llm-provider-icon";
 import type { LoaderData } from "./data-loader";
 import type { StageApp } from "./types";
 
@@ -56,6 +59,7 @@ interface AppListCardProps {
 	badgeType: AppListCardBadgeType;
 	iconName?: string;
 	providers?: string[];
+	icon?: ReactNode;
 	onClick?: () => void;
 }
 
@@ -65,6 +69,7 @@ function AppListCard({
 	badgeType,
 	iconName,
 	providers,
+	icon,
 	onClick,
 }: AppListCardProps) {
 	const badgeConfig: Record<
@@ -91,26 +96,28 @@ function AppListCard({
 	};
 
 	const { label } = badgeConfig[badgeType];
-
-	const providersLabel =
-		providers && providers.length > 0 ? providers.join(" · ") : undefined;
+	const visibleProviders = providers?.slice(0, 3) ?? [];
+	const remainingProvidersCount =
+		(providers?.length ?? 0) - visibleProviders.length;
 
 	return (
 		<button
 			type="button"
-			className="rounded-xl border border-blue-muted/40 bg-transparent px-4 py-3 flex flex-col gap-2 text-left transition-colors hover:bg-white/5"
+			className="rounded-xl border-[0.5px] border-blue-muted/40 bg-transparent px-4 py-3 flex flex-col gap-2 text-left transition-colors hover:bg-white/5"
 			onClick={onClick}
 		>
 			<div className="flex items-center gap-3">
-				<div className="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center shrink-0">
-					{iconName ? (
-						<DynamicIcon name={iconName} className="h-5 w-5 text-white" />
+				<div className="w-10 h-10 rounded-full bg-blue-muted/20 flex items-center justify-center shrink-0">
+					{icon ? (
+						icon
+					) : iconName ? (
+						<DynamicIcon name={iconName} className="h-5 w-5 text-text-muted" />
 					) : (
-						<span className="text-white text-sm font-semibold">A</span>
+						<span className="text-text-muted text-sm font-semibold">A</span>
 					)}
 				</div>
 				<div className="flex items-center gap-2 min-w-0">
-					<span className="text-text font-medium text-[14px] truncate">
+					<span className="text-text-muted font-medium text-[14px] truncate">
 						{title}
 					</span>
 					<span className="shrink-0 rounded-full bg-white/5 px-2 py-[2px] text-[11px] text-text/70">
@@ -119,18 +126,29 @@ function AppListCard({
 				</div>
 			</div>
 			{description.length > 0 ? (
-				<span className="text-text/70 text-[12px] line-clamp-2">
+				<span className="text-text-muted/80 text-[12px] line-clamp-2">
 					{description}
 				</span>
 			) : (
-				<span className="text-text/70 text-[12px] invisible">placeholder</span>
+				<span className="text-text-muted/80 text-[12px] invisible">
+					placeholder
+				</span>
 			)}
-			<div className="min-h-[14px]">
-				{providersLabel ? (
-					<span className="text-text/60 text-[11px] truncate">
-						{providersLabel}
+			<div className="flex items-center gap-1 min-h-[20px]">
+				{visibleProviders.map((provider) => (
+					<div
+						key={provider}
+						className="w-5 h-5 rounded bg-white/5 flex items-center justify-center"
+					>
+						<LLMProviderIcon provider={provider} className="w-3 h-3" />
+					</div>
+				))}
+				{remainingProvidersCount > 0 ? (
+					<span className="text-text/60 text-[11px]">
+						+{remainingProvidersCount}
 					</span>
-				) : (
+				) : null}
+				{(!providers || providers.length === 0) && (
 					<span className="text-text/60 text-[11px] invisible">
 						placeholder
 					</span>
@@ -467,25 +485,46 @@ export function Page({
 						{/* Section 1: Sample apps from Giselle team */}
 						<div className="flex flex-col">
 							<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-4">
-								<h2 className="text-text/80 text-[16px]">
+								<h2 className="text-text-muted text-[16px]">
 									Sample apps from Giselle team
 								</h2>
 							</div>
 							<div className="grid grid-cols-3 gap-3 pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
 								<AppListCard
 									title="Customer Support"
-									description="Example app for customer support workflows."
+									description="A ready-made workflow that triages customer tickets, summarizes conversation history, and suggests high-quality replies for your support team."
 									badgeType="sample"
+									icon={
+										<AppIcon
+											defaultSize={false}
+											className="h-6 w-6 text-white/40"
+										/>
+									}
+									providers={["openai", "anthropic", "google", "perplexity"]}
 								/>
 								<AppListCard
 									title="Tech Support"
-									description="Example app for technical support workflows."
+									description="Handles bug reports, reproduces issues based on logs, and proposes potential fixes that engineers can review quickly."
 									badgeType="sample"
+									icon={
+										<AppIcon
+											defaultSize={false}
+											className="h-6 w-6 text-white/40"
+										/>
+									}
+									providers={["openai", "anthropic", "google"]}
 								/>
 								<AppListCard
 									title="Product Manager"
-									description="Example app for product management workflows."
+									description="Aggregates user feedback, highlights trends, and drafts product requirement ideas your team can refine."
 									badgeType="sample"
+									icon={
+										<AppIcon
+											defaultSize={false}
+											className="h-6 w-6 text-white/40"
+										/>
+									}
+									providers={["openai", "anthropic"]}
 								/>
 							</div>
 						</div>
@@ -493,7 +532,7 @@ export function Page({
 						{/* Section 2: Select an Apps to Run */}
 						<div className="flex flex-col">
 							<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-4">
-								<h2 className="text-text/80 text-[16px]">
+								<h2 className="text-text-muted text-[16px]">
 									Select Your App to Run
 								</h2>
 								<div className="relative">

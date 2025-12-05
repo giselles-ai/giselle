@@ -96,9 +96,47 @@ async function userApps(teamIds: TeamId[], userDbId: number) {
 				const documentFiles: string[] = [];
 				const llmProviders = new Set<string>();
 
-				// LLM providers and vector stores: check all nodes in workspace
-				// (not just reachable ones, as they might be referenced indirectly)
+				// Build adjacency list from workspace connections so we can
+				// traverse only nodes that are reachable from the app entry node.
+				const connectionsByOutputNodeId = new Map<string, string[]>();
+				for (const connection of workspace.connections ?? []) {
+					const outputNodeId = connection.outputNode.id;
+					const inputNodeId = connection.inputNode.id;
+					const existing = connectionsByOutputNodeId.get(outputNodeId);
+					if (existing === undefined) {
+						connectionsByOutputNodeId.set(outputNodeId, [inputNodeId]);
+					} else if (!existing.includes(inputNodeId)) {
+						existing.push(inputNodeId);
+					}
+				}
+
+				const reachableNodeIds = new Set<string>();
+				const stack = [appEntryNode.id];
+				reachableNodeIds.add(appEntryNode.id);
+
+				while (stack.length > 0) {
+					const currentNodeId = stack.pop();
+					if (currentNodeId === undefined) {
+						continue;
+					}
+					const nextNodeIds =
+						connectionsByOutputNodeId.get(currentNodeId) ?? [];
+					for (const nextNodeId of nextNodeIds) {
+						if (!reachableNodeIds.has(nextNodeId)) {
+							reachableNodeIds.add(nextNodeId);
+							stack.push(nextNodeId);
+						}
+					}
+				}
+
+				// LLM providers and vector stores: check only nodes that are
+				// reachable from the app's entry node to better reflect what
+				// this app actually uses.
 				for (const node of workspace.nodes) {
+					if (!reachableNodeIds.has(node.id)) {
+						continue;
+					}
+
 					// LLM providers
 					if (
 						isTextGenerationNode(node) &&
