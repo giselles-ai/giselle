@@ -53,6 +53,29 @@ type AppListCardBadgeType =
 	| "official"
 	| "ambassador";
 
+const APP_LIST_BADGE_CONFIG: Record<
+	AppListCardBadgeType,
+	{
+		label: string;
+	}
+> = {
+	sample: {
+		label: "Sample app",
+	},
+	"your-team": {
+		label: "Your team app",
+	},
+	"other-team": {
+		label: "Other team app",
+	},
+	official: {
+		label: "Official app",
+	},
+	ambassador: {
+		label: "Ambassador app",
+	},
+};
+
 interface AppListCardProps {
 	title: string;
 	description: string;
@@ -72,30 +95,7 @@ function AppListCard({
 	icon,
 	onClick,
 }: AppListCardProps) {
-	const badgeConfig: Record<
-		AppListCardBadgeType,
-		{
-			label: string;
-		}
-	> = {
-		sample: {
-			label: "Sample app",
-		},
-		"your-team": {
-			label: "Your team app",
-		},
-		"other-team": {
-			label: "Other team app",
-		},
-		official: {
-			label: "Official app",
-		},
-		ambassador: {
-			label: "Ambassador app",
-		},
-	};
-
-	const { label } = badgeConfig[badgeType];
+	const { label } = APP_LIST_BADGE_CONFIG[badgeType];
 	const visibleProviders = providers?.slice(0, 3) ?? [];
 	const remainingProvidersCount =
 		(providers?.length ?? 0) - visibleProviders.length;
