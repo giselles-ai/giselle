@@ -73,7 +73,7 @@ export const TeamInvitationEmail = ({
 							Click the button below to accept and access your shared workspace.
 						</Text>
 						<Button href={displayJoinUrl} style={button}>
-							Join the team
+							Join the Team
 						</Button>
 						<Text style={text}>
 							If you didn&apos;t expect this invitation, you can safely ignore
