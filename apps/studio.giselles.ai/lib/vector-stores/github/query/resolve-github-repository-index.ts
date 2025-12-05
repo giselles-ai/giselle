@@ -15,6 +15,17 @@ export async function resolveGitHubRepositoryIndex(
 ): Promise<number> {
 	const { workspaceId, owner, repo } = context;
 
+	// Input validation
+	if (!workspaceId || workspaceId.trim().length === 0) {
+		throw new Error("Workspace ID is required");
+	}
+	if (!owner || owner.trim().length === 0) {
+		throw new Error("Repository owner is required");
+	}
+	if (!repo || repo.trim().length === 0) {
+		throw new Error("Repository name is required");
+	}
+
 	// === Official Vector Store bypass ===
 	// Check if there's an official repository index matching owner/repo
 	if (officialVectorStoreConfig.teamDbId !== null) {
@@ -44,17 +55,6 @@ export async function resolveGitHubRepositoryIndex(
 			return repositoryIndex[0].dbId;
 		}
 		// Fall through to normal flow if not found or not in official list
-	}
-
-	// Input validation
-	if (!workspaceId || workspaceId.trim().length === 0) {
-		throw new Error("Workspace ID is required");
-	}
-	if (!owner || owner.trim().length === 0) {
-		throw new Error("Repository owner is required");
-	}
-	if (!repo || repo.trim().length === 0) {
-		throw new Error("Repository name is required");
 	}
 
 	// Look up team from workspace
