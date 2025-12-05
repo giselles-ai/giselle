@@ -52,11 +52,21 @@ type AppListCardBadgeType =
 
 interface AppListCardProps {
 	title: string;
+	description: string;
 	badgeType: AppListCardBadgeType;
+	iconName?: string;
+	providers?: string[];
 	onClick?: () => void;
 }
 
-function AppListCard({ title, badgeType, onClick }: AppListCardProps) {
+function AppListCard({
+	title,
+	description,
+	badgeType,
+	iconName,
+	providers,
+	onClick,
+}: AppListCardProps) {
 	const badgeConfig: Record<
 		AppListCardBadgeType,
 		{
@@ -82,18 +92,49 @@ function AppListCard({ title, badgeType, onClick }: AppListCardProps) {
 
 	const { label } = badgeConfig[badgeType];
 
+	const providersLabel =
+		providers && providers.length > 0 ? providers.join(" · ") : undefined;
+
 	return (
 		<button
 			type="button"
-			className="rounded-lg border border-white px-4 py-3 flex items-center gap-3 text-left"
+			className="rounded-xl border border-blue-muted/40 bg-transparent px-4 py-3 flex flex-col gap-2 text-left transition-colors hover:bg-white/5"
 			onClick={onClick}
 		>
-			<div className="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center shrink-0">
-				<span className="text-white text-sm font-semibold">A</span>
+			<div className="flex items-center gap-3">
+				<div className="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center shrink-0">
+					{iconName ? (
+						<DynamicIcon name={iconName} className="h-5 w-5 text-white" />
+					) : (
+						<span className="text-white text-sm font-semibold">A</span>
+					)}
+				</div>
+				<div className="flex items-center gap-2 min-w-0">
+					<span className="text-text font-medium text-[14px] truncate">
+						{title}
+					</span>
+					<span className="shrink-0 rounded-full bg-white/5 px-2 py-[2px] text-[11px] text-text/70">
+						{label}
+					</span>
+				</div>
 			</div>
-			<div className="flex flex-col">
-				<span className="text-text font-medium text-[14px]">{title}</span>
-				<span className="text-text/60 text-[12px]">{label}</span>
+			{description.length > 0 ? (
+				<span className="text-text/70 text-[12px] line-clamp-2">
+					{description}
+				</span>
+			) : (
+				<span className="text-text/70 text-[12px] invisible">placeholder</span>
+			)}
+			<div className="min-h-[14px]">
+				{providersLabel ? (
+					<span className="text-text/60 text-[11px] truncate">
+						{providersLabel}
+					</span>
+				) : (
+					<span className="text-text/60 text-[11px] invisible">
+						placeholder
+					</span>
+				)}
 			</div>
 		</button>
 	);
@@ -113,7 +154,14 @@ function AppCard({
 		: "other-team";
 
 	return (
-		<AppListCard title={app.name} badgeType={badgeType} onClick={onSelect} />
+		<AppListCard
+			title={app.name}
+			description={app.description}
+			badgeType={badgeType}
+			iconName={app.iconName}
+			providers={app.llmProviders}
+			onClick={onSelect}
+		/>
 	);
 }
 
@@ -424,9 +472,21 @@ export function Page({
 								</h2>
 							</div>
 							<div className="grid grid-cols-3 gap-3 pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
-								<AppListCard title="Customer Support" badgeType="sample" />
-								<AppListCard title="Tech Support" badgeType="sample" />
-								<AppListCard title="Product Manager" badgeType="sample" />
+								<AppListCard
+									title="Customer Support"
+									description="Example app for customer support workflows."
+									badgeType="sample"
+								/>
+								<AppListCard
+									title="Tech Support"
+									description="Example app for technical support workflows."
+									badgeType="sample"
+								/>
+								<AppListCard
+									title="Product Manager"
+									description="Example app for product management workflows."
+									badgeType="sample"
+								/>
 							</div>
 						</div>
 
