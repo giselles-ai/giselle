@@ -303,7 +303,9 @@ export function GitHubVectorStoreNodePropertiesPanel({
 				)}
 
 				{/* Setting label below repository */}
-				<SettingLabel className="mt-[8px]">Setting</SettingLabel>
+				{selectedRepoKey && (
+					<SettingLabel className="mt-[8px]">Setting</SettingLabel>
+				)}
 
 				{/* Content Type Selection */}
 				{selectedRepoKey && (
