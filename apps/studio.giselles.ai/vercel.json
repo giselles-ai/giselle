@@ -1,11 +1,11 @@
 {
 	"crons": [
 		{
-			"path": "/api/vector-stores/github/ingest",
+			"path": "/api/vector-stores/cron/github/ingest",
 			"schedule": "*/10 * * * *"
 		},
 		{
-			"path": "/api/vector-stores/document/ingest",
+			"path": "/api/vector-stores/cron/document/ingest",
 			"schedule": "*/3 * * * *"
 		}
 	]
