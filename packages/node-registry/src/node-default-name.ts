@@ -101,6 +101,8 @@ export function defaultName(node: NodeLike) {
 						node.name ??
 						vectorStoreNodeDefaultName(node.content.source.provider)
 					);
+				case "webPage":
+					return node.name ?? "Webpage";
 				default:
 					return node.name ?? node.content.type;
 			}
