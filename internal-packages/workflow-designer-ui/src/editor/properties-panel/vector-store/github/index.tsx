@@ -293,6 +293,8 @@ export function GitHubVectorStoreNodePropertiesPanel({
 					<div className="pt-[8px] flex justify-end">
 						<Link
 							href={settingPath}
+							target="_blank"
+							rel="noopener noreferrer"
 							className="text-inverse hover:text-inverse text-[14px] underline"
 						>
 							Set Up Vector Store
