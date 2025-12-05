@@ -8,7 +8,6 @@ import { DynamicIcon } from "lucide-react/dynamic";
 import { useRouter } from "next/navigation";
 import { use, useCallback, useRef, useState, useTransition } from "react";
 import { TopLightOverlay } from "@/app/(main)/lobby/components/top-light-overlay";
-import { AgentCard } from "@/app/(main)/workspaces/components/agent-card";
 import type { LoaderData } from "./data-loader";
 import type { StageApp } from "./types";
 
@@ -194,9 +193,11 @@ function ChatInputArea({
 		}
 	};
 
+	const hasInput = inputValue.trim().length > 0;
+
 	return (
 		<div className="relative w-full max-w-[640px] min-w-[320px] mx-auto">
-			<div className="bg-blue-muted/10 backdrop-blur-md rounded-[14px] pt-4 px-4 pb-2">
+			<div className="bg-blue-muted/10 rounded-[14px] shadow-[inset_0_1px_4px_rgba(0,0,0,0.22)] pt-4 px-2 pb-2">
 				{/* Textarea */}
 				<textarea
 					ref={textareaRef}
@@ -206,7 +207,7 @@ function ChatInputArea({
 					placeholder="Ask anything—powered by Giselle docs"
 					rows={1}
 					disabled={isRunning}
-					className="w-full resize-none bg-transparent text-[15px] text-foreground placeholder:text-blue-muted/50 outline-none disabled:cursor-not-allowed min-h-[2.75em] pt-0 pb-[0.7em]"
+					className="w-full resize-none bg-transparent text-[15px] text-foreground placeholder:text-blue-muted/50 outline-none disabled:cursor-not-allowed min-h-[2.75em] pt-0 pb-[0.7em] px-1"
 				/>
 
 				{/* Bottom row: App selector and buttons */}
@@ -219,7 +220,7 @@ function ChatInputArea({
 							value={selectedApp?.id}
 							onValueChange={onAppSelect}
 							widthClassName="w-full"
-							triggerClassName="border-none !bg-blue-muted/10 hover:!bg-[rgba(131,157,195,0.15)]"
+							triggerClassName="border-none !bg-blue-muted/10 hover:!bg-[rgba(131,157,195,0.15)] !px-3"
 						/>
 					</div>
 
@@ -235,12 +236,30 @@ function ChatInputArea({
 							type="button"
 							onClick={handleSubmit}
 							disabled={isRunning || !selectedApp || !inputValue.trim()}
-							className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[5px] border border-white disabled:opacity-50 disabled:cursor-not-allowed"
+							className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[5px] bg-[color:var(--color-inverse)] disabled:cursor-not-allowed ${
+								hasInput ? "opacity-100" : "opacity-40"
+							}`}
 						>
-							<ArrowUpIcon className="h-3 w-3 stroke-white" />
+							<ArrowUpIcon className="h-3 w-3 text-[color:var(--color-background)]" />
 						</button>
 					</div>
 				</div>
+			</div>
+			{/* Keyboard shortcut hint (outside chat container, aligned bottom-right) */}
+			<div className="mt-3 flex items-center justify-end gap-1 pr-1 text-[11px] text-blue-muted/60">
+				<div className="flex items-center gap-[4px]">
+					<div className="flex h-[18px] w-[18px] items-center justify-center rounded-[6px] border border-blue-muted/40 bg-blue-muted/10">
+						<span className="text-[10px] leading-none tracking-[0.08em]">
+							⌘
+						</span>
+					</div>
+					<div className="flex h-[18px] w-[18px] items-center justify-center rounded-[6px] border border-blue-muted/40 bg-blue-muted/10">
+						<span className="text-[10px] leading-none tracking-[0.08em]">
+							↵
+						</span>
+					</div>
+				</div>
+				<span className="leading-none">to send</span>
 			</div>
 		</div>
 	);
@@ -456,55 +475,6 @@ export function Page({
 											}}
 										/>
 									))}
-								</div>
-							)}
-						</div>
-
-						{/* Section 3: Team apps */}
-						<div className="flex flex-col">
-							<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-4">
-								<h2 className="text-inverse text-[16px]">
-									Edit Apps in Studio
-								</h2>
-								<div className="relative">
-									<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted" />
-									<input
-										type="text"
-										placeholder="Search"
-										className="pl-9 pr-4 py-2 rounded-lg border border-white bg-transparent text-text placeholder:text-text-muted text-sm focus:outline-none focus:ring-2 focus:ring-white/20"
-									/>
-								</div>
-							</div>
-							{teamApps.length === 0 ? (
-								<p className="text-sm text-muted-foreground max-w-[960px] mx-auto w-full">
-									No apps found in Team apps.
-								</p>
-							) : (
-								<div className="grid grid-cols-[repeat(auto-fill,minmax(267px,1fr))] gap-4 pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
-									{teamApps.map((app) => {
-										// Convert StageApp to AgentCard format
-										const agentCardData = {
-											id: app.id,
-											name: app.name,
-											description: app.description,
-											workspaceId: app.workspaceId,
-											githubRepositories: app.vectorStoreRepositories,
-											documentVectorStoreFiles: app.vectorStoreFiles,
-											llmProviders: app.llmProviders,
-											creator: null,
-											executionCount: 0,
-										};
-										return (
-											<AgentCard
-												key={app.id}
-												agent={
-													agentCardData as unknown as Parameters<
-														typeof AgentCard
-													>[0]["agent"]
-												}
-											/>
-										);
-									})}
 								</div>
 							)}
 						</div>
