@@ -14,7 +14,7 @@ export default function HomePage() {
 					fallback={
 						<div className="min-h-screen flex flex-col items-center justify-center">
 							<p
-								className="text-[36px] font-sans font-medium text-[hsl(192,73%,84%)] mb-4"
+								className="text-[16px] font-sans font-medium text-[hsl(192,73%,84%)] mb-4"
 								style={{
 									textShadow:
 										"0 0 20px #0087f6, 0 0 40px #0087f6, 0 0 60px #0087f6",

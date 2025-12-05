@@ -73,6 +73,35 @@ async function userApps(teamIds: TeamId[], userDbId: number) {
 		);
 	}
 
+	// Build a map of workspace creator user info so we can show who owns each app.
+	const creatorDbIds = new Set<number>();
+	for (const team of teams) {
+		for (const app of team.apps) {
+			const creatorDbId = app.workspace.creatorDbId;
+			if (creatorDbId != null) {
+				creatorDbIds.add(creatorDbId);
+			}
+		}
+	}
+
+	const creatorUsers =
+		creatorDbIds.size > 0
+			? await db.query.users.findMany({
+					where: (usersTable, { inArray }) =>
+						inArray(usersTable.dbId, Array.from(creatorDbIds)),
+				})
+			: [];
+	const creatorMap = new Map<
+		number,
+		{ displayName: string | null; avatarUrl: string | null }
+	>();
+	for (const creator of creatorUsers) {
+		creatorMap.set(creator.dbId, {
+			displayName: creator.displayName,
+			avatarUrl: creator.avatarUrl,
+		});
+	}
+
 	const result = await Promise.all(
 		teams.flatMap((team) =>
 			team.apps.map(async (app) => {
@@ -124,7 +153,7 @@ async function userApps(teamIds: TeamId[], userDbId: number) {
 					for (const nextNodeId of nextNodeIds) {
 						if (!reachableNodeIds.has(nextNodeId)) {
 							reachableNodeIds.add(nextNodeId);
-							stack.push(nextNodeId);
+							stack.push(nextNodeId as `nd-${string}`);
 						}
 					}
 				}
@@ -196,13 +225,18 @@ async function userApps(teamIds: TeamId[], userDbId: number) {
 	const apps: StageApp[] = [];
 
 	for (const data of result) {
+		const creatorInfo =
+			(data.workspace as any).creatorDbId != null
+				? (creatorMap.get((data.workspace as any).creatorDbId) ?? null)
+				: null;
+
 		apps.push({
 			id: data.giselleApp.id,
 			name: data.giselleApp.name,
 			description: data.giselleApp.description,
 			iconName: isIconName(data.giselleApp.iconName)
 				? data.giselleApp.iconName
-				: "cable",
+				: "sparkles",
 			entryNodeId: data.giselleApp.entryNodeId,
 			parameters: data.giselleApp.parameters,
 			workspaceId: data.workspace.id,
@@ -213,6 +247,7 @@ async function userApps(teamIds: TeamId[], userDbId: number) {
 			vectorStoreRepositories: data.githubRepositories,
 			vectorStoreFiles: data.documentFiles,
 			llmProviders: data.llmProviders,
+			creator: creatorInfo,
 		});
 	}
 

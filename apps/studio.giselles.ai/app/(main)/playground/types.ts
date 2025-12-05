@@ -24,4 +24,8 @@ export interface StageApp {
 	vectorStoreRepositories: string[];
 	vectorStoreFiles: string[];
 	llmProviders: string[];
+	creator: {
+		displayName: string | null;
+		avatarUrl: string | null;
+	} | null;
 }

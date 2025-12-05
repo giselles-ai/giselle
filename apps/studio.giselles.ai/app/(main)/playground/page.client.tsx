@@ -4,6 +4,7 @@ import { AppIcon } from "@giselle-internal/ui/app-icon";
 import { Select, type SelectOption } from "@giselle-internal/ui/select";
 import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
 import type { GenerationContextInput, TaskId } from "@giselles-ai/protocol";
+import clsx from "clsx";
 import { ArrowUpIcon, Image as ImageIcon, Search } from "lucide-react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import { useRouter } from "next/navigation";
@@ -83,6 +84,7 @@ interface AppListCardProps {
 	iconName?: string;
 	providers?: string[];
 	icon?: ReactNode;
+	creatorName?: string | null;
 	onClick?: () => void;
 }
 
@@ -93,6 +95,7 @@ function AppListCard({
 	iconName,
 	providers,
 	icon,
+	creatorName,
 	onClick,
 }: AppListCardProps) {
 	const { label } = APP_LIST_BADGE_CONFIG[badgeType];
@@ -107,11 +110,14 @@ function AppListCard({
 			onClick={onClick}
 		>
 			<div className="flex items-center gap-3">
-				<div className="w-10 h-10 rounded-full bg-[rgba(31,36,44,0.65)] flex items-center justify-center shrink-0">
+				<div className="w-10 h-10 rounded-full bg-[rgba(21,25,33,0.7)] flex items-center justify-center shrink-0">
 					{icon ? (
 						icon
 					) : iconName ? (
-						<DynamicIcon name={iconName} className="h-5 w-5 text-text-muted" />
+						<DynamicIcon
+							name={iconName as any}
+							className="h-5 w-5 text-text-muted"
+						/>
 					) : (
 						<span className="text-text-muted text-sm font-semibold">A</span>
 					)}
@@ -126,36 +132,47 @@ function AppListCard({
 				</div>
 			</div>
 			{description.length > 0 ? (
-				<span className="text-text-muted/70 text-[12px] line-clamp-2">
+				<span className="text-text-muted/70 text-[12px] leading-[1.6] line-clamp-2">
 					{description}
 				</span>
 			) : (
-				<span className="text-text-muted/70 text-[12px] invisible">
+				<span className="text-text-muted/70 text-[12px] leading-[1.6] invisible">
 					placeholder
 				</span>
 			)}
-			<div className="flex items-center gap-1 min-h-[20px]">
-				{visibleProviders.map((provider) => (
-					<div
-						key={provider}
-						className="w-5 h-5 rounded bg-white/5 flex items-center justify-center"
-					>
-						<LLMProviderIcon
-							provider={provider}
-							className="w-3 h-3 opacity-40"
-						/>
-					</div>
-				))}
-				{remainingProvidersCount > 0 ? (
-					<span className="text-text/60 text-[11px]">
-						+{remainingProvidersCount}
-					</span>
-				) : null}
-				{(!providers || providers.length === 0) && (
-					<span className="text-text/60 text-[11px] invisible">
-						placeholder
-					</span>
-				)}
+			<div className="flex min-h-[28px] flex-col gap-0.5">
+				<div className="flex items-center gap-1">
+					{visibleProviders.map((provider) => (
+						<div
+							key={provider}
+							className="flex h-5 w-5 items-center justify-center rounded bg-white/5"
+						>
+							<LLMProviderIcon
+								provider={provider}
+								className="h-3 w-3 opacity-40"
+							/>
+						</div>
+					))}
+					{remainingProvidersCount > 0 ? (
+						<span className="text-text/60 text-[11px]">
+							+{remainingProvidersCount}
+						</span>
+					) : null}
+					{(!providers || providers.length === 0) && (
+						<span className="text-text/60 text-[11px] invisible">
+							placeholder
+						</span>
+					)}
+				</div>
+				<span
+					className={clsx(
+						"text-[11px]",
+						"text-text-muted/80",
+						creatorName ? "visible" : "invisible",
+					)}
+				>
+					{creatorName ? `by ${creatorName}` : "placeholder"}
+				</span>
 			</div>
 		</button>
 	);
@@ -173,6 +190,7 @@ function AppCard({
 	const badgeType: AppListCardBadgeType = app.isMine
 		? "your-team"
 		: "other-team";
+	const creatorName = app.creator?.displayName ?? null;
 
 	return (
 		<AppListCard
@@ -181,6 +199,7 @@ function AppCard({
 			badgeType={badgeType}
 			iconName={app.iconName}
 			providers={app.llmProviders}
+			creatorName={creatorName}
 			onClick={onSelect}
 		/>
 	);
@@ -470,7 +489,7 @@ export function Page({
 				{/* Main content: apps area */}
 				<div className="flex-1 min-w-0 flex flex-col px-[24px] pt-[24px]">
 					{/* Top section: app info + chat input */}
-					<div className="space-y-6 pb-6">
+					<div className="space-y-6 pb-8">
 						<StageTopCard runningApp={runningApp} runStatus={runStatus} />
 
 						{/* Chat-style input area */}
@@ -487,8 +506,8 @@ export function Page({
 					<div className="flex flex-col gap-8 w-full pb-8 pt-16">
 						{/* Section 1: Sample apps from Giselle team */}
 						<div className="flex flex-col">
-							<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-4">
-								<h2 className="text-text-muted text-[16px]">
+							<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-2">
+								<h2 className="mt-1 text-[16px] text-text-muted/80">
 									Sample apps from Giselle team
 								</h2>
 							</div>
@@ -534,8 +553,8 @@ export function Page({
 
 						{/* Section 2: Select an Apps to Run */}
 						<div className="flex flex-col">
-							<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-4">
-								<h2 className="text-text-muted text-[16px]">
+							<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-2">
+								<h2 className="mt-1 text-[16px] text-text-muted/80">
 									Select Your App to Run
 								</h2>
 								<div className="relative">
