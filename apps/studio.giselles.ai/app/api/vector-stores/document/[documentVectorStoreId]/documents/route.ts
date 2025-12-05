@@ -304,7 +304,7 @@ export async function POST(
 			});
 
 			// Trigger ingestion immediately after response is sent
-			// If this fails or times out, cron job will retry (/api/vector-stores/document/ingest)
+			// If this fails or times out, cron job will retry (/api/vector-stores/cron/document/ingest)
 			after(() =>
 				ingestDocument(sourceId, {
 					embeddingProfileIds: store.embeddingProfileIds,
