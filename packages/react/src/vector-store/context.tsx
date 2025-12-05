@@ -6,6 +6,7 @@ export interface VectorStoreContextValue {
 		name: string;
 		owner: string;
 		repo: string;
+		isOfficial: boolean;
 		contentTypes: {
 			contentType: "blob" | "pull_request" | "issue";
 			embeddingProfileIds: number[];

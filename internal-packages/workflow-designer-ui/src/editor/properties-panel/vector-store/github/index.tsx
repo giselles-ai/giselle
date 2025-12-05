@@ -64,14 +64,16 @@ export function GitHubVectorStoreNodePropertiesPanel({
 
 	const repositoryOptions = useMemo(() => {
 		return allRepositories.map((repo) => ({
-			value: `${repo.owner}/${repo.repo}`,
-			label: `${repo.owner}/${repo.repo}`,
+			value: repo.id,
+			label: repo.isOfficial
+				? `${repo.owner}/${repo.repo} (Official)`
+				: `${repo.owner}/${repo.repo}`,
 		}));
 	}, [allRepositories]);
 
 	const handleRepositoryChange = (selectedKey: string) => {
 		const selectedRepo = allRepositories.find(
-			(repo) => `${repo.owner}/${repo.repo}` === selectedKey,
+			(repo) => repo.id === selectedKey,
 		);
 		if (selectedRepo) {
 			// Reset content type selection when repository changes
@@ -105,14 +107,12 @@ export function GitHubVectorStoreNodePropertiesPanel({
 	};
 
 	const [selectedRepoKey, setSelectedRepoKey] = useState<string | undefined>(
-		selectedRepository
-			? `${selectedRepository.owner}/${selectedRepository.repo}`
-			: undefined,
+		selectedRepository ? selectedRepository.id : undefined,
 	);
 
 	const contentTypeAvailability = useMemo(() => {
 		const selectedRepo = allRepositories.find(
-			(repo) => `${repo.owner}/${repo.repo}` === selectedRepoKey,
+			(repo) => repo.id === selectedRepoKey,
 		);
 		if (!selectedRepo)
 			return {
@@ -161,7 +161,7 @@ export function GitHubVectorStoreNodePropertiesPanel({
 
 	const availableEmbeddingProfiles = useMemo(() => {
 		const selectedRepo = allRepositories.find(
-			(repo) => `${repo.owner}/${repo.repo}` === selectedRepoKey,
+			(repo) => repo.id === selectedRepoKey,
 		);
 		if (!selectedRepo || !selectedContentType) return [];
 
@@ -203,7 +203,7 @@ export function GitHubVectorStoreNodePropertiesPanel({
 		contentType: "blob" | "pull_request" | "issue",
 	) => {
 		const selectedRepo = allRepositories.find(
-			(repo) => `${repo.owner}/${repo.repo}` === selectedRepoKey,
+			(repo) => repo.id === selectedRepoKey,
 		);
 		if (selectedRepo) {
 			setSelectedContentType(contentType);
