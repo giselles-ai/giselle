@@ -107,7 +107,7 @@ function AppListCard({
 			onClick={onClick}
 		>
 			<div className="flex items-center gap-3">
-				<div className="w-10 h-10 rounded-full bg-blue-muted/20 flex items-center justify-center shrink-0">
+				<div className="w-10 h-10 rounded-full bg-[rgba(31,36,44,0.65)] flex items-center justify-center shrink-0">
 					{icon ? (
 						icon
 					) : iconName ? (
@@ -117,7 +117,7 @@ function AppListCard({
 					)}
 				</div>
 				<div className="flex items-center gap-2 min-w-0">
-					<span className="text-text-muted font-medium text-[14px] truncate">
+					<span className="font-medium text-[14px] truncate text-[color:var(--color-text-nav-active)]">
 						{title}
 					</span>
 					<span className="shrink-0 rounded-full bg-white/5 px-2 py-[2px] text-[11px] text-text/70">
@@ -126,11 +126,11 @@ function AppListCard({
 				</div>
 			</div>
 			{description.length > 0 ? (
-				<span className="text-text-muted/80 text-[12px] line-clamp-2">
+				<span className="text-text-muted/70 text-[12px] line-clamp-2">
 					{description}
 				</span>
 			) : (
-				<span className="text-text-muted/80 text-[12px] invisible">
+				<span className="text-text-muted/70 text-[12px] invisible">
 					placeholder
 				</span>
 			)}
@@ -140,7 +140,10 @@ function AppListCard({
 						key={provider}
 						className="w-5 h-5 rounded bg-white/5 flex items-center justify-center"
 					>
-						<LLMProviderIcon provider={provider} className="w-3 h-3" />
+						<LLMProviderIcon
+							provider={provider}
+							className="w-3 h-3 opacity-40"
+						/>
 					</div>
 				))}
 				{remainingProvidersCount > 0 ? (
@@ -481,7 +484,7 @@ export function Page({
 					</div>
 
 					{/* App sections */}
-					<div className="flex flex-col gap-8 w-full pb-8 pt-12">
+					<div className="flex flex-col gap-8 w-full pb-8 pt-16">
 						{/* Section 1: Sample apps from Giselle team */}
 						<div className="flex flex-col">
 							<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-4">
