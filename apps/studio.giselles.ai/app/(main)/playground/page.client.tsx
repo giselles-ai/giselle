@@ -43,6 +43,62 @@ import type { StageApp } from "./types";
 // 	},
 // ];
 
+type AppListCardBadgeType =
+	| "sample"
+	| "your-team"
+	| "other-team"
+	| "official"
+	| "ambassador";
+
+interface AppListCardProps {
+	title: string;
+	badgeType: AppListCardBadgeType;
+	onClick?: () => void;
+}
+
+function AppListCard({ title, badgeType, onClick }: AppListCardProps) {
+	const badgeConfig: Record<
+		AppListCardBadgeType,
+		{
+			label: string;
+		}
+	> = {
+		sample: {
+			label: "Sample app",
+		},
+		"your-team": {
+			label: "Your team app",
+		},
+		"other-team": {
+			label: "Other team app",
+		},
+		official: {
+			label: "Official app",
+		},
+		ambassador: {
+			label: "Ambassador app",
+		},
+	};
+
+	const { label } = badgeConfig[badgeType];
+
+	return (
+		<button
+			type="button"
+			className="rounded-lg border border-white px-4 py-3 flex items-center gap-3 text-left"
+			onClick={onClick}
+		>
+			<div className="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center shrink-0">
+				<span className="text-white text-sm font-semibold">A</span>
+			</div>
+			<div className="flex flex-col">
+				<span className="text-text font-medium text-[14px]">{title}</span>
+				<span className="text-text/60 text-[12px]">{label}</span>
+			</div>
+		</button>
+	);
+}
+
 function AppCard({
 	app,
 	onSelect,
@@ -52,20 +108,12 @@ function AppCard({
 	onSelect?: () => void;
 	isSelected?: boolean;
 }) {
+	const badgeType: AppListCardBadgeType = app.isMine
+		? "your-team"
+		: "other-team";
+
 	return (
-		<button
-			type="button"
-			className="rounded-lg border border-white px-4 py-3 flex items-center gap-3 text-left"
-			onClick={onSelect}
-		>
-			<div className="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center shrink-0">
-				<span className="text-white text-sm font-semibold">A</span>
-			</div>
-			<div className="flex flex-col">
-				<span className="text-text font-medium text-[14px]">{app.name}</span>
-				<span className="text-text/60 text-[12px]">{app.teamName}</span>
-			</div>
-		</button>
+		<AppListCard title={app.name} badgeType={badgeType} onClick={onSelect} />
 	);
 }
 
@@ -74,14 +122,20 @@ interface StageTopCardProps {
 	runStatus: "idle" | "running" | "completed";
 }
 
-function StageTopCard(_props: StageTopCardProps) {
+function StageTopCard({ runningApp, runStatus }: StageTopCardProps) {
 	return (
 		<div className="relative flex w-full max-w-[960px] min-w-[320px] mx-auto flex-col overflow-hidden">
 			<div className="w-full flex justify-center items-center py-2">
 				<div className="flex flex-col items-center relative z-10">
-					<p className="font-thin text-[36px] font-sans text-blue-muted/50 text-center">
-						What's the task? Your agent's on it.
-					</p>
+					{runningApp && runStatus === "running" ? (
+						<p className="font-[800] text-text/60 text-[16px]">
+							Creating task...
+						</p>
+					) : (
+						<p className="font-thin text-[36px] font-sans text-blue-muted/50 text-center">
+							What's the task? Your agent's on it.
+						</p>
+					)}
 				</div>
 			</div>
 		</div>
@@ -365,66 +419,21 @@ export function Page({
 						{/* Section 1: Sample apps from Giselle team */}
 						<div className="flex flex-col">
 							<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-4">
-								<h2 className="text-inverse text-[14px]">
+								<h2 className="text-text/80 text-[16px]">
 									Sample apps from Giselle team
 								</h2>
 							</div>
 							<div className="grid grid-cols-3 gap-3 pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
-								<button
-									type="button"
-									className="rounded-lg border border-white px-4 py-3 flex items-center gap-3 text-left"
-								>
-									<div className="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center shrink-0">
-										<span className="text-white text-sm font-semibold">A</span>
-									</div>
-									<div className="flex flex-col">
-										<span className="text-text font-medium text-[14px]">
-											Customer Support
-										</span>
-										<span className="text-text/60 text-[12px]">
-											Giselle Team
-										</span>
-									</div>
-								</button>
-								<button
-									type="button"
-									className="rounded-lg border border-white px-4 py-3 flex items-center gap-3 text-left"
-								>
-									<div className="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center shrink-0">
-										<span className="text-white text-sm font-semibold">A</span>
-									</div>
-									<div className="flex flex-col">
-										<span className="text-text font-medium text-[14px]">
-											Tech Support
-										</span>
-										<span className="text-text/60 text-[12px]">
-											Giselle Team
-										</span>
-									</div>
-								</button>
-								<button
-									type="button"
-									className="rounded-lg border border-white px-4 py-3 flex items-center gap-3 text-left"
-								>
-									<div className="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center shrink-0">
-										<span className="text-white text-sm font-semibold">A</span>
-									</div>
-									<div className="flex flex-col">
-										<span className="text-text font-medium text-[14px]">
-											Product Manager
-										</span>
-										<span className="text-text/60 text-[12px]">
-											Giselle Team
-										</span>
-									</div>
-								</button>
+								<AppListCard title="Customer Support" badgeType="sample" />
+								<AppListCard title="Tech Support" badgeType="sample" />
+								<AppListCard title="Product Manager" badgeType="sample" />
 							</div>
 						</div>
 
 						{/* Section 2: Select an Apps to Run */}
 						<div className="flex flex-col">
 							<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-4">
-								<h2 className="text-inverse text-[16px]">
+								<h2 className="text-text/80 text-[16px]">
 									Select Your App to Run
 								</h2>
 								<div className="relative">
