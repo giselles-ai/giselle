@@ -3,6 +3,17 @@ import { cache } from "react";
 import { db, supabaseUserMappings, users } from "@/db";
 import { getUser } from "@/lib/supabase";
 
+/**
+ * @deprecated This implementation is outdated and barrel exported, which unintentionally increases bundle size.
+ * Use `getCurrentUser` from "@/lib/get-current-user" instead.
+ *
+ * @example
+ * ```ts
+ * import { getCurrentUser } from "@/lib/get-current-user";
+ *
+ * const user = await getCurrentUser();
+ * ```
+ */
 async function fetchCurrentUser() {
 	const supabaseUser = await getUser();
 	const user = await db
