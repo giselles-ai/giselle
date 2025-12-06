@@ -1,4 +1,4 @@
-import { fetchCurrentUser } from "@/services/accounts";
+import { getCurrentUser } from "@/lib/get-current-user";
 import { SentryUserProvider } from "./sentry-user-provider";
 
 interface SentryUserWrapperProps {
@@ -9,7 +9,7 @@ export async function SentryUserWrapper({ children }: SentryUserWrapperProps) {
 	let userId: string | undefined;
 
 	try {
-		const currentUser = await fetchCurrentUser();
+		const currentUser = await getCurrentUser();
 		userId = currentUser.id;
 	} catch {
 		// User not available, continue without setting Sentry user
