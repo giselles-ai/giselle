@@ -983,7 +983,7 @@ export function Toolbar() {
 												</ToggleGroup.Item>
 												<ToggleGroup.Item value="webPage" data-tool>
 													<WebPageFileIcon className="w-[20px] h-[20px]" />
-													<p className="text-[14px]">webPage</p>
+													<p className="text-[14px]">Webpage</p>
 												</ToggleGroup.Item>
 											</ToggleGroup.Root>
 										</div>
