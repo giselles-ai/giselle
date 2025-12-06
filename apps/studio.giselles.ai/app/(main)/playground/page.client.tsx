@@ -400,11 +400,9 @@ export function Page({
 		return Array.from(map.values());
 	})();
 
-	// NOTE: Temporarily-force empty apps state for debugging the "no apps" UI.
-	// const teamApps = data.currentTeamId
-	// 	? data.apps.filter((app) => app.teamId === data.currentTeamId)
-	// 	: data.apps;
-	const teamApps: StageApp[] = [];
+	const teamApps = data.currentTeamId
+		? data.apps.filter((app) => app.teamId === data.currentTeamId)
+		: data.apps;
 	// TODO: Set up Giselle team apps later
 	const _myApps =
 		data.currentTeamId != null
