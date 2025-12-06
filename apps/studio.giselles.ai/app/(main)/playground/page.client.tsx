@@ -5,7 +5,12 @@ import { Select, type SelectOption } from "@giselle-internal/ui/select";
 import { isIconName } from "@giselle-internal/ui/utils";
 import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
 import type { GenerationContextInput, TaskId } from "@giselles-ai/protocol";
-import { ArrowUpIcon, Image as ImageIcon, Search } from "lucide-react";
+import {
+	ArrowUpIcon,
+	Image as ImageIcon,
+	Search,
+	Sparkles,
+} from "lucide-react";
 import { DynamicIcon, type IconName } from "lucide-react/dynamic";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
@@ -395,9 +400,11 @@ export function Page({
 		return Array.from(map.values());
 	})();
 
-	const teamApps = data.currentTeamId
-		? data.apps.filter((app) => app.teamId === data.currentTeamId)
-		: data.apps;
+	// NOTE: Temporarily-force empty apps state for debugging the "no apps" UI.
+	// const teamApps = data.currentTeamId
+	// 	? data.apps.filter((app) => app.teamId === data.currentTeamId)
+	// 	: data.apps;
+	const teamApps: StageApp[] = [];
 	// TODO: Set up Giselle team apps later
 	const _myApps =
 		data.currentTeamId != null
@@ -584,9 +591,26 @@ export function Page({
 								</div>
 							</div>
 							{teamApps.length === 0 ? (
-								<p className="text-sm text-muted-foreground max-w-[960px] mx-auto w-full">
-									No apps available.
-								</p>
+								<div className="pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
+									<div className="w-full rounded-lg bg-[rgba(255,255,255,0.03)] shadow-[0_4px_16px_rgba(0,0,0,0.06)] px-6 py-6 text-center">
+										<h3 className="flex items-center justify-center gap-2 text-[16px] font-medium text-blue-muted/80">
+											<Sparkles className="h-4 w-4 text-blue-muted/80" />
+											<span>No apps yet</span>
+										</h3>
+										<p className="mt-2 text-[13px] text-blue-muted/60 leading-relaxed">
+											Build your first agent in Studio. Agents you create will
+											appear here, ready to run in Stage.
+										</p>
+										<div className="mt-6 flex justify-center">
+											<button
+												type="button"
+												className="inline-flex items-center justify-center rounded-lg border border-[rgba(131,157,195,0.3)] px-4 py-2 text-[13px] text-[rgba(131,157,195,0.7)] transition-colors hover:border-[rgba(131,157,195,0.4)] hover:bg-[rgba(131,157,195,0.1)]"
+											>
+												Create your first app
+											</button>
+										</div>
+									</div>
+								</div>
 							) : filteredTeamApps.length === 0 ? (
 								<p className="text-sm text-muted-foreground max-w-[960px] mx-auto w-full">
 									No apps match your search.
