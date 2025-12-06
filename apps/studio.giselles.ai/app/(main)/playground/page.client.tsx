@@ -126,10 +126,12 @@ function AppListCard({
 					style={
 						isSelected
 							? {
-									backgroundColor: "rgba(131,157,195,0.28)",
+									// 選択時: 505D7B 付近の少し暗めトーンでしっかり塗る
+									backgroundColor: "rgba(80,93,123,1)",
 								}
 							: {
-									backgroundColor: "rgba(80,93,123,0.4)",
+									// 非選択時: さらに一段だけ暗くして存在感を抑える
+									backgroundColor: "rgba(45,54,76,1)",
 								}
 					}
 				>
