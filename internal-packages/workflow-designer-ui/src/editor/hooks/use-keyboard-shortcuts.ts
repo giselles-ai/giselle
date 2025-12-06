@@ -6,6 +6,7 @@ import {
 	moveTool,
 	selectActionTool,
 	selectLanguageModelTool,
+	selectLanguageModelV2Tool,
 	selectRetrievalCategoryTool,
 	selectSourceCategoryTool,
 	selectTriggerTool,
@@ -88,6 +89,7 @@ export function useKeyboardShortcuts(
 	useToolAction("t", selectTriggerTool);
 	useToolAction("i", selectSourceCategoryTool);
 	useToolAction("g", selectLanguageModelTool);
+	useToolAction("p", selectLanguageModelV2Tool);
 	useToolAction("r", selectRetrievalCategoryTool);
 	useToolAction("d", selectActionTool);
 	useToolAction("Escape", moveTool);
