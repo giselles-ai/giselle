@@ -99,7 +99,8 @@
 		"tailwindcss-animate": "1.0.7",
 		"tiny-invariant": "1.3.3",
 		"valibot": "1.2.0",
-		"zod": "catalog:"
+		"zod": "catalog:",
+		"zustand": "catalog:"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "catalog:",
