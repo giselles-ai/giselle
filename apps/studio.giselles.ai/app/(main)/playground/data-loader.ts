@@ -225,10 +225,9 @@ async function userApps(teamIds: TeamId[], userDbId: number) {
 	const apps: StageApp[] = [];
 
 	for (const data of result) {
+		const creatorDbId = data.dbWorkspace.creatorDbId;
 		const creatorInfo =
-			(data.workspace as any).creatorDbId != null
-				? (creatorMap.get((data.workspace as any).creatorDbId) ?? null)
-				: null;
+			creatorDbId != null ? (creatorMap.get(creatorDbId) ?? null) : null;
 
 		apps.push({
 			id: data.giselleApp.id,

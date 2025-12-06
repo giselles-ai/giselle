@@ -2,11 +2,11 @@
 
 import { AppIcon } from "@giselle-internal/ui/app-icon";
 import { Select, type SelectOption } from "@giselle-internal/ui/select";
+import { isIconName } from "@giselle-internal/ui/utils";
 import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
 import type { GenerationContextInput, TaskId } from "@giselles-ai/protocol";
-import clsx from "clsx";
 import { ArrowUpIcon, Image as ImageIcon, Search } from "lucide-react";
-import { DynamicIcon } from "lucide-react/dynamic";
+import { DynamicIcon, type IconName } from "lucide-react/dynamic";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { use, useCallback, useRef, useState, useTransition } from "react";
@@ -85,6 +85,7 @@ interface AppListCardProps {
 	providers?: string[];
 	icon?: ReactNode;
 	creatorName?: string | null;
+	isSelected?: boolean;
 	onClick?: () => void;
 }
 
@@ -96,6 +97,7 @@ function AppListCard({
 	providers,
 	icon,
 	creatorName,
+	isSelected = false,
 	onClick,
 }: AppListCardProps) {
 	const { label } = APP_LIST_BADGE_CONFIG[badgeType];
@@ -106,16 +108,41 @@ function AppListCard({
 	return (
 		<button
 			type="button"
-			className="rounded-xl border-[0.5px] border-blue-muted/40 bg-transparent px-4 py-3 flex flex-col gap-2 text-left transition-colors hover:bg-white/5"
+			className="relative rounded-xl border-[0.5px] border-blue-muted/40 bg-transparent px-4 py-3 flex flex-col gap-2 text-left transition-all duration-150 ease-out hover:bg-white/5"
+			style={
+				isSelected
+					? {
+							borderColor: "rgba(131,157,195,0.32)",
+							boxShadow: "0 0 0 1px rgba(131,157,195,0.18)",
+							backgroundColor: "rgba(131,157,195,0.06)",
+						}
+					: undefined
+			}
 			onClick={onClick}
 		>
+			{badgeType !== "your-team" ? (
+				<span
+					className="pointer-events-none absolute right-4 top-0 -translate-y-[6px] shrink-0 rounded-full px-2 py-[2px] text-[11px] text-text/80"
+					style={
+						isSelected
+							? {
+									backgroundColor: "rgba(131,157,195,0.28)",
+								}
+							: {
+									backgroundColor: "rgba(80,93,123,0.4)",
+								}
+					}
+				>
+					{label}
+				</span>
+			) : null}
 			<div className="flex items-center gap-3">
 				<div className="w-10 h-10 rounded-full bg-[rgba(21,25,33,0.7)] flex items-center justify-center shrink-0">
 					{icon ? (
 						icon
-					) : iconName ? (
+					) : iconName && isIconName(iconName) ? (
 						<DynamicIcon
-							name={iconName as any}
+							name={iconName as IconName}
 							className="h-5 w-5 text-text-muted"
 						/>
 					) : (
@@ -125,9 +152,6 @@ function AppListCard({
 				<div className="flex items-center gap-2 min-w-0">
 					<span className="font-medium text-[14px] truncate text-[color:var(--color-text-nav-active)]">
 						{title}
-					</span>
-					<span className="shrink-0 rounded-full bg-white/5 px-2 py-[2px] text-[11px] text-text/70">
-						{label}
 					</span>
 				</div>
 			</div>
@@ -164,14 +188,8 @@ function AppListCard({
 						</span>
 					)}
 				</div>
-				<span
-					className={clsx(
-						"text-[11px]",
-						"text-text-muted/80",
-						creatorName ? "visible" : "invisible",
-					)}
-				>
-					{creatorName ? `by ${creatorName}` : "placeholder"}
+				<span className="text-[11px] text-text-muted/70 py-[1px]">
+					{creatorName ? `by ${creatorName}` : ""}
 				</span>
 			</div>
 		</button>
@@ -181,7 +199,7 @@ function AppListCard({
 function AppCard({
 	app,
 	onSelect,
-	isSelected: _isSelected = false,
+	isSelected = false,
 }: {
 	app: StageApp;
 	onSelect?: () => void;
@@ -200,6 +218,7 @@ function AppCard({
 			iconName={app.iconName}
 			providers={app.llmProviders}
 			creatorName={creatorName}
+			isSelected={isSelected}
 			onClick={onSelect}
 		/>
 	);
@@ -220,7 +239,7 @@ function StageTopCard({ runningApp, runStatus }: StageTopCardProps) {
 							Creating task...
 						</p>
 					) : (
-						<p className="font-thin text-[36px] font-sans text-blue-muted/50 text-center">
+						<p className="font-thin text-[36px] font-sans text-blue-muted/70 text-center">
 							What's the task? Your agent's on it.
 						</p>
 					)}
@@ -306,7 +325,7 @@ function ChatInputArea({
 
 	return (
 		<div className="relative w-full max-w-[640px] min-w-[320px] mx-auto">
-			<div className="bg-blue-muted/10 rounded-[14px] shadow-[inset_0_1px_4px_rgba(0,0,0,0.22)] pt-4 px-2 pb-2">
+			<div className="rounded-2xl bg-[rgba(131,157,195,0.14)] shadow-[inset_0_1px_4px_rgba(0,0,0,0.22)] pt-5 px-4 pb-4">
 				{/* Textarea */}
 				<textarea
 					ref={textareaRef}
@@ -329,7 +348,7 @@ function ChatInputArea({
 							value={selectedApp?.id}
 							onValueChange={onAppSelect}
 							widthClassName="w-full"
-							triggerClassName="border-none !bg-blue-muted/10 hover:!bg-[rgba(131,157,195,0.15)] !px-3"
+							triggerClassName="border-none !bg-[rgba(131,157,195,0.1)] hover:!bg-[rgba(131,157,195,0.18)] !px-3"
 						/>
 					</div>
 
@@ -489,7 +508,7 @@ export function Page({
 				{/* Main content: apps area */}
 				<div className="flex-1 min-w-0 flex flex-col px-[24px] pt-[24px]">
 					{/* Top section: app info + chat input */}
-					<div className="space-y-6 pb-8">
+					<div className="space-y-4 pb-8">
 						<StageTopCard runningApp={runningApp} runStatus={runStatus} />
 
 						{/* Chat-style input area */}
@@ -503,7 +522,7 @@ export function Page({
 					</div>
 
 					{/* App sections */}
-					<div className="flex flex-col gap-8 w-full pb-8 pt-16">
+					<div className="flex flex-col gap-8 w-full pb-8 pt-20">
 						{/* Section 1: Sample apps from Giselle team */}
 						<div className="flex flex-col">
 							<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-2">
@@ -519,7 +538,7 @@ export function Page({
 									icon={
 										<AppIcon
 											defaultSize={false}
-											className="h-6 w-6 text-white/40"
+											className="h-5 w-5 text-white/40"
 										/>
 									}
 									providers={["openai", "anthropic", "google", "perplexity"]}
@@ -531,7 +550,7 @@ export function Page({
 									icon={
 										<AppIcon
 											defaultSize={false}
-											className="h-6 w-6 text-white/40"
+											className="h-5 w-5 text-white/40"
 										/>
 									}
 									providers={["openai", "anthropic", "google"]}
@@ -543,7 +562,7 @@ export function Page({
 									icon={
 										<AppIcon
 											defaultSize={false}
-											className="h-6 w-6 text-white/40"
+											className="h-5 w-5 text-white/40"
 										/>
 									}
 									providers={["openai", "anthropic"]}
