@@ -108,7 +108,7 @@ function AppListCard({
 	return (
 		<button
 			type="button"
-			className="relative rounded-xl border-[0.5px] border-blue-muted/40 bg-transparent px-4 py-3 flex flex-col gap-2 text-left transition-all duration-150 ease-out hover:bg-white/5"
+			className="relative rounded-[10px] sm:rounded-xl border-[0.5px] border-blue-muted/40 bg-transparent px-4 py-3 flex flex-col gap-2 text-left transition-all duration-150 ease-out hover:bg-white/5"
 			style={
 				isSelected
 					? {
@@ -122,7 +122,7 @@ function AppListCard({
 		>
 			{badgeType !== "your-team" ? (
 				<span
-					className="pointer-events-none absolute right-4 top-0 -translate-y-[6px] shrink-0 rounded-full px-2 py-[2px] text-[11px] text-text/80"
+					className="pointer-events-none absolute right-4 top-0 -translate-y-[6px] shrink-0 rounded-full px-[7px] py-[3px] text-[10px] sm:px-2 sm:py-[2px] sm:text-[11px] text-text/80"
 					style={
 						isSelected
 							? {
@@ -158,15 +158,15 @@ function AppListCard({
 				</div>
 			</div>
 			{description.length > 0 ? (
-				<span className="text-text-muted/70 text-[12px] leading-[1.6] line-clamp-2">
+				<span className="text-text-muted/70 text-[12px] leading-relaxed line-clamp-2">
 					{description}
 				</span>
 			) : (
-				<span className="text-text-muted/70 text-[12px] leading-[1.6] invisible">
+				<span className="text-text-muted/70 text-[12px] leading-relaxed invisible">
 					placeholder
 				</span>
 			)}
-			<div className="flex min-h-[28px] flex-col gap-0.5">
+			<div className="flex min-h-[28px] flex-col gap-0.5 mt-1">
 				<div className="flex items-center gap-1">
 					{visibleProviders.map((provider) => (
 						<div
@@ -234,7 +234,7 @@ interface StageTopCardProps {
 function StageTopCard({ runningApp, runStatus }: StageTopCardProps) {
 	return (
 		<div className="relative flex w-full max-w-[960px] min-w-[320px] mx-auto flex-col overflow-hidden">
-			<div className="w-full flex justify-center items-center py-2">
+			<div className="w-full flex justify-center items-center pt-1 pb-1 sm:pt-2 sm:pb-2">
 				<div className="flex flex-col items-center relative z-10">
 					{runningApp && runStatus === "running" ? (
 						<p className="font-[800] text-text/60 text-[16px]">
@@ -242,7 +242,8 @@ function StageTopCard({ runningApp, runStatus }: StageTopCardProps) {
 						</p>
 					) : (
 						<p className="font-thin text-[36px] font-sans text-blue-muted/70 text-center">
-							What's the task? Your agent's on it.
+							What's the task?
+							<span className="block sm:inline"> Your agent's on it.</span>
 						</p>
 					)}
 				</div>
@@ -327,7 +328,7 @@ function ChatInputArea({
 
 	return (
 		<div className="relative w-full max-w-[640px] min-w-[320px] mx-auto">
-			<div className="rounded-2xl bg-[rgba(131,157,195,0.14)] shadow-[inset_0_1px_4px_rgba(0,0,0,0.22)] pt-5 px-4 pb-4">
+			<div className="rounded-2xl bg-[rgba(131,157,195,0.14)] shadow-[inset_0_1px_4px_rgba(0,0,0,0.22)] pt-4 pb-3 sm:pt-5 sm:pb-4 px-4">
 				{/* Textarea */}
 				<textarea
 					ref={textareaRef}
@@ -337,11 +338,11 @@ function ChatInputArea({
 					placeholder="Ask anything—powered by Giselle docs"
 					rows={1}
 					disabled={isRunning}
-					className="w-full resize-none bg-transparent text-[15px] text-foreground placeholder:text-blue-muted/50 outline-none disabled:cursor-not-allowed min-h-[2.75em] pt-0 pb-[0.7em] px-1"
+					className="w-full resize-none bg-transparent text-[15px] text-foreground placeholder:text-blue-muted/50 outline-none disabled:cursor-not-allowed min-h-[2.4em] sm:min-h-[2.75em] pt-0 pb-[0.7em] px-1"
 				/>
 
 				{/* Bottom row: App selector and buttons */}
-				<div className="flex items-center justify-between mt-3">
+				<div className="flex items-center justify-between mt-2 sm:mt-3">
 					{/* Left side: App selector */}
 					<div className="flex-1 max-w-[200px]">
 						<Select
@@ -350,7 +351,7 @@ function ChatInputArea({
 							value={selectedApp?.id}
 							onValueChange={onAppSelect}
 							widthClassName="w-full"
-							triggerClassName="border-none !bg-[rgba(131,157,195,0.1)] hover:!bg-[rgba(131,157,195,0.18)] !px-3"
+							triggerClassName="border-none !bg-[rgba(131,157,195,0.1)] hover:!bg-[rgba(131,157,195,0.18)] !px-2 !h-8 sm:!h-9 !rounded-[7px] sm:!rounded-[9px] text-[13px] [&_svg]:opacity-70"
 						/>
 					</div>
 
@@ -376,7 +377,7 @@ function ChatInputArea({
 				</div>
 			</div>
 			{/* Keyboard shortcut hint (outside chat container, aligned bottom-right) */}
-			<div className="mt-3 flex items-center justify-end gap-1 pr-1 text-[11px] text-blue-muted/60">
+			<div className="mt-1 flex items-center justify-end gap-[6px] pr-0 text-[11px] text-blue-muted/60">
 				<div className="flex items-center gap-[4px]">
 					<div className="flex h-[18px] w-[18px] items-center justify-center rounded-[6px] border border-blue-muted/40 bg-blue-muted/10">
 						<span className="text-[10px] leading-none tracking-[0.08em]">
@@ -508,7 +509,7 @@ export function Page({
 		<div className="w-full flex flex-col">
 			<div className="flex items-stretch gap-4 min-w-0">
 				{/* Main content: apps area */}
-				<div className="flex-1 min-w-0 flex flex-col px-[24px] pt-[24px]">
+				<div className="flex-1 min-w-0 flex flex-col px-4 sm:px-[24px] pt-[24px]">
 					{/* Top section: app info + chat input */}
 					<div className="space-y-4 pb-8">
 						<StageTopCard runningApp={runningApp} runStatus={runStatus} />
@@ -524,7 +525,7 @@ export function Page({
 					</div>
 
 					{/* App sections */}
-					<div className="flex flex-col gap-8 w-full pb-8 pt-20">
+					<div className="flex flex-col gap-8 w-full pb-8 pt-12">
 						{/* Section 1: Sample apps from Giselle team */}
 						<div className="flex flex-col">
 							<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-2">
@@ -532,7 +533,7 @@ export function Page({
 									Sample apps from Giselle team
 								</h2>
 							</div>
-							<div className="grid grid-cols-3 gap-3 pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
+							<div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
 								<AppListCard
 									title="Customer Support"
 									description="A ready-made workflow that triages customer tickets, summarizes conversation history, and suggests high-quality replies for your support team."
@@ -624,7 +625,7 @@ export function Page({
 									No apps match your search.
 								</p>
 							) : (
-								<div className="grid grid-cols-3 gap-3 pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
+								<div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
 									{filteredTeamApps.map((app) => (
 										<AppCard
 											app={app}
