@@ -14,39 +14,6 @@ import { LLMProviderIcon } from "@/app/(main)/workspaces/components/llm-provider
 import type { LoaderData } from "./data-loader";
 import type { StageApp } from "./types";
 
-// const suggestedApps: App[] = [
-// 	{
-// 		id: "data-analyzer",
-// 		name: "Data Analyzer",
-// 		description: "Extract insights from your data",
-// 		iconName: "chart-bar",
-// 	},
-// 	{
-// 		id: "email-writer",
-// 		name: "Email Writer",
-// 		description: "Compose professional emails",
-// 		iconName: "mail",
-// 	},
-// 	{
-// 		id: "code-reviewer",
-// 		name: "Code Reviewer",
-// 		description: "Review and improve code quality",
-// 		iconName: "code",
-// 	},
-// 	{
-// 		id: "research-assistant",
-// 		name: "Research Assistant",
-// 		description: "Deep research and analysis",
-// 		iconName: "brain",
-// 	},
-// 	{
-// 		id: "creative-brainstorm",
-// 		name: "Creative Brainstorm",
-// 		description: "Generate creative ideas",
-// 		iconName: "sparkles",
-// 	},
-// ];
-
 type AppListCardBadgeType =
 	| "sample"
 	| "your-team"
