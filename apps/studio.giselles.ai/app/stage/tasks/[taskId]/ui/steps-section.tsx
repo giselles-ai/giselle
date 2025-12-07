@@ -180,7 +180,7 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 					{/* Steps Header */}
 					<button
 						type="button"
-						className="flex items-center justify-between text-text-muted text-[13px] font-semibold mb-4 w-full cursor-pointer hover:text-text-muted transition-colors"
+						className="flex items-center justify-between text-text-muted text-[13px] font-semibold mb-2 w-full cursor-pointer hover:text-text-muted transition-colors"
 						onClick={() => setIsStepsExpanded(!isStepsExpanded)}
 					>
 						<span className="block">Completed {completedStepsCount} steps</span>

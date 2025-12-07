@@ -16,12 +16,12 @@ export function TopSection({ data }: { data: Promise<TopSectionData> }) {
 	const resolvedData = use(data);
 
 	return (
-		<div className="w-full pb-6">
+		<div className="w-full pb-3 sticky top-0 z-10 bg-[color:var(--color-background)]">
 			<div className="max-w-[640px] min-w-[320px] mx-auto">
 				{/* App Summary Section */}
 				<div>
 					{/* Title placeholder */}
-					<div className="flex items-center gap-3 mb-3">
+					<div className="flex items-center gap-3 mb-2">
 						<h3 className="text-[20px] font-normal text-inverse">
 							{/* App summary title will be displayed here */}
 							App summary title
