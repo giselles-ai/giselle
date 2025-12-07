@@ -50,22 +50,6 @@ export function InputAreaPlaceholder() {
 					</div>
 				</div>
 			</div>
-			{/* Keyboard shortcut hint (same layout as playground) */}
-			<div className="mt-1 flex items-center justify-end gap-[6px] pr-0 text-[11px] text-blue-muted/60">
-				<div className="flex items-center gap-[4px]">
-					<div className="flex h-[18px] w-[18px] items-center justify-center rounded-[6px] border border-blue-muted/40 bg-blue-muted/10">
-						<span className="text-[10px] leading-none tracking-[0.08em]">
-							⌘
-						</span>
-					</div>
-					<div className="flex h-[18px] w-[18px] items-center justify-center rounded-[6px] border border-blue-muted/40 bg-blue-muted/10">
-						<span className="text-[10px] leading-none tracking-[0.08em]">
-							↵
-						</span>
-					</div>
-				</div>
-				<span className="leading-none">to send</span>
-			</div>
 		</div>
 	);
 }

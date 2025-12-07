@@ -31,7 +31,7 @@ export default async function ({
 
 	return (
 		<div className="bg-bg text-foreground min-h-screen font-sans">
-			<div className="max-w-7xl mx-auto px-4 py-6">
+			<div className="max-w-7xl mx-auto px-4 pt-6 pb-0 flex flex-col min-h-screen">
 				{/* Top Section */}
 				<Suspense fallback={<div>Loading...</div>}>
 					<TopSection data={topSectionData} />
@@ -42,19 +42,24 @@ export default async function ({
 					<StepsSection taskPromise={taskPromise} taskId={taskId} />
 				</Suspense>
 
-				{/* Main Content Area - Request new tasks section */}
-				<div className="mt-8 pt-8">
-					<div className="max-w-[640px] min-w-[320px] mx-auto">
-						<h2 className="text-text-muted text-[13px] font-semibold block mb-4">
-							Request new tasks in a new session
-						</h2>
-					</div>
-					{/* TODO: Input area will be added here - placeholder for future functionality */}
-					<InputAreaPlaceholder />
-				</div>
-
 				{/* Render nested routes */}
 				{children}
+
+				{/* Main Content Area - Request new tasks section (fixed near bottom) */}
+				<div
+					className="mt-8 sticky bottom-0 z-10 bg-[color:var(--color-background)] pb-4"
+					style={{ marginBottom: "-1px" }}
+				>
+					{/* Top gradient separator */}
+					<div className="h-6 -mt-6 bg-gradient-to-t from-[color:var(--color-background)] to-transparent pointer-events-none" />
+					<div className="max-w-[640px] min-w-[320px] mx-auto">
+						<h2 className="text-text-muted text-[13px] font-semibold block mb-2">
+							Request new tasks in a new session
+						</h2>
+						{/* TODO: Input area will be added here - placeholder for future functionality */}
+						<InputAreaPlaceholder />
+					</div>
+				</div>
 			</div>
 		</div>
 	);
