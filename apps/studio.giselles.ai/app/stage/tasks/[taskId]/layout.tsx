@@ -32,20 +32,22 @@ export default async function ({
 	return (
 		<div className="bg-bg text-foreground min-h-screen font-sans">
 			<div className="max-w-7xl mx-auto px-4 pt-6 pb-0 flex flex-col min-h-screen">
-				{/* Top Section */}
-				<Suspense fallback={<div>Loading...</div>}>
-					<TopSection data={topSectionData} />
-				</Suspense>
+				<div className="flex-1">
+					{/* Top Section */}
+					<Suspense fallback={<div>Loading...</div>}>
+						<TopSection data={topSectionData} />
+					</Suspense>
 
-				{/* Steps Section */}
-				<Suspense fallback={<div>Loading steps...</div>}>
-					<StepsSection taskPromise={taskPromise} taskId={taskId} />
-				</Suspense>
+					{/* Steps Section */}
+					<Suspense fallback={<div>Loading steps...</div>}>
+						<StepsSection taskPromise={taskPromise} taskId={taskId} />
+					</Suspense>
 
-				{/* Render nested routes */}
-				{children}
+					{/* Render nested routes */}
+					{children}
+				</div>
 
-				{/* Main Content Area - Request new tasks section (fixed near bottom) */}
+				{/* Main Content Area - Request new tasks section (sticky inside main container) */}
 				<div
 					className="mt-8 sticky bottom-0 z-10 bg-[color:var(--color-background)] pb-4"
 					style={{ marginBottom: "-1px" }}

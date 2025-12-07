@@ -176,112 +176,116 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 	return (
 		<TaskStreamReader taskId={taskId} onUpdateAction={updateTask}>
 			<div className="w-full mt-6">
-				{/* Steps Header */}
-				<button
-					type="button"
-					className="flex items-center justify-between text-text-muted text-[13px] font-semibold mb-4 w-full cursor-pointer hover:text-text-muted transition-colors"
-					onClick={() => setIsStepsExpanded(!isStepsExpanded)}
-				>
-					<span className="block">Completed {completedStepsCount} steps</span>
-					<div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
-						<ChevronDownIcon
-							className={`size-4 transition-transform ${
-								isStepsExpanded ? "rotate-180" : ""
-							}`}
-						/>
-					</div>
-				</button>
+				<div className="max-w-[640px] min-w-[320px] mx-auto">
+					{/* Steps Header */}
+					<button
+						type="button"
+						className="flex items-center justify-between text-text-muted text-[13px] font-semibold mb-4 w-full cursor-pointer hover:text-text-muted transition-colors"
+						onClick={() => setIsStepsExpanded(!isStepsExpanded)}
+					>
+						<span className="block">Completed {completedStepsCount} steps</span>
+						<div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
+							<ChevronDownIcon
+								className={`size-4 transition-transform ${
+									isStepsExpanded ? "rotate-180" : ""
+								}`}
+							/>
+						</div>
+					</button>
 
-				{isStepsExpanded && (
-					<div className="space-y-4">
-						{task.sequences.map((sequence, sequenceIndex) => (
-							<div key={sequence.id} className="flex items-start gap-3">
-								{/* Step Heading */}
-								<div className="text-[14px] font-medium text-[hsl(192,73%,84%)] flex-shrink-0 pt-3">
-									Step {sequenceIndex + 1}
-								</div>
-								{/* Steps Grid - vertical */}
-								<div className="flex-1 flex flex-col gap-2">
-									{sequence.steps.map((step) => {
-										const isExpanded = expandedSteps.has(step.id);
-										const generation = stepGenerations[step.id];
-										const modelInfo = getModelInfo(generation);
+					{isStepsExpanded && (
+						<div className="space-y-4">
+							{task.sequences.map((sequence, sequenceIndex) => (
+								<div key={sequence.id} className="flex items-start gap-3">
+									{/* Step Heading */}
+									<div className="text-[14px] font-medium text-[hsl(192,73%,84%)] flex-shrink-0 pt-3">
+										Step {sequenceIndex + 1}
+									</div>
+									{/* Steps Grid - vertical */}
+									<div className="flex-1 flex flex-col gap-2">
+										{sequence.steps.map((step) => {
+											const isExpanded = expandedSteps.has(step.id);
+											const generation = stepGenerations[step.id];
+											const modelInfo = getModelInfo(generation);
 
-										return (
-											<div key={step.id} className="space-y-2">
-												{/* Step Button */}
-												<div className="flex items-center gap-3 p-3 rounded-lg border border-border bg-transparent hover:bg-white/5 transition-colors">
-													<button
-														type="button"
-														className="flex-1 flex items-center gap-3 text-left"
-														onClick={() => handleStepToggle(step.id)}
-													>
-														{/* Step Status Icon */}
-														<div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center flex-shrink-0">
-															{step.status === "queued" && (
-																<CircleDashedIcon className="text-black size-[16px]" />
-															)}
-															{step.status === "running" && (
-																<RefreshCw className="text-black size-[16px] animate-spin" />
-															)}
-															{step.status === "completed" &&
-																(() => {
-																	if (generation) {
+											return (
+												<div key={step.id} className="space-y-2">
+													{/* Step Button */}
+													<div className="flex items-center gap-3 p-3 rounded-lg border border-border bg-transparent hover:bg-white/5 transition-colors">
+														<button
+															type="button"
+															className="flex-1 flex items-center gap-3 text-left"
+															onClick={() => handleStepToggle(step.id)}
+														>
+															{/* Step Status Icon */}
+															<div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center flex-shrink-0">
+																{step.status === "queued" && (
+																	<CircleDashedIcon className="text-black size-[16px]" />
+																)}
+																{step.status === "running" && (
+																	<RefreshCw className="text-black size-[16px] animate-spin" />
+																)}
+																{step.status === "completed" &&
+																	(() => {
+																		if (generation) {
+																			return (
+																				<NodeIcon
+																					node={
+																						generation.context.operationNode
+																					}
+																					className="size-[16px] text-black"
+																				/>
+																			);
+																		}
 																		return (
-																			<NodeIcon
-																				node={generation.context.operationNode}
-																				className="size-[16px] text-black"
-																			/>
+																			<BrainCircuit className="text-black size-[16px]" />
 																		);
-																	}
-																	return (
-																		<BrainCircuit className="text-black size-[16px]" />
-																	);
-																})()}
-															{step.status === "failed" && (
-																<XIcon className="text-black size-[16px]" />
-															)}
-															{step.status === "cancelled" && (
-																<CircleSlashIcon className="text-black size-[16px]" />
-															)}
-														</div>
-														<span className="text-[14px] text-text-muted">
-															{step.name || "Untitled"}
-														</span>
-														{step.status === "completed" && generation && (
-															<span className="text-[12px] text-text-muted">
-																{modelInfo.modelName}
+																	})()}
+																{step.status === "failed" && (
+																	<XIcon className="text-black size-[16px]" />
+																)}
+																{step.status === "cancelled" && (
+																	<CircleSlashIcon className="text-black size-[16px]" />
+																)}
+															</div>
+															<span className="text-[14px] text-text-muted">
+																{step.name || "Untitled"}
 															</span>
-														)}
-													</button>
-													<div className="flex items-center gap-2">
-														{step.status === "completed" && generation && (
-															<StepActions generation={generation} />
-														)}
-														<ChevronRightIcon
-															className={`size-4 text-text-muted transition-transform ${
-																isExpanded ? "rotate-90" : ""
-															}`}
-														/>
-													</div>
-												</div>
-
-												{/* Step Content Accordion */}
-												{isExpanded && generation && (
-													<div className="ml-4 pl-4 border-l-2 border-border">
-														<div className="py-4">
-															<GenerationView generation={generation} />
+															{step.status === "completed" && generation && (
+																<span className="text-[12px] text-text-muted">
+																	{modelInfo.modelName}
+																</span>
+															)}
+														</button>
+														<div className="flex items-center gap-2">
+															{step.status === "completed" && generation && (
+																<StepActions generation={generation} />
+															)}
+															<ChevronRightIcon
+																className={`size-4 text-text-muted transition-transform ${
+																	isExpanded ? "rotate-90" : ""
+																}`}
+															/>
 														</div>
 													</div>
-												)}
-											</div>
-										);
-									})}
+
+													{/* Step Content Accordion */}
+													{isExpanded && generation && (
+														<div className="ml-4 pl-4 border-l-2 border-border">
+															<div className="py-4">
+																<GenerationView generation={generation} />
+															</div>
+														</div>
+													)}
+												</div>
+											);
+										})}
+									</div>
 								</div>
-							</div>
-						))}
-					</div>
-				)}
+							))}
+						</div>
+					)}
+				</div>
 			</div>
 		</TaskStreamReader>
 	);
