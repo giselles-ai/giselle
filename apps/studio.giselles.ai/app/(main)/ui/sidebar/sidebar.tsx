@@ -27,7 +27,7 @@ type SidebarPart = SidebarLinkGroupPart | SidebarDividerPart;
 function SidebarItem({ part }: { part: SidebarPart }) {
 	switch (part.type) {
 		case "divider":
-			return <div className="bg-border/80 h-px -mx-1 my-2" />;
+			return <div className="bg-border/80 h-px mx-2 my-2" />;
 		case "linkGroup":
 			return (
 				<Accordion.Item key={part.id} value={part.id} className="w-full">
