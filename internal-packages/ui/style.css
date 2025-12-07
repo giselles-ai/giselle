@@ -283,3 +283,25 @@
 		box-shadow: 0 0 18px rgba(0, 135, 246, 0.7);
 	}
 }
+
+@keyframes ui-select-content-show {
+	0% {
+		opacity: 0;
+		transform: translateY(6px);
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes ui-select-content-hide {
+	0% {
+		opacity: 1;
+		transform: translateY(0);
+	}
+	100% {
+		opacity: 0;
+		transform: translateY(6px);
+	}
+}

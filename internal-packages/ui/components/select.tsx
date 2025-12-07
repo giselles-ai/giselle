@@ -163,6 +163,8 @@ export function Select<T extends SelectOption>({
 					className={clsx(
 						contentMinWidthClassName ?? "min-w-(--radix-select-trigger-width)",
 						"z-50",
+						"data-[state=open]:animate-[ui-select-content-show_200ms_ease-out]",
+						"data-[state=closed]:animate-[ui-select-content-hide_180ms_ease-in]",
 					)}
 				>
 					<PopoverContent>
