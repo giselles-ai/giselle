@@ -44,9 +44,11 @@ export default async function ({
 
 				{/* Main Content Area - Request new tasks section */}
 				<div className="mt-8 pt-8">
-					<h2 className="text-text-muted text-[13px] font-semibold block mb-4">
-						Request new tasks in a new session
-					</h2>
+					<div className="max-w-[640px] min-w-[320px] mx-auto">
+						<h2 className="text-text-muted text-[13px] font-semibold block mb-4">
+							Request new tasks in a new session
+						</h2>
+					</div>
 					{/* TODO: Input area will be added here - placeholder for future functionality */}
 					<InputAreaPlaceholder />
 				</div>
