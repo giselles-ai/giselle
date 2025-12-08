@@ -29,6 +29,8 @@ export function TopSection({ data }: { data: Promise<TopSectionData> }) {
 						<Link
 							href={`/workspaces/${resolvedData.workspaceId}`}
 							className="inline-block"
+							target="_blank"
+							rel="noreferrer"
 						>
 							<div className="group [&>div]:rounded-lg [&>div>div]:rounded-md [&>div>div]:text-[hsl(192,73%,84%)] [&>div>div]:border-[hsl(192,73%,84%)] [&>div>div]:transition-colors [&>div>div]:cursor-pointer hover:[&>div>div]:bg-[hsl(192,73%,84%)] hover:[&>div>div]:text-[hsl(192,73%,20%)]">
 								<StatusBadge
