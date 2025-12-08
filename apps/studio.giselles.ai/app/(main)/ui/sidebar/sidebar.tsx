@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import type { IconName } from "lucide-react/dynamic";
 import { Accordion } from "radix-ui";
+import { stageFlag } from "../../../../flags";
 import { CreateAppButton } from "./create-app-button";
 import { SidebarLink } from "./sidebar-link";
 
@@ -56,33 +57,34 @@ function SidebarItem({ part }: { part: SidebarPart }) {
 	}
 }
 
-const sidebarParts: SidebarPart[] = [
-	{
-		type: "linkGroup",
-		id: "stage",
-		label: "Stage - Run Apps",
-		icon: "sparkle",
-		links: [
-			{
-				id: "playground",
-				label: "Playground",
-				href: "/playground",
-				activeMatchPattern: "/playground",
-			},
-			{
-				id: "apps",
-				label: "Apps",
-				href: "/stage/showcase",
-				activeMatchPattern: "/stage/showcase",
-			},
-			{
-				id: "tasks",
-				label: "Task History",
-				href: "/tasks",
-				activeMatchPattern: "/tasks*",
-			},
-		],
-	},
+const stagePart: SidebarPart = {
+	type: "linkGroup",
+	id: "stage",
+	label: "Stage - Run Apps",
+	icon: "sparkle",
+	links: [
+		{
+			id: "playground",
+			label: "Playground",
+			href: "/playground",
+			activeMatchPattern: "/playground",
+		},
+		{
+			id: "apps",
+			label: "Apps",
+			href: "/stage/showcase",
+			activeMatchPattern: "/stage/showcase",
+		},
+		{
+			id: "tasks",
+			label: "Task History",
+			href: "/tasks",
+			activeMatchPattern: "/tasks*",
+		},
+	],
+};
+
+const baseSidebarParts: SidebarPart[] = [
 	{
 		type: "linkGroup",
 		id: "studio",
@@ -144,7 +146,12 @@ const sidebarParts: SidebarPart[] = [
 	},
 ];
 
-export function Sidebar() {
+export async function Sidebar() {
+	const isStageEnabled = await stageFlag();
+	const sidebarParts = isStageEnabled
+		? [stagePart, ...baseSidebarParts]
+		: baseSidebarParts;
+
 	return (
 		<div className="w-[240px]">
 			<div className="px-4">
