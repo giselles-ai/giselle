@@ -47,6 +47,20 @@ function createOpenAITextNode(
 }
 
 describe("node-conversion", () => {
+	const createGoogleGeminiNode = (
+		llmOverrides?: Partial<TextGenerationNode["content"]["llm"]>,
+	) =>
+		({
+			...googleGemini,
+			content: {
+				...googleGemini.content,
+				llm: {
+					...googleGemini.content.llm,
+					...(llmOverrides ?? {}),
+				},
+			},
+		}) as TextGenerationNode;
+
 	describe("convertTextGenerationToContentGeneration", () => {
 		it("should convert TextGenerationNode to ContentGenerationNode", () => {
 			const textGenerationNode = openAI_1 as TextGenerationNode;
@@ -135,6 +149,19 @@ describe("node-conversion", () => {
 
 			expect(result.content.languageModel.provider).toBe("google");
 			expect(result.content.languageModel.id).toBe("google/gemini-2.5-flash");
+		});
+
+		it("should convert Google Gemini 3 Pro Preview model", () => {
+			const textGenerationNode = createGoogleGeminiNode({
+				id: "gemini-3-pro-preview",
+			});
+			const result =
+				convertTextGenerationToContentGeneration(textGenerationNode);
+
+			expect(result.content.languageModel.provider).toBe("google");
+			expect(result.content.languageModel.id).toBe(
+				"google/gemini-3-pro-preview",
+			);
 		});
 
 		it("should convert GPT-5.1 models", () => {
@@ -239,6 +266,20 @@ describe("node-conversion", () => {
 
 			expect(result.content.llm?.provider).toBe("google");
 			expect(result.content.llm?.id).toBe("gemini-2.5-flash");
+		});
+
+		it("should convert Google Gemini 3 Pro Preview model back", () => {
+			const textGenerationNode = createGoogleGeminiNode({
+				id: "gemini-3-pro-preview",
+			});
+			const contentGenerationNode =
+				convertTextGenerationToContentGeneration(textGenerationNode);
+			const result = convertContentGenerationToTextGeneration(
+				contentGenerationNode,
+			);
+
+			expect(result.content.llm?.provider).toBe("google");
+			expect(result.content.llm?.id).toBe("gemini-3-pro-preview");
 		});
 
 		it("should handle node without tools when converting back", () => {
@@ -371,6 +412,24 @@ describe("node-conversion", () => {
 			expect(convertedBack.content.prompt).toBe(originalNode.content.prompt);
 		});
 
+		it("should preserve data through round-trip conversion with Google Gemini 3 Pro Preview", () => {
+			const originalNode = createGoogleGeminiNode({
+				id: "gemini-3-pro-preview",
+			});
+			const contentGenerationNode =
+				convertTextGenerationToContentGeneration(originalNode);
+			const convertedBack = convertContentGenerationToTextGeneration(
+				contentGenerationNode,
+			);
+
+			expect(convertedBack.content.type).toBe(originalNode.content.type);
+			expect(convertedBack.content.llm?.provider).toBe(
+				originalNode.content.llm.provider,
+			);
+			expect(convertedBack.content.llm?.id).toBe(originalNode.content.llm.id);
+			expect(convertedBack.content.prompt).toBe(originalNode.content.prompt);
+		});
+
 		it("should preserve data through round-trip conversion for GPT-5.1 models", () => {
 			const originalNode = createOpenAITextNode("gpt-5.1-thinking");
 
@@ -380,6 +439,12 @@ describe("node-conversion", () => {
 				contentGenerationNode,
 			);
 
+			expect(convertedBack.content.type).toBe(originalNode.content.type);
+			expect(convertedBack.content.llm?.provider).toBe(
+				originalNode.content.llm.provider,
+			);
+			expect(convertedBack.content.llm?.id).toBe(originalNode.content.llm.id);
+			expect(convertedBack.content.prompt).toBe(originalNode.content.prompt);
 			expect(convertedBack.content.llm?.id).toBe("gpt-5.1-thinking");
 		});
 	});
