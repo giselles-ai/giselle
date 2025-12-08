@@ -48,7 +48,7 @@ export function TeamSwitcher({
 }) {
 	const { currentTeam, memberTeams, isFreeTeamCreationAllowed } =
 		use(getTeamContext);
-	const isPro = isProPlan(currentTeam);
+	const currentTeamIsPro = isProPlan(currentTeam);
 	async function changeTeamAction(nextTeamId: string) {
 		"use server";
 
@@ -73,7 +73,7 @@ export function TeamSwitcher({
 						<span className="text-inverse text-[14px] font-medium overflow-hidden text-ellipsis whitespace-nowrap">
 							{currentTeam.name}
 						</span>
-						{isPro ? <ProTag /> : <FreeTag />}
+						{currentTeamIsPro ? <ProTag /> : <FreeTag />}
 					</div>
 					<div className="pl-3 ml-auto flex-none">
 						<ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50 hover:bg-white/10 hover:opacity-100 hover:rounded-md hover:p-0.5" />
@@ -88,7 +88,7 @@ export function TeamSwitcher({
 									id={team.id}
 									name={team.name}
 									avatarUrl={team.avatarUrl}
-									isPro={isPro}
+									isPro={isProPlan(team)}
 									isCurrentTeam={team.id === currentTeam.id}
 									changeTeamAction={changeTeamAction}
 								/>
