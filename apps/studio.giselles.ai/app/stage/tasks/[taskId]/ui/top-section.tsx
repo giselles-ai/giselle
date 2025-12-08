@@ -21,7 +21,7 @@ export function TopSection({ data }: { data: Promise<TopSectionData> }) {
 				{/* App Summary Section */}
 				<div>
 					{/* Title placeholder */}
-					<div className="flex items-center gap-3 mb-2">
+					<div className="flex items-center gap-3 mb-1">
 						<h3 className="text-[20px] font-normal text-inverse">
 							{/* App summary title will be displayed here */}
 							App summary title

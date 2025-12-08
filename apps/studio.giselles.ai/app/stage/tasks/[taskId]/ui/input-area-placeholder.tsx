@@ -2,7 +2,7 @@
 
 import { Select } from "@giselle-internal/ui/select";
 import type { Task } from "@giselles-ai/protocol";
-import { ArrowUpIcon, Image as ImageIcon } from "lucide-react";
+import { ArrowUpIcon, Paperclip } from "lucide-react";
 import { use } from "react";
 
 export function InputAreaPlaceholder({
@@ -25,30 +25,32 @@ export function InputAreaPlaceholder({
 					aria-label="Input area placeholder (not yet functional)"
 				/>
 
-				{/* Bottom row: App selector and buttons */}
+				{/* Bottom row: Attachment + App selector + send */}
 				<div className="flex items-center justify-between mt-2 sm:mt-3">
-					{/* Left side: App selector */}
-					<div className="flex-1 max-w-[200px]">
-						<Select
-							options={[{ value: task.id, label: appLabel }]}
-							placeholder={appLabel}
-							value={task.id}
-							onValueChange={() => {}}
-							widthClassName="w-full"
-							disabled
-							triggerClassName="border-none !bg-[rgba(131,157,195,0.1)] hover:!bg-[rgba(131,157,195,0.18)] !px-2 !h-8 sm:!h-9 !rounded-[7px] sm:!rounded-[9px] text-[13px] [&_svg]:opacity-70"
-						/>
-					</div>
-
-					{/* Right side: Attachment + Send buttons */}
-					<div className="flex items-center gap-2">
+					{/* Left side: Attachment + App selector */}
+					<div className="flex items-center gap-2 flex-1 max-w-[260px]">
 						<button
 							type="button"
 							disabled
 							className="flex h-6 w-6 flex-shrink-0 items-center justify-center"
 						>
-							<ImageIcon className="h-5 w-5 stroke-white/70" />
+							<Paperclip className="h-4 w-4 text-text-muted/70" />
 						</button>
+						<div className="flex-1">
+							<Select
+								options={[{ value: task.id, label: appLabel }]}
+								placeholder={appLabel}
+								value={task.id}
+								onValueChange={() => {}}
+								widthClassName="w-full"
+								disabled
+								triggerClassName="border-none !bg-[rgba(131,157,195,0.1)] hover:!bg-[rgba(131,157,195,0.18)] !px-2 !h-8 sm:!h-9 !rounded-[7px] sm:!rounded-[9px] text-[13px] [&_svg]:opacity-70"
+							/>
+						</div>
+					</div>
+
+					{/* Right side: Send button */}
+					<div className="flex items-center gap-2">
 						<button
 							type="button"
 							disabled

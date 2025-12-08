@@ -219,15 +219,15 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 					</button>
 
 					{isStepsExpanded && (
-						<div className="space-y-4">
+						<div className="space-y-4 mb-8">
 							{task.sequences.map((sequence, sequenceIndex) => (
-								<div key={sequence.id} className="flex items-start gap-3">
+								<div key={sequence.id} className="space-y-2">
 									{/* Step Heading */}
-									<div className="text-[14px] font-medium text-[hsl(192,73%,84%)] flex-shrink-0 pt-3">
+									<div className="text-[14px] font-medium text-[hsl(192,73%,84%)]">
 										Step {sequenceIndex + 1}
 									</div>
-									{/* Steps Grid - vertical */}
-									<div className="flex-1 flex flex-col gap-2">
+									{/* Steps - stacked vertically in a single column */}
+									<div className="flex flex-col gap-2">
 										{sequence.steps.map((step) => {
 											const isExpanded = expandedSteps.has(step.id);
 											const generation = stepGenerations[step.id];
