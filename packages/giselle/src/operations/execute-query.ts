@@ -252,6 +252,10 @@ async function resolveQuery(
 				resolvedQuery = resolvedQuery.replace(replaceKeyword, result ?? "");
 				break;
 			}
+			case "end": {
+				resolvedQuery = resolvedQuery.replace(replaceKeyword, "");
+				break;
+			}
 			case "query":
 			case "vectorStore":
 				break;

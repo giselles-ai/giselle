@@ -44,6 +44,8 @@ export function GenerationRunner({ generation }: { generation: Generation }) {
 			);
 			return null;
 		}
+		case "end":
+			return null;
 		default: {
 			const _exhaustiveCheck: never = generationContext.operationNode.content;
 			return _exhaustiveCheck;
