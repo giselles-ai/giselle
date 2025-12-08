@@ -1,4 +1,14 @@
-import type { ParameterItem, Trigger } from "@giselles-ai/protocol";
+import type {
+	FileData,
+	FileId,
+	ParameterItem,
+	Trigger,
+	WorkspaceId,
+} from "@giselles-ai/protocol";
+import {
+	createUploadedFileData,
+	createUploadingFileData,
+} from "@giselles-ai/protocol";
 import type { FormInput, FormValues, ValidationErrors } from "./types";
 
 /**
@@ -69,6 +79,21 @@ export function parseFormInputs(
 				}
 				break;
 			}
+			case "files": {
+				const files = formData
+					.getAll(input.name)
+					.filter(
+						(entry): entry is File => entry instanceof File && entry.size > 0,
+					);
+
+				if (input.required && files.length === 0) {
+					errors[input.name] = `${input.label} is required`;
+					break;
+				}
+
+				values[input.name] = files;
+				break;
+			}
 			default: {
 				const _exhaustiveCheck: never = input.type;
 				throw new Error(`Unhandled input type: ${_exhaustiveCheck}`);
@@ -79,10 +104,19 @@ export function parseFormInputs(
 	return { errors, values };
 }
 
-export function toParameterItems(
+export async function toParameterItems(
 	inputs: FormInput[],
 	values: FormValues,
-): ParameterItem[] {
+	options?: {
+		workspaceId: WorkspaceId;
+		uploadFile: (args: {
+			workspaceId: WorkspaceId;
+			fileId: FileId;
+			fileName: string;
+			file: File;
+		}) => Promise<void>;
+	},
+): Promise<ParameterItem[]> {
 	const items: ParameterItem[] = [];
 	for (const input of inputs) {
 		const value = values[input.name];
@@ -105,6 +139,44 @@ export function toParameterItems(
 					value: value as number,
 				});
 				break;
+			case "files": {
+				if (!Array.isArray(value)) {
+					break;
+				}
+
+				if (options === undefined) {
+					throw new Error(
+						"File upload options are required to submit file inputs.",
+					);
+				}
+
+				const uploadedFiles: FileData[] = [];
+				for (const file of value) {
+					const uploadingFileData = createUploadingFileData({
+						name: file.name,
+						type: file.type || "application/octet-stream",
+						size: file.size,
+					});
+
+					await options.uploadFile({
+						workspaceId: options.workspaceId,
+						fileId: uploadingFileData.id,
+						fileName: file.name,
+						file,
+					});
+
+					uploadedFiles.push(
+						createUploadedFileData(uploadingFileData, Date.now()),
+					);
+				}
+
+				items.push({
+					type: "files",
+					name: input.name,
+					value: uploadedFiles,
+				});
+				break;
+			}
 			default: {
 				const _exhaustiveCheck: never = input.type;
 				throw new Error(`Unhandled input type: ${_exhaustiveCheck}`);

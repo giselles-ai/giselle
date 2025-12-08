@@ -2,6 +2,7 @@ import * as z from "zod/v4";
 import { Connection } from "../connection";
 import type { WebhookEvent } from "../integrations/github-webhooks";
 import { Node, NodeLike, OperationNode, OperationNodeLike } from "../node";
+import { FileData } from "../node/variables";
 import { TaskId } from "../task/task-id";
 import { WorkspaceId } from "../workspace";
 
@@ -49,9 +50,17 @@ export const NumberParameterItem = z.object({
 });
 export type NumberParameterItem = z.infer<typeof NumberParameterItem>;
 
+export const FilesParameterItem = z.object({
+	name: z.string(),
+	type: z.literal("files"),
+	value: z.array(FileData),
+});
+export type FilesParameterItem = z.infer<typeof FilesParameterItem>;
+
 export const ParameterItem = z.discriminatedUnion("type", [
 	StringParameterItem,
 	NumberParameterItem,
+	FilesParameterItem,
 ]);
 export type ParameterItem = z.infer<typeof ParameterItem>;
 

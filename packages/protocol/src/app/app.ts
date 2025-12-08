@@ -4,7 +4,12 @@ import { NodeId } from "../node/base";
 import { WorkspaceId } from "../workspace/id";
 import { AppId } from "./app-id";
 
-export const AppParameterType = z.enum(["text", "multiline-text", "number"]);
+export const AppParameterType = z.enum([
+	"text",
+	"multiline-text",
+	"number",
+	"files",
+]);
 
 // appprm is an abbreviation for APP PaRaMeter
 export const AppParameterId = createIdGenerator("appprm");
