@@ -4,7 +4,7 @@ import type { Generation } from "@giselles-ai/protocol";
 import { CheckCircle, Copy, Download } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
-import { getAssistantTextFromGeneration } from "../../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-text";
+import { getAssistantTextFromGeneration } from "../../../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-text";
 
 interface StepLayoutProps {
 	header: ReactNode;

@@ -8,9 +8,7 @@ export async function getUpgradeButtonContext() {
 
 	return { isProPlan: isProPlan(currentTeam) };
 }
-export type UpgradeButtonContext = Awaited<
-	ReturnType<typeof getUpgradeButtonContext>
->;
+type UpgradeButtonContext = Awaited<ReturnType<typeof getUpgradeButtonContext>>;
 export function UpgradeButton({
 	getUpgradeButtonContextPromise,
 }: {

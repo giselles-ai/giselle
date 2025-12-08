@@ -9,7 +9,7 @@ import { Accordion } from "radix-ui";
 import { CreateAppButton } from "./create-app-button";
 import { SidebarLink } from "./sidebar-link";
 
-export interface SidebarLinkGroupPart {
+interface SidebarLinkGroupPart {
 	type: "linkGroup";
 	id: string;
 	label: string;
@@ -56,7 +56,7 @@ function SidebarItem({ part }: { part: SidebarPart }) {
 	}
 }
 
-export const sidebarParts: SidebarPart[] = [
+const sidebarParts: SidebarPart[] = [
 	{
 		type: "linkGroup",
 		id: "stage",

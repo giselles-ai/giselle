@@ -4,7 +4,7 @@ import { acts, agents, db } from "@/db";
 import { stageFlag } from "@/flags";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchCurrentTeam, fetchUserTeams } from "@/services/teams";
-import { fetchFlowTriggers } from "./(depreacted)/services";
+import { fetchFlowTriggers } from "../(depreacted)/services";
 import { ShowcaseClient } from "./showcase-client";
 
 export default async function StageShowcasePage() {

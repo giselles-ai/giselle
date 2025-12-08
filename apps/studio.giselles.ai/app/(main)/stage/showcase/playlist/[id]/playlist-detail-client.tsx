@@ -16,7 +16,7 @@ import { Edit3, Play, Plus, Star, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type React from "react";
 import { useState } from "react";
-import { Card } from "../../../../(main)/settings/components/card";
+import { Card } from "../../../../settings/components/card";
 
 interface App {
 	id: string;

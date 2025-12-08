@@ -92,7 +92,7 @@ export async function loadCurrentUser() {
 		},
 	};
 }
-export type CurrentUser = Awaited<ReturnType<typeof loadCurrentUser>>;
+type CurrentUser = Awaited<ReturnType<typeof loadCurrentUser>>;
 
 export function AccountMenu({
 	currentUserPromise,

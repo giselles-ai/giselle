@@ -10,7 +10,7 @@ import {
 } from "@giselles-ai/protocol";
 import { notFound } from "next/navigation";
 import { giselle } from "@/app/giselle";
-import { GenerationView } from "../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-view";
+import { GenerationView } from "../../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-view";
 import { StepLayout } from "./ui/step-layout";
 
 // Helper function to get model info from generation

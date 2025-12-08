@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 
-export type ActiveMatchPattern = string | string[];
+type ActiveMatchPattern = string | string[];
 
 function isPathActive(pathname: string, pattern?: ActiveMatchPattern) {
 	if (!pattern) return false;

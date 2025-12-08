@@ -11,13 +11,13 @@ import {
 	useState,
 } from "react";
 import { cn } from "@/lib/utils";
-import { buttonVariants } from "../../../../(main)/settings/components/button";
-import { FormInputRenderer } from "../../../(top)/form-input-renderer";
+import { buttonVariants } from "../../../../settings/components/button";
+import { FormInputRenderer } from "../../../(depreacted)/form-input-renderer";
 import {
 	createInputsFromTrigger,
 	parseFormInputs,
 	toParameterItems,
-} from "../../../(top)/helpers";
+} from "../../../(depreacted)/helpers";
 import { fetchWorkspaceFlowTrigger, runWorkspaceApp } from "../actions";
 
 interface RunModalProps {
