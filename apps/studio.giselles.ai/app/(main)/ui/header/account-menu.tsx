@@ -112,8 +112,8 @@ export function AccountMenu({
 							<AvatarImage
 								className="rounded-full w-8 h-8"
 								avatarUrl={currentUser.avatarUrl}
-								width={32}
-								height={32}
+								width={30}
+								height={30}
 								alt={
 									currentUser.displayName || currentUser.email || "user avatar"
 								}
@@ -135,8 +135,8 @@ export function AccountMenu({
 									<AvatarImage
 										className="rounded-full shrink-0"
 										avatarUrl={currentUser.avatarUrl}
-										width={32}
-										height={32}
+										width={30}
+										height={30}
 										alt={
 											currentUser.displayName ||
 											currentUser.email ||
