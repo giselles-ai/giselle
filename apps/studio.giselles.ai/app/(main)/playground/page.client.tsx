@@ -5,12 +5,7 @@ import { Select, type SelectOption } from "@giselle-internal/ui/select";
 import { isIconName } from "@giselle-internal/ui/utils";
 import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
 import type { GenerationContextInput, TaskId } from "@giselles-ai/protocol";
-import {
-	ArrowUpIcon,
-	Image as ImageIcon,
-	Search,
-	Sparkles,
-} from "lucide-react";
+import { ArrowUpIcon, Paperclip, Search, Sparkles } from "lucide-react";
 import { DynamicIcon, type IconName } from "lucide-react/dynamic";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
@@ -312,26 +307,28 @@ function ChatInputArea({
 
 				{/* Bottom row: App selector and buttons */}
 				<div className="flex items-center justify-between mt-2 sm:mt-3">
-					{/* Left side: App selector */}
-					<div className="flex-1 max-w-[200px]">
-						<Select
-							options={appOptions}
-							placeholder="Select an app..."
-							value={selectedApp?.id}
-							onValueChange={onAppSelect}
-							widthClassName="w-full"
-							triggerClassName="border-none !bg-[rgba(131,157,195,0.1)] hover:!bg-[rgba(131,157,195,0.18)] !px-2 !h-8 sm:!h-9 !rounded-[7px] sm:!rounded-[9px] text-[13px] [&_svg]:opacity-70"
-						/>
-					</div>
-
-					{/* Right side: Attachment + Send buttons */}
-					<div className="flex items-center gap-2">
+					{/* Left side: Attachment + App selector */}
+					<div className="flex items-center gap-2 flex-1 max-w-[260px]">
 						<button
 							type="button"
 							className="flex h-6 w-6 flex-shrink-0 items-center justify-center"
 						>
-							<ImageIcon className="h-5 w-5 stroke-white" />
+							<Paperclip className="h-4 w-4 text-text-muted" />
 						</button>
+						<div className="flex-1">
+							<Select
+								options={appOptions}
+								placeholder="Select an app..."
+								value={selectedApp?.id}
+								onValueChange={onAppSelect}
+								widthClassName="w-full"
+								triggerClassName="border-none !bg-[rgba(131,157,195,0.1)] hover:!bg-[rgba(131,157,195,0.18)] !px-2 !h-8 sm:!h-9 !rounded-[7px] sm:!rounded-[9px] text-[13px] [&_svg]:opacity-70"
+							/>
+						</div>
+					</div>
+
+					{/* Right side: Send button */}
+					<div className="flex items-center gap-2">
 						<button
 							type="button"
 							onClick={handleSubmit}
