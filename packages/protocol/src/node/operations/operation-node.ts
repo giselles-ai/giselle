@@ -12,6 +12,7 @@ import {
 	ContentGenerationContent,
 	ContentGenerationContentReference,
 } from "./content-generation";
+import { EndContent, EndContentReference } from "./end";
 import {
 	ImageGenerationContent,
 	ImageGenerationContentReference,
@@ -31,6 +32,7 @@ const OperationNodeContent = z.discriminatedUnion("type", [
 	QueryContent,
 	AppEntryContent,
 	ContentGenerationContent,
+	EndContent,
 ]);
 
 export const OperationNode = NodeBase.extend({
@@ -54,6 +56,7 @@ export const OperationNodeLike = NodeBase.extend({
 			ActionContent.shape.type,
 			QueryContent.shape.type,
 			ContentGenerationContent.shape.type,
+			EndContent.shape.type,
 		]),
 	}),
 });
@@ -154,6 +157,15 @@ export function isContentGenerationNode(
 	return result.success;
 }
 
+export const EndNode = OperationNode.extend({
+	content: EndContent,
+});
+export type EndNode = z.infer<typeof EndNode>;
+export function isEndNode(args?: unknown): args is EndNode {
+	const result = EndNode.safeParse(args);
+	return result.success;
+}
+
 const OperationNodeContentReference = z.discriminatedUnion("type", [
 	AppEntryContentReference,
 	TextGenerationContentReference,
@@ -162,6 +174,7 @@ const OperationNodeContentReference = z.discriminatedUnion("type", [
 	ActionContentReference,
 	QueryContentReference,
 	ContentGenerationContentReference,
+	EndContentReference,
 ]);
 export const OperationNodeReference = NodeReferenceBase.extend({
 	type: OperationNode.shape.type,

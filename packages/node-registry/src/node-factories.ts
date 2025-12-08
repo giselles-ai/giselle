@@ -14,6 +14,7 @@ import {
 	DEFAULT_SIMILARITY_THRESHOLD,
 	type DraftApp,
 	DraftAppParameterId,
+	type EndNode,
 	type FileContent,
 	type FileData,
 	type FileId,
@@ -27,6 +28,7 @@ import {
 	isActionNode,
 	isAppEntryNode,
 	isContentGenerationNode,
+	isEndNode,
 	isFileNode,
 	isGitHubNode,
 	isImageGenerationNode,
@@ -418,6 +420,34 @@ const queryFactoryImpl = {
 	},
 } satisfies NodeFactory<QueryNode>;
 
+const endFactoryImpl = {
+	create: (): EndNode => ({
+		id: NodeId.generate(),
+		type: "operation",
+		content: {
+			type: "end",
+		},
+		inputs: [],
+		outputs: [],
+	}),
+	clone: (orig: EndNode): NodeFactoryCloneResult<EndNode> => {
+		const { newIo: newInputs, idMap: inputIdMap } =
+			cloneAndRenewInputIdsWithMap(orig.inputs);
+		const { newIo: newOutputs, idMap: outputIdMap } =
+			cloneAndRenewOutputIdsWithMap(orig.outputs);
+
+		const newNode = {
+			id: NodeId.generate(),
+			type: "operation",
+			name: `Copy of ${orig.name ?? defaultName(orig)}`,
+			content: structuredClone(orig.content),
+			inputs: newInputs,
+			outputs: newOutputs,
+		} satisfies EndNode;
+		return { newNode, inputIdMap, outputIdMap };
+	},
+} satisfies NodeFactory<EndNode>;
+
 const textVariableFactoryImpl = {
 	create: (): TextNode =>
 		({
@@ -790,6 +820,7 @@ const factoryImplementations = {
 	trigger: triggerFactoryImpl,
 	action: actionFactoryImpl,
 	query: queryFactoryImpl,
+	end: endFactoryImpl,
 	text: textVariableFactoryImpl,
 	file: fileVariableFactoryImpl,
 	github: githubVariableFactoryImpl,
@@ -805,6 +836,7 @@ type CreateArgMap = {
 	trigger: Parameters<typeof triggerFactoryImpl.create>[0];
 	action: Parameters<typeof actionFactoryImpl.create>[0];
 	query: undefined; // queryFactoryImpl.create is no argument
+	end: undefined;
 	text: undefined; // textVariableFactoryImpl.create is no argument
 	file: Parameters<typeof fileVariableFactoryImpl.create>[0];
 	github: Parameters<typeof githubVariableFactoryImpl.create>[0];
@@ -852,6 +884,10 @@ export function createActionNode(provider: ActionProvider): ActionNode {
 
 export function createQueryNode(): QueryNode {
 	return queryFactoryImpl.create();
+}
+
+export function createEndNode(): EndNode {
+	return endFactoryImpl.create();
 }
 
 export function createTextNode(): TextNode {
@@ -924,6 +960,11 @@ export function cloneNode<N extends Node>(
 		case "query":
 			if (isQueryNode(sourceNode)) {
 				return queryFactoryImpl.clone(sourceNode) as NodeFactoryCloneResult<N>;
+			}
+			break;
+		case "end":
+			if (isEndNode(sourceNode)) {
+				return endFactoryImpl.clone(sourceNode) as NodeFactoryCloneResult<N>;
 			}
 			break;
 		case "text":
@@ -1009,6 +1050,8 @@ export const nodeFactories = {
 				);
 			case "query":
 				return factoryImplementations.query.create();
+			case "end":
+				return factoryImplementations.end.create();
 			case "text":
 				return factoryImplementations.text.create();
 			case "file":
@@ -1061,6 +1104,11 @@ export const nodeFactories = {
 			case "query":
 				if (isQueryNode(sourceNode)) {
 					return factoryImplementations.query.clone(sourceNode);
+				}
+				break;
+			case "end":
+				if (isEndNode(sourceNode)) {
+					return factoryImplementations.end.clone(sourceNode);
 				}
 				break;
 			case "text":

@@ -14,6 +14,7 @@ import {
 	createAppEntryNode,
 	createContentGenerationNode,
 	createDocumentVectorStoreNode,
+	createEndNode,
 	createFileNode,
 	createGitHubVectorStoreNode,
 	createQueryNode,
@@ -36,6 +37,7 @@ import clsx from "clsx/lite";
 import {
 	DatabaseZapIcon,
 	FileSlidersIcon,
+	FlagIcon,
 	FolderInputIcon,
 	SparklesIcon,
 	SquareArrowOutUpRightIcon,
@@ -227,6 +229,10 @@ export function Toolbar() {
 					)}
 					value={selectedTool?.action}
 					onValueChange={(value) => {
+						if (value === "addEnd") {
+							setSelectedTool(addNodeTool(createEndNode()));
+							return;
+						}
 						if (isToolAction(value)) {
 							switch (value) {
 								case "selectLanguageModel":
@@ -1067,6 +1073,12 @@ export function Toolbar() {
 								</Popover.Portal>
 							</Popover.Root>
 						)}
+					</ToggleGroup.Item>
+
+					<ToggleGroup.Item value="addEnd" data-tool className="relative">
+						<Tooltip text={<TooltipAndHotkey text="End" hotkey="e" />}>
+							<FlagIcon data-icon />
+						</Tooltip>
 					</ToggleGroup.Item>
 				</ToggleGroup.Root>
 			</div>
