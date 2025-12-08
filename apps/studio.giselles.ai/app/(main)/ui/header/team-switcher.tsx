@@ -80,7 +80,7 @@ export function TeamSwitcher({
 					</div>
 				</Popover.Trigger>
 				<Popover.Portal>
-					<Popover.Content sideOffset={4}>
+					<Popover.Content sideOffset={4} align="start">
 						<PopoverContent>
 							{memberTeams.map((team) => (
 								<TeamSwitchButton
