@@ -43,6 +43,32 @@ describe("calculateDisplayCost", () => {
 		});
 	});
 
+	it("should calculate display cost for OpenAI gpt-5.1-thinking model", async () => {
+		const result = await calculateDisplayCost("openai", "gpt-5.1-thinking", {
+			inputTokens: 1000,
+			outputTokens: 500,
+		});
+
+		expect(result).toEqual({
+			inputCostForDisplay: 0.00125,
+			outputCostForDisplay: 0.005,
+			totalCostForDisplay: 0.00625,
+		});
+	});
+
+	it("should calculate display cost for OpenAI gpt-5.1-codex model", async () => {
+		const result = await calculateDisplayCost("openai", "gpt-5.1-codex", {
+			inputTokens: 1000,
+			outputTokens: 500,
+		});
+
+		expect(result).toEqual({
+			inputCostForDisplay: 0.00125,
+			outputCostForDisplay: 0.005,
+			totalCostForDisplay: 0.00625,
+		});
+	});
+
 	describe("Floating point precision", () => {
 		it("should handle very small token counts precisely", async () => {
 			const result = await calculateDisplayCost("openai", "gpt-5", {
