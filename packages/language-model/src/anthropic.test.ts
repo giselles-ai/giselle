@@ -4,6 +4,9 @@ import { AnthropicLanguageModelId } from "./anthropic";
 describe("anthropic llm", () => {
 	describe("AnthropicLanguageModelId", () => {
 		it("should parse valid enum values successfully", () => {
+			expect(AnthropicLanguageModelId.parse("claude-opus-4.5")).toBe(
+				"claude-opus-4.5",
+			);
 			expect(AnthropicLanguageModelId.parse("claude-opus-4-1-20250805")).toBe(
 				"claude-opus-4-1-20250805",
 			);
@@ -15,9 +18,27 @@ describe("anthropic llm", () => {
 			);
 		});
 
+		it("should fallback claude-opus-4-5-* to claude-opus-4.5", () => {
+			expect(AnthropicLanguageModelId.parse("claude-opus-4-5-foo")).toBe(
+				"claude-opus-4.5",
+			);
+		});
+
 		it("should fallback claude-opus-4-1-* to claude-opus-4-1-20250805", () => {
 			expect(AnthropicLanguageModelId.parse("claude-opus-4-1-foo")).toBe(
 				"claude-opus-4-1-20250805",
+			);
+		});
+
+		it("should fallback claude-4-5-opus-* to claude-opus-4.5", () => {
+			expect(AnthropicLanguageModelId.parse("claude-4-5-opus-4-foo")).toBe(
+				"claude-opus-4.5",
+			);
+		});
+
+		it("should fallback claude-4.5-opus-* to claude-opus-4.5", () => {
+			expect(AnthropicLanguageModelId.parse("claude-4.5-opus-foo")).toBe(
+				"claude-opus-4.5",
 			);
 		});
 

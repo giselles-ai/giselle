@@ -1,6 +1,7 @@
 import type { TextGenerationNode } from "@giselles-ai/protocol";
 import { describe, expect, it } from "vitest";
 import {
+	anthropicClaudeOpus45,
 	anthropicClaudeSonnet,
 	googleGemini,
 	openAI_1,
@@ -142,6 +143,15 @@ describe("node-conversion", () => {
 			);
 		});
 
+		it("should convert Anthropic Claude Opus 4.5 model", () => {
+			const textGenerationNode = anthropicClaudeOpus45 as TextGenerationNode;
+			const result =
+				convertTextGenerationToContentGeneration(textGenerationNode);
+
+			expect(result.content.languageModel.provider).toBe("anthropic");
+			expect(result.content.languageModel.id).toBe("anthropic/claude-opus-4.5");
+		});
+
 		it("should convert Google Gemini model", () => {
 			const textGenerationNode = googleGemini as TextGenerationNode;
 			const result =
@@ -254,6 +264,18 @@ describe("node-conversion", () => {
 
 			expect(result.content.llm?.provider).toBe("anthropic");
 			expect(result.content.llm?.id).toBe("claude-sonnet-4-5-20250929");
+		});
+
+		it("should convert Anthropic Claude Opus 4.5 model back", () => {
+			const textGenerationNode = anthropicClaudeOpus45 as TextGenerationNode;
+			const contentGenerationNode =
+				convertTextGenerationToContentGeneration(textGenerationNode);
+			const result = convertContentGenerationToTextGeneration(
+				contentGenerationNode,
+			);
+
+			expect(result.content.llm?.provider).toBe("anthropic");
+			expect(result.content.llm?.id).toBe("claude-opus-4.5");
 		});
 
 		it("should convert Google Gemini model back", () => {
@@ -382,6 +404,22 @@ describe("node-conversion", () => {
 
 		it("should preserve data through round-trip conversion with Anthropic Claude", () => {
 			const originalNode = anthropicClaudeSonnet as TextGenerationNode;
+			const contentGenerationNode =
+				convertTextGenerationToContentGeneration(originalNode);
+			const convertedBack = convertContentGenerationToTextGeneration(
+				contentGenerationNode,
+			);
+
+			expect(convertedBack.content.type).toBe(originalNode.content.type);
+			expect(convertedBack.content.llm?.provider).toBe(
+				originalNode.content.llm.provider,
+			);
+			expect(convertedBack.content.llm?.id).toBe(originalNode.content.llm.id);
+			expect(convertedBack.content.prompt).toBe(originalNode.content.prompt);
+		});
+
+		it("should preserve data through round-trip conversion with Anthropic Claude Opus 4.5", () => {
+			const originalNode = anthropicClaudeOpus45 as TextGenerationNode;
 			const contentGenerationNode =
 				convertTextGenerationToContentGeneration(originalNode);
 			const convertedBack = convertContentGenerationToTextGeneration(

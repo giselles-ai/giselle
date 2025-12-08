@@ -162,6 +162,34 @@ export const anthropicClaudeSonnet = {
 	},
 };
 
+export const anthropicClaudeOpus45 = {
+	id: "nd-Opus45Example",
+	name: "Claude Opus 4.5",
+	type: "operation",
+	inputs: [],
+	outputs: [
+		{
+			id: "otp-Opus45Output",
+			label: "Output",
+			accessor: "generated-text",
+		},
+	],
+	content: {
+		type: "textGeneration",
+		llm: {
+			provider: "anthropic",
+			id: "claude-opus-4.5",
+			configurations: {
+				temperature: 0.7,
+				topP: 1,
+				reasoningText: true,
+			},
+		},
+		prompt:
+			'{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Solve x^2 + 4x + 4 = 0."}]}]}',
+	},
+};
+
 export const googleGemini = {
 	id: "nd-xBohbqzL9DYoB3ZV",
 	name: "Gemini with Search Ground",

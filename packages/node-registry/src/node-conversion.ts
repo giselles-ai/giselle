@@ -19,6 +19,8 @@ function convertTextGenerationLanguageModelIdToContentGenerationLanguageModelId(
 	switch (from) {
 		case "claude-haiku-4-5-20251001":
 			return "anthropic/claude-haiku-4-5";
+		case "claude-opus-4.5":
+			return "anthropic/claude-opus-4.5";
 		case "claude-opus-4-1-20250805":
 			return "anthropic/claude-opus-4.1";
 		case "claude-sonnet-4-5-20250929":
@@ -62,8 +64,7 @@ function convertContentGenerationLanguageModelIdToTextGenerationLanguageModelId(
 		case "anthropic/claude-haiku-4-5":
 			return "claude-haiku-4-5-20251001";
 		case "anthropic/claude-opus-4.5":
-			// Reverts from 4.5 to 4.1
-			return "claude-opus-4-1-20250805";
+			return "claude-opus-4.5";
 		case "anthropic/claude-opus-4.1":
 			return "claude-opus-4-1-20250805";
 		case "anthropic/claude-sonnet-4-5":
