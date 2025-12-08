@@ -32,7 +32,7 @@ export function TeamSwitchButton({
 				});
 			}}
 		>
-			<div className="flex items-center gap-1.5 w-full">
+			<div className="flex items-center gap-1.5 w-full justify-start">
 				<TeamAvatarImage
 					avatarUrl={avatarUrl}
 					teamName={name}
@@ -41,7 +41,7 @@ export function TeamSwitchButton({
 					className="w-8 h-8 shrink-0"
 					alt={name}
 				/>
-				<span className="truncate max-w-[140px] text-[14px] font-geist text-inverse flex-1">
+				<span className="truncate max-w-[140px] text-[14px] font-geist text-inverse">
 					{name}
 				</span>
 				{isPro ? <ProTag /> : <FreeTag />}
