@@ -19,8 +19,8 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { GlassButton } from "@/components/ui/glass-button";
-import { Card } from "../../(main)/settings/components/card";
-import { SearchHeader } from "../../(main)/workspaces/components/search-header";
+import { Card } from "../../settings/components/card";
+import { SearchHeader } from "../../workspaces/components/search-header";
 
 type SortOption = "name-asc" | "name-desc" | "date-desc" | "date-asc";
 
