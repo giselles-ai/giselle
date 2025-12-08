@@ -92,6 +92,67 @@ function StepActions({ generation }: { generation: Generation }) {
 	);
 }
 
+function OutputActions({ generation }: { generation: Generation }) {
+	const [copyFeedback, setCopyFeedback] = useState(false);
+
+	const handleCopyToClipboard = async () => {
+		try {
+			const textContent = getAssistantTextFromGeneration(generation);
+			if (textContent) {
+				await navigator.clipboard.writeText(textContent);
+				setCopyFeedback(true);
+				setTimeout(() => setCopyFeedback(false), 2000);
+			}
+		} catch (error) {
+			console.error("Failed to copy to clipboard:", error);
+		}
+	};
+
+	const handleDownload = () => {
+		try {
+			const textContent = getAssistantTextFromGeneration(generation);
+			if (textContent) {
+				const blob = new Blob([textContent], { type: "text/plain" });
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement("a");
+				a.href = url;
+				a.download = `generation-${generation.id}.txt`;
+				document.body.appendChild(a);
+				a.click();
+				document.body.removeChild(a);
+				URL.revokeObjectURL(url);
+			}
+		} catch (error) {
+			console.error("Failed to download content:", error);
+		}
+	};
+
+	return (
+		<div className="flex items-center gap-1">
+			<button
+				type="button"
+				className="p-2 hover:bg-white/10 rounded-lg transition-colors group"
+				title={copyFeedback ? "Copied!" : "Copy content"}
+				onClick={handleCopyToClipboard}
+			>
+				{copyFeedback ? (
+					<CheckCircle className="size-4 text-green-400" />
+				) : (
+					<Copy className="size-4 text-text-muted group-hover:text-text transition-colors" />
+				)}
+			</button>
+			<button
+				type="button"
+				className="p-2 hover:bg-white/10 rounded-lg transition-colors group"
+				title="Download content"
+				onClick={handleDownload}
+			>
+				<Download className="size-4 text-text-muted group-hover:text-text transition-colors" />
+			</button>
+		</div>
+	);
+}
+
 export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 	const defaultTask = use(taskPromise);
 	const [task, setTask] = useState(defaultTask);
@@ -315,6 +376,9 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 					<div className="mt-4">
 						<div className="flex items-center justify-between text-text-muted text-[13px] font-semibold mb-2 w-full">
 							<span className="block">Output</span>
+							{lastCompletedGeneration && (
+								<OutputActions generation={lastCompletedGeneration} />
+							)}
 						</div>
 						<div className="ml-0">
 							{lastCompletedGeneration ? (
