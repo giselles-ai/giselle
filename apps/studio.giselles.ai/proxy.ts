@@ -2,7 +2,7 @@ import { get } from "@vercel/edge-config";
 import { NextResponse } from "next/server";
 import { supabaseMiddleware } from "./lib/supabase";
 
-export default supabaseMiddleware(async (user, request) => {
+export const proxy = supabaseMiddleware(async (user, request) => {
 	const maintenance = await get("maintenance");
 	if (maintenance) {
 		request.nextUrl.pathname = "/maintenance";

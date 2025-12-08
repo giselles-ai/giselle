@@ -7,11 +7,11 @@
 	},
 	"private": true,
 	"scripts": {
-		"dev": "next dev --turbopack",
+		"dev": "next dev",
 		"dev-debug": "LOGLEVEL=debug pnpm run dev",
 		"email:dev": "email dev --dir emails --port 3333",
 		"email:export": "email export --dir emails --outDir out",
-		"build": "next build --turbo",
+		"build": "next build",
 		"build:analyze": "ANALYZE=true next build",
 		"start": "next start",
 		"format": "biome check --write .",
@@ -100,7 +100,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "catalog:",
-		"@next/bundle-analyzer": "15.3.4",
+		"@next/bundle-analyzer": "16.0.7",
 		"@octokit/openapi-types": "catalog:",
 		"@playwright/test": "1.56.1",
 		"@react-email/preview-server": "5.0.5",
