@@ -1075,11 +1075,13 @@ export function Toolbar() {
 						)}
 					</ToggleGroup.Item>
 
-					<ToggleGroup.Item value="addEnd" data-tool className="relative">
-						<Tooltip text={<TooltipAndHotkey text="End" hotkey="e" />}>
-							<FlagIcon data-icon />
-						</Tooltip>
-					</ToggleGroup.Item>
+					{stage && (
+						<ToggleGroup.Item value="addEnd" data-tool className="relative">
+							<Tooltip text={<TooltipAndHotkey text="End" hotkey="e" />}>
+								<FlagIcon data-icon />
+							</Tooltip>
+						</ToggleGroup.Item>
+					)}
 				</ToggleGroup.Root>
 			</div>
 		</div>
