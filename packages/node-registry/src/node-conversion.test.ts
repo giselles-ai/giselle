@@ -13,6 +13,39 @@ import {
 	convertTextGenerationToContentGeneration,
 } from "./node-conversion";
 
+type OpenAITextGenerationModelId = Extract<
+	TextGenerationNode["content"]["llm"],
+	{ provider: "openai" }
+>["id"];
+
+function createOpenAITextNode(
+	modelId: OpenAITextGenerationModelId,
+): TextGenerationNode {
+	return {
+		id: `nd-${modelId}`,
+		name: `Node ${modelId}`,
+		type: "operation",
+		inputs: [],
+		outputs: [],
+		content: {
+			type: "textGeneration",
+			llm: {
+				provider: "openai",
+				id: modelId,
+				configurations: {
+					temperature: 0.7,
+					topP: 1,
+					presencePenalty: 0,
+					frequencyPenalty: 0,
+					textVerbosity: "medium",
+					reasoningEffort: "medium",
+				},
+			},
+			prompt: "test",
+		},
+	};
+}
+
 describe("node-conversion", () => {
 	const createGoogleGeminiNode = (
 		llmOverrides?: Partial<TextGenerationNode["content"]["llm"]>,
@@ -129,6 +162,23 @@ describe("node-conversion", () => {
 			expect(result.content.languageModel.id).toBe(
 				"google/gemini-3-pro-preview",
 			);
+
+		it("should convert GPT-5.1 models", () => {
+			const modelIds: OpenAITextGenerationModelId[] = [
+				"gpt-5.1-thinking",
+				"gpt-5.1-codex",
+			];
+			for (const modelId of modelIds) {
+				const textGenerationNode = createOpenAITextNode(modelId);
+				const result =
+					convertTextGenerationToContentGeneration(textGenerationNode);
+
+				expect(result.content.languageModel.id).toBe(
+					modelId === "gpt-5.1-thinking"
+						? "openai/gpt-5.1-thinking"
+						: "openai/gpt-5.1-codex",
+				);
+			}
 		});
 	});
 
@@ -241,6 +291,31 @@ describe("node-conversion", () => {
 
 			expect(result.content.tools).toBeUndefined();
 		});
+
+		it("should convert GPT-5.1 language models back to text generation nodes", () => {
+			const modelIds: Array<
+				"openai/gpt-5.1-thinking" | "openai/gpt-5.1-codex"
+			> = ["openai/gpt-5.1-thinking", "openai/gpt-5.1-codex"];
+			for (const modelId of modelIds) {
+				const textGenerationNode = createOpenAITextNode(
+					modelId === "openai/gpt-5.1-thinking"
+						? ("gpt-5.1-thinking" as OpenAITextGenerationModelId)
+						: ("gpt-5.1-codex" as OpenAITextGenerationModelId),
+				);
+				const contentGenerationNode =
+					convertTextGenerationToContentGeneration(textGenerationNode);
+
+				const result = convertContentGenerationToTextGeneration(
+					contentGenerationNode,
+				);
+
+				expect(result.content.llm?.id).toBe(
+					modelId === "openai/gpt-5.1-thinking"
+						? "gpt-5.1-thinking"
+						: "gpt-5.1-codex",
+				);
+			}
+		});
 	});
 
 	describe("round-trip conversion", () => {
@@ -340,6 +415,10 @@ describe("node-conversion", () => {
 			const originalNode = createGoogleGeminiNode({
 				id: "gemini-3-pro-preview",
 			});
+
+		it("should preserve data through round-trip conversion for GPT-5.1 models", () => {
+			const originalNode = createOpenAITextNode("gpt-5.1-thinking");
+
 			const contentGenerationNode =
 				convertTextGenerationToContentGeneration(originalNode);
 			const convertedBack = convertContentGenerationToTextGeneration(
@@ -352,6 +431,7 @@ describe("node-conversion", () => {
 			);
 			expect(convertedBack.content.llm?.id).toBe(originalNode.content.llm.id);
 			expect(convertedBack.content.prompt).toBe(originalNode.content.prompt);
+			expect(convertedBack.content.llm?.id).toBe("gpt-5.1-thinking");
 		});
 	});
 });

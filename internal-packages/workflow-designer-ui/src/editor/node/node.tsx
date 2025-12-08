@@ -211,6 +211,7 @@ export function NodeComponent({
 		const isAction = node.content.type === "action";
 		const isQuery = node.content.type === "query";
 		const isAppEntry = node.content.type === "appEntry";
+		const isEnd = node.content.type === "end";
 
 		const isVectorStoreGithub =
 			isVectorStore &&
@@ -223,7 +224,13 @@ export function NodeComponent({
 		const isGithubTrigger = isTriggerNode(node, "github");
 
 		const isFillIcon =
-			isText || isFile || isWebPage || isGithub || isVectorStore || isAction;
+			isText ||
+			isFile ||
+			isWebPage ||
+			isGithub ||
+			isVectorStore ||
+			isAction ||
+			isEnd;
 		const isStrokeIcon =
 			isTextGeneration || isImageGeneration || isTrigger || isQuery;
 
@@ -234,7 +241,8 @@ export function NodeComponent({
 			isGithub ||
 			isVectorStoreGithub ||
 			isTrigger ||
-			isAction;
+			isAction ||
+			isEnd;
 
 		return {
 			isText,
@@ -249,6 +257,7 @@ export function NodeComponent({
 			isAction,
 			isQuery,
 			isAppEntry,
+			isEnd,
 			isVectorStoreGithub,
 			isVectorStoreDocument,
 			isGithubTrigger,
@@ -275,6 +284,7 @@ export function NodeComponent({
 		isAction: boolean;
 		isQuery: boolean;
 		isAppEntry: boolean;
+		isEnd: boolean;
 		isVectorStoreGithub: boolean;
 		isVectorStoreDocument: boolean;
 		isGithubTrigger: boolean;
@@ -302,6 +312,7 @@ export function NodeComponent({
 				return "var(--color-trigger-node-1)";
 			if (variant.isAction) return "var(--color-action-node-1)";
 			if (variant.isQuery) return "var(--color-query-node-1)";
+			if (variant.isEnd) return "var(--color-action-node-1)";
 			return undefined;
 		},
 		[],
@@ -354,6 +365,7 @@ export function NodeComponent({
 				selected && v.isTrigger && "shadow-trigger-node-1",
 				selected && v.isAppEntry && "shadow-trigger-node-1",
 				selected && v.isAction && "shadow-action-node-1",
+				selected && v.isEnd && "shadow-action-node-1",
 				selected && v.isQuery && "shadow-query-node-1",
 				selected && "shadow-[0px_0px_20px_1px_rgba(0,0,0,0.4)]",
 				selected &&
@@ -371,6 +383,7 @@ export function NodeComponent({
 				highlighted && v.isTrigger && "shadow-trigger-node-1",
 				highlighted && v.isAppEntry && "shadow-trigger-node-1",
 				highlighted && v.isAction && "shadow-action-node-1",
+				highlighted && v.isEnd && "shadow-action-node-1",
 				highlighted && v.isQuery && "shadow-query-node-1",
 				highlighted && "shadow-[0px_0px_20px_1px_rgba(0,0,0,0.4)]",
 				highlighted &&
@@ -475,6 +488,9 @@ export function NodeComponent({
 						v.isAction &&
 						"from-action-node-1/30 via-action-node-1/50 to-action-node-1",
 					!borderGradientStyle &&
+						v.isEnd &&
+						"from-action-node-1/30 via-action-node-1/50 to-action-node-1",
+					!borderGradientStyle &&
 						v.isQuery &&
 						"from-query-node-1/30 via-query-node-1/50 to-query-node-1",
 				)}
@@ -506,6 +522,7 @@ export function NodeComponent({
 							v.isTrigger && "bg-trigger-node-1",
 							v.isAppEntry && "bg-trigger-node-1",
 							v.isAction && "bg-action-node-1",
+							v.isEnd && "bg-action-node-1",
 							v.isQuery && "bg-query-node-1",
 						)}
 					>
@@ -528,6 +545,7 @@ export function NodeComponent({
 								v.isGithubTrigger && "fill-current",
 								v.isAppEntry && "stroke-current fill-none",
 								v.isAction && "fill-current",
+								v.isEnd && "fill-current",
 								v.isQuery && "stroke-current fill-none",
 								v.isGithub && "fill-current",
 								v.isText && "text-background",
@@ -542,6 +560,7 @@ export function NodeComponent({
 								v.isGithubTrigger && "text-background",
 								v.isAppEntry && "text-inverse",
 								v.isAction && "text-inverse",
+								v.isEnd && "text-inverse",
 								v.isQuery && "text-background",
 							)}
 						/>

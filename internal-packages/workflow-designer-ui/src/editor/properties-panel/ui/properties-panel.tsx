@@ -76,6 +76,8 @@ function getNodeIconBackground(node: NodeLike): string {
 				return "bg-action-node-1";
 			case "query":
 				return "bg-query-node-1";
+			case "end":
+				return "bg-red-500";
 			default: {
 				const _exhaustiveCheck: never = node.content.type;
 				throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);

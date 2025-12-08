@@ -84,6 +84,7 @@ export async function buildMessageObject({
 				appEntryResolver,
 			);
 		}
+		case "end":
 		case "action":
 		case "trigger":
 		case "query":
@@ -278,6 +279,10 @@ async function buildGenerationMessageForTextGeneration({
 				);
 				// If there is no matching Output, replace it with an empty string (remove the pattern string from userMessage)
 				userMessage = userMessage.replace(replaceKeyword, result ?? "");
+				break;
+			}
+			case "end": {
+				userMessage = userMessage.replace(replaceKeyword, "");
 				break;
 			}
 			case "appEntry": {
@@ -599,7 +604,9 @@ async function buildGenerationMessageForImageGeneration(
 
 			case "github":
 			case "vectorStore":
-				throw new Error("Not implemented");
+			case "end":
+				userMessage = userMessage.replace(replaceKeyword, "");
+				break;
 
 			default: {
 				const _exhaustiveCheck: never = contextNode.content;
@@ -1013,6 +1020,10 @@ async function buildGenerationMessageForContentGeneration({
 				);
 				// If there is no matching Output, replace it with an empty string (remove the pattern string from userMessage)
 				userMessage = userMessage.replace(replaceKeyword, result ?? "");
+				break;
+			}
+			case "end": {
+				userMessage = userMessage.replace(replaceKeyword, "");
 				break;
 			}
 			case "appEntry": {

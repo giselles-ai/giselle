@@ -36,6 +36,10 @@ export function isSupportedConnection(
 		};
 	}
 
+	if (inputNode.content.type === "end") {
+		return { canConnect: true };
+	}
+
 	// prevent unsupported inputs for image generation node
 	if (isImageGenerationNode(inputNode)) {
 		if (outputNode.content.type === "github") {

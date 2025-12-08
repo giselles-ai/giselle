@@ -2,6 +2,7 @@ import { type ActionProvider, getEntry } from "@giselles-ai/action-registry";
 import {
 	isActionNode,
 	isContentGenerationNode,
+	isEndNode,
 	isImageGenerationNode,
 	isQueryNode,
 	isTextGenerationNode,
@@ -82,6 +83,11 @@ export function defaultName(node: NodeLike) {
 						throw new Error(`Expected query node, got ${node.type}`);
 					}
 					return node.name ?? "Query";
+				case "end":
+					if (!isEndNode(node)) {
+						throw new Error(`Expected end node, got ${node.type}`);
+					}
+					return node.name ?? "End";
 				case "appEntry":
 					return node.name ?? "App Entry";
 				default: {

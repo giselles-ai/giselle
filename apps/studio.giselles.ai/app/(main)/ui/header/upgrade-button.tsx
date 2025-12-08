@@ -8,6 +8,7 @@ export async function getUpgradeButtonContext() {
 
 	return { isProPlan: isProPlan(currentTeam) };
 }
+
 type UpgradeButtonContext = Awaited<ReturnType<typeof getUpgradeButtonContext>>;
 export function UpgradeButton({
 	getUpgradeButtonContextPromise,
@@ -23,7 +24,7 @@ export function UpgradeButton({
 	return (
 		<form className="flex items-center">
 			<Button
-				className="px-4 py-2 text-sm font-medium text-white bg-primary-900 hover:bg-primary-900/80 rounded-lg transition-colors"
+				className="relative inline-flex items-center justify-center gap-2 duration-300 focus-visible:outline-none focus-visible:shadow-[0_0_0_1px_var(--color-focused)] border border-primary-400 shadow-[inset_0_0_12px_rgba(255,255,255,0.08)] hover:shadow-[inset_0_0_16px_rgba(255,255,255,0.12)] px-4 py-1 text-sm font-medium text-white bg-primary-400 hover:bg-primary-400/90 rounded-full transition-colors"
 				formAction={upgradeCurrentTeam}
 			>
 				Upgrade
