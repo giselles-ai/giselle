@@ -162,6 +162,7 @@ describe("node-conversion", () => {
 			expect(result.content.languageModel.id).toBe(
 				"google/gemini-3-pro-preview",
 			);
+		});
 
 		it("should convert GPT-5.1 models", () => {
 			const modelIds: OpenAITextGenerationModelId[] = [
@@ -415,6 +416,19 @@ describe("node-conversion", () => {
 			const originalNode = createGoogleGeminiNode({
 				id: "gemini-3-pro-preview",
 			});
+			const contentGenerationNode =
+				convertTextGenerationToContentGeneration(originalNode);
+			const convertedBack = convertContentGenerationToTextGeneration(
+				contentGenerationNode,
+			);
+
+			expect(convertedBack.content.type).toBe(originalNode.content.type);
+			expect(convertedBack.content.llm?.provider).toBe(
+				originalNode.content.llm.provider,
+			);
+			expect(convertedBack.content.llm?.id).toBe(originalNode.content.llm.id);
+			expect(convertedBack.content.prompt).toBe(originalNode.content.prompt);
+		});
 
 		it("should preserve data through round-trip conversion for GPT-5.1 models", () => {
 			const originalNode = createOpenAITextNode("gpt-5.1-thinking");
