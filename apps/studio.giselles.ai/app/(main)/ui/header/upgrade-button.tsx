@@ -1,7 +1,7 @@
-import { Button } from "@giselle-internal/ui/button";
 import { use } from "react";
 import { fetchCurrentTeam, isProPlan } from "@/services/teams";
 import { upgradeCurrentTeam } from "@/services/teams/actions/upgrade-current-team";
+import { Button } from "../../settings/components/button";
 
 export async function getUpgradeButtonContext() {
 	const currentTeam = await fetchCurrentTeam();
