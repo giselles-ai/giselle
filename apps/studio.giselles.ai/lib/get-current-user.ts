@@ -1,7 +1,8 @@
+import { cache } from "react";
 import { db } from "@/db";
 import { getUser } from "./supabase";
 
-export async function getCurrentUser() {
+async function _getCurrentUser() {
 	const supabaseUser = await getUser();
 	const supabaseUserWithUser = await db.query.supabaseUserMappings.findFirst({
 		where: (supabaseUserMappings, { eq }) =>
@@ -23,9 +24,10 @@ export async function getCurrentUser() {
 	}
 	return {
 		id: supabaseUserWithUser.user.id,
-		db: supabaseUserWithUser.user.dbId,
 		displayName: supabaseUserWithUser.user.displayName,
 		email: supabaseUserWithUser.user.email,
 		avatarUrl: supabaseUserWithUser.user.avatarUrl,
 	};
 }
+
+export const getCurrentUser = cache(_getCurrentUser);
