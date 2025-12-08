@@ -77,7 +77,7 @@ export const anthropicTokenPricing: ModelPriceTable = {
 	"claude-opus-4.5": {
 		prices: [
 			{
-				validFrom: "2025-03-31T00:00:00Z",
+				validFrom: "2025-11-25T00:00:00Z",
 				price: {
 					input: {
 						costPerMegaToken: 5.0,
