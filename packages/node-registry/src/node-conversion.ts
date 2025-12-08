@@ -29,10 +29,14 @@ function convertTextGenerationLanguageModelIdToContentGenerationLanguageModelId(
 			return "google/gemini-2.5-flash-lite";
 		case "gemini-2.5-pro":
 			return "google/gemini-2.5-pro";
+		case "gpt-5.1-thinking":
+			return "openai/gpt-5.1-thinking";
 		case "gpt-5":
 			return "openai/gpt-5";
 		case "gpt-5-mini":
 			return "openai/gpt-5-mini";
+		case "gpt-5.1-codex":
+			return "openai/gpt-5.1-codex";
 		case "gpt-5-codex":
 			return "openai/gpt-5-codex";
 		case "gpt-5-nano":
@@ -72,15 +76,13 @@ function convertContentGenerationLanguageModelIdToTextGenerationLanguageModelId(
 		case "google/gemini-2.5-pro":
 			return "gemini-2.5-pro";
 		case "openai/gpt-5.1-thinking":
-			// Reverts from 5.1 to  5
-			return "gpt-5";
+			return "gpt-5.1-thinking";
 		case "openai/gpt-5":
 			return "gpt-5";
 		case "openai/gpt-5-mini":
 			return "gpt-5-mini";
 		case "openai/gpt-5.1-codex":
-			// Reverts from 5.1 Codex to 5 Codex
-			return "gpt-5-codex";
+			return "gpt-5.1-codex";
 		case "openai/gpt-5-codex":
 			return "gpt-5-codex";
 		case "openai/gpt-5-nano":
