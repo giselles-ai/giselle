@@ -162,6 +162,7 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 	const stepGenerationsRef = useRef(stepGenerations);
 	const [expandedSteps, setExpandedSteps] = useState<Set<string>>(new Set());
 	const [isStepsExpanded, setIsStepsExpanded] = useState(false);
+	const [isOutputExpanded, setIsOutputExpanded] = useState(true);
 
 	const updateTask = useCallback<StreamDataEventHandler>((data) => {
 		setTask(data.task);
@@ -376,19 +377,38 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 					<div className="mt-4">
 						<div className="flex items-center justify-between text-text-muted text-[13px] font-semibold mb-2 w-full">
 							<span className="block">Output</span>
-							{lastCompletedGeneration && (
-								<OutputActions generation={lastCompletedGeneration} />
-							)}
 						</div>
-						<div className="ml-0">
-							{lastCompletedGeneration ? (
-								<GenerationView generation={lastCompletedGeneration} />
-							) : (
-								<p className="text-[13px] text-text-muted/70 italic">
-									No output available yet.
-								</p>
-							)}
-						</div>
+						{lastCompletedGeneration ? (
+							<div className="rounded-xl bg-blue-muted/5 px-4 py-3">
+								<div className="flex items-center justify-between mb-2 w-full">
+									<div className="flex-1" />
+									<div className="flex items-center gap-1">
+										<OutputActions generation={lastCompletedGeneration} />
+										<button
+											type="button"
+											className="w-6 h-6 flex items-center justify-center rounded-md hover:bg-white/10 transition-colors"
+											onClick={() => setIsOutputExpanded(!isOutputExpanded)}
+											aria-label={isOutputExpanded ? "Collapse output" : "Expand output"}
+										>
+											<ChevronDownIcon
+												className={`size-4 text-text-muted transition-transform ${
+													isOutputExpanded ? "rotate-180" : ""
+												}`}
+											/>
+										</button>
+									</div>
+								</div>
+								{isOutputExpanded ? (
+									<div className="mt-1">
+										<GenerationView generation={lastCompletedGeneration} />
+									</div>
+								) : null}
+							</div>
+						) : (
+							<p className="text-[13px] text-text-muted/70 italic">
+								No output available yet.
+							</p>
+						)}
 					</div>
 				</div>
 			</div>
