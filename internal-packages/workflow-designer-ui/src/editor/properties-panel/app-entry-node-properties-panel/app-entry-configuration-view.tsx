@@ -28,6 +28,7 @@ const TYPE_OPTIONS = [
 	{ value: "text", label: "Text" },
 	{ value: "multiline-text", label: "Text (multi-line)" },
 	{ value: "number", label: "Number" },
+	{ value: "files", label: "Files" },
 ];
 
 type ValidationErrors = {
@@ -146,7 +147,9 @@ function ParameterRow({
 					placeholder="Select type..."
 					value={param.type}
 					onValueChange={(value) =>
-						onTypeChange(value as "text" | "multiline-text" | "number")
+						onTypeChange(
+							value as "text" | "multiline-text" | "number" | "files",
+						)
 					}
 				/>
 

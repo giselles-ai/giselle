@@ -100,6 +100,31 @@ export function FormInputRenderer({
 								tabIndex={isPending ? -1 : undefined}
 							/>
 						)}
+						{input.type === "files" && (
+							<input
+								type="file"
+								name={input.name}
+								id={input.name}
+								multiple
+								required={input.required}
+								aria-invalid={!!validationErrors[input.name]}
+								aria-describedby={
+									validationErrors[input.name]
+										? `${input.name}-error`
+										: undefined
+								}
+								className={clsx(
+									"w-full flex justify-between items-center rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none",
+									"border-[1px]",
+									validationErrors[input.name]
+										? "border-error"
+										: "border-border",
+									"text-[14px]",
+								)}
+								disabled={isPending}
+								tabIndex={isPending ? -1 : undefined}
+							/>
+						)}
 						{validationErrors[input.name] && (
 							<span
 								id={`${input.name}-error`}

@@ -1,4 +1,4 @@
-import type { NodeId, OutputId } from "@giselles-ai/protocol";
+import type { FileData, NodeId, OutputId } from "@giselles-ai/protocol";
 import type { ToolSet } from "ai";
 
 export type PreparedToolSet = {
@@ -12,6 +12,6 @@ export interface GenerationMetadata {
 export type AppEntryResolver = (
 	nodeId: NodeId,
 	outputId: OutputId,
-) => string | number | undefined;
+) => string | number | FileData[] | undefined;
 
 export type * from "./internal/use-generation-executor";

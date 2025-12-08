@@ -1,10 +1,13 @@
 "use client";
 
 import { Button } from "@giselle-internal/ui/button";
-import type {
-	App,
-	AppEntryNode,
-	GenerationContextInput,
+import {
+	type App,
+	type AppEntryNode,
+	createUploadedFileData,
+	createUploadingFileData,
+	type FileData,
+	type GenerationContextInput,
 } from "@giselles-ai/protocol";
 import { useGiselle } from "@giselles-ai/react";
 import { clsx } from "clsx/lite";
@@ -64,7 +67,6 @@ export function AppEntryInputDialog({
 			: null,
 		({ appId }) => client.getApp({ appId }).then((res) => res.app),
 	);
-
 	const app = useMemo(() => {
 		if (
 			isFromAppEntryNode({
@@ -100,36 +102,94 @@ export function AppEntryInputDialog({
 
 			const formData = new FormData(e.currentTarget);
 			const errors: Record<string, string> = {};
-			const values: Record<string, string | number> = {};
+			const values: Record<string, string | number | FileData[]> = {};
 
 			for (const parameter of app.parameters) {
-				const formDataEntryValue = formData.get(parameter.name);
-				const value = formDataEntryValue
-					? formDataEntryValue.toString().trim()
-					: "";
-
-				if (parameter.required && value === "") {
-					errors[parameter.id] = `${parameter.name} is required`;
-					continue;
-				}
-
-				if (value === "") {
-					values[parameter.id] = "";
-					continue;
-				}
-
 				switch (parameter.type) {
 					case "text":
-					case "multiline-text":
+					case "multiline-text": {
+						const formDataEntryValue = formData.get(parameter.name);
+						const value = formDataEntryValue
+							? formDataEntryValue.toString().trim()
+							: "";
+
+						if (parameter.required && value === "") {
+							errors[parameter.id] = `${parameter.name} is required`;
+							continue;
+						}
+
+						if (value === "") {
+							values[parameter.id] = "";
+							continue;
+						}
+
 						values[parameter.id] = value;
 						break;
+					}
 					case "number": {
+						const formDataEntryValue = formData.get(parameter.name);
+						const value = formDataEntryValue
+							? formDataEntryValue.toString().trim()
+							: "";
+
+						if (parameter.required && value === "") {
+							errors[parameter.id] = `${parameter.name} is required`;
+							continue;
+						}
+
+						if (value === "") {
+							values[parameter.id] = "";
+							continue;
+						}
+
 						const numValue = Number(value);
 						if (Number.isNaN(numValue)) {
 							errors[parameter.id] = `${parameter.name} must be a valid number`;
 						} else {
 							values[parameter.id] = numValue;
 						}
+						break;
+					}
+					case "files": {
+						const files = formData
+							.getAll(parameter.name)
+							.filter(
+								(entry): entry is File =>
+									entry instanceof File && entry.size > 0,
+							);
+
+						if (parameter.required && files.length === 0) {
+							errors[parameter.id] = `${parameter.name} is required`;
+							continue;
+						}
+
+						if (files.length === 0) {
+							values[parameter.id] = [];
+							continue;
+						}
+
+						const uploadedFiles: FileData[] = [];
+
+						for (const file of files) {
+							const uploadingFileData = createUploadingFileData({
+								name: file.name,
+								type: file.type || "application/octet-stream",
+								size: file.size,
+							});
+
+							await client.uploadFile({
+								workspaceId: app.workspaceId,
+								file,
+								fileId: uploadingFileData.id,
+								fileName: file.name,
+							});
+
+							uploadedFiles.push(
+								createUploadedFileData(uploadingFileData, Date.now()),
+							);
+						}
+
+						values[parameter.id] = uploadedFiles;
 						break;
 					}
 					default: {
@@ -156,6 +216,15 @@ export function AppEntryInputDialog({
 							value,
 						};
 					}
+
+					if (Array.isArray(value)) {
+						return {
+							name: id,
+							type: "files" as const,
+							value,
+						};
+					}
+
 					return {
 						name: id,
 						type: "string" as const,
@@ -176,7 +245,7 @@ export function AppEntryInputDialog({
 				setIsSubmitting(false);
 			}
 		},
-		[app, onClose, onSubmit],
+		[app, onClose, onSubmit, client],
 	);
 
 	if (isLoading) {
@@ -277,6 +346,22 @@ export function AppEntryInputDialog({
 											type="number"
 											name={parameter.name}
 											id={parameter.name}
+											className={clsx(
+												"w-full flex justify-between items-center rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none",
+												"border-[1px]",
+												validationErrors[parameter.id]
+													? "border-red-500"
+													: "border-border",
+												"text-[14px]",
+											)}
+										/>
+									)}
+									{parameter.type === "files" && (
+										<input
+											type="file"
+											name={parameter.name}
+											id={parameter.name}
+											multiple
 											className={clsx(
 												"w-full flex justify-between items-center rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none",
 												"border-[1px]",

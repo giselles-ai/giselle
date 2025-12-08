@@ -21,7 +21,7 @@ export interface FlowTriggerUIItem {
 export interface FormInput {
 	name: string;
 	label: string;
-	type: "text" | "multiline-text" | "number";
+	type: "text" | "multiline-text" | "number" | "files";
 	required: boolean;
 }
 
@@ -31,5 +31,5 @@ export interface ValidationErrors {
 }
 
 export interface FormValues {
-	[key: string]: string | number;
+	[key: string]: string | number | File[];
 }
