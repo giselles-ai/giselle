@@ -1,9 +1,18 @@
 "use client";
 
 import { Select } from "@giselle-internal/ui/select";
+import type { Task } from "@giselles-ai/protocol";
 import { ArrowUpIcon, Image as ImageIcon } from "lucide-react";
+import { use } from "react";
 
-export function InputAreaPlaceholder() {
+export function InputAreaPlaceholder({
+	taskPromise,
+}: {
+	taskPromise: Promise<Task>;
+}) {
+	const task = use(taskPromise);
+	const appLabel = task.name ?? "Selected app";
+
 	return (
 		<div className="relative w-full max-w-[640px] min-w-[320px] mx-auto">
 			<div className="rounded-2xl bg-[rgba(131,157,195,0.14)] shadow-[inset_0_1px_4px_rgba(0,0,0,0.22)] pt-4 pb-3 sm:pt-5 sm:pb-4 px-4">
@@ -21,9 +30,9 @@ export function InputAreaPlaceholder() {
 					{/* Left side: App selector */}
 					<div className="flex-1 max-w-[200px]">
 						<Select
-							options={[]}
-							placeholder="Select an app..."
-							value={undefined}
+							options={[{ value: task.id, label: appLabel }]}
+							placeholder={appLabel}
+							value={task.id}
 							onValueChange={() => {}}
 							widthClassName="w-full"
 							disabled

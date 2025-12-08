@@ -161,6 +161,31 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 		0,
 	);
 
+	// Find the last completed step's generation (if available)
+	const lastCompletedGeneration = (() => {
+		for (
+			let sequenceIndex = task.sequences.length - 1;
+			sequenceIndex >= 0;
+			sequenceIndex--
+		) {
+			const sequence = task.sequences[sequenceIndex];
+			for (
+				let stepIndex = sequence.steps.length - 1;
+				stepIndex >= 0;
+				stepIndex--
+			) {
+				const step = sequence.steps[stepIndex];
+				if (step.status === "completed") {
+					const generation = stepGenerations[step.id];
+					if (generation) {
+						return generation;
+					}
+				}
+			}
+		}
+		return undefined;
+	})();
+
 	const handleStepToggle = (stepId: string) => {
 		setExpandedSteps((prev) => {
 			const newSet = new Set(prev);
@@ -285,6 +310,22 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 							))}
 						</div>
 					)}
+
+					{/* Output preview for last completed step */}
+					<div className="mt-4">
+						<div className="flex items-center justify-between text-text-muted text-[13px] font-semibold mb-2 w-full">
+							<span className="block">Output</span>
+						</div>
+						<div className="ml-0">
+							{lastCompletedGeneration ? (
+								<GenerationView generation={lastCompletedGeneration} />
+							) : (
+								<p className="text-[13px] text-text-muted/70 italic">
+									No output available yet.
+								</p>
+							)}
+						</div>
+					</div>
 				</div>
 			</div>
 		</TaskStreamReader>

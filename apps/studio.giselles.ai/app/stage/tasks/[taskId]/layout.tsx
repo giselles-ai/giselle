@@ -67,7 +67,7 @@ export default async function ({
 							Request new tasks in a new session
 						</h2>
 						{/* TODO: Input area will be added here - placeholder for future functionality */}
-						<InputAreaPlaceholder />
+						<InputAreaPlaceholder taskPromise={taskPromise} />
 					</div>
 				</div>
 			</div>
