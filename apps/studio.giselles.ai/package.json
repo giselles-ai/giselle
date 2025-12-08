@@ -44,6 +44,7 @@
 		"@next/third-parties": "catalog:",
 		"@octokit/auth-app": "catalog:",
 		"@octokit/core": "catalog:",
+		"@octokit/request-error": "catalog:",
 		"@opentelemetry/api": "1.9.0",
 		"@paralleldrive/cuid2": "2.2.2",
 		"@radix-ui/react-dropdown-menu": "2.1.16",

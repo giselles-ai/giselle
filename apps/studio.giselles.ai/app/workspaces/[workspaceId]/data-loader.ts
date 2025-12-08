@@ -17,7 +17,10 @@ import {
 	getDocumentVectorStores,
 	getOfficialDocumentVectorStores,
 } from "@/lib/vector-stores/document/queries";
-import { getGitHubRepositoryIndexes } from "@/lib/vector-stores/github";
+import {
+	getGitHubRepositoryIndexes,
+	getOfficialGitHubRepositoryIndexes,
+} from "@/lib/vector-stores/github";
 import { getGitHubIntegrationState } from "@/packages/lib/github";
 import { getUsageLimitsForTeam } from "@/packages/lib/usage-limits";
 import { fetchCurrentUser } from "@/services/accounts";
@@ -50,9 +53,6 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 	}
 
 	const usageLimits = await getUsageLimitsForTeam(workspaceTeam);
-	const gitHubRepositoryIndexes = await getGitHubRepositoryIndexes(
-		workspaceTeam.dbId,
-	);
 	const webSearchAction = await webSearchActionFlag();
 	const layoutV3 = await layoutV3Flag();
 	const stage = await stageFlag();
@@ -62,6 +62,26 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 	const data = await giselle.getWorkspace(workspaceId);
 	const generateContentNode = await generateContentNodeFlag();
 	const privatePreviewTools = await privatePreviewToolsFlag();
+	const [teamGitHubRepositoryIndexes, officialGitHubRepositoryIndexes] =
+		await Promise.all([
+			getGitHubRepositoryIndexes(workspaceTeam.dbId),
+			getOfficialGitHubRepositoryIndexes(),
+		]);
+
+	const officialGitHubIds = new Set(
+		officialGitHubRepositoryIndexes.map((r) => r.id),
+	);
+	const teamGitHubIds = new Set(teamGitHubRepositoryIndexes.map((r) => r.id));
+	const gitHubRepositoryIndexes = [
+		...teamGitHubRepositoryIndexes.map((repo) => ({
+			...repo,
+			isOfficial: officialGitHubIds.has(repo.id),
+		})),
+		...officialGitHubRepositoryIndexes
+			.filter((repo) => !teamGitHubIds.has(repo.id))
+			.map((repo) => ({ ...repo, isOfficial: true })),
+	];
+
 	const [teamDocumentStores, officialDocumentStores] = await Promise.all([
 		getDocumentVectorStores(workspaceTeam.dbId),
 		getOfficialDocumentVectorStores(),

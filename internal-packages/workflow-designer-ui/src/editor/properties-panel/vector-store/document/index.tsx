@@ -326,6 +326,8 @@ export function DocumentVectorStoreNodePropertiesPanel({
 				<div className="flex justify-end pt-[8px]">
 					<Link
 						href={settingPath}
+						target="_blank"
+						rel="noopener noreferrer"
 						className="text-[14px] text-inverse underline hover:text-inverse"
 					>
 						Set Up Vector Store

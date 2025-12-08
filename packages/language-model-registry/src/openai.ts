@@ -20,6 +20,11 @@ const reasoningEffortDescription =
 const textVerbosityDescription =
 	"Constrains the verbosity of the model's response. Lower values will result in more concise responses, while higher values will result in more verbose responses. Currently supported values";
 
+/**
+ * `reasoningEffort` configuration for OpenAI models.
+ * Default values follow OpenAI's official defaults for each model.
+ * @see https://platform.openai.com/docs/api-reference/responses/create#responses_create-reasoning-effort
+ */
 export const openai = {
 	"openai/gpt-5.1-thinking": defineLanguageModel({
 		provider: openaiProvider,
@@ -68,7 +73,7 @@ export const openai = {
 		configurationOptions: {
 			reasoningEffort: {
 				description: reasoningEffortDescription,
-				schema: z.enum(["minimal", "low", "medium", "high"]),
+				schema: z.enum(["none", "low", "medium", "high"]),
 			},
 			textVerbosity: {
 				description: textVerbosityDescription,
@@ -76,7 +81,7 @@ export const openai = {
 			},
 		},
 		defaultConfiguration: {
-			reasoningEffort: "minimal",
+			reasoningEffort: "none",
 			textVerbosity: "medium",
 		},
 		url: "https://platform.openai.com/docs/models/gpt-5.1-codex",
@@ -107,7 +112,7 @@ export const openai = {
 			},
 		},
 		defaultConfiguration: {
-			reasoningEffort: "minimal",
+			reasoningEffort: "medium",
 			textVerbosity: "medium",
 		},
 		url: "https://platform.openai.com/docs/models/gpt-5",
