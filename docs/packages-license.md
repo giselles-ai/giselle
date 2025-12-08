@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 906 MIT
+* 898 MIT
 * 180 Apache 2.0
 * 41 ISC
 * 27 New BSD
@@ -2416,7 +2416,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/primitive"></a>
-### @radix-ui/primitive v1.1.1
+### @radix-ui/primitive v1.1.3
 #### 
 
 ##### Paths
@@ -2438,7 +2438,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-accordion"></a>
-### @radix-ui/react-accordion v1.2.2
+### @radix-ui/react-accordion v1.2.12
 #### 
 
 ##### Paths
@@ -2504,7 +2504,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-collapsible"></a>
-### @radix-ui/react-collapsible v1.1.2
+### @radix-ui/react-collapsible v1.1.12
 #### 
 
 ##### Paths
@@ -2515,7 +2515,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-collection"></a>
-### @radix-ui/react-collection v1.1.1
+### @radix-ui/react-collection v1.1.7
 #### 
 
 ##### Paths
@@ -2526,7 +2526,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-compose-refs"></a>
-### @radix-ui/react-compose-refs v1.1.1
+### @radix-ui/react-compose-refs v1.1.2
 #### 
 
 ##### Paths
@@ -2537,7 +2537,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-context"></a>
-### @radix-ui/react-context v1.1.1
+### @radix-ui/react-context v1.1.2
 #### 
 
 ##### Paths
@@ -2570,7 +2570,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-direction"></a>
-### @radix-ui/react-direction v1.1.0
+### @radix-ui/react-direction v1.1.1
 #### 
 
 ##### Paths
@@ -2658,7 +2658,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-id"></a>
-### @radix-ui/react-id v1.1.0
+### @radix-ui/react-id v1.1.1
 #### 
 
 ##### Paths
@@ -2768,7 +2768,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-presence"></a>
-### @radix-ui/react-presence v1.1.2
+### @radix-ui/react-presence v1.1.5
 #### 
 
 ##### Paths
@@ -2779,7 +2779,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-primitive"></a>
-### @radix-ui/react-primitive v2.0.1
+### @radix-ui/react-primitive v2.1.3
 #### 
 
 ##### Paths
@@ -2867,7 +2867,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-slot"></a>
-### @radix-ui/react-slot v1.1.1
+### @radix-ui/react-slot v1.2.3
 #### 
 
 ##### Paths
@@ -2955,7 +2955,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-use-callback-ref"></a>
-### @radix-ui/react-use-callback-ref v1.1.0
+### @radix-ui/react-use-callback-ref v1.1.1
 #### 
 
 ##### Paths
@@ -2966,7 +2966,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-use-controllable-state"></a>
-### @radix-ui/react-use-controllable-state v1.1.0
+### @radix-ui/react-use-controllable-state v1.2.2
 #### 
 
 ##### Paths
@@ -3010,7 +3010,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@radix-ui/react-use-layout-effect"></a>
-### @radix-ui/react-use-layout-effect v1.1.0
+### @radix-ui/react-use-layout-effect v1.1.1
 #### 
 
 ##### Paths
@@ -4298,17 +4298,6 @@ LGPL-3.0-or-later permitted
 
 <a name="@tailwindcss/postcss"></a>
 ### @tailwindcss/postcss v4.1.10
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="@tailwindcss/typography"></a>
-### @tailwindcss/typography v0.5.15
 #### 
 
 ##### Paths
@@ -6442,17 +6431,6 @@ BlueOak-1.0.0 permitted
 * /home/runner/work/giselle/giselle
 
 <a href="http://opensource.org/licenses/bsd-license">Simplified BSD</a> permitted
-
-
-
-<a name="cssesc"></a>
-### cssesc v3.0.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
 
 
 
@@ -8711,39 +8689,6 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="lodash.castarray"></a>
-### lodash.castarray v4.4.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="lodash.isplainobject"></a>
-### lodash.isplainobject v4.0.6
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="lodash.merge"></a>
-### lodash.merge v4.6.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="lodash.sortby"></a>
 ### lodash.sortby v4.7.0
 #### 
@@ -10405,17 +10350,6 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="postcss-selector-parser"></a>
-### postcss-selector-parser v6.0.10
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="postgres-array"></a>
 ### postgres-array v2.0.0
 #### 
@@ -11905,17 +11839,6 @@ Unknown manually approved
 
 
 
-<a name="tailwindcss-animate"></a>
-### tailwindcss-animate v1.0.7
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="tapable"></a>
 ### tapable v2.3.0
 #### 
@@ -12670,17 +12593,6 @@ Unknown manually approved
 
 <a name="utf-8-validate"></a>
 ### utf-8-validate v6.0.5
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="util-deprecate"></a>
-### util-deprecate v1.0.2
 #### 
 
 ##### Paths

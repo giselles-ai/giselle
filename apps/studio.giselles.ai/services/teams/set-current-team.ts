@@ -1,8 +1,7 @@
 import { updateGiselleSession } from "@/lib/giselle-session";
 import { fetchUserTeams } from "./";
-import type { TeamId } from "./types";
 
-export async function setCurrentTeam(teamId: TeamId) {
+export async function setCurrentTeam(teamId: string) {
 	const teams = await fetchUserTeams();
 	if (teams.length === 0) {
 		throw new Error("No teams found");
