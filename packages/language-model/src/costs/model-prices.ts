@@ -126,7 +126,7 @@ export const googleTokenPricing: ModelPriceTable = {
 	"gemini-3-pro-preview": {
 		prices: [
 			{
-				validFrom: "2025-10-01T00:00:00Z",
+				validFrom: "2025-11-18T00:00:00Z",
 				price: {
 					input: {
 						costPerMegaToken: 2.0,
