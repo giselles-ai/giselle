@@ -93,7 +93,7 @@ export function TeamSwitcher({
 									changeTeamAction={changeTeamAction}
 								/>
 							))}
-							<div className="bg-white/10 h-px -mx-1 my-1" />
+							<div className="bg-white/10 h-px mx-1 my-1" />
 
 							<CreateTeamDialogTrigger />
 						</PopoverContent>
