@@ -5,7 +5,7 @@ import Link from "next/link";
 import { DropdownMenu } from "radix-ui";
 import { use } from "react";
 import type { TeamPlan } from "@/db";
-import { getCurrentUser } from "@/lib/get-current-user";
+import { getCurrentUser as getCurrentUserApi } from "@/lib/get-current-user";
 import { logger } from "@/lib/logger";
 import { getUser } from "@/lib/supabase";
 import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
@@ -69,10 +69,10 @@ function DropdownMenuSubTrigger({
 	);
 }
 
-export async function loadCurrentUser() {
+export async function getCurrentUser() {
 	const [supabaseUser, currentUser, currentTeam] = await Promise.all([
 		getUser(),
-		getCurrentUser(),
+		getCurrentUserApi(),
 		fetchCurrentTeam(),
 	]);
 
@@ -92,7 +92,7 @@ export async function loadCurrentUser() {
 		},
 	};
 }
-type CurrentUser = Awaited<ReturnType<typeof loadCurrentUser>>;
+type CurrentUser = Awaited<ReturnType<typeof getCurrentUser>>;
 
 export function AccountMenu({
 	currentUserPromise,

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { GiselleLogo } from "@/components/giselle-logo";
-import { AccountMenu, loadCurrentUser } from "./account-menu";
+import { AccountMenu, getCurrentUser } from "./account-menu";
 import { getTeamContext, TeamSwitcher } from "./team-switcher";
 import { getUpgradeButtonContext, UpgradeButton } from "./upgrade-button";
 
@@ -59,7 +59,7 @@ export function Header() {
 							<div className="w-8 h-8 bg-inverse/20 animate-pulse rounded-full" />
 						}
 					>
-						<AccountMenu currentUserPromise={loadCurrentUser()} />
+						<AccountMenu currentUserPromise={getCurrentUser()} />
 					</Suspense>
 				</div>
 			</div>
