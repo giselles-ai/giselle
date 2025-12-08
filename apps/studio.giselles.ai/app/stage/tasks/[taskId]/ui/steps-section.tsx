@@ -161,7 +161,7 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 	>({});
 	const stepGenerationsRef = useRef(stepGenerations);
 	const [expandedSteps, setExpandedSteps] = useState<Set<string>>(new Set());
-	const [isStepsExpanded, setIsStepsExpanded] = useState(true);
+	const [isStepsExpanded, setIsStepsExpanded] = useState(false);
 
 	const updateTask = useCallback<StreamDataEventHandler>((data) => {
 		setTask(data.task);
@@ -266,11 +266,11 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 					{/* Steps Header */}
 					<button
 						type="button"
-						className="flex items-center justify-between text-text-muted text-[13px] font-semibold mb-2 w-full cursor-pointer hover:text-text-muted transition-colors"
+						className="flex items-center gap-2 text-text-muted text-[13px] font-semibold mb-2 w-full cursor-pointer hover:text-text-muted transition-colors"
 						onClick={() => setIsStepsExpanded(!isStepsExpanded)}
 					>
 						<span className="block">Completed {completedStepsCount} steps</span>
-						<div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
+						<div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
 							<ChevronDownIcon
 								className={`size-4 transition-transform ${
 									isStepsExpanded ? "rotate-180" : ""
