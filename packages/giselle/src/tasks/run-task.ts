@@ -110,6 +110,8 @@ async function executeStep(args: {
 				break;
 			case "appEntry":
 				break;
+			case "end":
+				break;
 			default: {
 				const _exhaustiveCheck: never =
 					args.generation.context.operationNode.content.type;

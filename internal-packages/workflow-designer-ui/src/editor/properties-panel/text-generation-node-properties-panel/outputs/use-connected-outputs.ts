@@ -103,6 +103,9 @@ export function useConnectedOutputs(node: TextGenerationNode) {
 								connection,
 							});
 							break;
+						case "end":
+							// End Node has no Output so do nothing
+							break;
 						default: {
 							const _exhaustiveCheck: never = outputNode.content.type;
 							throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
