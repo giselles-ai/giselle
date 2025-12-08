@@ -106,6 +106,9 @@
 	--color-vector-store-node-1: hsl(76, 100%, 47%);
 	--color-vector-store-node-2: hsl(76, 100%, 35%);
 
+	--color-end-node-1: var(--color-blue-400);
+	--color-end-node-2: var(--color-blue-800);
+
 	--color-error-900: var(--color-red-900);
 
 	--font-accent: var(--font-dm-sans);

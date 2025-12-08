@@ -312,7 +312,7 @@ export function NodeComponent({
 				return "var(--color-trigger-node-1)";
 			if (variant.isAction) return "var(--color-action-node-1)";
 			if (variant.isQuery) return "var(--color-query-node-1)";
-			if (variant.isEnd) return "var(--color-action-node-1)";
+			if (variant.isEnd) return "var(--color-end-node-1)";
 			return undefined;
 		},
 		[],
@@ -365,7 +365,7 @@ export function NodeComponent({
 				selected && v.isTrigger && "shadow-trigger-node-1",
 				selected && v.isAppEntry && "shadow-trigger-node-1",
 				selected && v.isAction && "shadow-action-node-1",
-				selected && v.isEnd && "shadow-action-node-1",
+				selected && v.isEnd && "shadow-end-node-1",
 				selected && v.isQuery && "shadow-query-node-1",
 				selected && "shadow-[0px_0px_20px_1px_rgba(0,0,0,0.4)]",
 				selected &&
@@ -383,7 +383,7 @@ export function NodeComponent({
 				highlighted && v.isTrigger && "shadow-trigger-node-1",
 				highlighted && v.isAppEntry && "shadow-trigger-node-1",
 				highlighted && v.isAction && "shadow-action-node-1",
-				highlighted && v.isEnd && "shadow-action-node-1",
+				highlighted && v.isEnd && "shadow-end-node-1",
 				highlighted && v.isQuery && "shadow-query-node-1",
 				highlighted && "shadow-[0px_0px_20px_1px_rgba(0,0,0,0.4)]",
 				highlighted &&
@@ -489,7 +489,7 @@ export function NodeComponent({
 						"from-action-node-1/30 via-action-node-1/50 to-action-node-1",
 					!borderGradientStyle &&
 						v.isEnd &&
-						"from-action-node-1/30 via-action-node-1/50 to-action-node-1",
+						"from-end-node-1/30 via-end-node-1/50 to-end-node-1",
 					!borderGradientStyle &&
 						v.isQuery &&
 						"from-query-node-1/30 via-query-node-1/50 to-query-node-1",
@@ -522,7 +522,7 @@ export function NodeComponent({
 							v.isTrigger && "bg-trigger-node-1",
 							v.isAppEntry && "bg-trigger-node-1",
 							v.isAction && "bg-action-node-1",
-							v.isEnd && "bg-action-node-1",
+							v.isEnd && "bg-end-node-1",
 							v.isQuery && "bg-query-node-1",
 						)}
 					>
@@ -694,6 +694,7 @@ export function NodeComponent({
 											v.isContentGeneration && "!border-generation-node-1",
 											v.isImageGeneration && "!border-image-generation-node-1",
 											v.isQuery && "!border-query-node-1",
+											v.isEnd && "!border-end-node-1",
 										)}
 									/>
 									<div className="absolute left-[-12px] text-[12px] text-text-muted whitespace-nowrap -translate-x-[100%]">
@@ -749,6 +750,8 @@ export function NodeComponent({
 											"!border-action-node-1 group-data-[state=connected]:!bg-action-node-1 group-data-[state=connected]:!border-action-node-1",
 										v.isQuery &&
 											"!border-query-node-1 group-data-[state=connected]:!bg-query-node-1 group-data-[state=connected]:!border-query-node-1",
+										v.isEnd &&
+											"!border-end-node-1 group-data-[state=connected]:!bg-end-node-1 group-data-[state=connected]:!border-end-node-1",
 									)}
 								/>
 								<div

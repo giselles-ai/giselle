@@ -110,6 +110,9 @@
 	--color-vector-store-node-1: var(--color-node-vector-store-primary);
 	--color-vector-store-node-2: var(--color-node-vector-store-secondary);
 
+	--color-end-node-1: var(--color-blue-400);
+	--color-end-node-2: var(--color-blue-800);
+
 	--color-error-900: var(--color-red-900);
 	--error_900: var(--color-red-900);
 	--red_900: var(--color-red-900);
