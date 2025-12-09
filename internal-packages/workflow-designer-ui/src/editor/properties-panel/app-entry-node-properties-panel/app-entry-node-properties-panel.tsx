@@ -1,4 +1,4 @@
-import type { AppEntryNode } from "@giselles-ai/protocol";
+import type { App, AppEntryNode } from "@giselles-ai/protocol";
 import { useGiselle, useWorkflowDesigner } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { useState } from "react";
@@ -15,11 +15,11 @@ export function AppEntryNodePropertiesPanel({ node }: { node: AppEntryNode }) {
 	const [scrollMode] = useState<"limited" | "full">("full");
 
 	const giselle = useGiselle();
-	const { data, isLoading } = useSWR(
+	const { data, isLoading, mutate } = useSWR<{ app: App }>(
 		node.content.status !== "configured"
 			? null
 			: { namespace: "getApp", appId: node.content.appId },
-		({ appId }) => giselle.getApp({ appId }),
+		({ appId }: { appId: App["id"] }) => giselle.getApp({ appId }),
 	);
 
 	return (
@@ -40,7 +40,11 @@ export function AppEntryNodePropertiesPanel({ node }: { node: AppEntryNode }) {
 				>
 					{isLoading && <div>Loading...</div>}
 					{data !== undefined && (
-						<AppEntryConfiguredView node={node} app={data.app} />
+						<AppEntryConfiguredView
+							node={node}
+							app={data.app}
+							mutateApp={mutate}
+						/>
 					)}
 				</div>
 			</PropertiesPanelContent>
