@@ -68,6 +68,21 @@ export async function copyAgent(
 		const newName = `Copy of ${baseName}`;
 		let workspace = await giselle.copyWorkspace(agent.workspaceId, newName);
 
+		// The agents table is deprecated, so we are inserting into the workspaces table.
+		await db.insert(agents).values({
+			id: newAgentId,
+			name: newName,
+			teamDbId: team.dbId,
+			creatorDbId: user.dbId,
+			workspaceId: workspace.id,
+		});
+		await db.insert(workspaces).values({
+			id: workspace.id,
+			name: workspace.name,
+			teamDbId: team.dbId,
+			creatorDbId: user.dbId,
+		});
+
 		const nodesWithDuplicatedApps = await Promise.all(
 			workspace.nodes.map(async (node) => {
 				if (!isAppEntryNode(node) || node.content.status !== "configured") {
@@ -107,21 +122,6 @@ export async function copyAgent(
 			};
 			workspace = await giselle.updateWorkspace(updatedWorkspace);
 		}
-
-		// The agents table is deprecated, so we are inserting into the workspaces table.
-		await db.insert(agents).values({
-			id: newAgentId,
-			name: newName,
-			teamDbId: team.dbId,
-			creatorDbId: user.dbId,
-			workspaceId: workspace.id,
-		});
-		await db.insert(workspaces).values({
-			id: workspace.id,
-			name: workspace.name,
-			teamDbId: team.dbId,
-			creatorDbId: user.dbId,
-		});
 
 		// Copy flowTrigger DB records for staged triggers
 		for (const node of workspace.nodes) {
