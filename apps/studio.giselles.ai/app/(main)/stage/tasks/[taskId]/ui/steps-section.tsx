@@ -242,9 +242,22 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 						onClick={() => setIsStepsExpanded(!isStepsExpanded)}
 					>
 						<div className="flex items-center gap-2">
-							<span className="block">
-								Completed {completedStepsCount} steps
-							</span>
+							{task.status === "inProgress" &&
+							completedStepsCount < totalStepsCount ? (
+								<span
+									className="block bg-[length:200%_100%] bg-clip-text bg-gradient-to-r from-text-muted via-text-muted/50 to-text-muted text-transparent animate-shimmer"
+									style={{
+										animationDuration: "1s",
+										animationTimingFunction: "linear",
+									}}
+								>
+									Completed {completedStepsCount} steps
+								</span>
+							) : (
+								<span className="block">
+									Completed {completedStepsCount} steps
+								</span>
+							)}
 							{totalStepsCount > 0 ? (
 								<div className="flex items-center gap-1 text-[11px] text-text-muted/80">
 									<div
