@@ -193,7 +193,7 @@ async function getAppsBySampleFlag(
 
 		apps.push({
 			id: data.giselleApp.id,
-			name: data.giselleApp.name,
+			name: data.workspace.name ?? "No name app",
 			description: data.giselleApp.description,
 			iconName: isIconName(data.giselleApp.iconName)
 				? data.giselleApp.iconName
