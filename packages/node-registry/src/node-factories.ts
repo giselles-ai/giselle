@@ -660,6 +660,7 @@ const appEntryFactoryImpl = {
 	create: (): AppEntryNode => {
 		const draftApp = createDefaultDraftApp();
 		return {
+			name: draftApp.name,
 			id: NodeId.generate(),
 			type: "operation",
 			content: {
