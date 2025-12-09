@@ -1,5 +1,6 @@
 import {
 	App,
+	type AppEntryNode,
 	AppId,
 	AppParameterId,
 	type FileData,
@@ -177,7 +178,7 @@ export function ZustandBridgeProvider({
 				return;
 			}
 
-			nextState.updateNode(node.id, {
+			nextState.updateNodeData(existingNode as AppEntryNode, {
 				name: parseResult.data.name,
 				outputs: parseResult.data.parameters.map((parameter) => ({
 					id: OutputId.generate(),
@@ -185,7 +186,7 @@ export function ZustandBridgeProvider({
 					accessor: parameter.id,
 				})),
 				content: {
-					...node.content,
+					type: "appEntry",
 					status: "configured",
 					appId,
 				},
