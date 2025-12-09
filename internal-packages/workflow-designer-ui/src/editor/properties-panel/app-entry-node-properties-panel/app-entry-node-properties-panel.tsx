@@ -7,7 +7,6 @@ import {
 	PropertiesPanelContent,
 	PropertiesPanelRoot,
 } from "../ui";
-import { AppEntryConfigurationView } from "./app-entry-configuration-view";
 import { AppEntryConfiguredView } from "./app-entry-configured-view";
 
 export function AppEntryNodePropertiesPanel({ node }: { node: AppEntryNode }) {
@@ -30,12 +29,6 @@ export function AppEntryNodePropertiesPanel({ node }: { node: AppEntryNode }) {
 						scrollMode === "limited" ? "max-h-[560px]" : "h-full flex-1",
 					)}
 				>
-					{node.content.status === "unconfigured" && (
-						<AppEntryConfigurationView
-							draftApp={node.content.draftApp}
-							node={node}
-						/>
-					)}
 					{node.content.status === "configured" && (
 						<AppEntryConfiguredView node={node} appId={node.content.appId} />
 					)}

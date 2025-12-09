@@ -8,12 +8,12 @@ import { getEntry } from "@giselles-ai/language-model-registry";
 import {
 	type ActionNode,
 	type AppEntryNode,
+	AppParameterId,
 	type ContentGenerationNode,
 	createPendingCopyFileData,
 	DEFAULT_MAX_RESULTS,
 	DEFAULT_SIMILARITY_THRESHOLD,
 	type DraftApp,
-	DraftAppParameterId,
 	type EndNode,
 	type FileContent,
 	type FileData,
@@ -134,13 +134,13 @@ function createDefaultDraftApp(): DraftApp {
 		iconName: "workflow",
 		parameters: [
 			{
-				id: DraftAppParameterId.generate(),
+				id: AppParameterId.generate(),
 				name: "",
 				type: "multiline-text",
 				required: true,
 			},
 			{
-				id: DraftAppParameterId.generate(),
+				id: AppParameterId.generate(),
 				name: "",
 				type: "files",
 				required: false,
@@ -690,7 +690,7 @@ const appEntryFactoryImpl = {
 							parameters: clonedContent.draftApp.parameters.map(
 								(parameter) => ({
 									...parameter,
-									id: DraftAppParameterId.generate(),
+									id: AppParameterId.generate(),
 								}),
 							),
 						},
