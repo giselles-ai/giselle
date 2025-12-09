@@ -1,45 +1,18 @@
-import type { AppEntryNode, AppId } from "@giselles-ai/protocol";
+import type { App, AppEntryNode } from "@giselles-ai/protocol";
 import { AppParameterId } from "@giselles-ai/protocol";
-import { useGiselle } from "@giselles-ai/react";
-import { useEffect, useState } from "react";
-import useSWR from "swr";
+import { useState } from "react";
 import { SettingDetail, SettingLabel } from "../ui/setting-label";
 import { AppIconSelect } from "./app-icon-select";
 
 export function AppEntryConfiguredView({
 	node,
-	appId,
+	app,
 }: {
 	node: AppEntryNode;
-	appId: AppId;
+	app: App;
 }) {
-	const giselle = useGiselle();
-	const { data, isLoading } = useSWR(`getApp/${appId}`, () =>
-		giselle.getApp({ appId }),
-	);
-	const [appDescription, setAppDescription] = useState("");
-	const [selectedIconName, setSelectedIconName] = useState("");
-	const appDescriptionFromServer = data?.app.description ?? "";
-	const appIconNameFromServer = data?.app.iconName ?? "";
-	const appIdFromServer = data?.app.id;
-
-	useEffect(() => {
-		if (appIdFromServer === undefined) {
-			return;
-		}
-
-		setAppDescription(appDescriptionFromServer);
-		setSelectedIconName(appIconNameFromServer);
-	}, [appIdFromServer, appDescriptionFromServer, appIconNameFromServer]);
-
-	if (isLoading) {
-		return null;
-	}
-
-	if (data === undefined) {
-		console.warn("App data is undefined");
-		return null;
-	}
+	const [appDescription, setAppDescription] = useState(app.description);
+	const [selectedIconName, setSelectedIconName] = useState(app.iconName);
 
 	return (
 		<div className="flex flex-col gap-[16px] p-0 px-1 overflow-y-auto">
@@ -82,9 +55,7 @@ export function AppEntryConfiguredView({
 									output.accessor,
 								);
 								const parameter = parameterIdResult.success
-									? data.app.parameters.find(
-											(p) => p.id === parameterIdResult.data,
-										)
+									? app.parameters.find((p) => p.id === parameterIdResult.data)
 									: undefined;
 
 								return (
