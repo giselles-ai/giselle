@@ -99,6 +99,7 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 		Record<string, Generation["context"]["operationNode"]>
 	>({});
 	const stepGenerationsRef = useRef(stepGenerations);
+	const stepOperationNodesRef = useRef(stepOperationNodes);
 	const [expandedSteps, setExpandedSteps] = useState<Set<string>>(new Set());
 	const [isStepsExpanded, setIsStepsExpanded] = useState(false);
 	const [isOutputExpanded, setIsOutputExpanded] = useState(true);
@@ -107,10 +108,14 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 		setTask(data.task);
 	}, []);
 
-	// Keep ref in sync with state
+	// Keep refs in sync with state
 	useEffect(() => {
 		stepGenerationsRef.current = stepGenerations;
 	}, [stepGenerations]);
+
+	useEffect(() => {
+		stepOperationNodesRef.current = stepOperationNodes;
+	}, [stepOperationNodes]);
 
 	// Fetch generation data for completed steps
 	useEffect(() => {
@@ -131,7 +136,10 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 							stepId: step.id,
 							generationId: step.generationId,
 						});
-					} else if (!stepOperationNodes[step.id] && step.generationId) {
+					} else if (
+						!stepOperationNodesRef.current[step.id] &&
+						step.generationId
+					) {
 						// Fetch generation just to get operationNode, even if step is not completed
 						generationsToFetch.push({
 							stepId: step.id,
