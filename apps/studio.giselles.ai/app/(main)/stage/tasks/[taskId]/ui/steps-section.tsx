@@ -268,7 +268,7 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 					</button>
 
 					{isStepsExpanded && (
-						<div className="mb-8">
+						<div className="mb-8 border-l border-border pl-3">
 							{task.sequences.map((sequence, sequenceIndex) => {
 								// Determine sequence status
 								const hasRunningStep = sequence.steps.some(
