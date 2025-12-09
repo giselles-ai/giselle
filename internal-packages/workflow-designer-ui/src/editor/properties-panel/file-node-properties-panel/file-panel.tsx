@@ -132,7 +132,7 @@ export function FilePanel({ node, config }: FilePanelProps) {
 					}
 				}
 				isValid = config.accept.some((accept) =>
-					new RegExp(accept).test(itemType),
+					accept === itemType
 				);
 			}
 			return isValid;
@@ -157,7 +157,7 @@ export function FilePanel({ node, config }: FilePanelProps) {
 				}
 
 				const isValid = config.accept.some((accept) =>
-					new RegExp(accept).test(mimeType),
+					accept === mimeType
 				);
 				if (!isValid) {
 					throw new InvalidFileTypeError(config.accept, mimeType);
