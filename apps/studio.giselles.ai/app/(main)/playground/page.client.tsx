@@ -523,7 +523,7 @@ function ChatInputArea({
 	const hasInput = inputValue.trim().length > 0;
 	const uploadedFiles = attachedFiles.filter(isUploadedFile);
 	const hasPendingUploads = attachedFiles.some(
-		(file) => file.status !== "uploaded",
+		(file) => file.status === "uploading",
 	);
 	const canSubmit =
 		!!selectedApp && hasInput && !isRunning && !hasPendingUploads;
