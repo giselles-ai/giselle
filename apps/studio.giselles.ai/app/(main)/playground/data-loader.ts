@@ -13,6 +13,7 @@ async function getApps(teamDbId: number, userDbId: number) {
 		where: (workspaces, { eq, and, exists }) =>
 			and(
 				eq(workspaces.teamDbId, teamDbId),
+				eq(workspaces.metadata, { sample: false }),
 				exists(
 					db
 						.select({ workspaceDbId: appsDefinition.workspaceDbId })
