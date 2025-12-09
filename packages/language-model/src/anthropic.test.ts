@@ -7,9 +7,6 @@ describe("anthropic llm", () => {
 			expect(AnthropicLanguageModelId.parse("claude-opus-4.5")).toBe(
 				"claude-opus-4.5",
 			);
-			expect(AnthropicLanguageModelId.parse("claude-opus-4-1-20250805")).toBe(
-				"claude-opus-4-1-20250805",
-			);
 			expect(AnthropicLanguageModelId.parse("claude-sonnet-4-5-20250929")).toBe(
 				"claude-sonnet-4-5-20250929",
 			);
@@ -24,9 +21,15 @@ describe("anthropic llm", () => {
 			);
 		});
 
-		it("should fallback claude-opus-4-1-* to claude-opus-4-1-20250805", () => {
+		it("should fallback claude-opus-4-1-* to claude-opus-4.5", () => {
 			expect(AnthropicLanguageModelId.parse("claude-opus-4-1-foo")).toBe(
-				"claude-opus-4-1-20250805",
+				"claude-opus-4.5",
+			);
+		});
+
+		it("should fallback claude-opus-4-1-20250805 to claude-opus-4.5", () => {
+			expect(AnthropicLanguageModelId.parse("claude-opus-4-1-20250805")).toBe(
+				"claude-opus-4.5",
 			);
 		});
 
@@ -42,9 +45,9 @@ describe("anthropic llm", () => {
 			);
 		});
 
-		it("should fallback claude-4-opus-* to claude-opus-4-1-20250805", () => {
+		it("should fallback claude-4-opus-* to claude-opus-4.5", () => {
 			expect(AnthropicLanguageModelId.parse("claude-4-opus-4-foo")).toBe(
-				"claude-opus-4-1-20250805",
+				"claude-opus-4.5",
 			);
 		});
 
@@ -90,9 +93,9 @@ describe("anthropic llm", () => {
 			);
 		});
 
-		it("should fallback claude-3-opus-* to claude-opus-4-1-20250805", () => {
+		it("should fallback claude-3-opus-* to claude-opus-4.5", () => {
 			expect(AnthropicLanguageModelId.parse("claude-3-opus-foo")).toBe(
-				"claude-opus-4-1-20250805",
+				"claude-opus-4.5",
 			);
 		});
 
