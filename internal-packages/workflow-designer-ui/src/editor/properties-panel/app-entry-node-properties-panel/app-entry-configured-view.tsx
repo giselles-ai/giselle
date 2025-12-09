@@ -1,4 +1,5 @@
 import { Button } from "@giselle-internal/ui/button";
+import { useToasts } from "@giselle-internal/ui/toast";
 import type { App, AppEntryNode } from "@giselles-ai/protocol";
 import { AppParameterId } from "@giselles-ai/protocol";
 import { useGiselle } from "@giselles-ai/react";
@@ -24,6 +25,8 @@ export function AppEntryConfiguredView({
 	const [isSavingIcon, setIsSavingIcon] = useState(false);
 	const [isSavingDescription, setIsSavingDescription] = useState(false);
 
+	const { info } = useToasts();
+
 	useEffect(() => {
 		setAppDescription(app.description);
 	}, [app.description]);
@@ -41,8 +44,9 @@ export function AppEntryConfiguredView({
 				},
 			});
 			await mutateApp();
+			info("App updated successfully");
 		},
-		[app, client, mutateApp],
+		[app, client, mutateApp, info],
 	);
 
 	const handleIconChange = useCallback(
@@ -84,8 +88,6 @@ export function AppEntryConfiguredView({
 		[app.description, appDescription, persistApp, selectedIconName],
 	);
 
-	const isDescriptionDirty = appDescription !== app.description;
-
 	return (
 		<div className="flex flex-col gap-[16px] p-0 px-1 overflow-y-auto">
 			<div className="flex flex-col gap-[8px]">
@@ -121,15 +123,15 @@ export function AppEntryConfiguredView({
 					/>
 					<Button
 						type="submit"
-						variant="glass"
-						size="compact"
-						className="absolute bottom-[8px] right-[8px] inline-flex items-center gap-[6px]"
-						disabled={!isDescriptionDirty || isSavingDescription}
+						variant="solid"
+						disabled={isSavingDescription}
+						leftIcon={
+							isSavingDescription && (
+								<LoaderIcon className="size-[14px] animate-spin" />
+							)
+						}
 					>
-						{isSavingDescription && (
-							<LoaderIcon className="size-[14px] animate-spin" />
-						)}
-						Submit
+						Save
 					</Button>
 				</form>
 			</div>
