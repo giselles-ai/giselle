@@ -239,7 +239,7 @@ export async function dataLoader() {
 		getCurrentUser(),
 		fetchCurrentTeam(),
 	]);
-	const [apps, _sampleApps, tasks] = await Promise.all([
+	const [apps, sampleApps, tasks] = await Promise.all([
 		getApps(currentTeam.dbId, currentUser.dbId),
 		getSampleApps(currentTeam.dbId, currentUser.dbId),
 		getTasks(currentTeam.dbId),
@@ -248,7 +248,7 @@ export async function dataLoader() {
 	const currentTeamId = currentTeam.id;
 
 	logger.debug({ apps, tasks, currentTeamId });
-	return { apps, tasks, currentTeamId };
+	return { apps, sampleApps, tasks, currentTeamId };
 }
 
 export type LoaderData = Awaited<ReturnType<typeof dataLoader>>;
