@@ -2,7 +2,6 @@ import {
 	App,
 	type AppEntryNode,
 	AppId,
-	AppParameterId,
 	type FileData,
 	type FileNode,
 	isAppEntryNode,
@@ -125,7 +124,12 @@ export function ZustandBridgeProvider({
 
 	const autoConfigureAppEntryNode = useCallback(
 		async (node: NodeLike) => {
-			if (!isAppEntryNode(node) || node.content.status !== "unconfigured") {
+			if (!isAppEntryNode(node)) {
+				return;
+			}
+
+			if (node.content.status !== "unconfigured") {
+				console.warn("Node is not unconfigured");
 				return;
 			}
 			const workspace = appStore.getState().workspace;
@@ -142,12 +146,7 @@ export function ZustandBridgeProvider({
 				name: ensureNonEmpty(draftApp.name, fallbackNodeName),
 				description: draftApp.description ?? "",
 				iconName: ensureNonEmpty(draftApp.iconName, "workflow"),
-				parameters: draftApp.parameters.map((draftParameter, index) => ({
-					id: AppParameterId.generate(),
-					type: draftParameter.type,
-					name: ensureNonEmpty(draftParameter.name, `Parameter ${index + 1}`),
-					required: draftParameter.required,
-				})),
+				parameters: draftApp.parameters,
 				entryNodeId: node.id,
 				workspaceId: workspace.id,
 			};
@@ -180,11 +179,6 @@ export function ZustandBridgeProvider({
 
 			nextState.updateNodeData(existingNode as AppEntryNode, {
 				name: parseResult.data.name,
-				outputs: parseResult.data.parameters.map((parameter) => ({
-					id: OutputId.generate(),
-					label: parameter.name,
-					accessor: parameter.id,
-				})),
 				content: {
 					type: "appEntry",
 					status: "configured",

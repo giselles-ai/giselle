@@ -135,13 +135,13 @@ function createDefaultDraftApp(): DraftApp {
 		parameters: [
 			{
 				id: AppParameterId.generate(),
-				name: "",
+				name: "Input(Text)",
 				type: "multiline-text",
 				required: true,
 			},
 			{
 				id: AppParameterId.generate(),
-				name: "",
+				name: "Input(File)",
 				type: "files",
 				required: false,
 			},
@@ -658,16 +658,21 @@ const webPageFactoryImpl = {
 
 const appEntryFactoryImpl = {
 	create: (): AppEntryNode => {
+		const draftApp = createDefaultDraftApp();
 		return {
 			id: NodeId.generate(),
 			type: "operation",
 			content: {
 				type: "appEntry",
 				status: "unconfigured",
-				draftApp: createDefaultDraftApp(),
+				draftApp,
 			},
 			inputs: [],
-			outputs: [],
+			outputs: draftApp.parameters.map((parameter) => ({
+				id: OutputId.generate(),
+				label: parameter.name,
+				accessor: parameter.id,
+			})),
 		} satisfies AppEntryNode;
 	},
 	clone: (orig: AppEntryNode): NodeFactoryCloneResult<AppEntryNode> => {
