@@ -73,6 +73,35 @@ async function userApps(teamIds: TeamId[], userDbId: number) {
 		);
 	}
 
+	// Build a map of workspace creator user info so we can show who owns each app.
+	const creatorDbIds = new Set<number>();
+	for (const team of teams) {
+		for (const app of team.apps) {
+			const creatorDbId = app.workspace.creatorDbId;
+			if (creatorDbId != null) {
+				creatorDbIds.add(creatorDbId);
+			}
+		}
+	}
+
+	const creatorUsers =
+		creatorDbIds.size > 0
+			? await db.query.users.findMany({
+					where: (usersTable, { inArray }) =>
+						inArray(usersTable.dbId, Array.from(creatorDbIds)),
+				})
+			: [];
+	const creatorMap = new Map<
+		number,
+		{ displayName: string | null; avatarUrl: string | null }
+	>();
+	for (const creator of creatorUsers) {
+		creatorMap.set(creator.dbId, {
+			displayName: creator.displayName,
+			avatarUrl: creator.avatarUrl,
+		});
+	}
+
 	const result = await Promise.all(
 		teams.flatMap((team) =>
 			team.apps.map(async (app) => {
@@ -96,9 +125,47 @@ async function userApps(teamIds: TeamId[], userDbId: number) {
 				const documentFiles: string[] = [];
 				const llmProviders = new Set<string>();
 
-				// LLM providers and vector stores: check all nodes in workspace
-				// (not just reachable ones, as they might be referenced indirectly)
+				// Build adjacency list from workspace connections so we can
+				// traverse only nodes that are reachable from the app entry node.
+				const connectionsByOutputNodeId = new Map<string, string[]>();
+				for (const connection of workspace.connections ?? []) {
+					const outputNodeId = connection.outputNode.id;
+					const inputNodeId = connection.inputNode.id;
+					const existing = connectionsByOutputNodeId.get(outputNodeId);
+					if (existing === undefined) {
+						connectionsByOutputNodeId.set(outputNodeId, [inputNodeId]);
+					} else if (!existing.includes(inputNodeId)) {
+						existing.push(inputNodeId);
+					}
+				}
+
+				const reachableNodeIds = new Set<string>();
+				const stack = [appEntryNode.id];
+				reachableNodeIds.add(appEntryNode.id);
+
+				while (stack.length > 0) {
+					const currentNodeId = stack.pop();
+					if (currentNodeId === undefined) {
+						continue;
+					}
+					const nextNodeIds =
+						connectionsByOutputNodeId.get(currentNodeId) ?? [];
+					for (const nextNodeId of nextNodeIds) {
+						if (!reachableNodeIds.has(nextNodeId)) {
+							reachableNodeIds.add(nextNodeId);
+							stack.push(nextNodeId as `nd-${string}`);
+						}
+					}
+				}
+
+				// LLM providers and vector stores: check only nodes that are
+				// reachable from the app's entry node to better reflect what
+				// this app actually uses.
 				for (const node of workspace.nodes) {
+					if (!reachableNodeIds.has(node.id)) {
+						continue;
+					}
+
 					// LLM providers
 					if (
 						isTextGenerationNode(node) &&
@@ -158,13 +225,17 @@ async function userApps(teamIds: TeamId[], userDbId: number) {
 	const apps: StageApp[] = [];
 
 	for (const data of result) {
+		const creatorDbId = data.dbWorkspace.creatorDbId;
+		const creatorInfo =
+			creatorDbId != null ? (creatorMap.get(creatorDbId) ?? null) : null;
+
 		apps.push({
 			id: data.giselleApp.id,
 			name: data.giselleApp.name,
 			description: data.giselleApp.description,
 			iconName: isIconName(data.giselleApp.iconName)
 				? data.giselleApp.iconName
-				: "cable",
+				: "sparkles",
 			entryNodeId: data.giselleApp.entryNodeId,
 			parameters: data.giselleApp.parameters,
 			workspaceId: data.workspace.id,
@@ -175,6 +246,7 @@ async function userApps(teamIds: TeamId[], userDbId: number) {
 			vectorStoreRepositories: data.githubRepositories,
 			vectorStoreFiles: data.documentFiles,
 			llmProviders: data.llmProviders,
+			creator: creatorInfo,
 		});
 	}
 

@@ -15,10 +15,10 @@ You are an expert React developer specializing in creating simple, maintainable 
 **Technical Requirements:**
 
 1. **UI Component Usage:**
-   - ALWAYS import UI components from 'internal-packages/ui'
-   - NEVER use '@/components/ui' (this is deprecated)
-   - Reference examples in 'apps/playground/app/ui' for usage patterns
-   - When creating new components, check if existing UI components can be composed instead
+   - ALWAYS import UI components from `@giselles-ai/ui` (or the appropriate `@giselle-internal/ui/*` entry point, e.g. `@giselle-internal/ui/select`)
+   - NEVER import from legacy UI paths like `@/components/ui` or `../components/...`
+   - For concrete usage examples, refer to `apps/studio.giselles.ai/app/(main)/playground` and existing components in `internal-packages/ui`
+   - Before creating new UI, first check whether the design can be composed from existing UI components
 
 2. **React 19 Patterns:**
    - NEVER use forwardRef - it's not needed in React 19
@@ -33,13 +33,13 @@ You are an expert React developer specializing in creating simple, maintainable 
 
 **Component Creation Process:**
 1. Start with the simplest possible implementation
-2. Use existing UI components from 'internal-packages/ui' wherever possible
+2. Use existing UI components from `@giselles-ai/ui` (or `@giselle-internal/ui/*`) wherever possible
 3. Keep component files focused - one main export per file
 4. Use TypeScript for all props interfaces
 5. Avoid premature optimization or abstraction
 
 **Code Review Checklist:**
-- Are all UI imports from 'internal-packages/ui'?
+- Are all UI imports from `@giselles-ai/ui` or `@giselle-internal/ui/*`?
 - Is forwardRef avoided in favor of regular prop passing?
 - Is useEffect usage justified and minimal?
 - Could the component be simpler while maintaining functionality?
@@ -48,8 +48,8 @@ You are an expert React developer specializing in creating simple, maintainable 
 
 **Example of Good Component:**
 ```tsx
-import { Button } from 'internal-packages/ui/button';
-import { Input } from 'internal-packages/ui/input';
+import { Button } from '@giselles-ai/ui/button';
+import { Input } from '@giselles-ai/ui/input';
 
 interface LoginFormProps {
   onSubmit: (data: { email: string; password: string }) => void;

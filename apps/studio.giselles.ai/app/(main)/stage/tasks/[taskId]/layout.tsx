@@ -31,28 +31,45 @@ export default async function ({
 
 	return (
 		<div className="bg-bg text-foreground min-h-screen font-sans">
-			<div className="max-w-7xl mx-auto px-4 py-6">
-				{/* Top Section */}
-				<Suspense fallback={<div>Loading...</div>}>
-					<TopSection data={topSectionData} />
-				</Suspense>
+			<div className="max-w-7xl mx-auto px-4 pt-6 pb-0 flex flex-col min-h-screen">
+				<div className="flex-1">
+					{/* Top Section */}
+					<Suspense fallback={<div>Loading...</div>}>
+						<TopSection data={topSectionData} />
+					</Suspense>
 
-				{/* Steps Section */}
-				<Suspense fallback={<div>Loading steps...</div>}>
-					<StepsSection taskPromise={taskPromise} taskId={taskId} />
-				</Suspense>
+					{/* Task input preview placeholder (non-sticky, below summary) */}
+					<div className="mt-3 max-w-[640px] min-w-[320px] mx-auto">
+						<div className="rounded-[10px] border border-blue-muted/40 bg-blue-muted/7 px-3 py-2 text-[13px] text-text/80">
+							{/* TODO: Replace with actual task input preview */}
+							Task input preview will be displayed here.
+						</div>
+					</div>
 
-				{/* Main Content Area - Request new tasks section */}
-				<div className="mt-8 pt-8">
-					<h2 className="text-text-muted text-[13px] font-semibold block mb-4">
-						Request new tasks in a new session
-					</h2>
-					{/* TODO: Input area will be added here - placeholder for future functionality */}
-					<InputAreaPlaceholder />
+					{/* Steps Section */}
+					<Suspense fallback={<div>Loading steps...</div>}>
+						<StepsSection taskPromise={taskPromise} taskId={taskId} />
+					</Suspense>
+
+					{/* Render nested routes */}
+					{children}
 				</div>
 
-				{/* Render nested routes */}
-				{children}
+				{/* Main Content Area - Request new tasks section (sticky inside main container) */}
+				<div
+					className="mt-8 sticky bottom-0 z-10 bg-[color:var(--color-background)] pb-4"
+					style={{ marginBottom: "-1px" }}
+				>
+					{/* Top gradient separator */}
+					<div className="h-6 -mt-6 bg-gradient-to-t from-[color:var(--color-background)] to-transparent pointer-events-none" />
+					<div className="max-w-[640px] min-w-[320px] mx-auto">
+						<h2 className="text-text-muted text-[13px] font-semibold block mb-2">
+							Request new tasks in a new session
+						</h2>
+						{/* TODO: Input area will be added here - placeholder for future functionality */}
+						<InputAreaPlaceholder taskPromise={taskPromise} />
+					</div>
+				</div>
 			</div>
 		</div>
 	);
