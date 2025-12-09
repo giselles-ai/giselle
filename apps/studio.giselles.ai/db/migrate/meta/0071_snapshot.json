@@ -1,0 +1,3434 @@
+{
+  "id": "bc5df7e5-ae0e-4b3b-a358-e0bb1badb22b",
+  "prevId": "d2ec1687-e6bc-477b-87f2-1e13326bd8ed",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.acts": {
+      "name": "acts",
+      "schema": "",
+      "columns": {
+        "db_id": {
+          "name": "db_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "team_db_id": {
+          "name": "team_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "director_db_id": {
+          "name": "director_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sdk_workspace_id": {
+          "name": "sdk_workspace_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sdk_flow_trigger_id": {
+          "name": "sdk_flow_trigger_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sdk_act_id": {
+          "name": "sdk_act_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "acts_team_db_id_index": {
+          "name": "acts_team_db_id_index",
+          "columns": [
+            {
+              "expression": "team_db_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "acts_sdk_workspace_id_index": {
+          "name": "acts_sdk_workspace_id_index",
+          "columns": [
+            {
+              "expression": "sdk_workspace_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "acts_sdk_flow_trigger_id_index": {
+          "name": "acts_sdk_flow_trigger_id_index",
+          "columns": [
+            {
+              "expression": "sdk_flow_trigger_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "acts_sdk_act_id_index": {
+          "name": "acts_sdk_act_id_index",
+          "columns": [
+            {
+              "expression": "sdk_act_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "acts_team_db_id_teams_db_id_fk": {
+          "name": "acts_team_db_id_teams_db_id_fk",
+          "tableFrom": "acts",
+          "tableTo": "teams",
+          "columnsFrom": [
+            "team_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "acts_director_db_id_users_db_id_fk": {
+          "name": "acts_director_db_id_users_db_id_fk",
+          "tableFrom": "acts",
+          "tableTo": "users",
+          "columnsFrom": [
+            "director_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.agent_activities": {
+      "name": "agent_activities",
+      "schema": "",
+      "columns": {
+        "db_id": {
+          "name": "db_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "agent_db_id": {
+          "name": "agent_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ended_at": {
+          "name": "ended_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total_duration_ms": {
+          "name": "total_duration_ms",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "usage_report_db_id": {
+          "name": "usage_report_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "agent_activities_agent_db_id_index": {
+          "name": "agent_activities_agent_db_id_index",
+          "columns": [
+            {
+              "expression": "agent_db_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "agent_activities_ended_at_index": {
+          "name": "agent_activities_ended_at_index",
+          "columns": [
+            {
+              "expression": "ended_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "agent_activities_agent_db_id_agents_db_id_fk": {
+          "name": "agent_activities_agent_db_id_agents_db_id_fk",
+          "tableFrom": "agent_activities",
+          "tableTo": "agents",
+          "columnsFrom": [
+            "agent_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "agent_activities_usage_report_db_id_agent_time_usage_reports_db_id_fk": {
+          "name": "agent_activities_usage_report_db_id_agent_time_usage_reports_db_id_fk",
+          "tableFrom": "agent_activities",
+          "tableTo": "agent_time_usage_reports",
+          "columnsFrom": [
+            "usage_report_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.agent_time_restrictions": {
+      "name": "agent_time_restrictions",
+      "schema": "",
+      "columns": {
+        "team_db_id": {
+          "name": "team_db_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "agent_time_restrictions_team_db_id_index": {
+          "name": "agent_time_restrictions_team_db_id_index",
+          "columns": [
+            {
+              "expression": "team_db_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "agent_time_restrictions_team_db_id_teams_db_id_fk": {
+          "name": "agent_time_restrictions_team_db_id_teams_db_id_fk",
+          "tableFrom": "agent_time_restrictions",
+          "tableTo": "teams",
+          "columnsFrom": [
+            "team_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.agent_time_usage_reports": {
+      "name": "agent_time_usage_reports",
+      "schema": "",
+      "columns": {
+        "db_id": {
+          "name": "db_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "team_db_id": {
+          "name": "team_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "accumulated_duration_ms": {
+          "name": "accumulated_duration_ms",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "minutes_increment": {
+          "name": "minutes_increment",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_meter_event_id": {
+          "name": "stripe_meter_event_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "agent_time_usage_reports_team_db_id_index": {
+          "name": "agent_time_usage_reports_team_db_id_index",
+          "columns": [
+            {
+              "expression": "team_db_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "agent_time_usage_reports_created_at_index": {
+          "name": "agent_time_usage_reports_created_at_index",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "agent_time_usage_reports_stripe_meter_event_id_index": {
+          "name": "agent_time_usage_reports_stripe_meter_event_id_index",
+          "columns": [
+            {
+              "expression": "stripe_meter_event_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "agent_time_usage_reports_team_db_id_teams_db_id_fk": {
+          "name": "agent_time_usage_reports_team_db_id_teams_db_id_fk",
+          "tableFrom": "agent_time_usage_reports",
+          "tableTo": "teams",
+          "columnsFrom": [
+            "team_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.agents": {
+      "name": "agents",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "db_id": {
+          "name": "db_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "team_db_id": {
+          "name": "team_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "graph_url": {
+          "name": "graph_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "workspace_id": {
+          "name": "workspace_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "creator_db_id": {
+          "name": "creator_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{\"sample\":false}'::jsonb"
+        }
+      },
+      "indexes": {
+        "agents_team_db_id_index": {
+          "name": "agents_team_db_id_index",
+          "columns": [
+            {
+              "expression": "team_db_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "agents_team_db_id_teams_db_id_fk": {
+          "name": "agents_team_db_id_teams_db_id_fk",
+          "tableFrom": "agents",
+          "tableTo": "teams",
+          "columnsFrom": [
+            "team_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "agents_creator_db_id_users_db_id_fk": {
+          "name": "agents_creator_db_id_users_db_id_fk",
+          "tableFrom": "agents",
+          "tableTo": "users",
+          "columnsFrom": [
+            "creator_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "agents_id_unique": {
+          "name": "agents_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.apps": {
+      "name": "apps",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "app_entry_node_id": {
+          "name": "app_entry_node_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "db_id": {
+          "name": "db_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "team_db_id": {
+          "name": "team_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "workspace_db_id": {
+          "name": "workspace_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "apps_team_db_id_index": {
+          "name": "apps_team_db_id_index",
+          "columns": [
+            {
+              "expression": "team_db_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "apps_team_db_id_teams_db_id_fk": {
+          "name": "apps_team_db_id_teams_db_id_fk",
+          "tableFrom": "apps",
+          "tableTo": "teams",
+          "columnsFrom": [
+            "team_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "apps_workspace_db_id_workspaces_db_id_fk": {
+          "name": "apps_workspace_db_id_workspaces_db_id_fk",
+          "tableFrom": "apps",
+          "tableTo": "workspaces",
+          "columnsFrom": [
+            "workspace_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "apps_id_unique": {
+          "name": "apps_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        },
+        "apps_workspace_db_id_app_entry_node_id_unique": {
+          "name": "apps_workspace_db_id_app_entry_node_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "workspace_db_id",
+            "app_entry_node_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.document_embedding_profiles": {
+      "name": "document_embedding_profiles",
+      "schema": "",
+      "columns": {
+        "document_vector_store_db_id": {
+          "name": "document_vector_store_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "embedding_profile_id": {
+          "name": "embedding_profile_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "doc_vs_emb_profiles_store_fk": {
+          "name": "doc_vs_emb_profiles_store_fk",
+          "tableFrom": "document_embedding_profiles",
+          "tableTo": "document_vector_stores",
+          "columnsFrom": [
+            "document_vector_store_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "doc_vs_emb_profiles_pk": {
+          "name": "doc_vs_emb_profiles_pk",
+          "columns": [
+            "document_vector_store_db_id",
+            "embedding_profile_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.document_embeddings": {
+      "name": "document_embeddings",
+      "schema": "",
+      "columns": {
+        "db_id": {
+          "name": "db_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "document_vector_store_db_id": {
+          "name": "document_vector_store_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "document_vector_store_source_db_id": {
+          "name": "document_vector_store_source_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "embedding_profile_id": {
+          "name": "embedding_profile_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "embedding_dimensions": {
+          "name": "embedding_dimensions",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "document_key": {
+          "name": "document_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "chunk_index": {
+          "name": "chunk_index",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "chunk_content": {
+          "name": "chunk_content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "embedding": {
+          "name": "embedding",
+          "type": "vector",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "doc_embs_embedding_1536_idx": {
+          "name": "doc_embs_embedding_1536_idx",
+          "columns": [
+            {
+              "expression": "(\"embedding\"::vector(1536)) vector_cosine_ops",
+              "asc": true,
+              "isExpression": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "where": "\"document_embeddings\".\"embedding_dimensions\" = 1536",
+          "concurrently": false,
+          "method": "hnsw",
+          "with": {}
+        },
+        "doc_embs_embedding_3072_idx": {
+          "name": "doc_embs_embedding_3072_idx",
+          "columns": [
+            {
+              "expression": "(\"embedding\"::halfvec(3072)) halfvec_cosine_ops",
+              "asc": true,
+              "isExpression": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "where": "\"document_embeddings\".\"embedding_dimensions\" = 3072",
+          "concurrently": false,
+          "method": "hnsw",
+          "with": {}
+        },
+        "doc_embs_store_idx": {
+          "name": "doc_embs_store_idx",
+          "columns": [
+            {
+              "expression": "document_vector_store_db_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "document_embeddings_document_vector_store_db_id_document_vector_stores_db_id_fk": {
+          "name": "document_embeddings_document_vector_store_db_id_document_vector_stores_db_id_fk",
+          "tableFrom": "document_embeddings",
+          "tableTo": "document_vector_stores",
+          "columnsFrom": [
+            "document_vector_store_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "document_embeddings_document_vector_store_source_db_id_document_vector_store_sources_db_id_fk": {
+          "name": "document_embeddings_document_vector_store_source_db_id_document_vector_store_sources_db_id_fk",
+          "tableFrom": "document_embeddings",
+          "tableTo": "document_vector_store_sources",
+          "columnsFrom": [
+            "document_vector_store_source_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "doc_embs_src_prof_doc_chunk_unique": {
+          "name": "doc_embs_src_prof_doc_chunk_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "document_vector_store_source_db_id",
+            "embedding_profile_id",
+            "document_key",
+            "chunk_index"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.document_vector_store_sources": {
+      "name": "document_vector_store_sources",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "db_id": {
+          "name": "db_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "document_vector_store_db_id": {
+          "name": "document_vector_store_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "storage_bucket": {
+          "name": "storage_bucket",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "storage_key": {
+          "name": "storage_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "file_name": {
+          "name": "file_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "file_size_bytes": {
+          "name": "file_size_bytes",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "file_checksum": {
+          "name": "file_checksum",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "upload_status": {
+          "name": "upload_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'uploading'"
+        },
+        "upload_error_code": {
+          "name": "upload_error_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ingest_status": {
+          "name": "ingest_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'idle'"
+        },
+        "ingest_error_code": {
+          "name": "ingest_error_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "ingested_at": {
+          "name": "ingested_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "doc_vs_src_upload_status_idx": {
+          "name": "doc_vs_src_upload_status_idx",
+          "columns": [
+            {
+              "expression": "upload_status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "doc_vs_src_ingest_status_idx": {
+          "name": "doc_vs_src_ingest_status_idx",
+          "columns": [
+            {
+              "expression": "ingest_status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "document_vector_store_sources_document_vector_store_db_id_document_vector_stores_db_id_fk": {
+          "name": "document_vector_store_sources_document_vector_store_db_id_document_vector_stores_db_id_fk",
+          "tableFrom": "document_vector_store_sources",
+          "tableTo": "document_vector_stores",
+          "columnsFrom": [
+            "document_vector_store_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "doc_vs_src_id_unique": {
+          "name": "doc_vs_src_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        },
+        "doc_vs_src_storage_unique": {
+          "name": "doc_vs_src_storage_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "document_vector_store_db_id",
+            "storage_key"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.document_vector_stores": {
+      "name": "document_vector_stores",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "db_id": {
+          "name": "db_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "team_db_id": {
+          "name": "team_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "doc_vs_team_db_id_idx": {
+          "name": "doc_vs_team_db_id_idx",
+          "columns": [
+            {
+              "expression": "team_db_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "document_vector_stores_team_db_id_teams_db_id_fk": {
+          "name": "document_vector_stores_team_db_id_teams_db_id_fk",
+          "tableFrom": "document_vector_stores",
+          "tableTo": "teams",
+          "columnsFrom": [
+            "team_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "doc_vs_id_unique": {
+          "name": "doc_vs_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.flow_triggers": {
+      "name": "flow_triggers",
+      "schema": "",
+      "columns": {
+        "db_id": {
+          "name": "db_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "team_db_id": {
+          "name": "team_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "staged": {
+          "name": "staged",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "workspace_id": {
+          "name": "workspace_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "flow_trigger_id": {
+          "name": "flow_trigger_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "flow_triggers_flow_trigger_id_index": {
+          "name": "flow_triggers_flow_trigger_id_index",
+          "columns": [
+            {
+              "expression": "flow_trigger_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "flow_triggers_team_db_id_index": {
+          "name": "flow_triggers_team_db_id_index",
+          "columns": [
+            {
+              "expression": "team_db_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "flow_triggers_staged_index": {
+          "name": "flow_triggers_staged_index",
+          "columns": [
+            {
+              "expression": "staged",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "flow_triggers_team_db_id_teams_db_id_fk": {
+          "name": "flow_triggers_team_db_id_teams_db_id_fk",
+          "tableFrom": "flow_triggers",
+          "tableTo": "teams",
+          "columnsFrom": [
+            "team_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.github_integration_settings": {
+      "name": "github_integration_settings",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "agent_db_id": {
+          "name": "agent_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "db_id": {
+          "name": "db_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "repository_full_name": {
+          "name": "repository_full_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "call_sign": {
+          "name": "call_sign",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "event": {
+          "name": "event",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "flow_id": {
+          "name": "flow_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "event_node_mappings": {
+          "name": "event_node_mappings",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "next_action": {
+          "name": "next_action",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "github_integration_settings_agent_db_id_agents_db_id_fk": {
+          "name": "github_integration_settings_agent_db_id_agents_db_id_fk",
+          "tableFrom": "github_integration_settings",
+          "tableTo": "agents",
+          "columnsFrom": [
+            "agent_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "github_integration_settings_id_unique": {
+          "name": "github_integration_settings_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.github_repository_content_status": {
+      "name": "github_repository_content_status",
+      "schema": "",
+      "columns": {
+        "db_id": {
+          "name": "db_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "repository_index_db_id": {
+          "name": "repository_index_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "embedding_profile_id": {
+          "name": "embedding_profile_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content_type": {
+          "name": "content_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "enabled": {
+          "name": "enabled",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'idle'"
+        },
+        "last_synced_at": {
+          "name": "last_synced_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "error_code": {
+          "name": "error_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "retry_after": {
+          "name": "retry_after",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "gh_content_status_query_idx": {
+          "name": "gh_content_status_query_idx",
+          "columns": [
+            {
+              "expression": "enabled",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "retry_after",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "gh_content_status_repo_idx_fk": {
+          "name": "gh_content_status_repo_idx_fk",
+          "tableFrom": "github_repository_content_status",
+          "tableTo": "github_repository_index",
+          "columnsFrom": [
+            "repository_index_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "gh_content_status_unique": {
+          "name": "gh_content_status_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "repository_index_db_id",
+            "embedding_profile_id",
+            "content_type"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.github_repository_embedding_profiles": {
+      "name": "github_repository_embedding_profiles",
+      "schema": "",
+      "columns": {
+        "repository_index_db_id": {
+          "name": "repository_index_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "embedding_profile_id": {
+          "name": "embedding_profile_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "gh_repo_emb_profiles_repo_idx_fk": {
+          "name": "gh_repo_emb_profiles_repo_idx_fk",
+          "tableFrom": "github_repository_embedding_profiles",
+          "tableTo": "github_repository_index",
+          "columnsFrom": [
+            "repository_index_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "gh_repo_emb_profiles_pk": {
+          "name": "gh_repo_emb_profiles_pk",
+          "columns": [
+            "repository_index_db_id",
+            "embedding_profile_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.github_repository_embeddings": {
+      "name": "github_repository_embeddings",
+      "schema": "",
+      "columns": {
+        "db_id": {
+          "name": "db_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "repository_index_db_id": {
+          "name": "repository_index_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "embedding_profile_id": {
+          "name": "embedding_profile_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "embedding_dimensions": {
+          "name": "embedding_dimensions",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "file_sha": {
+          "name": "file_sha",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "path": {
+          "name": "path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "embedding": {
+          "name": "embedding",
+          "type": "vector",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "chunk_content": {
+          "name": "chunk_content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "chunk_index": {
+          "name": "chunk_index",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "github_repository_embeddings_embedding_1536_idx": {
+          "name": "github_repository_embeddings_embedding_1536_idx",
+          "columns": [
+            {
+              "expression": "\"embedding\"::vector(1536) vector_cosine_ops",
+              "asc": true,
+              "isExpression": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "where": "\"github_repository_embeddings\".\"embedding_dimensions\" = 1536",
+          "concurrently": false,
+          "method": "hnsw",
+          "with": {}
+        },
+        "github_repository_embeddings_embedding_3072_idx": {
+          "name": "github_repository_embeddings_embedding_3072_idx",
+          "columns": [
+            {
+              "expression": "\"embedding\"::halfvec(3072) halfvec_cosine_ops",
+              "asc": true,
+              "isExpression": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "where": "\"github_repository_embeddings\".\"embedding_dimensions\" = 3072",
+          "concurrently": false,
+          "method": "hnsw",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "github_repository_embeddings_repository_index_db_id_github_repository_index_db_id_fk": {
+          "name": "github_repository_embeddings_repository_index_db_id_github_repository_index_db_id_fk",
+          "tableFrom": "github_repository_embeddings",
+          "tableTo": "github_repository_index",
+          "columnsFrom": [
+            "repository_index_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "gh_repo_emb_unique": {
+          "name": "gh_repo_emb_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "repository_index_db_id",
+            "embedding_profile_id",
+            "path",
+            "chunk_index"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.github_repository_index": {
+      "name": "github_repository_index",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "db_id": {
+          "name": "db_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "owner": {
+          "name": "owner",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "repo": {
+          "name": "repo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "team_db_id": {
+          "name": "team_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "installation_id": {
+          "name": "installation_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "last_ingested_commit_sha": {
+          "name": "last_ingested_commit_sha",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'idle'"
+        },
+        "error_code": {
+          "name": "error_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "retry_after": {
+          "name": "retry_after",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "github_repository_index_team_db_id_index": {
+          "name": "github_repository_index_team_db_id_index",
+          "columns": [
+            {
+              "expression": "team_db_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "github_repository_index_status_index": {
+          "name": "github_repository_index_status_index",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "github_repository_index_team_db_id_teams_db_id_fk": {
+          "name": "github_repository_index_team_db_id_teams_db_id_fk",
+          "tableFrom": "github_repository_index",
+          "tableTo": "teams",
+          "columnsFrom": [
+            "team_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "github_repository_index_id_unique": {
+          "name": "github_repository_index_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        },
+        "github_repository_index_owner_repo_team_db_id_unique": {
+          "name": "github_repository_index_owner_repo_team_db_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "owner",
+            "repo",
+            "team_db_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.github_repository_issue_embeddings": {
+      "name": "github_repository_issue_embeddings",
+      "schema": "",
+      "columns": {
+        "db_id": {
+          "name": "db_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "repository_index_db_id": {
+          "name": "repository_index_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "embedding_profile_id": {
+          "name": "embedding_profile_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "embedding_dimensions": {
+          "name": "embedding_dimensions",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "issue_number": {
+          "name": "issue_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "issue_state": {
+          "name": "issue_state",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "issue_state_reason": {
+          "name": "issue_state_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "issue_updated_at": {
+          "name": "issue_updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "issue_closed_at": {
+          "name": "issue_closed_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "content_type": {
+          "name": "content_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content_id": {
+          "name": "content_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "document_key": {
+          "name": "document_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content_created_at": {
+          "name": "content_created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content_edited_at": {
+          "name": "content_edited_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "metadata_version": {
+          "name": "metadata_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "embedding": {
+          "name": "embedding",
+          "type": "vector",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "chunk_content": {
+          "name": "chunk_content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "chunk_index": {
+          "name": "chunk_index",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "gh_issue_embeddings_embedding_1536_idx": {
+          "name": "gh_issue_embeddings_embedding_1536_idx",
+          "columns": [
+            {
+              "expression": "(\"embedding\"::vector(1536)) vector_cosine_ops",
+              "asc": true,
+              "isExpression": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "where": "\"github_repository_issue_embeddings\".\"embedding_dimensions\" = 1536",
+          "concurrently": false,
+          "method": "hnsw",
+          "with": {}
+        },
+        "gh_issue_embeddings_embedding_3072_idx": {
+          "name": "gh_issue_embeddings_embedding_3072_idx",
+          "columns": [
+            {
+              "expression": "(\"embedding\"::halfvec(3072)) halfvec_cosine_ops",
+              "asc": true,
+              "isExpression": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "where": "\"github_repository_issue_embeddings\".\"embedding_dimensions\" = 3072",
+          "concurrently": false,
+          "method": "hnsw",
+          "with": {}
+        },
+        "gh_issue_emb_repo_doc_idx": {
+          "name": "gh_issue_emb_repo_doc_idx",
+          "columns": [
+            {
+              "expression": "repository_index_db_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "document_key",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "gh_issue_embeddings_repo_idx_fk": {
+          "name": "gh_issue_embeddings_repo_idx_fk",
+          "tableFrom": "github_repository_issue_embeddings",
+          "tableTo": "github_repository_index",
+          "columnsFrom": [
+            "repository_index_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "gh_issue_emb_unique": {
+          "name": "gh_issue_emb_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "repository_index_db_id",
+            "embedding_profile_id",
+            "issue_number",
+            "content_type",
+            "content_id",
+            "chunk_index"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.github_repository_pull_request_embeddings": {
+      "name": "github_repository_pull_request_embeddings",
+      "schema": "",
+      "columns": {
+        "db_id": {
+          "name": "db_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "repository_index_db_id": {
+          "name": "repository_index_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "embedding_profile_id": {
+          "name": "embedding_profile_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "embedding_dimensions": {
+          "name": "embedding_dimensions",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pr_number": {
+          "name": "pr_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "merged_at": {
+          "name": "merged_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content_type": {
+          "name": "content_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content_id": {
+          "name": "content_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "document_key": {
+          "name": "document_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "embedding": {
+          "name": "embedding",
+          "type": "vector",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "chunk_content": {
+          "name": "chunk_content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "chunk_index": {
+          "name": "chunk_index",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "gh_pr_embeddings_embedding_1536_idx": {
+          "name": "gh_pr_embeddings_embedding_1536_idx",
+          "columns": [
+            {
+              "expression": "\"embedding\"::vector(1536) vector_cosine_ops",
+              "asc": true,
+              "isExpression": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "where": "\"github_repository_pull_request_embeddings\".\"embedding_dimensions\" = 1536",
+          "concurrently": false,
+          "method": "hnsw",
+          "with": {}
+        },
+        "gh_pr_embeddings_embedding_3072_idx": {
+          "name": "gh_pr_embeddings_embedding_3072_idx",
+          "columns": [
+            {
+              "expression": "\"embedding\"::halfvec(3072) halfvec_cosine_ops",
+              "asc": true,
+              "isExpression": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "where": "\"github_repository_pull_request_embeddings\".\"embedding_dimensions\" = 3072",
+          "concurrently": false,
+          "method": "hnsw",
+          "with": {}
+        },
+        "gh_pr_emb_repo_doc_idx": {
+          "name": "gh_pr_emb_repo_doc_idx",
+          "columns": [
+            {
+              "expression": "repository_index_db_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "document_key",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "gh_pr_embeddings_repo_idx_fk": {
+          "name": "gh_pr_embeddings_repo_idx_fk",
+          "tableFrom": "github_repository_pull_request_embeddings",
+          "tableTo": "github_repository_index",
+          "columnsFrom": [
+            "repository_index_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "gh_pr_emb_unique": {
+          "name": "gh_pr_emb_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "repository_index_db_id",
+            "embedding_profile_id",
+            "pr_number",
+            "content_type",
+            "content_id",
+            "chunk_index"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.invitations": {
+      "name": "invitations",
+      "schema": "",
+      "columns": {
+        "token": {
+          "name": "token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "team_db_id": {
+          "name": "team_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "inviter_user_db_id": {
+          "name": "inviter_user_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expired_at": {
+          "name": "expired_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "revoked_at": {
+          "name": "revoked_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "invitations_team_db_id_revoked_at_index": {
+          "name": "invitations_team_db_id_revoked_at_index",
+          "columns": [
+            {
+              "expression": "team_db_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "revoked_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "invitations_team_db_id_teams_db_id_fk": {
+          "name": "invitations_team_db_id_teams_db_id_fk",
+          "tableFrom": "invitations",
+          "tableTo": "teams",
+          "columnsFrom": [
+            "team_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "invitations_inviter_user_db_id_users_db_id_fk": {
+          "name": "invitations_inviter_user_db_id_users_db_id_fk",
+          "tableFrom": "invitations",
+          "tableTo": "users",
+          "columnsFrom": [
+            "inviter_user_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "invitations_token_unique": {
+          "name": "invitations_token_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "token"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.oauth_credentials": {
+      "name": "oauth_credentials",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "provider": {
+          "name": "provider",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "provider_account_id": {
+          "name": "provider_account_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "access_token": {
+          "name": "access_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "refresh_token": {
+          "name": "refresh_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "token_type": {
+          "name": "token_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "scope": {
+          "name": "scope",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "oauth_credentials_user_id_users_db_id_fk": {
+          "name": "oauth_credentials_user_id_users_db_id_fk",
+          "tableFrom": "oauth_credentials",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "oauth_credentials_user_id_provider_provider_account_id_unique": {
+          "name": "oauth_credentials_user_id_provider_provider_account_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "user_id",
+            "provider",
+            "provider_account_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.stripe_billing_cadence_histories": {
+      "name": "stripe_billing_cadence_histories",
+      "schema": "",
+      "columns": {
+        "db_id": {
+          "name": "db_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "team_db_id": {
+          "name": "team_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "customer_id": {
+          "name": "customer_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "billing_profile_id": {
+          "name": "billing_profile_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "payer_type": {
+          "name": "payer_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "billing_cycle_type": {
+          "name": "billing_cycle_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "billing_cycle_interval_count": {
+          "name": "billing_cycle_interval_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "billing_cycle_day_of_month": {
+          "name": "billing_cycle_day_of_month",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "billing_cycle_month_of_year": {
+          "name": "billing_cycle_month_of_year",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "billing_cycle_time_hour": {
+          "name": "billing_cycle_time_hour",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "billing_cycle_time_minute": {
+          "name": "billing_cycle_time_minute",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "billing_cycle_time_second": {
+          "name": "billing_cycle_time_second",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "next_billing_date": {
+          "name": "next_billing_date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bill_settings_id": {
+          "name": "bill_settings_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created": {
+          "name": "created",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "lookup_key": {
+          "name": "lookup_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "stripe_cadence_hist_id_idx": {
+          "name": "stripe_cadence_hist_id_idx",
+          "columns": [
+            {
+              "expression": "id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "stripe_cadence_hist_team_db_id_idx": {
+          "name": "stripe_cadence_hist_team_db_id_idx",
+          "columns": [
+            {
+              "expression": "team_db_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "stripe_cadence_hist_customer_id_idx": {
+          "name": "stripe_cadence_hist_customer_id_idx",
+          "columns": [
+            {
+              "expression": "customer_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "stripe_billing_cadence_histories_team_db_id_teams_db_id_fk": {
+          "name": "stripe_billing_cadence_histories_team_db_id_teams_db_id_fk",
+          "tableFrom": "stripe_billing_cadence_histories",
+          "tableTo": "teams",
+          "columnsFrom": [
+            "team_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.stripe_pricing_plan_subscription_histories": {
+      "name": "stripe_pricing_plan_subscription_histories",
+      "schema": "",
+      "columns": {
+        "db_id": {
+          "name": "db_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "team_db_id": {
+          "name": "team_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "billing_cadence_db_id": {
+          "name": "billing_cadence_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "billing_cadence_id": {
+          "name": "billing_cadence_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pricing_plan_id": {
+          "name": "pricing_plan_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pricing_plan_version_id": {
+          "name": "pricing_plan_version_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "servicing_status": {
+          "name": "servicing_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "collection_status": {
+          "name": "collection_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "activated_at": {
+          "name": "activated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "canceled_at": {
+          "name": "canceled_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "paused_at": {
+          "name": "paused_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "collection_current_at": {
+          "name": "collection_current_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "collection_past_due_at": {
+          "name": "collection_past_due_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "collection_paused_at": {
+          "name": "collection_paused_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "collection_unpaid_at": {
+          "name": "collection_unpaid_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "collection_awaiting_customer_action_at": {
+          "name": "collection_awaiting_customer_action_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created": {
+          "name": "created",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "stripe_pps_hist_id_idx": {
+          "name": "stripe_pps_hist_id_idx",
+          "columns": [
+            {
+              "expression": "id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "stripe_pps_hist_team_db_id_idx": {
+          "name": "stripe_pps_hist_team_db_id_idx",
+          "columns": [
+            {
+              "expression": "team_db_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "stripe_pps_hist_billing_cadence_db_id_idx": {
+          "name": "stripe_pps_hist_billing_cadence_db_id_idx",
+          "columns": [
+            {
+              "expression": "billing_cadence_db_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "stripe_pricing_plan_subscription_histories_team_db_id_teams_db_id_fk": {
+          "name": "stripe_pricing_plan_subscription_histories_team_db_id_teams_db_id_fk",
+          "tableFrom": "stripe_pricing_plan_subscription_histories",
+          "tableTo": "teams",
+          "columnsFrom": [
+            "team_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "stripe_pricing_plan_subscription_histories_billing_cadence_db_id_stripe_billing_cadence_histories_db_id_fk": {
+          "name": "stripe_pricing_plan_subscription_histories_billing_cadence_db_id_stripe_billing_cadence_histories_db_id_fk",
+          "tableFrom": "stripe_pricing_plan_subscription_histories",
+          "tableTo": "stripe_billing_cadence_histories",
+          "columnsFrom": [
+            "billing_cadence_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.supabase_user_mappings": {
+      "name": "supabase_user_mappings",
+      "schema": "",
+      "columns": {
+        "user_db_id": {
+          "name": "user_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "supabase_user_id": {
+          "name": "supabase_user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "supabase_user_mappings_user_db_id_users_db_id_fk": {
+          "name": "supabase_user_mappings_user_db_id_users_db_id_fk",
+          "tableFrom": "supabase_user_mappings",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "supabase_user_mappings_user_db_id_unique": {
+          "name": "supabase_user_mappings_user_db_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "user_db_id"
+          ]
+        },
+        "supabase_user_mappings_supabase_user_id_unique": {
+          "name": "supabase_user_mappings_supabase_user_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "supabase_user_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.tasks": {
+      "name": "tasks",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "db_id": {
+          "name": "db_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "team_db_id": {
+          "name": "team_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "app_db_id": {
+          "name": "app_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "tasks_team_db_id_index": {
+          "name": "tasks_team_db_id_index",
+          "columns": [
+            {
+              "expression": "team_db_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "tasks_team_db_id_teams_db_id_fk": {
+          "name": "tasks_team_db_id_teams_db_id_fk",
+          "tableFrom": "tasks",
+          "tableTo": "teams",
+          "columnsFrom": [
+            "team_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "tasks_app_db_id_apps_db_id_fk": {
+          "name": "tasks_app_db_id_apps_db_id_fk",
+          "tableFrom": "tasks",
+          "tableTo": "apps",
+          "columnsFrom": [
+            "app_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "tasks_id_unique": {
+          "name": "tasks_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.team_memberships": {
+      "name": "team_memberships",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_db_id": {
+          "name": "user_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "team_db_id": {
+          "name": "team_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "team_memberships_user_db_id_users_db_id_fk": {
+          "name": "team_memberships_user_db_id_users_db_id_fk",
+          "tableFrom": "team_memberships",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "team_memberships_team_db_id_teams_db_id_fk": {
+          "name": "team_memberships_team_db_id_teams_db_id_fk",
+          "tableFrom": "team_memberships",
+          "tableTo": "teams",
+          "columnsFrom": [
+            "team_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "team_memberships_user_db_id_team_db_id_unique": {
+          "name": "team_memberships_user_db_id_team_db_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "user_db_id",
+            "team_db_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.teams": {
+      "name": "teams",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "db_id": {
+          "name": "db_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "avatar_url": {
+          "name": "avatar_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "plan": {
+          "name": "plan",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'free'"
+        },
+        "active_subscription_id": {
+          "name": "active_subscription_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "active_customer_id": {
+          "name": "active_customer_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "teams_id_unique": {
+          "name": "teams_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.user_seat_usage_reports": {
+      "name": "user_seat_usage_reports",
+      "schema": "",
+      "columns": {
+        "db_id": {
+          "name": "db_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "team_db_id": {
+          "name": "team_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_db_id_list": {
+          "name": "user_db_id_list",
+          "type": "integer[]",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_meter_event_id": {
+          "name": "stripe_meter_event_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "value": {
+          "name": "value",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "user_seat_usage_reports_team_db_id_index": {
+          "name": "user_seat_usage_reports_team_db_id_index",
+          "columns": [
+            {
+              "expression": "team_db_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "user_seat_usage_reports_created_at_index": {
+          "name": "user_seat_usage_reports_created_at_index",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "user_seat_usage_reports_stripe_meter_event_id_index": {
+          "name": "user_seat_usage_reports_stripe_meter_event_id_index",
+          "columns": [
+            {
+              "expression": "stripe_meter_event_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "user_seat_usage_reports_team_db_id_teams_db_id_fk": {
+          "name": "user_seat_usage_reports_team_db_id_teams_db_id_fk",
+          "tableFrom": "user_seat_usage_reports",
+          "tableTo": "teams",
+          "columnsFrom": [
+            "team_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "display_name": {
+          "name": "display_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "avatar_url": {
+          "name": "avatar_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "db_id": {
+          "name": "db_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "users_id_unique": {
+          "name": "users_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        },
+        "users_email_unique": {
+          "name": "users_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.workspaces": {
+      "name": "workspaces",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "db_id": {
+          "name": "db_id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "team_db_id": {
+          "name": "team_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "creator_db_id": {
+          "name": "creator_db_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "metadata": {
+          "name": "metadata",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{\"sample\":false}'::jsonb"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "workspaces_team_db_id_teams_db_id_fk": {
+          "name": "workspaces_team_db_id_teams_db_id_fk",
+          "tableFrom": "workspaces",
+          "tableTo": "teams",
+          "columnsFrom": [
+            "team_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "workspaces_creator_db_id_users_db_id_fk": {
+          "name": "workspaces_creator_db_id_users_db_id_fk",
+          "tableFrom": "workspaces",
+          "tableTo": "users",
+          "columnsFrom": [
+            "creator_db_id"
+          ],
+          "columnsTo": [
+            "db_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "workspaces_id_unique": {
+          "name": "workspaces_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
