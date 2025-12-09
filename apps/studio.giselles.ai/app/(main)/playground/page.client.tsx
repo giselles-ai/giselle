@@ -71,6 +71,7 @@ function AppListCard({
 	const visibleProviders = providers?.slice(0, 3) ?? [];
 	const remainingProvidersCount =
 		(providers?.length ?? 0) - visibleProviders.length;
+	const fallbackInitial = title.trim().charAt(0).toUpperCase() || "A";
 
 	return (
 		<button
@@ -93,11 +94,11 @@ function AppListCard({
 					style={
 						isSelected
 							? {
-									// 選択時: 505D7B 付近の少し暗めトーンでしっかり塗る
+									// Selected state: slightly darker tone around 505D7B
 									backgroundColor: "rgba(80,93,123,1)",
 								}
 							: {
-									// 非選択時: さらに一段だけ暗くして存在感を抑える
+									// Unselected state: darker tone to reduce emphasis
 									backgroundColor: "rgba(45,54,76,1)",
 								}
 					}
@@ -115,7 +116,9 @@ function AppListCard({
 							className="h-5 w-5 text-text-muted"
 						/>
 					) : (
-						<span className="text-text-muted text-sm font-semibold">A</span>
+						<span className="text-text-muted text-sm font-semibold">
+							{fallbackInitial}
+						</span>
 					)}
 				</div>
 				<div className="flex items-center gap-2 min-w-0">
@@ -177,7 +180,7 @@ function AppCard({
 	const badgeType: AppListCardBadgeType = app.isMine
 		? "your-team"
 		: "other-team";
-	const creatorName = app.creator?.displayName ?? null;
+	const creatorName = app.creator?.displayName;
 
 	return (
 		<AppListCard
@@ -596,6 +599,9 @@ export function Page({
 										<div className="mt-6 flex justify-center">
 											<button
 												type="button"
+												onClick={() => {
+													router.push("/workspaces");
+												}}
 												className="inline-flex items-center justify-center rounded-lg border border-[rgba(131,157,195,0.3)] px-4 py-2 text-[13px] text-[rgba(131,157,195,0.7)] transition-colors hover:border-[rgba(131,157,195,0.4)] hover:bg-[rgba(131,157,195,0.1)]"
 											>
 												Create your first app
