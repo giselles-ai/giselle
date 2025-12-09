@@ -129,7 +129,7 @@ function cloneAndRenewInputIdsWithMap(
 
 function createDefaultDraftApp(): DraftApp {
 	return {
-		name: "",
+		name: "App Request",
 		description: "",
 		iconName: "workflow",
 		parameters: [
