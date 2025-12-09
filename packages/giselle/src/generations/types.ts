@@ -1,5 +1,5 @@
 import type { FileData, NodeId, OutputId } from "@giselles-ai/protocol";
-import type { ToolSet } from "ai";
+import type { DataContent, FilePart, ImagePart, TextPart, ToolSet } from "ai";
 
 export type PreparedToolSet = {
 	toolSet: ToolSet;
@@ -9,9 +9,11 @@ export interface GenerationMetadata {
 	[key: string]: string | number | GenerationMetadata | null | undefined;
 }
 
+export type ResolvedFileData = FileData & { data: DataContent };
+
 export type AppEntryResolver = (
 	nodeId: NodeId,
 	outputId: OutputId,
-) => string | number | FileData[] | undefined;
+) => Promise<(TextPart | FilePart | ImagePart)[]>;
 
 export type * from "./internal/use-generation-executor";

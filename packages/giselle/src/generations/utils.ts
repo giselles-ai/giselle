@@ -286,15 +286,32 @@ async function buildGenerationMessageForTextGeneration({
 				break;
 			}
 			case "appEntry": {
-				const result = appEntryResolver(
+				const messageParts = await appEntryResolver(
 					sourceKeyword.nodeId,
 					sourceKeyword.outputId,
 				);
 
-				userMessage = userMessage.replace(
-					replaceKeyword,
-					result === undefined ? "" : `${result}`,
+				const fileOrImageParts = messageParts.filter(
+					(p) => p.type === "file" || p.type === "image",
 				);
+				if (fileOrImageParts.length > 0) {
+					userMessage = userMessage.replace(
+						replaceKeyword,
+						getFilesDescription(attachedFiles.length, fileOrImageParts.length),
+					);
+
+					attachedFiles.push(...fileOrImageParts);
+					attachedFileNodeIds.push(contextNode.id);
+				}
+
+				const textParts = messageParts.filter((p) => p.type === "text");
+				if (textParts.length > 0) {
+					userMessage = userMessage.replace(
+						replaceKeyword,
+						textParts.map((p) => p.text).join(" "),
+					);
+				}
+
 				break;
 			}
 			default: {
@@ -572,15 +589,31 @@ async function buildGenerationMessageForImageGeneration(
 			}
 
 			case "appEntry": {
-				const result = appEntryResolver(
+				const messageParts = await appEntryResolver(
 					sourceKeyword.nodeId,
 					sourceKeyword.outputId,
 				);
 
-				userMessage = userMessage.replace(
-					replaceKeyword,
-					result === undefined ? "" : `${result}`,
+				const fileOrImageParts = messageParts.filter(
+					(p) => p.type === "file" || p.type === "image",
 				);
+				if (fileOrImageParts.length > 0) {
+					userMessage = userMessage.replace(
+						replaceKeyword,
+						getFilesDescription(attachedFiles.length, fileOrImageParts.length),
+					);
+
+					attachedFiles.push(...fileOrImageParts);
+				}
+
+				const textParts = messageParts.filter((p) => p.type === "text");
+				if (textParts.length > 0) {
+					userMessage = userMessage.replace(
+						replaceKeyword,
+						textParts.map((p) => p.text).join(" "),
+					);
+				}
+
 				break;
 			}
 
@@ -1027,15 +1060,32 @@ async function buildGenerationMessageForContentGeneration({
 				break;
 			}
 			case "appEntry": {
-				const result = appEntryResolver(
+				const messageParts = await appEntryResolver(
 					sourceKeyword.nodeId,
 					sourceKeyword.outputId,
 				);
 
-				userMessage = userMessage.replace(
-					replaceKeyword,
-					result === undefined ? "" : `${result}`,
+				const fileOrImageParts = messageParts.filter(
+					(p) => p.type === "file" || p.type === "image",
 				);
+				if (fileOrImageParts.length > 0) {
+					userMessage = userMessage.replace(
+						replaceKeyword,
+						getFilesDescription(attachedFiles.length, fileOrImageParts.length),
+					);
+
+					attachedFiles.push(...fileOrImageParts);
+					attachedFileNodeIds.push(contextNode.id);
+				}
+
+				const textParts = messageParts.filter((p) => p.type === "text");
+				if (textParts.length > 0) {
+					userMessage = userMessage.replace(
+						replaceKeyword,
+						textParts.map((p) => p.text).join(" "),
+					);
+				}
+
 				break;
 			}
 			default: {
