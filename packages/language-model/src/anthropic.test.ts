@@ -7,11 +7,11 @@ describe("anthropic llm", () => {
 			expect(AnthropicLanguageModelId.parse("claude-opus-4.5")).toBe(
 				"claude-opus-4.5",
 			);
-			expect(AnthropicLanguageModelId.parse("claude-sonnet-4-5-20250929")).toBe(
-				"claude-sonnet-4-5-20250929",
+			expect(AnthropicLanguageModelId.parse("claude-sonnet-4.5")).toBe(
+				"claude-sonnet-4.5",
 			);
-			expect(AnthropicLanguageModelId.parse("claude-haiku-4-5-20251001")).toBe(
-				"claude-haiku-4-5-20251001",
+			expect(AnthropicLanguageModelId.parse("claude-haiku-4.5")).toBe(
+				"claude-haiku-4.5",
 			);
 		});
 
@@ -51,45 +51,57 @@ describe("anthropic llm", () => {
 			);
 		});
 
-		it("should fallback claude-sonnet-4-5-* to claude-sonnet-4-5-20250929", () => {
+		it("should fallback claude-sonnet-4-5-* to claude-sonnet-4.5", () => {
 			expect(AnthropicLanguageModelId.parse("claude-sonnet-4-5-foo")).toBe(
-				"claude-sonnet-4-5-20250929",
+				"claude-sonnet-4.5",
 			);
 		});
 
-		it("should fallback claude-haiku-4-5-* to claude-haiku-4-5-20251001", () => {
+		it("should fallback claude-sonnet-4-5-20250929 to claude-sonnet-4.5", () => {
+			expect(AnthropicLanguageModelId.parse("claude-sonnet-4-5-20250929")).toBe(
+				"claude-sonnet-4.5",
+			);
+		});
+
+		it("should fallback claude-haiku-4-5-* to claude-haiku-4.5", () => {
 			expect(AnthropicLanguageModelId.parse("claude-haiku-4-5-bar")).toBe(
-				"claude-haiku-4-5-20251001",
+				"claude-haiku-4.5",
 			);
 		});
 
-		it("should fallback claude-4-sonnet-* to claude-sonnet-4-5-20250929", () => {
+		it("should fallback claude-haiku-4-5-20251001 to claude-haiku-4.5", () => {
+			expect(AnthropicLanguageModelId.parse("claude-haiku-4-5-20251001")).toBe(
+				"claude-haiku-4.5",
+			);
+		});
+
+		it("should fallback claude-4-sonnet-* to claude-sonnet-4.5", () => {
 			expect(AnthropicLanguageModelId.parse("claude-4-sonnet-4-bar")).toBe(
-				"claude-sonnet-4-5-20250929",
+				"claude-sonnet-4.5",
 			);
 		});
 
-		it("should fallback claude-3-7-sonnet-* to claude-sonnet-4-5-20250929", () => {
+		it("should fallback claude-3-7-sonnet-* to claude-sonnet-4.5", () => {
 			expect(AnthropicLanguageModelId.parse("claude-3-7-sonnet-xyz")).toBe(
-				"claude-sonnet-4-5-20250929",
+				"claude-sonnet-4.5",
 			);
 		});
 
-		it("should fallback claude-3-5-haiku-* to claude-haiku-4-5-20251001", () => {
+		it("should fallback claude-3-5-haiku-* to claude-haiku-4.5", () => {
 			expect(AnthropicLanguageModelId.parse("claude-3-5-haiku-abc")).toBe(
-				"claude-haiku-4-5-20251001",
+				"claude-haiku-4.5",
 			);
 		});
 
-		it("should fallback claude-3-5-sonnet-* to claude-sonnet-4-5-20250929", () => {
+		it("should fallback claude-3-5-sonnet-* to claude-sonnet-4.5", () => {
 			expect(AnthropicLanguageModelId.parse("claude-3-5-sonnet-foo")).toBe(
-				"claude-sonnet-4-5-20250929",
+				"claude-sonnet-4.5",
 			);
 		});
 
-		it("should fallback claude-3-sonnet-* to claude-sonnet-4-5-20250929", () => {
+		it("should fallback claude-3-sonnet-* to claude-sonnet-4.5", () => {
 			expect(AnthropicLanguageModelId.parse("claude-3-sonnet-foo")).toBe(
-				"claude-sonnet-4-5-20250929",
+				"claude-sonnet-4.5",
 			);
 		});
 
@@ -99,21 +111,21 @@ describe("anthropic llm", () => {
 			);
 		});
 
-		it("should fallback claude-3-haiku-* to claude-haiku-4-5-20251001", () => {
+		it("should fallback claude-3-haiku-* to claude-haiku-4.5", () => {
 			expect(AnthropicLanguageModelId.parse("claude-3-haiku-bar")).toBe(
-				"claude-haiku-4-5-20251001",
+				"claude-haiku-4.5",
 			);
 		});
 
-		it("should fallback unknown or non-matching variants to claude-haiku-4-5-20251001", () => {
+		it("should fallback unknown or non-matching variants to claude-haiku-4.5", () => {
 			expect(AnthropicLanguageModelId.parse("anthropic-unknown-model")).toBe(
-				"claude-haiku-4-5-20251001",
+				"claude-haiku-4.5",
 			);
 			expect(AnthropicLanguageModelId.parse("anthropic-foo-bar")).toBe(
-				"claude-haiku-4-5-20251001",
+				"claude-haiku-4.5",
 			);
 			expect(AnthropicLanguageModelId.parse("random-model")).toBe(
-				"claude-haiku-4-5-20251001",
+				"claude-haiku-4.5",
 			);
 		});
 	});
