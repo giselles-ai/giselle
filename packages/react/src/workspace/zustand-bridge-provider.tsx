@@ -6,7 +6,6 @@ import {
 	type FileNode,
 	isAppEntryNode,
 	type NodeLike,
-	OutputId,
 	type Workspace,
 } from "@giselles-ai/protocol";
 import { useCallback, useEffect, useMemo, useRef } from "react";
