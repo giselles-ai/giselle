@@ -14,7 +14,6 @@ export function transformGiselleLanguageModelToAiSdkLanguageModelCallOptions(
 	const languageModel = getEntry(content.languageModel.id);
 	switch (languageModel.id) {
 		case "openai/gpt-5":
-		case "openai/gpt-5-codex":
 		case "openai/gpt-5-mini":
 		case "openai/gpt-5-nano":
 		case "openai/gpt-5.1-codex":

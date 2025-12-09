@@ -41,8 +41,6 @@ function convertTextGenerationLanguageModelIdToContentGenerationLanguageModelId(
 			return "openai/gpt-5-mini";
 		case "gpt-5.1-codex":
 			return "openai/gpt-5.1-codex";
-		case "gpt-5-codex":
-			return "openai/gpt-5-codex";
 		case "gpt-5-nano":
 			return "openai/gpt-5-nano";
 		case "sonar":
@@ -85,8 +83,6 @@ function convertContentGenerationLanguageModelIdToTextGenerationLanguageModelId(
 			return "gpt-5-mini";
 		case "openai/gpt-5.1-codex":
 			return "gpt-5.1-codex";
-		case "openai/gpt-5-codex":
-			return "gpt-5-codex";
 		case "openai/gpt-5-nano":
 			// When converting back, use gpt-5-nano (not sonar/sonar-pro)
 			// as we cannot determine the original source

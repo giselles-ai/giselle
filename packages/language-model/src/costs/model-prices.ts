@@ -55,21 +55,6 @@ export const openAiTokenPricing: ModelPriceTable = {
 			},
 		],
 	},
-	"gpt-5-codex": {
-		prices: [
-			{
-				validFrom: "2025-09-15T00:00:00Z",
-				price: {
-					input: {
-						costPerMegaToken: 1.25,
-					},
-					output: {
-						costPerMegaToken: 10.0,
-					},
-				},
-			},
-		],
-	},
 	"gpt-5-mini": {
 		prices: [
 			{

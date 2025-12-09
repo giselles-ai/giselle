@@ -118,37 +118,6 @@ export const openai = {
 		url: "https://platform.openai.com/docs/models/gpt-5",
 	}),
 
-	"openai/gpt-5-codex": defineLanguageModel({
-		provider: openaiProvider,
-		id: "openai/gpt-5-codex",
-		name: "GPT-5-Codex",
-		description:
-			"GPT-5-Codex is a version of GPT-5 optimized for agentic coding tasks in Codex or similar environments.",
-		contextWindow: 400_000,
-		maxOutputTokens: 128_000,
-		knowledgeCutoff: new Date(2024, 8, 30).getTime(),
-		pricing: {
-			input: definePricing(1.25),
-			output: definePricing(10.0),
-		},
-		requiredTier: "pro",
-		configurationOptions: {
-			reasoningEffort: {
-				description: reasoningEffortDescription,
-				schema: z.enum(["minimal", "low", "medium", "high"]),
-			},
-			textVerbosity: {
-				description: textVerbosityDescription,
-				schema: z.enum(["low", "medium", "high"]),
-			},
-		},
-		defaultConfiguration: {
-			reasoningEffort: "medium",
-			textVerbosity: "medium",
-		},
-		url: "https://platform.openai.com/docs/models/gpt-5-codex",
-	}),
-
 	"openai/gpt-5-mini": defineLanguageModel({
 		provider: openaiProvider,
 		id: "openai/gpt-5-mini",
