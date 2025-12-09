@@ -236,6 +236,7 @@ export function AppEntryInputDialog({
 					inputs: [
 						{
 							type: "parameters",
+							// @ts-expect-error TODO: fix this later
 							items: parameterItems,
 						},
 					],

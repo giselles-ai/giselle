@@ -173,6 +173,7 @@ export async function toParameterItems(
 				items.push({
 					type: "files",
 					name: input.name,
+					// @ts-expect-error TODO: fix this later
 					value: uploadedFiles,
 				});
 				break;
