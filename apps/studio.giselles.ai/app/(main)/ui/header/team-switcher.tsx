@@ -1,6 +1,5 @@
 import { PopoverContent } from "@giselle-internal/ui/popover";
 import { ChevronsUpDown } from "lucide-react";
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { Popover } from "radix-ui";
 import { use } from "react";
@@ -53,8 +52,7 @@ export function TeamSwitcher({
 		"use server";
 
 		await setCurrentTeam(nextTeamId);
-		revalidatePath("/workspaces");
-		redirect("/workspaces");
+		redirect("/playground");
 	}
 
 	return (
