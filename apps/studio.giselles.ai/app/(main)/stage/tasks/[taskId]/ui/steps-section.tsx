@@ -10,7 +10,6 @@ import {
 	BrainCircuit,
 	CheckCircle,
 	ChevronDownIcon,
-	ChevronRightIcon,
 	CircleDashedIcon,
 	CircleSlashIcon,
 	Copy,
@@ -27,69 +26,6 @@ import { getModelInfo } from "../lib/utils";
 interface StepsSectionProps {
 	taskPromise: Promise<Task>;
 	taskId: TaskId;
-}
-
-function StepActions({ generation }: { generation: Generation }) {
-	const [copyFeedback, setCopyFeedback] = useState(false);
-
-	const handleCopyToClipboard = async (e: React.MouseEvent) => {
-		e.stopPropagation();
-		try {
-			const textContent = getAssistantTextFromGeneration(generation);
-			if (textContent) {
-				await navigator.clipboard.writeText(textContent);
-				setCopyFeedback(true);
-				setTimeout(() => setCopyFeedback(false), 2000);
-			}
-		} catch (error) {
-			console.error("Failed to copy to clipboard:", error);
-		}
-	};
-
-	const handleDownload = (e: React.MouseEvent) => {
-		e.stopPropagation();
-		try {
-			const textContent = getAssistantTextFromGeneration(generation);
-			if (textContent) {
-				const blob = new Blob([textContent], { type: "text/plain" });
-				const url = URL.createObjectURL(blob);
-				const a = document.createElement("a");
-				a.href = url;
-				a.download = `generation-${generation.id}.txt`;
-				document.body.appendChild(a);
-				a.click();
-				document.body.removeChild(a);
-				URL.revokeObjectURL(url);
-			}
-		} catch (error) {
-			console.error("Failed to download content:", error);
-		}
-	};
-
-	return (
-		<>
-			<button
-				type="button"
-				className="p-2 hover:bg-white/10 rounded-lg transition-colors group"
-				title={copyFeedback ? "Copied!" : "Copy content"}
-				onClick={handleCopyToClipboard}
-			>
-				{copyFeedback ? (
-					<CheckCircle className="size-4 text-green-400" />
-				) : (
-					<Copy className="size-4 text-text-muted group-hover:text-text transition-colors" />
-				)}
-			</button>
-			<button
-				type="button"
-				className="p-2 hover:bg-white/10 rounded-lg transition-colors group"
-				title="Download content"
-				onClick={handleDownload}
-			>
-				<Download className="size-4 text-text-muted group-hover:text-text transition-colors" />
-			</button>
-		</>
-	);
 }
 
 function OutputActions({ generation }: { generation: Generation }) {
@@ -159,6 +95,9 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 	const [stepGenerations, setStepGenerations] = useState<
 		Record<string, Generation>
 	>({});
+	const [stepOperationNodes, setStepOperationNodes] = useState<
+		Record<string, Generation["context"]["operationNode"]>
+	>({});
 	const stepGenerationsRef = useRef(stepGenerations);
 	const [expandedSteps, setExpandedSteps] = useState<Set<string>>(new Set());
 	const [isStepsExpanded, setIsStepsExpanded] = useState(false);
@@ -183,10 +122,17 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 
 			task.sequences.forEach((sequence) => {
 				sequence.steps.forEach((step) => {
+					// Fetch generation for completed steps, or fetch operationNode for any step that doesn't have it yet
 					if (
 						step.status === "completed" &&
 						!stepGenerationsRef.current[step.id]
 					) {
+						generationsToFetch.push({
+							stepId: step.id,
+							generationId: step.generationId,
+						});
+					} else if (!stepOperationNodes[step.id] && step.generationId) {
+						// Fetch generation just to get operationNode, even if step is not completed
 						generationsToFetch.push({
 							stepId: step.id,
 							generationId: step.generationId,
@@ -203,6 +149,13 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 							...prev,
 							[stepId]: generation,
 						}));
+						// Save operationNode even if generation has no output
+						if (generation.context.operationNode) {
+							setStepOperationNodes((prev) => ({
+								...prev,
+								[stepId]: generation.context.operationNode,
+							}));
+						}
 					}
 				} catch (error) {
 					console.warn(`Failed to fetch generation for step ${stepId}:`, error);
@@ -277,7 +230,7 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 					{/* Steps Header */}
 					<button
 						type="button"
-						className="flex items-center gap-2 text-text-muted text-[13px] font-semibold mb-2 w-full cursor-pointer hover:text-text-muted transition-colors"
+						className="flex items-center gap-2 text-text-muted text-[13px] font-semibold mb-4 py-2 w-full cursor-pointer hover:text-text-muted transition-colors"
 						onClick={() => setIsStepsExpanded(!isStepsExpanded)}
 					>
 						<div className="flex items-center gap-2">
@@ -315,95 +268,123 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 					</button>
 
 					{isStepsExpanded && (
-						<div className="space-y-4 mb-8">
-							{task.sequences.map((sequence, sequenceIndex) => (
-								<div key={sequence.id} className="space-y-2">
-									{/* Step Heading */}
-									<div className="text-[14px] font-medium text-[hsl(192,73%,84%)]">
-										Step {sequenceIndex + 1}
-									</div>
-									{/* Steps - stacked vertically in a single column */}
-									<div className="flex flex-col gap-2">
-										{sequence.steps.map((step) => {
-											const isExpanded = expandedSteps.has(step.id);
-											const generation = stepGenerations[step.id];
-											const modelInfo = getModelInfo(generation);
+						<div className="mb-8">
+							{task.sequences.map((sequence, sequenceIndex) => {
+								// Determine sequence status
+								const hasRunningStep = sequence.steps.some(
+									(step) => step.status === "running",
+								);
+								const allStepsCompleted = sequence.steps.every(
+									(step) => step.status === "completed",
+								);
+								const sequenceStatus = allStepsCompleted
+									? "completed"
+									: hasRunningStep
+										? "running"
+										: "pending";
 
-											return (
-												<div key={step.id} className="space-y-2">
-													{/* Step Button */}
-													<div className="flex items-center gap-3 p-3 rounded-lg border border-border bg-transparent hover:bg-white/5 transition-colors">
-														<button
-															type="button"
-															className="flex-1 flex items-center gap-3 text-left"
-															onClick={() => handleStepToggle(step.id)}
-														>
-															{/* Step Status Icon */}
-															<div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center flex-shrink-0">
+								return (
+									<div
+										key={sequence.id}
+										className={`grid grid-cols-[72px_540px] items-start gap-3 ${
+											sequenceIndex > 0 ? "mt-4" : ""
+										}`}
+									>
+										{/* Step Heading (left column, single label per sequence) */}
+										<div className="flex items-center gap-2">
+											{sequenceStatus === "pending" && (
+												<CircleDashedIcon className="size-3 text-text-muted/50 flex-shrink-0" />
+											)}
+											{sequenceStatus === "running" && (
+												<RefreshCw className="size-3 text-text-muted/50 flex-shrink-0 animate-spin" />
+											)}
+											{sequenceStatus === "completed" && (
+												<CheckCircle className="size-3 text-[hsl(192,73%,84%)]/70 flex-shrink-0" />
+											)}
+											<span
+												className={`text-[13px] font-medium ${
+													sequenceStatus === "completed"
+														? "text-[hsl(192,73%,84%)]/70"
+														: sequenceStatus === "running"
+															? "text-text-muted/50 bg-[length:200%_100%] bg-clip-text bg-gradient-to-r from-[hsl(192,73%,84%)] via-[hsl(192,73%,84%)_50%] to-[hsl(192,73%,84%)] text-transparent animate-shimmer"
+															: "text-text-muted/50"
+												}`}
+											>
+												Step {sequenceIndex + 1}
+											</span>
+										</div>
+
+										{/* Step cards + accordions (right column, all steps stacked vertically) */}
+										<div className="space-y-2">
+											{sequence.steps.map((step) => {
+												const isExpanded = expandedSteps.has(step.id);
+												const generation = stepGenerations[step.id];
+												const operationNode =
+													generation?.context.operationNode ??
+													stepOperationNodes[step.id];
+												const modelInfo = getModelInfo(generation);
+
+												return (
+													<div key={step.id}>
+														<div className="group flex items-center gap-3 rounded-lg bg-transparent transition-colors">
+															<button
+																type="button"
+																className="flex-1 flex items-center gap-3 text-left"
+																onClick={() => handleStepToggle(step.id)}
+															>
+																{/* Step Status Icon */}
 																{step.status === "queued" && (
-																	<CircleDashedIcon className="text-black size-[16px]" />
+																	<CircleDashedIcon className="text-text-muted/70 group-hover:text-text-muted size-[16px] flex-shrink-0 transition-colors" />
 																)}
 																{step.status === "running" && (
-																	<RefreshCw className="text-black size-[16px] animate-spin" />
+																	<RefreshCw className="text-text-muted/70 group-hover:text-text-muted size-[16px] animate-spin flex-shrink-0 transition-colors" />
 																)}
 																{step.status === "completed" &&
 																	(() => {
-																		if (generation) {
+																		if (operationNode) {
 																			return (
 																				<NodeIcon
-																					node={
-																						generation.context.operationNode
-																					}
-																					className="size-[16px] text-black"
+																					node={operationNode}
+																					className="size-[16px] text-text-muted/70 group-hover:text-text-muted flex-shrink-0 transition-colors"
 																				/>
 																			);
 																		}
 																		return (
-																			<BrainCircuit className="text-black size-[16px]" />
+																			<BrainCircuit className="text-text-muted/70 group-hover:text-text-muted size-[16px] flex-shrink-0 transition-colors" />
 																		);
 																	})()}
 																{step.status === "failed" && (
-																	<XIcon className="text-black size-[16px]" />
+																	<XIcon className="text-text-muted/70 group-hover:text-text-muted size-[16px] flex-shrink-0 transition-colors" />
 																)}
 																{step.status === "cancelled" && (
-																	<CircleSlashIcon className="text-black size-[16px]" />
+																	<CircleSlashIcon className="text-text-muted/70 group-hover:text-text-muted size-[16px] flex-shrink-0 transition-colors" />
 																)}
-															</div>
-															<span className="text-[14px] text-text-muted">
-																{step.name || "Untitled"}
-															</span>
-															{step.status === "completed" && generation && (
-																<span className="text-[12px] text-text-muted">
-																	{modelInfo.modelName}
+																<span className="text-[13px] text-text-muted/70 group-hover:text-text-muted transition-colors">
+																	{step.name || "Untitled"}
 																</span>
-															)}
-														</button>
-														<div className="flex items-center gap-2">
-															{step.status === "completed" && generation && (
-																<StepActions generation={generation} />
-															)}
-															<ChevronRightIcon
-																className={`size-4 text-text-muted transition-transform ${
-																	isExpanded ? "rotate-90" : ""
-																}`}
-															/>
+																{step.status === "completed" && generation && (
+																	<span className="text-[13px] text-text-muted/70 group-hover:text-text-muted transition-colors">
+																		{modelInfo.modelName}
+																	</span>
+																)}
+															</button>
 														</div>
-													</div>
 
-													{/* Step Content Accordion */}
-													{isExpanded && generation && (
-														<div className="ml-4 pl-4 border-l-2 border-border">
-															<div className="py-4">
-																<GenerationView generation={generation} />
+														{/* Step Content Accordion */}
+														{isExpanded && generation && (
+															<div className="ml-4 pl-4 border-l-2 border-border">
+																<div className="py-4 [&_.markdown-renderer]:text-[13px] [&_*[class*='text-[14px]']]:text-[13px] [&_*]:text-text-muted/70 [&_*[class*='text-inverse']]:!text-text-muted/70">
+																	<GenerationView generation={generation} />
+																</div>
 															</div>
-														</div>
-													)}
-												</div>
-											);
-										})}
+														)}
+													</div>
+												);
+											})}
+										</div>
 									</div>
-								</div>
-							))}
+								);
+							})}
 						</div>
 					)}
 
@@ -435,7 +416,7 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 									</div>
 								</div>
 								{isOutputExpanded ? (
-									<div className="mt-1">
+									<div className="mt-1 [&_.markdown-renderer]:text-[14px]">
 										<GenerationView generation={lastCompletedGeneration} />
 									</div>
 								) : null}
