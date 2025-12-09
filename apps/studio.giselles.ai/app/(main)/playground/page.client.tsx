@@ -12,19 +12,9 @@ import {
 	type FileData,
 	type GenerationContextInput,
 	type TaskId,
-	type UploadedFileData,
 } from "@giselles-ai/protocol";
 import { APICallError, useGiselle } from "@giselles-ai/react";
-import {
-	AlertCircle,
-	ArrowUpIcon,
-	Check,
-	Loader2,
-	Paperclip,
-	Search,
-	Sparkles,
-	X,
-} from "lucide-react";
+import { ArrowUpIcon, Paperclip, Search, Sparkles } from "lucide-react";
 import { DynamicIcon, type IconName } from "lucide-react/dynamic";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
@@ -38,6 +28,7 @@ import {
 } from "react";
 import { LLMProviderIcon } from "@/app/(main)/workspaces/components/llm-provider-icon";
 import type { LoaderData } from "./data-loader";
+import { FileAttachments } from "./file-attachments";
 import type { StageApp } from "./types";
 
 type AppListCardBadgeType =
@@ -243,37 +234,6 @@ function StageTopCard({
 			</div>
 		</div>
 	);
-}
-
-function formatFileSize(bytes: number) {
-	if (!Number.isFinite(bytes) || bytes <= 0) {
-		return "0 B";
-	}
-	const units = ["B", "KB", "MB", "GB", "TB"];
-	const exponent = Math.min(
-		Math.floor(Math.log(bytes) / Math.log(1024)),
-		units.length - 1,
-	);
-	const value = bytes / 1024 ** exponent;
-	const decimals = value >= 10 || exponent === 0 ? 0 : 1;
-	return `${value.toFixed(decimals)} ${units[exponent]}`;
-}
-
-function getFileStatusLabel(file: FileData) {
-	switch (file.status) {
-		case "uploading":
-			return "Uploading…";
-		case "uploaded":
-			return "Ready";
-		case "failed":
-			return "Upload failed";
-		default:
-			return file.status;
-	}
-}
-
-function isUploadedFile(file: FileData): file is UploadedFileData {
-	return file.status === "uploaded";
 }
 
 function getUploadErrorMessage(error: unknown) {
@@ -521,7 +481,6 @@ function ChatInputArea({
 	};
 
 	const hasInput = inputValue.trim().length > 0;
-	const uploadedFiles = attachedFiles.filter(isUploadedFile);
 	const hasPendingUploads = attachedFiles.some(
 		(file) => file.status === "uploading",
 	);
@@ -601,60 +560,10 @@ function ChatInputArea({
 						className="w-full resize-none bg-transparent text-[15px] text-foreground placeholder:text-blue-muted/50 outline-none disabled:cursor-not-allowed min-h-[2.4em] sm:min-h-[2.75em] pt-0 pb-[0.7em] px-1"
 					/>
 
-					{attachedFiles.length > 0 ? (
-						<div className="mt-3 space-y-2">
-							<div className="flex items-center justify-between text-[11px] text-blue-muted/70 px-1">
-								<span>Attachments</span>
-								<span>
-									{uploadedFiles.length}/{attachedFiles.length} ready
-								</span>
-							</div>
-							{attachedFiles.map((file) => {
-								const statusLabel = getFileStatusLabel(file);
-								return (
-									<div
-										key={file.id}
-										className="flex items-start gap-3 rounded-xl border border-white/5 bg-white/5 px-3 py-2 text-left"
-									>
-										<div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-white/10">
-											{file.status === "uploading" ? (
-												<Loader2 className="h-4 w-4 animate-spin text-blue-muted" />
-											) : file.status === "uploaded" ? (
-												<Check className="h-4 w-4 text-emerald-300" />
-											) : file.status === "failed" ? (
-												<AlertCircle className="h-4 w-4 text-red-400" />
-											) : (
-												<Paperclip className="h-4 w-4 text-blue-muted" />
-											)}
-										</div>
-										<div className="flex flex-1 flex-col gap-1 min-w-0">
-											<div className="flex items-center justify-between gap-2">
-												<p className="truncate text-[13px] text-white">
-													{file.name}
-												</p>
-												<button
-													type="button"
-													onClick={() => handleRemoveFile(file.id)}
-													className="text-text-muted hover:text-white transition-colors"
-													aria-label={`Remove ${file.name}`}
-												>
-													<X className="h-3.5 w-3.5" />
-												</button>
-											</div>
-											<p className="text-[11px] text-blue-muted/70">
-												{formatFileSize(file.size)} · {statusLabel}
-											</p>
-											{file.status === "failed" && file.errorMessage ? (
-												<p className="text-[11px] text-red-400">
-													{file.errorMessage}
-												</p>
-											) : null}
-										</div>
-									</div>
-								);
-							})}
-						</div>
-					) : null}
+					<FileAttachments
+						files={attachedFiles}
+						onRemoveFile={handleRemoveFile}
+					/>
 
 					{/* Bottom row: App selector and buttons */}
 					<div className="flex items-center justify-between mt-2 sm:mt-3">
