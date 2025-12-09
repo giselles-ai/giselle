@@ -6,6 +6,12 @@ import { useCallback } from "react";
 const OFFSET_X = 200;
 const OFFSET_Y = 100;
 
+const SINGLE_INSTANCE_NODE_TYPES = new Set(["appEntry", "end"]);
+
+function isSingleInstanceNode(node: Node) {
+	return SINGLE_INSTANCE_NODE_TYPES.has(node.content.type);
+}
+
 function handleAfterCopy(
 	newNode: Node | undefined,
 	copyFiles: (node: FileNode) => Promise<void>,
@@ -68,6 +74,19 @@ export function useNodeManipulation() {
 			// Validate the copied node using Zod schema
 			try {
 				const validatedNode = Node.parse(copiedNode);
+				if (
+					isSingleInstanceNode(validatedNode) &&
+					data.nodes.some(
+						(existingNode) =>
+							existingNode.content.type === validatedNode.content.type,
+					)
+				) {
+					console.warn(
+						`Cannot paste additional "${validatedNode.content.type}" node - limited to one per workspace.`,
+					);
+					onError?.();
+					return;
+				}
 				const newNode = copyNode(validatedNode, {
 					ui: { position, selected: true },
 				});
@@ -78,7 +97,14 @@ export function useNodeManipulation() {
 				onError?.();
 			}
 		},
-		[copiedNode, data.ui.nodeState, copyNode, setUiNodeState, copyFiles],
+		[
+			copiedNode,
+			data.nodes,
+			data.ui.nodeState,
+			copyNode,
+			setUiNodeState,
+			copyFiles,
+		],
 	);
 
 	const duplicate = useCallback(
@@ -94,6 +120,19 @@ export function useNodeManipulation() {
 
 			try {
 				const targetNode = Node.parse(targetNodeLike);
+				if (
+					isSingleInstanceNode(targetNode) &&
+					data.nodes.some(
+						(existingNode) =>
+							existingNode.content.type === targetNode.content.type,
+					)
+				) {
+					console.warn(
+						`Cannot duplicate "${targetNode.content.type}" node - limited to one per workspace.`,
+					);
+					onError?.();
+					return;
+				}
 				const nodeState = data.ui.nodeState[targetNode.id];
 				if (!nodeState) {
 					onError?.();
