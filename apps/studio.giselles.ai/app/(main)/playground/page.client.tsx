@@ -557,6 +557,8 @@ function ChatInputArea({
 				},
 			],
 		});
+		setAttachedFiles([]);
+		attachmentsRef.current = [];
 		setInputValue("");
 		// Reset textarea height after clearing - use requestAnimationFrame for better timing
 		requestAnimationFrame(() => {
