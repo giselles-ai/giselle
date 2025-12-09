@@ -99,9 +99,15 @@ export function Toolbar() {
 	} = useHoverState();
 	const [searchQuery, setSearchQuery] = useState<string>("");
 	const [selectedCategory, setSelectedCategory] = useState<string>("All");
-	const { llmProviders } = useWorkflowDesigner();
+	const { llmProviders, data: workspace } = useWorkflowDesigner();
 	const { stage, aiGatewayUnsupportedModels, generateContentNode } =
 		useFeatureFlag();
+	const hasAppRequestNode = useMemo(
+		() => workspace.nodes.some((node) => node.content.type === "appEntry"),
+		[workspace.nodes],
+	);
+	const appRequestNodeLimitTooltip =
+		"Only one App Request Node can exist per workspace.";
 
 	const availableLanguageModels = useMemo(
 		() =>
@@ -310,16 +316,39 @@ export function Toolbar() {
 														return;
 													}
 													if (value === "appEntry") {
+														if (hasAppRequestNode) {
+															return;
+														}
 														setSelectedTool(addNodeTool(createAppEntryNode()));
 													}
 												}}
 											>
-												{stage && (
-													<ToggleGroup.Item value="appEntry" data-tool>
-														<TriggerIcon className="size-[20px] shrink-0" />
-														<p className="text-[14px]">App Request</p>
-													</ToggleGroup.Item>
-												)}
+												{stage &&
+													(hasAppRequestNode ? (
+														<Tooltip
+															text={appRequestNodeLimitTooltip}
+															side="right"
+															align="start"
+														>
+															<span className="block w-full">
+																<ToggleGroup.Item
+																	value="appEntry"
+																	data-tool
+																	aria-disabled={true}
+																	disabled={true}
+																	className="cursor-not-allowed opacity-50 pointer-events-none"
+																>
+																	<TriggerIcon className="size-[20px] shrink-0" />
+																	<p className="text-[14px]">App Request</p>
+																</ToggleGroup.Item>
+															</span>
+														</Tooltip>
+													) : (
+														<ToggleGroup.Item value="appEntry" data-tool>
+															<TriggerIcon className="size-[20px] shrink-0" />
+															<p className="text-[14px]">App Request</p>
+														</ToggleGroup.Item>
+													))}
 												{triggerRegistry
 													.filter(
 														(triggerEntry) =>
