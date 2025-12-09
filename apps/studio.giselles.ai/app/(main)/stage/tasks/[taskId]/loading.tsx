@@ -21,7 +21,7 @@ const dummyGeneration: Generation = {
 				type: "textGeneration",
 				llm: {
 					provider: "anthropic",
-					id: "claude-sonnet-4-5-20250929",
+					id: "claude-sonnet-4.5",
 					configurations: {
 						temperature: 0.7,
 						topP: 1,
