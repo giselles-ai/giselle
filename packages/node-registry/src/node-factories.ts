@@ -131,7 +131,7 @@ function createDefaultDraftApp(): DraftApp {
 	return {
 		name: "",
 		description: "",
-		iconName: "workflow",
+		iconName: "cable",
 		parameters: [
 			{
 				id: AppParameterId.generate(),
