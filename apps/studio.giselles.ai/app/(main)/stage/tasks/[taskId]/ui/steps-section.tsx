@@ -64,7 +64,7 @@ function OutputActions({ generation }: { generation: Generation }) {
 	};
 
 	return (
-		<div className="flex items-center gap-1">
+		<div className="flex items-center">
 			<button
 				type="button"
 				className="p-2 hover:bg-white/10 rounded-lg transition-colors group"
@@ -291,34 +291,25 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 										}`}
 									>
 										{/* Step Heading (left column, single label per sequence) */}
-										<div className="flex items-center gap-2">
-											{sequenceStatus === "pending" && (
-												<CircleDashedIcon className="size-3 text-text-muted/50 flex-shrink-0" />
-											)}
-											{sequenceStatus === "running" && (
-												<RefreshCw className="size-3 text-text-muted/50 flex-shrink-0 animate-spin" />
-											)}
-											{sequenceStatus === "completed" && (
-												<CheckCircle className="size-3 text-[hsl(192,73%,84%)]/70 flex-shrink-0" />
-											)}
-											<span
-												className={`text-[13px] font-medium ${
-													sequenceStatus === "completed"
-														? "text-[hsl(192,73%,84%)]/70"
-														: sequenceStatus === "running"
-															? "text-text-muted/50 bg-[length:200%_100%] bg-clip-text bg-gradient-to-r from-[hsl(192,73%,84%)] via-[hsl(192,73%,84%)_50%] to-[hsl(192,73%,84%)] text-transparent animate-shimmer"
-															: "text-text-muted/50"
-												}`}
-											>
-												Step {sequenceIndex + 1}
-											</span>
-										</div>
+										<span
+											className={`text-[13px] font-medium ${
+												sequenceStatus === "completed"
+													? "text-[hsl(192,73%,84%)]/70"
+													: sequenceStatus === "running"
+														? "text-text-muted/50 bg-[length:200%_100%] bg-clip-text bg-gradient-to-r from-[hsl(192,73%,84%)] via-[hsl(192,73%,84%)_50%] to-[hsl(192,73%,84%)] text-transparent animate-shimmer"
+														: "text-text-muted/50"
+											}`}
+										>
+											Step {sequenceIndex + 1}
+										</span>
 
 										{/* Step cards + accordions (right column, all steps stacked vertically) */}
 										<div className="space-y-2">
 											{sequence.steps.map((step) => {
-												const isExpanded = expandedSteps.has(step.id);
 												const generation = stepGenerations[step.id];
+												// Only allow expansion if generation exists (has output)
+												const isExpanded =
+													generation && expandedSteps.has(step.id);
 												const operationNode =
 													generation?.context.operationNode ??
 													stepOperationNodes[step.id];
@@ -329,8 +320,16 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 														<div className="group flex items-center gap-3 rounded-lg bg-transparent transition-colors">
 															<button
 																type="button"
-																className="flex-1 flex items-center gap-3 text-left"
-																onClick={() => handleStepToggle(step.id)}
+																className={`flex-1 flex items-center gap-3 text-left ${
+																	!generation ? "cursor-default" : ""
+																}`}
+																onClick={() => {
+																	// Only toggle if generation exists (has output)
+																	if (generation) {
+																		handleStepToggle(step.id);
+																	}
+																}}
+																disabled={!generation}
 															>
 																{/* Step Status Icon */}
 																{step.status === "queued" && (
@@ -354,7 +353,7 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 																		);
 																	})()}
 																{step.status === "failed" && (
-																	<XIcon className="text-text-muted/70 group-hover:text-text-muted size-[16px] flex-shrink-0 transition-colors" />
+																	<XIcon className="text-red-400 size-[16px] flex-shrink-0 transition-colors" />
 																)}
 																{step.status === "cancelled" && (
 																	<CircleSlashIcon className="text-text-muted/70 group-hover:text-text-muted size-[16px] flex-shrink-0 transition-colors" />
@@ -397,7 +396,7 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 							<div className="rounded-xl bg-blue-muted/5 px-4 py-3">
 								<div className="flex items-center justify-between mb-2 w-full">
 									<div className="flex-1" />
-									<div className="flex items-center gap-1">
+									<div className="flex items-center">
 										<OutputActions generation={lastCompletedGeneration} />
 										<button
 											type="button"

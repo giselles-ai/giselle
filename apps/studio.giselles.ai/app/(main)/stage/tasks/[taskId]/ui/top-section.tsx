@@ -22,6 +22,20 @@ export function TopSection({ data }: { data: Promise<TopSectionData> }) {
 			<div className="max-w-[640px] min-w-[320px] mx-auto pt-2">
 				{/* App Summary Section */}
 				<div>
+					{/* Task Status */}
+					<div className="mb-2">
+						{resolvedData.task.status === "created" ? (
+							<StatusBadge status="success">Completed</StatusBadge>
+						) : resolvedData.task.status === "inProgress" ? (
+							<StatusBadge status="info">In Progress</StatusBadge>
+						) : resolvedData.task.status === "completed" ? (
+							<StatusBadge status="success">Completed</StatusBadge>
+						) : resolvedData.task.status === "failed" ? (
+							<StatusBadge status="error">Failed</StatusBadge>
+						) : (
+							<StatusBadge status="ignored">Cancelled</StatusBadge>
+						)}
+					</div>
 					{/* Title placeholder */}
 					<div className="flex items-center gap-3 mb-1">
 						<h3 className="text-[20px] font-normal text-inverse">
