@@ -1,8 +1,4 @@
 import { Select } from "@giselle-internal/ui/select";
-import {
-	SettingDetail,
-	SettingLabel,
-} from "@giselle-internal/ui/setting-label";
 import type {
 	EmbeddingProfileId,
 	GitHubVectorStoreSource,
@@ -19,6 +15,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { TriangleAlert } from "../../../../icons";
 import { useGitHubVectorStoreStatus } from "../../../lib/use-github-vector-store-status";
+import { SettingDetail, SettingLabel } from "../../ui/setting-label";
 
 type GitHubVectorStoreNodePropertiesPanelProps = {
 	node: VectorStoreNode;
@@ -67,14 +64,16 @@ export function GitHubVectorStoreNodePropertiesPanel({
 
 	const repositoryOptions = useMemo(() => {
 		return allRepositories.map((repo) => ({
-			value: `${repo.owner}/${repo.repo}`,
-			label: `${repo.owner}/${repo.repo}`,
+			value: repo.id,
+			label: repo.isOfficial
+				? `${repo.owner}/${repo.repo} (Official)`
+				: `${repo.owner}/${repo.repo}`,
 		}));
 	}, [allRepositories]);
 
 	const handleRepositoryChange = (selectedKey: string) => {
 		const selectedRepo = allRepositories.find(
-			(repo) => `${repo.owner}/${repo.repo}` === selectedKey,
+			(repo) => repo.id === selectedKey,
 		);
 		if (selectedRepo) {
 			// Reset content type selection when repository changes
@@ -108,14 +107,12 @@ export function GitHubVectorStoreNodePropertiesPanel({
 	};
 
 	const [selectedRepoKey, setSelectedRepoKey] = useState<string | undefined>(
-		selectedRepository
-			? `${selectedRepository.owner}/${selectedRepository.repo}`
-			: undefined,
+		selectedRepository ? selectedRepository.id : undefined,
 	);
 
 	const contentTypeAvailability = useMemo(() => {
 		const selectedRepo = allRepositories.find(
-			(repo) => `${repo.owner}/${repo.repo}` === selectedRepoKey,
+			(repo) => repo.id === selectedRepoKey,
 		);
 		if (!selectedRepo)
 			return {
@@ -164,7 +161,7 @@ export function GitHubVectorStoreNodePropertiesPanel({
 
 	const availableEmbeddingProfiles = useMemo(() => {
 		const selectedRepo = allRepositories.find(
-			(repo) => `${repo.owner}/${repo.repo}` === selectedRepoKey,
+			(repo) => repo.id === selectedRepoKey,
 		);
 		if (!selectedRepo || !selectedContentType) return [];
 
@@ -206,7 +203,7 @@ export function GitHubVectorStoreNodePropertiesPanel({
 		contentType: "blob" | "pull_request" | "issue",
 	) => {
 		const selectedRepo = allRepositories.find(
-			(repo) => `${repo.owner}/${repo.repo}` === selectedRepoKey,
+			(repo) => repo.id === selectedRepoKey,
 		);
 		if (selectedRepo) {
 			setSelectedContentType(contentType);
@@ -296,6 +293,8 @@ export function GitHubVectorStoreNodePropertiesPanel({
 					<div className="pt-[8px] flex justify-end">
 						<Link
 							href={settingPath}
+							target="_blank"
+							rel="noopener noreferrer"
 							className="text-inverse hover:text-inverse text-[14px] underline"
 						>
 							Set Up Vector Store
@@ -304,7 +303,9 @@ export function GitHubVectorStoreNodePropertiesPanel({
 				)}
 
 				{/* Setting label below repository */}
-				<SettingLabel className="mt-[8px]">Setting</SettingLabel>
+				{selectedRepoKey && (
+					<SettingLabel className="mt-[8px]">Setting</SettingLabel>
+				)}
 
 				{/* Content Type Selection */}
 				{selectedRepoKey && (

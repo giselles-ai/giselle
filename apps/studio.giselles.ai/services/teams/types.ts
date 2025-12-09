@@ -18,11 +18,3 @@ export type CurrentTeam = {
 };
 
 export type TeamWithSubscription = CurrentTeam;
-
-export type Team = {
-	id: TeamId;
-	name: typeof teams.$inferSelect.name;
-	avatarUrl?: typeof teams.$inferSelect.avatarUrl;
-	plan: typeof teams.$inferSelect.plan;
-	isPro?: boolean;
-};

@@ -229,6 +229,16 @@ export const supabaseUserMappings = pgTable("supabase_user_mappings", {
 	supabaseUserId: text("supabase_user_id").notNull().unique(),
 });
 
+export const supabaseUserRelations = relations(
+	supabaseUserMappings,
+	({ one }) => ({
+		user: one(users, {
+			fields: [supabaseUserMappings.userDbId],
+			references: [users.dbId],
+		}),
+	}),
+);
+
 export type TeamRole = "admin" | "member";
 export const teamMemberships = pgTable(
 	"team_memberships",

@@ -1,8 +1,4 @@
 import {
-	SettingDetail,
-	SettingLabel,
-} from "@giselle-internal/ui/setting-label";
-import {
 	getEntry,
 	type LanguageModelId,
 	type LanguageModelTier,
@@ -10,6 +6,7 @@ import {
 import type { ContentGenerationNode } from "@giselles-ai/protocol";
 import { useCallback, useMemo } from "react";
 import { ModelPickerV2 } from "../../../../ui/model-picker-v2";
+import { SettingDetail, SettingLabel } from "../../ui/setting-label";
 import { ConfigurationFormField } from "./configuration-form-field";
 
 export function ModelSettings({
@@ -34,7 +31,7 @@ export function ModelSettings({
 			onContentGenerationContentChange?.({
 				languageModel: {
 					id: languageModel.id,
-					provider: languageModel.provider,
+					provider: languageModel.providerId,
 					configuration: languageModel.defaultConfiguration,
 				},
 			});

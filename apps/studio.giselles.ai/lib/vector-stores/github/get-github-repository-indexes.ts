@@ -1,5 +1,7 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { db, githubRepositoryContentStatus, githubRepositoryIndex } from "@/db";
+import { officialVectorStoreConfig } from "@/lib/vector-stores/official-config";
+import type { GitHubRepositoryIndexId } from "@/packages/types";
 
 type ContentType = {
 	contentType: "blob" | "pull_request" | "issue";
@@ -14,9 +16,23 @@ type GitHubRepositoryIndex = {
 	contentTypes: ContentType[];
 };
 
-export async function getGitHubRepositoryIndexes(
+/**
+ * Internal helper to fetch repository indexes with optional ID filter.
+ */
+async function fetchRepositoryIndexes(
 	teamDbId: number,
+	repositoryIndexIds?: GitHubRepositoryIndexId[],
 ): Promise<GitHubRepositoryIndex[]> {
+	const whereConditions = [
+		eq(githubRepositoryIndex.teamDbId, teamDbId),
+		eq(githubRepositoryContentStatus.status, "completed"),
+		eq(githubRepositoryContentStatus.enabled, true),
+	];
+
+	if (repositoryIndexIds && repositoryIndexIds.length > 0) {
+		whereConditions.push(inArray(githubRepositoryIndex.id, repositoryIndexIds));
+	}
+
 	const repositories = await db
 		.select({
 			id: githubRepositoryIndex.id,
@@ -33,13 +49,7 @@ export async function getGitHubRepositoryIndexes(
 				githubRepositoryIndex.dbId,
 			),
 		)
-		.where(
-			and(
-				eq(githubRepositoryIndex.teamDbId, teamDbId),
-				eq(githubRepositoryContentStatus.status, "completed"),
-				eq(githubRepositoryContentStatus.enabled, true),
-			),
-		);
+		.where(and(...whereConditions));
 
 	// Group by repository and collect content types with embedding profiles
 	const repoMap = new Map<
@@ -90,4 +100,29 @@ export async function getGitHubRepositoryIndexes(
 			}),
 		),
 	}));
+}
+
+/**
+ * Get GitHub Repository Indexes for a team.
+ */
+export async function getGitHubRepositoryIndexes(
+	teamDbId: number,
+): Promise<GitHubRepositoryIndex[]> {
+	return await fetchRepositoryIndexes(teamDbId);
+}
+
+/**
+ * Get official GitHub Repository Indexes.
+ * Returns empty array if official feature is disabled.
+ */
+export async function getOfficialGitHubRepositoryIndexes(): Promise<
+	GitHubRepositoryIndex[]
+> {
+	const { teamDbId, githubRepositoryIndexIds } = officialVectorStoreConfig;
+
+	if (teamDbId === null || githubRepositoryIndexIds.length === 0) {
+		return [];
+	}
+
+	return await fetchRepositoryIndexes(teamDbId, githubRepositoryIndexIds);
 }

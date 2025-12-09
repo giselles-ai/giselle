@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { fetchEnrichedActs } from "@/app/stage/(top)/services";
+// import { fetchEnrichedActs } from "@/app/stage/(top)/services";
+import { fetchEnrichedActs } from "@/app/(main)/stage/(depreacted)/services";
 import { stageFlag } from "@/flags";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchUserTeams } from "@/services/teams";

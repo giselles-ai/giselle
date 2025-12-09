@@ -1,4 +1,3 @@
-import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
 import type { QueryNode } from "@giselles-ai/protocol";
 import { useNodeGenerations, useWorkflowDesigner } from "@giselles-ai/react";
@@ -14,6 +13,7 @@ import {
 	PropertiesPanelRoot,
 } from "../ui";
 import { NodePanelHeader } from "../ui/node-panel-header";
+import { SettingLabel } from "../ui/setting-label";
 import { GenerationPanel } from "./generation-panel";
 import { QueryPanel } from "./query-panel";
 import { SettingsPanel } from "./settings-panel";

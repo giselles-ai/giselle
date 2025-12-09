@@ -101,7 +101,7 @@ function extractTags(
 		const tags: string[] = [`provider:${content.languageModel.provider}`];
 
 		const languageModel = getEntry(content.languageModel.id);
-		switch (languageModel.provider) {
+		switch (languageModel.providerId) {
 			case "anthropic": {
 				const config = parseConfiguration(
 					languageModel,
@@ -196,7 +196,7 @@ function extractMetadata(
 		const { content } = node;
 		const languageModel = getEntry(content.languageModel.id);
 
-		switch (languageModel.provider) {
+		switch (languageModel.providerId) {
 			case "anthropic":
 				{
 					const configuration = parseConfiguration(
