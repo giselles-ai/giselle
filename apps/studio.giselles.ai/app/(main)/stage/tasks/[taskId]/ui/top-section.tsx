@@ -17,8 +17,6 @@ export function TopSection({ data }: { data: Promise<TopSectionData> }) {
 
 	return (
 		<div className="w-full pb-3 sticky top-0 z-10 bg-[color:var(--color-background)]">
-			{/* Top gradient separator to soften the edge against the header */}
-			<div className="h-4 bg-gradient-to-b from-[color:var(--color-background)] to-transparent pointer-events-none" />
 			<div className="max-w-[640px] min-w-[320px] mx-auto pt-2">
 				{/* App Summary Section */}
 				<div>
