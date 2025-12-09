@@ -131,12 +131,18 @@ function createDefaultDraftApp(): DraftApp {
 	return {
 		name: "",
 		description: "",
-		iconName: "",
+		iconName: "workflow",
 		parameters: [
 			{
 				id: DraftAppParameterId.generate(),
 				name: "",
-				type: "text",
+				type: "multiline-text",
+				required: true,
+			},
+			{
+				id: DraftAppParameterId.generate(),
+				name: "",
+				type: "files",
 				required: true,
 			},
 		],

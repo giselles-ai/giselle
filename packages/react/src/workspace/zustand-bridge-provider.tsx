@@ -1,8 +1,12 @@
 import {
+	App,
+	AppId,
+	AppParameterId,
 	type FileData,
 	type FileNode,
 	isAppEntryNode,
 	type NodeLike,
+	OutputId,
 	type Workspace,
 } from "@giselles-ai/protocol";
 import { useCallback, useEffect, useMemo, useRef } from "react";
@@ -23,6 +27,11 @@ export interface WorkspaceCallbackOptions {
 	onAddNode?: (node: NodeLike) => void;
 	onUpdateNode?: (node: NodeLike) => void;
 	onDeleteNode?: (node: NodeLike) => void;
+}
+
+function ensureNonEmpty(value: string | undefined, fallback: string) {
+	const trimmed = value?.trim() ?? "";
+	return trimmed.length > 0 ? trimmed : fallback;
 }
 
 function useWorkspaceAutoSave({
@@ -113,6 +122,86 @@ export function ZustandBridgeProvider({
 } & WorkspaceCallbackOptions) {
 	const client = useGiselle();
 
+	const autoConfigureAppEntryNode = useCallback(
+		async (node: NodeLike) => {
+			if (!isAppEntryNode(node) || node.content.status !== "unconfigured") {
+				return;
+			}
+			const workspace = appStore.getState().workspace;
+			if (!workspace) return;
+
+			const appId = AppId.generate();
+			const draftApp = node.content.draftApp;
+			const fallbackNodeName = ensureNonEmpty(
+				(node as { name?: string }).name,
+				"App Entry",
+			);
+			const appLike: App = {
+				id: appId,
+				name: ensureNonEmpty(draftApp.name, fallbackNodeName),
+				description: draftApp.description ?? "",
+				iconName: ensureNonEmpty(draftApp.iconName, "workflow"),
+				parameters: draftApp.parameters.map((draftParameter, index) => ({
+					id: AppParameterId.generate(),
+					type: draftParameter.type,
+					name: ensureNonEmpty(draftParameter.name, `Parameter ${index + 1}`),
+					required: draftParameter.required,
+				})),
+				entryNodeId: node.id,
+				workspaceId: workspace.id,
+			};
+			const parseResult = App.safeParse(appLike);
+			if (!parseResult.success) {
+				console.error(
+					"Failed to auto configure app entry node:",
+					parseResult.error,
+				);
+				return;
+			}
+
+			try {
+				await client.saveApp({ app: parseResult.data });
+			} catch (error) {
+				console.error(
+					"Failed to persist auto configured app entry node:",
+					error,
+				);
+				return;
+			}
+
+			const nextState = appStore.getState();
+			const existingNode = nextState.workspace?.nodes.find(
+				(workspaceNode) => workspaceNode.id === node.id,
+			);
+			if (existingNode === undefined) {
+				return;
+			}
+
+			nextState.updateNode(node.id, {
+				name: parseResult.data.name,
+				outputs: parseResult.data.parameters.map((parameter) => ({
+					id: OutputId.generate(),
+					label: parameter.name,
+					accessor: parameter.id,
+				})),
+				content: {
+					...node.content,
+					status: "configured",
+					appId,
+				},
+			});
+		},
+		[client],
+	);
+
+	const handleNodeAdded = useCallback(
+		(node: NodeLike) => {
+			void autoConfigureAppEntryNode(node);
+			onAddNode?.(node);
+		},
+		[autoConfigureAppEntryNode, onAddNode],
+	);
+
 	const { saveImmediately } = useWorkspaceAutoSave({
 		client,
 		saveWorkflowDelay,
@@ -120,10 +209,12 @@ export function ZustandBridgeProvider({
 
 	// Initialize or update workspace in the global store when data changes
 	useEffect(() => {
-		appStore
-			.getState()
-			.initWorkspace(data, { onAddNode, onUpdateNode, onDeleteNode });
-	}, [data, onAddNode, onUpdateNode, onDeleteNode]);
+		appStore.getState().initWorkspace(data, {
+			onAddNode: handleNodeAdded,
+			onUpdateNode,
+			onDeleteNode,
+		});
+	}, [data, handleNodeAdded, onUpdateNode, onDeleteNode]);
 
 	// Load LLM providers
 	useEffect(() => {

@@ -181,7 +181,9 @@ export function AppEntryConfigurationView({
 	const [isPending, startTransition] = useTransition();
 	const [appName, setAppName] = useState(draftApp.name);
 	const [appDescription, setAppDescription] = useState(draftApp.description);
-	const [appIconName, setAppIconName] = useState(draftApp.iconName || "cable");
+	const [appIconName, setAppIconName] = useState(
+		draftApp.iconName || "workflow",
+	);
 	const [draftAppParameters, setDraftAppParameters] = useState<
 		DraftAppParameter[]
 	>(draftApp.parameters);
