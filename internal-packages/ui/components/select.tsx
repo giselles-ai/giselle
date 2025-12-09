@@ -34,6 +34,8 @@ interface SelectProps<T extends SelectOption> {
 	disableHoverBg?: boolean;
 	/** Hide the check icon indicator for selected items (for action menus). */
 	hideItemIndicator?: boolean;
+	/** Side of the trigger on which the content will be aligned. */
+	side?: "top" | "right" | "bottom" | "left";
 }
 
 export function Select<T extends SelectOption>({
@@ -56,6 +58,7 @@ export function Select<T extends SelectOption>({
 	contentMinWidthClassName,
 	disableHoverBg,
 	hideItemIndicator,
+	side,
 }: SelectProps<T>) {
 	const [mounted, setMounted] = useState(false);
 	useEffect(() => setMounted(true), []);
@@ -159,6 +162,7 @@ export function Select<T extends SelectOption>({
 			<SelectPrimitive.Portal>
 				<SelectPrimitive.Content
 					position="popper"
+					side={side ?? "bottom"}
 					sideOffset={4}
 					className={clsx(
 						contentMinWidthClassName ?? "min-w-(--radix-select-trigger-width)",

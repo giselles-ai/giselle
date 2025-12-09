@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type React from "react";
 import { Suspense } from "react";
+import { InputAreaHeaderControls } from "./ui/input-area-header-controls";
 import { InputAreaPlaceholder } from "./ui/input-area-placeholder";
 import { StepsSection } from "./ui/steps-section";
 import { TopSection } from "./ui/top-section";
@@ -63,9 +64,14 @@ export default async function ({
 					{/* Top gradient separator */}
 					<div className="h-6 -mt-6 bg-gradient-to-t from-[color:var(--color-background)] to-transparent pointer-events-none" />
 					<div className="max-w-[640px] min-w-[320px] mx-auto">
-						<h2 className="text-text-muted text-[13px] font-semibold block mb-2">
-							Request new tasks in a new session
-						</h2>
+						<div className="flex items-center justify-between mb-2">
+							<h2 className="text-text-muted text-[13px] font-semibold">
+								Request new tasks in a new session
+							</h2>
+							<Suspense fallback={null}>
+								<InputAreaHeaderControls taskPromise={taskPromise} />
+							</Suspense>
+						</div>
 						{/* TODO: Input area will be added here - placeholder for future functionality */}
 						<InputAreaPlaceholder taskPromise={taskPromise} />
 					</div>
