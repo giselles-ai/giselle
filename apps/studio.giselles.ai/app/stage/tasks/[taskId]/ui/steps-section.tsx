@@ -388,7 +388,9 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 											type="button"
 											className="w-6 h-6 flex items-center justify-center rounded-md hover:bg-white/10 transition-colors"
 											onClick={() => setIsOutputExpanded(!isOutputExpanded)}
-											aria-label={isOutputExpanded ? "Collapse output" : "Expand output"}
+											aria-label={
+												isOutputExpanded ? "Collapse output" : "Expand output"
+											}
 										>
 											<ChevronDownIcon
 												className={`size-4 text-text-muted transition-transform ${
