@@ -215,13 +215,23 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 		});
 	}, [task]);
 
-	// Count completed steps
-	const completedStepsCount = task.sequences.reduce(
-		(count, sequence) =>
-			count +
-			sequence.steps.filter((step) => step.status === "completed").length,
-		0,
+	// Count total and completed steps
+	const { totalStepsCount, completedStepsCount } = task.sequences.reduce(
+		(counts, sequence) => {
+			const sequenceTotal = sequence.steps.length;
+			const sequenceCompleted = sequence.steps.filter(
+				(step) => step.status === "completed",
+			).length;
+			return {
+				totalStepsCount: counts.totalStepsCount + sequenceTotal,
+				completedStepsCount: counts.completedStepsCount + sequenceCompleted,
+			};
+		},
+		{ totalStepsCount: 0, completedStepsCount: 0 },
 	);
+
+	const progressRatio =
+		totalStepsCount > 0 ? completedStepsCount / totalStepsCount : 0;
 
 	// Find the last completed step's generation (if available)
 	const lastCompletedGeneration = (() => {
@@ -270,7 +280,31 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 						className="flex items-center gap-2 text-text-muted text-[13px] font-semibold mb-2 w-full cursor-pointer hover:text-text-muted transition-colors"
 						onClick={() => setIsStepsExpanded(!isStepsExpanded)}
 					>
-						<span className="block">Completed {completedStepsCount} steps</span>
+						<div className="flex items-center gap-2">
+							<span className="block">
+								Completed {completedStepsCount} steps
+							</span>
+							{totalStepsCount > 0 ? (
+								<div className="flex items-center gap-1 text-[11px] text-text-muted/80">
+									<div
+										className="relative h-[6px] w-16 overflow-hidden rounded-full bg-white/5"
+										aria-hidden="true"
+									>
+										<div
+											className="absolute inset-y-0 left-0 rounded-full bg-[linear-gradient(90deg,rgba(131,157,195,1),rgba(129,140,248,1))] transition-[width] duration-500 ease-out"
+											style={{
+												width: `${
+													Math.min(Math.max(progressRatio, 0), 1) * 100
+												}%`,
+											}}
+										/>
+									</div>
+									<span className="tabular-nums">
+										{completedStepsCount}/{totalStepsCount}
+									</span>
+								</div>
+							) : null}
+						</div>
 						<div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
 							<ChevronDownIcon
 								className={`size-4 transition-transform ${
