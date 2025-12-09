@@ -341,6 +341,10 @@ export const workspaceRelations = relations(workspaces, ({ one }) => ({
 		fields: [workspaces.teamDbId],
 		references: [teams.dbId],
 	}),
+	app: one(apps, {
+		fields: [workspaces.dbId],
+		references: [apps.workspaceDbId],
+	}),
 }));
 
 export const oauthCredentials = pgTable(

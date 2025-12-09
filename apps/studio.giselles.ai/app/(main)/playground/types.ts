@@ -17,8 +17,6 @@ export interface StageApp {
 	entryNodeId: NodeId;
 	workspaceId: WorkspaceId;
 	workspaceName: string;
-	teamName: string;
-	teamId: string;
 	parameters: AppParameter[];
 	isMine: boolean;
 	vectorStoreRepositories: string[];
