@@ -1,5 +1,4 @@
 import type {
-	FileData,
 	FileId,
 	ParameterItem,
 	Trigger,
