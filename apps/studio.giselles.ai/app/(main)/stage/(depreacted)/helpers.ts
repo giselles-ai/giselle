@@ -1,8 +1,8 @@
 import type {
-	FileData,
 	FileId,
 	ParameterItem,
 	Trigger,
+	UploadedFileData,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import {
@@ -150,7 +150,7 @@ export async function toParameterItems(
 					);
 				}
 
-				const uploadedFiles: FileData[] = [];
+				const uploadedFiles: UploadedFileData[] = [];
 				for (const file of value) {
 					const uploadingFileData = createUploadingFileData({
 						name: file.name,
