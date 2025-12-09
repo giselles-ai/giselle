@@ -5,8 +5,8 @@ import { parseConfiguration } from "./language-model";
 import { openai } from "./openai";
 
 describe("parseConfiguration", () => {
-	describe("with anthropic/claude-opus-4.1", () => {
-		const model = anthropic["anthropic/claude-opus-4.1"];
+	describe("with anthropic/claude-opus-4.5", () => {
+		const model = anthropic["anthropic/claude-opus-4.5"];
 
 		it("should parse valid configuration", () => {
 			const unknownData: Record<string, unknown> = {
