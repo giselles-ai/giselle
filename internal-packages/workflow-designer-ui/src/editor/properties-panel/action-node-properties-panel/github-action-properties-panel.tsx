@@ -1,8 +1,4 @@
 import {
-	SettingDetail,
-	SettingLabel,
-} from "@giselle-internal/ui/setting-label";
-import {
 	githubActionEntries,
 	githubActions,
 	githubActionToInputFields,
@@ -28,6 +24,7 @@ import {
 } from "../trigger-node-properties-panel/providers/github-trigger/components/icons";
 import { GitHubRepositoryBlock } from "../trigger-node-properties-panel/ui";
 import { GitHubInvalidCredential, SelectRepository } from "../ui";
+import { SettingDetail, SettingLabel } from "../ui/setting-label";
 import { GitHubActionConfiguredView } from "./ui/github-action-configured-view";
 
 // Default icon for actions without specific icons

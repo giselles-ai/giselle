@@ -1,8 +1,8 @@
-import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import type { AppEntryNode, AppId } from "@giselles-ai/protocol";
 import { AppParameterId } from "@giselles-ai/protocol";
 import { useGiselle } from "@giselles-ai/react";
 import useSWR from "swr";
+import { SettingLabel } from "../ui/setting-label";
 
 export function AppEntryConfiguredView({
 	node,

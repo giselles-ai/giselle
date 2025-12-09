@@ -5,7 +5,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const glassButtonVariants = cva(
-	"group relative overflow-hidden rounded-lg px-4 py-2 text-white transition-all duration-300 hover:scale-[1.01] active:scale-95 inline-flex items-center justify-center gap-1.5 font-sans text-[14px] font-medium",
+	"group relative overflow-hidden rounded-lg px-4 py-2 text-white transition-all duration-300 hover:scale-[1.01] active:scale-95 inline-flex items-center justify-center gap-1.5 font-sans text-[14px] font-medium cursor-pointer",
 	{
 		variants: {
 			variant: {
@@ -69,13 +69,13 @@ const GlassButton = React.forwardRef<HTMLButtonElement, GlassButtonProps>(
 				/>
 
 				{/* Main glass background */}
-				<div
+				{/*<div
 					className="absolute inset-0 rounded-lg backdrop-blur-md"
 					style={{
 						background:
 							"linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(107,143,240,0.1) 50%, rgba(107,143,240,0.2) 100%)",
 					}}
-				/>
+				/>*/}
 
 				{/* Top reflection */}
 				<div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-white/60 to-transparent" />
@@ -84,9 +84,7 @@ const GlassButton = React.forwardRef<HTMLButtonElement, GlassButtonProps>(
 				<div className="absolute inset-0 rounded-lg border border-white/20" />
 
 				{/* Content */}
-				<span className="relative z-10 flex items-center gap-1.5">
-					{children}
-				</span>
+				<span className="flex items-center gap-1.5">{children}</span>
 
 				{/* Hover overlay */}
 				<div className="absolute inset-0 rounded-lg bg-gradient-to-t from-transparent to-white/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-center justify-center" />

@@ -1,4 +1,3 @@
-import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
 import type { FileData } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
@@ -12,6 +11,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 import { TriangleAlert } from "../../../icons";
 import { FileNodeIcon } from "../../../icons/node";
+import { SettingLabel } from "../ui/setting-label";
 import type { FilePanelProps } from "./file-panel-type";
 import { useFileNode } from "./use-file-node";
 

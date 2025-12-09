@@ -7,6 +7,7 @@ import {
 	isTriggerNode,
 	isVectorStoreNode,
 } from "@giselles-ai/protocol";
+import { RequestError } from "@octokit/request-error";
 import { and, count, desc, eq, inArray, isNotNull } from "drizzle-orm";
 import { Suspense, use } from "react";
 import { giselle } from "@/app/giselle";
@@ -29,6 +30,7 @@ function AgentList({
 				githubRepositories: string[];
 				documentVectorStoreFiles: string[];
 				llmProviders: string[];
+				hasGithubIntegration: boolean;
 			}
 		>
 	>;
@@ -102,6 +104,7 @@ async function agentsQuery(teamDbId: number) {
 	const githubRepositoriesMap = new Map<string, string[]>();
 	const documentVectorStoreFilesMap = new Map<string, string[]>();
 	const llmProvidersMap = new Map<string, string[]>();
+	const hasGithubIntegrationMap = new Map<string, boolean>();
 
 	// Get document vector stores for all teams
 	const teamDbIds = [...new Set(agentsList.map((agent) => agent.teamDbId))];
@@ -127,6 +130,7 @@ async function agentsQuery(teamDbId: number) {
 				const repositories: string[] = [];
 				const documentFiles: string[] = [];
 				const llmProviders = new Set<string>();
+				let hasGithubIntegration = false;
 
 				if (workspace.nodes) {
 					for (const node of workspace.nodes) {
@@ -146,6 +150,7 @@ async function agentsQuery(teamDbId: number) {
 							isVectorStoreNode(node, "github") &&
 							node.content.source.state.status === "configured"
 						) {
+							hasGithubIntegration = true;
 							const { owner, repo } = node.content.source.state;
 							const fullName = `${owner}/${repo}`;
 							if (!repositories.includes(fullName)) {
@@ -158,6 +163,7 @@ async function agentsQuery(teamDbId: number) {
 							isTriggerNode(node, "github") &&
 							node.content.state.status === "configured"
 						) {
+							hasGithubIntegration = true;
 							try {
 								const trigger = await giselle.getTrigger({
 									triggerId: node.content.state.flowTriggerId,
@@ -175,13 +181,7 @@ async function agentsQuery(teamDbId: number) {
 								}
 							} catch (error) {
 								// Silently skip if installation is not found (may have been removed)
-								const errorMessage =
-									error instanceof Error ? error.message : String(error);
-								if (
-									errorMessage.includes("installation not found") ||
-									errorMessage.includes("installation may have been removed")
-								) {
-									// Installation was removed, skip silently
+								if (error instanceof RequestError && error.status === 404) {
 									continue;
 								}
 								console.error(
@@ -196,6 +196,7 @@ async function agentsQuery(teamDbId: number) {
 							isActionNode(node, "github") &&
 							node.content.command.state.status === "configured"
 						) {
+							hasGithubIntegration = true;
 							try {
 								const repoFullname = await giselle.getGitHubRepositoryFullname({
 									repositoryNodeId: node.content.command.state.repositoryNodeId,
@@ -207,13 +208,7 @@ async function agentsQuery(teamDbId: number) {
 								}
 							} catch (error) {
 								// Silently skip if installation is not found (may have been removed)
-								const errorMessage =
-									error instanceof Error ? error.message : String(error);
-								if (
-									errorMessage.includes("installation not found") ||
-									errorMessage.includes("installation may have been removed")
-								) {
-									// Installation was removed, skip silently
+								if (error instanceof RequestError && error.status === 404) {
 									continue;
 								}
 								console.error(
@@ -256,6 +251,9 @@ async function agentsQuery(teamDbId: number) {
 				if (llmProviders.size > 0) {
 					llmProvidersMap.set(agent.workspaceId, Array.from(llmProviders));
 				}
+				if (hasGithubIntegration) {
+					hasGithubIntegrationMap.set(agent.workspaceId, true);
+				}
 			} catch (error) {
 				console.error(
 					`Error extracting vector store info for workspace ${agent.workspaceId}:`,
@@ -284,6 +282,9 @@ async function agentsQuery(teamDbId: number) {
 				? documentVectorStoreFilesMap.get(workspaceId) || []
 				: [],
 			llmProviders: workspaceId ? llmProvidersMap.get(workspaceId) || [] : [],
+			hasGithubIntegration: workspaceId
+				? hasGithubIntegrationMap.get(workspaceId) || false
+				: false,
 		};
 	});
 }

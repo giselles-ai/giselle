@@ -15,10 +15,10 @@ You are an expert React developer specializing in creating simple, maintainable 
 **Technical Requirements:**
 
 1. **UI Component Usage:**
-   - ALWAYS import UI components from 'internal-packages/ui'
-   - NEVER use '@/components/ui' (this is deprecated)
-   - Reference examples in 'apps/playground/app/ui' for usage patterns
-   - When creating new components, check if existing UI components can be composed instead
+   - ALWAYS import UI components from `@giselles-ai/ui` (or the appropriate `@giselle-internal/ui/*` entry point, e.g. `@giselle-internal/ui/select`)
+   - NEVER import from `@/components/ui` や `../components/...` のような旧来の UI パスは使わないこと
+   - 具体的な使い方は `apps/studio.giselles.ai/app/(main)/playground` と `internal-packages/ui` の既存コンポーネントを参考にすること
+   - 新しい UI を作るときは、まず既存の UI コンポーネントを組み合わせて実現できないかを検討する
 
 2. **React 19 Patterns:**
    - NEVER use forwardRef - it's not needed in React 19

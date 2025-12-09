@@ -1,4 +1,3 @@
-import { SettingLabel } from "@giselle-internal/ui/setting-label";
 import { useToasts } from "@giselle-internal/ui/toast";
 import type { ImageGenerationNode } from "@giselles-ai/protocol";
 import { useNodeGenerations, useWorkflowDesigner } from "@giselles-ai/react";
@@ -10,6 +9,7 @@ import { isPromptEmpty } from "../../lib/validate-prompt";
 import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
 import { GenerateCtaButton } from "../ui/generate-cta-button";
 import { NodePanelHeader } from "../ui/node-panel-header";
+import { SettingLabel } from "../ui/setting-label";
 import { GenerationPanel } from "./generation-panel";
 import { PromptPanel } from "./prompt-panel";
 import { useConnectedSources } from "./sources";

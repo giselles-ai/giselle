@@ -14,8 +14,11 @@ export function isLanguageModelId(id: unknown): id is LanguageModelId {
 	return languageModelIds.includes(id as LanguageModelId);
 }
 
-export const languageModelProviders = languageModels.map(
+export const languageModelProviderDefinitions = languageModels.map(
 	(model) => model.provider,
+);
+export const languageModelProviders = languageModelProviderDefinitions.map(
+	(provider) => provider.id,
 );
 
 export function isLanguageModelProvider(
@@ -25,6 +28,8 @@ export function isLanguageModelProvider(
 }
 
 export type LanguageModelProvider = (typeof languageModelProviders)[number];
+export type LanguageModelProviderInfo =
+	(typeof languageModelProviderDefinitions)[number];
 
 export function getEntry(languageModelId: LanguageModelId) {
 	const languageModel = languageModels.find(

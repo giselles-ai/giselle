@@ -6,11 +6,13 @@ import type { GitHubRepositoryContentType } from "@/db";
 import type { TeamPlan } from "@/db/schema";
 import type { RepositoryWithStatuses } from "@/lib/vector-stores/github";
 import type { GitHubRepositoryIndexId } from "@/packages/types";
+import { OfficialRepositorySection } from "./official-repository-section";
 import { RepositoryItem } from "./repository-item";
 import { SectionHeader } from "./ui/section-header";
 
 type RepositoryListProps = {
 	repositories: RepositoryWithStatuses[];
+	officialRepositories: RepositoryWithStatuses[];
 	deleteRepositoryIndexAction: (
 		indexId: GitHubRepositoryIndexId,
 	) => Promise<void>;
@@ -32,6 +34,7 @@ type RepositoryListProps = {
 
 export function RepositoryList({
 	repositories,
+	officialRepositories,
 	deleteRepositoryIndexAction,
 	triggerManualIngestAction,
 	updateRepositoryIndexAction,
@@ -77,6 +80,8 @@ export function RepositoryList({
 					<GitHubVectorStoreLockedCard />
 				)}
 			</Card>
+
+			<OfficialRepositorySection repositories={officialRepositories} />
 		</div>
 	);
 }

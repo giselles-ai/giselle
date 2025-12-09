@@ -1,7 +1,5 @@
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
 import { Popover } from "@giselle-internal/ui/popover";
-import { PromptEditor } from "@giselle-internal/ui/prompt-editor";
-import { SettingDetail } from "@giselle-internal/ui/setting-label";
 import {
 	getEntry,
 	type LanguageModelId,
@@ -17,7 +15,6 @@ import {
 	Node,
 } from "@giselles-ai/protocol";
 import { useNodeGenerations, useWorkflowDesigner } from "@giselles-ai/react";
-import { titleCase } from "@giselles-ai/utils";
 import clsx from "clsx/lite";
 import { PlusIcon, Settings2Icon, XIcon } from "lucide-react";
 import { Tooltip as TooltipPrimitive } from "radix-ui";
@@ -25,6 +22,8 @@ import { useCallback, useMemo, useState } from "react";
 import ClipboardButton from "../../../ui/clipboard-button";
 import { GenerationView } from "../../../ui/generation-view";
 import { GenerateCtaButton, NodePanelHeader, PropertiesPanelRoot } from "../ui";
+import { PromptEditor } from "../ui/prompt-editor";
+import { SettingDetail } from "../ui/setting-label";
 import { ConfigurationFormField, ModelPickerV2 } from "./language-model";
 import { useNodeContext } from "./node-context/use-node-context";
 import { ToolConfigurationDialog } from "./tool";
@@ -133,11 +132,11 @@ export function ContentGenerationNodePropertiesPanel({
 		[configuredTools],
 	);
 	const toolsGroupByProvider = useMemo(() => {
-		const makeItems = (provider: string) =>
+		const makeItems = (providerId: string) =>
 			languageModelTools
 				.filter(
 					(tool: LanguageModelTool) =>
-						tool.provider === provider && !configuredToolNames.has(tool.name),
+						tool.provider === providerId && !configuredToolNames.has(tool.name),
 				)
 				.map((tool: LanguageModelTool) => ({
 					value: tool.name,
@@ -151,12 +150,16 @@ export function ContentGenerationNodePropertiesPanel({
 				items: makeItems("giselle"),
 			},
 			{
-				groupId: languageModel.provider,
-				groupLabel: `${titleCase(languageModel.provider)} Provides`,
-				items: makeItems(languageModel.provider),
+				groupId: languageModel.providerId,
+				groupLabel: `${languageModel.provider.title} Provides`,
+				items: makeItems(languageModel.providerId),
 			},
 		].filter((group) => group.items.length > 0);
-	}, [configuredToolNames, languageModel.provider]);
+	}, [
+		configuredToolNames,
+		languageModel.providerId,
+		languageModel.provider.title,
+	]);
 
 	const handleToolSelect = (_e: unknown, item: { value: string }) => {
 		const toolName = item.value;
@@ -297,7 +300,7 @@ export function ContentGenerationNodePropertiesPanel({
 				content: {
 					...node.content,
 					languageModel: {
-						provider: newLanguageModel.provider,
+						provider: newLanguageModel.providerId,
 						id: newLanguageModel.id,
 						configuration: newLanguageModel.defaultConfiguration,
 					},
@@ -565,7 +568,7 @@ export function ContentGenerationNodePropertiesPanel({
 						<PromptEditor
 							placeholder="Write your prompt... Use @ to reference other nodes"
 							value={node.content.prompt}
-							onValueChange={(value) => {
+							onValueChange={(value: string) => {
 								updateNodeDataContent(node, { prompt: value });
 							}}
 							connections={connections}

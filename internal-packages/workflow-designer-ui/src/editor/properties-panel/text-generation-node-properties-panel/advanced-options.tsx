@@ -1,10 +1,7 @@
-import {
-	SettingDetail,
-	SettingLabel,
-} from "@giselle-internal/ui/setting-label";
 import type { TextGenerationNode } from "@giselles-ai/protocol";
 import { ChevronRightIcon } from "lucide-react";
 import { useState } from "react";
+import { SettingDetail, SettingLabel } from "../ui/setting-label";
 import { ToolsPanel } from "./tools";
 
 export function AdvancedOptions({ node }: { node: TextGenerationNode }) {

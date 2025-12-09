@@ -22,6 +22,7 @@ interface AgentCardProps {
 		githubRepositories?: string[];
 		documentVectorStoreFiles?: string[];
 		llmProviders?: string[];
+		hasGithubIntegration?: boolean;
 	};
 }
 
@@ -210,12 +211,11 @@ export function AgentCard({ agent }: AgentCardProps) {
 									<LLMProviderIcon provider={provider} className="w-4 h-4" />
 								</div>
 							))}
-							{agent.githubRepositories &&
-								agent.githubRepositories.length > 0 && (
-									<div className="w-7 h-7 rounded bg-white/10 flex items-center justify-center">
-										<GitHubIcon className="w-4 h-4 text-text/60" />
-									</div>
-								)}
+							{agent.hasGithubIntegration && (
+								<div className="w-7 h-7 rounded bg-white/10 flex items-center justify-center">
+									<GitHubIcon className="w-4 h-4 text-text/60" />
+								</div>
+							)}
 							{agent.documentVectorStoreFiles &&
 								agent.documentVectorStoreFiles.length > 0 && (
 									<div className="w-7 h-7 rounded bg-white/10 flex items-center justify-center">
