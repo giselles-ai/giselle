@@ -24,6 +24,7 @@ async function _getCurrentUser() {
 	}
 	return {
 		id: supabaseUserWithUser.user.id,
+		dbId: supabaseUserWithUser.user.dbId,
 		displayName: supabaseUserWithUser.user.displayName,
 		email: supabaseUserWithUser.user.email,
 		avatarUrl: supabaseUserWithUser.user.avatarUrl,
