@@ -13,16 +13,21 @@ import {
 	type TextGenerationNode,
 } from "@giselles-ai/protocol";
 
+// Legacy model IDs that are no longer in the current schema but may exist in stored data
+type LegacyAnthropicModelId = "claude-opus-4-1-20250805";
+type TextGenerationModelIdWithLegacy =
+	| TextGenerationNode["content"]["llm"]["id"]
+	| LegacyAnthropicModelId;
+
 function convertTextGenerationLanguageModelIdToContentGenerationLanguageModelId(
-	from: TextGenerationNode["content"]["llm"]["id"],
+	from: TextGenerationModelIdWithLegacy,
 ): LanguageModelId {
 	switch (from) {
 		case "claude-haiku-4-5-20251001":
 			return "anthropic/claude-haiku-4-5";
 		case "claude-opus-4.5":
-			return "anthropic/claude-opus-4.5";
 		case "claude-opus-4-1-20250805":
-			return "anthropic/claude-opus-4.1";
+			return "anthropic/claude-opus-4.5";
 		case "claude-sonnet-4-5-20250929":
 			return "anthropic/claude-sonnet-4-5";
 		case "gemini-2.5-flash":
@@ -65,8 +70,6 @@ function convertContentGenerationLanguageModelIdToTextGenerationLanguageModelId(
 			return "claude-haiku-4-5-20251001";
 		case "anthropic/claude-opus-4.5":
 			return "claude-opus-4.5";
-		case "anthropic/claude-opus-4.1":
-			return "claude-opus-4-1-20250805";
 		case "anthropic/claude-sonnet-4-5":
 			return "claude-sonnet-4-5-20250929";
 		case "google/gemini-2.5-flash":
@@ -109,7 +112,7 @@ export function convertTextGenerationToContentGeneration(
 
 	const languageModelId =
 		convertTextGenerationLanguageModelIdToContentGenerationLanguageModelId(
-			textGenerationContent.llm.id,
+			textGenerationContent.llm.id as TextGenerationModelIdWithLegacy,
 		);
 	// Convert language model from old format to new format
 	const languageModelEntry = getEntry(languageModelId);

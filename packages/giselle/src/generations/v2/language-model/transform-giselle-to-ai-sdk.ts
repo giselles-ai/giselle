@@ -33,7 +33,6 @@ export function transformGiselleLanguageModelToAiSdkLanguageModelCallOptions(
 			} satisfies Partial<LanguageModelV2CallOptions>;
 		}
 		case "anthropic/claude-haiku-4-5":
-		case "anthropic/claude-opus-4.1":
 		case "anthropic/claude-opus-4.5":
 		case "anthropic/claude-sonnet-4-5": {
 			const config = parseConfiguration(
