@@ -143,7 +143,7 @@ function createDefaultDraftApp(): DraftApp {
 				id: DraftAppParameterId.generate(),
 				name: "",
 				type: "files",
-				required: true,
+				required: false,
 			},
 		],
 	};
