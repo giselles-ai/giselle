@@ -15,9 +15,11 @@ import {
 
 // Legacy model IDs that are no longer in the current schema but may exist in stored data
 type LegacyAnthropicModelId = "claude-opus-4-1-20250805";
+type LegacyOpenAiModelId = "gpt-5-codex";
 type TextGenerationModelIdWithLegacy =
 	| TextGenerationNode["content"]["llm"]["id"]
-	| LegacyAnthropicModelId;
+	| LegacyAnthropicModelId
+	| LegacyOpenAiModelId;
 
 function convertTextGenerationLanguageModelIdToContentGenerationLanguageModelId(
 	from: TextGenerationModelIdWithLegacy,
@@ -47,7 +49,7 @@ function convertTextGenerationLanguageModelIdToContentGenerationLanguageModelId(
 		case "gpt-5.1-codex":
 			return "openai/gpt-5.1-codex";
 		case "gpt-5-codex":
-			return "openai/gpt-5-codex";
+			return "openai/gpt-5.1-codex";
 		case "gpt-5-nano":
 			return "openai/gpt-5-nano";
 		case "sonar":
@@ -89,7 +91,7 @@ function convertContentGenerationLanguageModelIdToTextGenerationLanguageModelId(
 		case "openai/gpt-5.1-codex":
 			return "gpt-5.1-codex";
 		case "openai/gpt-5-codex":
-			return "gpt-5-codex";
+			return "gpt-5.1-codex";
 		case "openai/gpt-5-nano":
 			// When converting back, use gpt-5-nano (not sonar/sonar-pro)
 			// as we cannot determine the original source

@@ -11,7 +11,7 @@ describe("openai llm", () => {
 				"gpt-5.1-codex",
 			);
 			expect(OpenAILanguageModelId.parse("gpt-5")).toBe("gpt-5");
-			expect(OpenAILanguageModelId.parse("gpt-5-codex")).toBe("gpt-5-codex");
+			expect(OpenAILanguageModelId.parse("gpt-5-codex")).toBe("gpt-5.1-codex");
 			expect(OpenAILanguageModelId.parse("gpt-5-mini")).toBe("gpt-5-mini");
 			expect(OpenAILanguageModelId.parse("gpt-5-nano")).toBe("gpt-5-nano");
 		});
@@ -24,7 +24,7 @@ describe("openai llm", () => {
 				"gpt-5.1-codex",
 			);
 			expect(OpenAILanguageModelId.parse("gpt-5-codex-20250915")).toBe(
-				"gpt-5-codex",
+				"gpt-5.1-codex",
 			);
 
 			// Fallback to gpt-5

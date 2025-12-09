@@ -32,7 +32,6 @@ export const OpenAILanguageModelId = z
 		"gpt-5.1-thinking",
 		"gpt-5.1-codex",
 		"gpt-5",
-		"gpt-5-codex",
 		"gpt-5-mini",
 		"gpt-5-nano",
 	])
@@ -51,7 +50,7 @@ export const OpenAILanguageModelId = z
 		}
 
 		if (/^gpt-5-codex(?:-.+)?$/.test(v)) {
-			return "gpt-5-codex";
+			return "gpt-5.1-codex";
 		}
 
 		// Fallback to gpt-5
@@ -129,18 +128,6 @@ const gpt5: OpenAILanguageModel = {
 	configurations: defaultConfigurations,
 };
 
-const gpt5codex: OpenAILanguageModel = {
-	provider: "openai",
-	id: "gpt-5-codex",
-	capabilities:
-		Capability.ImageFileInput |
-		Capability.TextGeneration |
-		Capability.OptionalSearchGrounding |
-		Capability.Reasoning,
-	tier: Tier.enum.pro,
-	configurations: defaultConfigurations,
-};
-
 const gpt5mini: OpenAILanguageModel = {
 	provider: "openai",
 	id: "gpt-5-mini",
@@ -164,14 +151,7 @@ const gpt5nano: OpenAILanguageModel = {
 	configurations: defaultConfigurations,
 };
 
-export const models = [
-	gpt51Thinking,
-	gpt51codex,
-	gpt5,
-	gpt5codex,
-	gpt5mini,
-	gpt5nano,
-];
+export const models = [gpt51Thinking, gpt51codex, gpt5, gpt5mini, gpt5nano];
 
 export const LanguageModel = OpenAILanguageModel;
 export type LanguageModel = OpenAILanguageModel;
