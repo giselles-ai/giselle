@@ -317,7 +317,7 @@ export function Toolbar() {
 												{stage && (
 													<ToggleGroup.Item value="appEntry" data-tool>
 														<TriggerIcon className="size-[20px] shrink-0" />
-														<p className="text-[14px]">App Entry Node</p>
+														<p className="text-[14px]">App Request</p>
 													</ToggleGroup.Item>
 												)}
 												{triggerRegistry

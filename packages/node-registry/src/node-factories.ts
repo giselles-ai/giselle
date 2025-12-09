@@ -129,7 +129,7 @@ function cloneAndRenewInputIdsWithMap(
 
 function createDefaultDraftApp(): DraftApp {
 	return {
-		name: "",
+		name: "App Request",
 		description: "",
 		iconName: "cable",
 		parameters: [
@@ -660,6 +660,7 @@ const appEntryFactoryImpl = {
 	create: (): AppEntryNode => {
 		const draftApp = createDefaultDraftApp();
 		return {
+			name: draftApp.name,
 			id: NodeId.generate(),
 			type: "operation",
 			content: {
