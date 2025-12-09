@@ -971,10 +971,7 @@ export const apps = pgTable(
 	"apps",
 	{
 		id: text("id").$type<AppId>().notNull().unique(),
-		appEntryNodeId: text("app_entry_node_id")
-			.$type<NodeId>()
-			.notNull()
-			.unique(),
+		appEntryNodeId: text("app_entry_node_id").$type<NodeId>().notNull(),
 		dbId: serial("db_id").primaryKey(),
 		teamDbId: integer("team_db_id")
 			.notNull()
@@ -988,7 +985,10 @@ export const apps = pgTable(
 			.notNull()
 			.$onUpdate(() => new Date()),
 	},
-	(table) => [index().on(table.teamDbId)],
+	(table) => [
+		index().on(table.teamDbId),
+		unique().on(table.workspaceDbId, table.appEntryNodeId),
+	],
 );
 
 export const appRelations = relations(apps, ({ one, many }) => ({

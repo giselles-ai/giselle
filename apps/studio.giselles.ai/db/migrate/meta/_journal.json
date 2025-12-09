@@ -498,6 +498,13 @@
       "when": 1764318117118,
       "tag": "0070_even_living_lightning",
       "breakpoints": true
+    },
+    {
+      "idx": 71,
+      "version": "7",
+      "when": 1765275369057,
+      "tag": "0071_lush_william_stryker",
+      "breakpoints": true
     }
   ]
 }
