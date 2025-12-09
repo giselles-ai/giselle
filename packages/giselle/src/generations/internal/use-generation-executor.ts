@@ -24,9 +24,11 @@ import {
 } from "@giselles-ai/protocol";
 import type {
 	DataContent,
+	FilePart,
 	ImagePart,
 	ModelMessage,
 	ProviderMetadata,
+	TextPart,
 } from "ai";
 import { UsageLimitError } from "../../error";
 import { filePath } from "../../files/utils";
@@ -424,7 +426,7 @@ export async function useGenerationExecutor<T>(args: {
 		return { completedGeneration, outputFileBlobs };
 	}
 
-	const appEntryResolver: AppEntryResolver = (nodeId, outputId) => {
+	const appEntryResolver: AppEntryResolver = async (nodeId, outputId) => {
 		const appEntryNode = args.generation.context.sourceNodes.find(
 			(sourceNode) => sourceNode.id === nodeId,
 		);
@@ -459,9 +461,79 @@ export async function useGenerationExecutor<T>(args: {
 				{ parameterInput },
 				`Parameter ${parseResult.data} not found`,
 			);
-			return undefined;
+			return [];
 		}
-		return parameter.value;
+
+		switch (parameter.type) {
+			case "files":
+				return await Promise.all(
+					parameter.value.map(async (fileParameter) => {
+						const path = filePath({
+							...runningGeneration.context.origin,
+							fileId: fileParameter.id,
+						});
+
+						const exists = await args.context.storage.exists(path);
+						if (!exists) {
+							args.context.logger.warn(
+								{ id: fileParameter.id },
+								`File not found for app parameter`,
+							);
+							return undefined;
+						}
+
+						const blob = await args.context.storage.getBlob(path);
+
+						switch (fileParameter.type) {
+							case "image/jpeg":
+							case "image/png":
+							case "image/gif":
+							case "image/svg":
+								return {
+									type: "image",
+									image: blob,
+								} as ImagePart;
+							case "application/pdf":
+								return {
+									type: "file",
+									filename: fileParameter.name,
+									data: blob,
+									mediaType: "application/pdf",
+								} as FilePart;
+							default: {
+								args.context.logger.warn(
+									{ id: fileParameter.id, type: fileParameter.type },
+									`File type not supported`,
+								);
+								return undefined;
+							}
+						}
+					}),
+				).then((parts) => parts.filter((part) => part !== undefined));
+			case "number":
+				return [
+					{
+						type: "text",
+						text: `${parameter.value}`,
+					} satisfies TextPart,
+				];
+			case "string":
+				return [
+					{
+						type: "text",
+						text: parameter.value,
+					} satisfies TextPart,
+				];
+			default: {
+				const _exhaustiveCheck: never = parameter;
+				args.context.logger.warn(
+					{ _exhaustiveCheck },
+					`Unhandled parameter type`,
+				);
+
+				return [];
+			}
+		}
 	};
 
 	return args.execute({

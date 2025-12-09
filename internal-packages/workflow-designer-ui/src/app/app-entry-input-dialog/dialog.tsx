@@ -6,8 +6,8 @@ import {
 	type AppEntryNode,
 	createUploadedFileData,
 	createUploadingFileData,
-	type FileData,
 	type GenerationContextInput,
+	type UploadedFileData,
 } from "@giselles-ai/protocol";
 import { useGiselle } from "@giselles-ai/react";
 import { clsx } from "clsx/lite";
@@ -102,7 +102,7 @@ export function AppEntryInputDialog({
 
 			const formData = new FormData(e.currentTarget);
 			const errors: Record<string, string> = {};
-			const values: Record<string, string | number | FileData[]> = {};
+			const values: Record<string, string | number | UploadedFileData[]> = {};
 
 			for (const parameter of app.parameters) {
 				switch (parameter.type) {
@@ -168,7 +168,7 @@ export function AppEntryInputDialog({
 							continue;
 						}
 
-						const uploadedFiles: FileData[] = [];
+						const uploadedFiles: UploadedFileData[] = [];
 
 						for (const file of files) {
 							const uploadingFileData = createUploadingFileData({
