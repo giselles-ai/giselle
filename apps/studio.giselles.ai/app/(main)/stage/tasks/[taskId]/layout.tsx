@@ -31,7 +31,7 @@ export default async function ({
 
 	return (
 		<div className="bg-bg text-foreground min-h-screen font-sans">
-			<div className="max-w-7xl mx-auto px-4 pt-6 pb-0 flex flex-col min-h-screen">
+			<div className="max-w-7xl mx-auto px-4 pt-0 pb-0 flex flex-col min-h-screen">
 				<div className="flex-1">
 					{/* Top Section */}
 					<Suspense fallback={<div>Loading...</div>}>
