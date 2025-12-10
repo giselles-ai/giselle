@@ -1,5 +1,5 @@
 import { createRequire } from "node:module";
-import { dirname } from "node:path";
+import { dirname, join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { init as initPdfium, type WrappedPdfiumModule } from "@embedpdf/pdfium";
 
@@ -20,8 +20,11 @@ const requireBaseUrl = moduleUrl.endsWith("/")
 	: moduleUrl;
 
 const moduleRequire = createRequire(requireBaseUrl);
-const PDFIUM_WASM_PATH = moduleRequire.resolve("@embedpdf/pdfium/pdfium.wasm");
-const PDFIUM_WASM_DIR = dirname(PDFIUM_WASM_PATH);
+
+// Resolve package entry, then derive the wasm path to avoid exports restrictions.
+const PDFIUM_PACKAGE_ENTRY = moduleRequire.resolve("@embedpdf/pdfium");
+const PDFIUM_WASM_DIR = dirname(PDFIUM_PACKAGE_ENTRY);
+const PDFIUM_WASM_PATH = join(PDFIUM_WASM_DIR, "pdfium.wasm");
 
 type PdfiumRenderCallback = (frame: {
 	data: Uint8Array;
