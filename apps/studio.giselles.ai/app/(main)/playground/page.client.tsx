@@ -534,6 +534,12 @@ function ChatInputArea({
 			return;
 		}
 
+		const nativeEvent = event.nativeEvent;
+		if (nativeEvent.isComposing || nativeEvent.keyCode === 229) {
+			// Skip submit while IME composition (e.g., Japanese) is active
+			return;
+		}
+
 		if (event.shiftKey) {
 			event.preventDefault();
 			const textarea = textareaRef.current;
