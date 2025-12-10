@@ -1,19 +1,40 @@
-"use client";
-
 import { StatusBadge } from "@giselle-internal/ui/status-badge";
-import type { Task } from "@giselles-ai/protocol";
+import { TaskId } from "@giselles-ai/protocol";
 import { FilePenLine } from "lucide-react";
 import Link from "next/link";
 import { use } from "react";
+import { giselle } from "@/app/giselle";
 
-interface TopSectionData {
-	// TODO: task property is reserved for future use
-	task: Task;
-	workspaceId: string;
+export async function getTopSectionData({
+	params,
+}: {
+	params: Promise<{ taskId: string }>;
+}) {
+	const { taskId: taskIdParam } = await params;
+	const result = TaskId.safeParse(taskIdParam);
+	if (!result.success) {
+		throw new Error(`Invalid task ID: ${taskIdParam}`);
+	}
+	const taskId = result.data;
+	const task = await giselle.getTask({ taskId });
+	const workspace = await giselle.getWorkspace(task.workspaceId);
+	return {
+		taskId,
+		workspace: {
+			name: workspace.name,
+			id: workspace.id,
+		},
+	};
 }
 
-export function TopSection({ data }: { data: Promise<TopSectionData> }) {
-	const resolvedData = use(data);
+type TopSectionData = Awaited<ReturnType<typeof getTopSectionData>>;
+
+export function TopSection({
+	topSectionDataPromise,
+}: {
+	topSectionDataPromise: Promise<TopSectionData>;
+}) {
+	const { taskId, workspace } = use(topSectionDataPromise);
 
 	return (
 		<div className="w-full pb-3 sticky top-0 z-10 bg-[color:var(--color-background)]">
@@ -26,10 +47,10 @@ export function TopSection({ data }: { data: Promise<TopSectionData> }) {
 					<div className="flex items-center gap-3 mb-1">
 						<h3 className="text-[20px] font-normal text-inverse">
 							{/* App summary title will be displayed here */}
-							App summary title
+							{workspace.name}:{taskId}
 						</h3>
 						<Link
-							href={`/workspaces/${resolvedData.workspaceId}`}
+							href={`/workspaces/${workspace.id}`}
 							className="inline-block"
 							target="_blank"
 							rel="noreferrer"

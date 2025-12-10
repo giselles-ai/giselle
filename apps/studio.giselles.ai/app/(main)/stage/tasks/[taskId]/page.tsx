@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { InputAreaPlaceholder } from "./ui/input-area-placeholder";
 import { StepsSection } from "./ui/steps-section";
-import { TopSection } from "./ui/top-section";
+import { getTopSectionData, TopSection } from "./ui/top-section";
 import "./mobile-scroll.css";
 import { TaskId } from "@giselles-ai/protocol";
 import { giselle } from "@/app/giselle";
@@ -22,10 +22,6 @@ export default async function ({
 	const taskId = result.data;
 	// Fetch task once and reuse for both sections
 	const taskPromise = giselle.getTask({ taskId });
-	const topSectionData = taskPromise.then((task) => ({
-		task,
-		workspaceId: task.workspaceId,
-	}));
 
 	return (
 		<div className="bg-bg text-foreground min-h-screen font-sans">
@@ -33,7 +29,7 @@ export default async function ({
 				<div className="flex-1">
 					{/* Top Section */}
 					<Suspense fallback={<div>Loading...</div>}>
-						<TopSection data={topSectionData} />
+						<TopSection topSectionDataPromise={getTopSectionData({ params })} />
 					</Suspense>
 
 					{/* Task input preview placeholder (non-sticky, below summary) */}
