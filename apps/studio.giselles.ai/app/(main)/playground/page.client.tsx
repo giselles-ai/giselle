@@ -510,11 +510,42 @@ function ChatInputArea({
 		});
 	};
 
-	const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-		if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-			e.preventDefault();
-			handleSubmit();
+	const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+		if (event.key !== "Enter") {
+			return;
 		}
+
+		if (event.shiftKey) {
+			event.preventDefault();
+			const textarea = textareaRef.current;
+			if (!textarea) {
+				setInputValue((currentValue) => `${currentValue}\n`);
+				requestAnimationFrame(() => {
+					resizeTextarea();
+				});
+				return;
+			}
+
+			const selectionStart = textarea.selectionStart ?? textarea.value.length;
+			const selectionEnd = textarea.selectionEnd ?? textarea.value.length;
+
+			setInputValue((currentValue) => {
+				const before = currentValue.slice(0, selectionStart);
+				const after = currentValue.slice(selectionEnd);
+				return `${before}\n${after}`;
+			});
+
+			requestAnimationFrame(() => {
+				const cursorPosition = selectionStart + 1;
+				textarea.selectionStart = cursorPosition;
+				textarea.selectionEnd = cursorPosition;
+				resizeTextarea();
+			});
+			return;
+		}
+
+		event.preventDefault();
+		handleSubmit();
 	};
 
 	return (
@@ -598,11 +629,19 @@ function ChatInputArea({
 				</div>
 			</section>
 			{/* Keyboard shortcut hint (outside chat container, aligned bottom-right) */}
-			<div className="mt-1 flex items-center justify-end gap-[6px] pr-0 text-[11px] text-blue-muted/60">
-				<div className="flex items-center gap-[4px]">
+			<div className="mt-1 flex flex-wrap items-center justify-end gap-3 pr-0 text-[11px] text-blue-muted/60">
+				<div className="flex items-center gap-[6px]">
 					<div className="flex h-[18px] w-[18px] items-center justify-center rounded-[6px] border border-blue-muted/40 bg-blue-muted/10">
 						<span className="text-[10px] leading-none tracking-[0.08em]">
-							⌘
+							↵
+						</span>
+					</div>
+					<span className="leading-none">to send</span>
+				</div>
+				<div className="flex items-center gap-[6px]">
+					<div className="flex h-[18px] w-[18px] items-center justify-center rounded-[6px] border border-blue-muted/40 bg-blue-muted/10">
+						<span className="text-[10px] leading-none tracking-[0.08em]">
+							⇧
 						</span>
 					</div>
 					<div className="flex h-[18px] w-[18px] items-center justify-center rounded-[6px] border border-blue-muted/40 bg-blue-muted/10">
@@ -610,8 +649,8 @@ function ChatInputArea({
 							↵
 						</span>
 					</div>
+					<span className="leading-none">for newline</span>
 				</div>
-				<span className="leading-none">to send</span>
 			</div>
 		</div>
 	);
