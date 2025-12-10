@@ -515,7 +515,7 @@ function ChatInputArea({
 			return;
 		}
 
-		if (event.metaKey || event.ctrlKey) {
+		if (event.shiftKey) {
 			event.preventDefault();
 			const textarea = textareaRef.current;
 			if (!textarea) {
@@ -641,7 +641,7 @@ function ChatInputArea({
 				<div className="flex items-center gap-[6px]">
 					<div className="flex h-[18px] w-[18px] items-center justify-center rounded-[6px] border border-blue-muted/40 bg-blue-muted/10">
 						<span className="text-[10px] leading-none tracking-[0.08em]">
-							⌘
+							⇧
 						</span>
 					</div>
 					<div className="flex h-[18px] w-[18px] items-center justify-center rounded-[6px] border border-blue-muted/40 bg-blue-muted/10">
