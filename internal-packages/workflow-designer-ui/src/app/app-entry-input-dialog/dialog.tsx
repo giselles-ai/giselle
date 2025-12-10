@@ -2,7 +2,6 @@
 
 import { Button } from "@giselle-internal/ui/button";
 import {
-	type App,
 	type AppEntryNode,
 	createUploadedFileData,
 	createUploadingFileData,
@@ -13,79 +12,27 @@ import { useGiselle } from "@giselles-ai/react";
 import { clsx } from "clsx/lite";
 import { LoaderIcon, PlayIcon, XIcon } from "lucide-react";
 import { Dialog } from "radix-ui";
-import { type FormEventHandler, useCallback, useMemo, useState } from "react";
+import { type FormEventHandler, useCallback, useState } from "react";
 import useSWR from "swr";
-
-interface AppEntryInputDialogFromAppEntryNode {
-	node: AppEntryNode;
-	app?: never;
-}
-
-interface AppEntryInputDialogFromApp {
-	node?: never;
-	app: App;
-}
-
-type AppEntryInputDialogProps =
-	| AppEntryInputDialogFromAppEntryNode
-	| AppEntryInputDialogFromApp;
-
-function isFromAppEntryNode(
-	props: unknown,
-): props is AppEntryInputDialogFromAppEntryNode {
-	return (
-		typeof props === "object" &&
-		props !== null &&
-		"node" in props &&
-		props.node !== undefined
-	);
-}
-
-function isFromApp(props: unknown): props is AppEntryInputDialogFromApp {
-	return (
-		typeof props === "object" &&
-		props !== null &&
-		"app" in props &&
-		props.app !== undefined
-	);
-}
 
 export function AppEntryInputDialog({
 	onClose,
 	onSubmit,
-	...props
-}: AppEntryInputDialogProps & {
+	node,
+}: {
 	onSubmit: (event: {
 		inputs: GenerationContextInput[];
 	}) => Promise<void> | void;
 	onClose?: () => void;
+	node: AppEntryNode;
 }) {
 	const client = useGiselle();
-	const { isLoading, data } = useSWR(
-		isFromAppEntryNode(props) && props.node.content.status === "configured"
-			? { namespace: "getApp", appId: props.node.content.appId }
+	const { isLoading, data: app } = useSWR(
+		node.content.status === "configured"
+			? { namespace: "getApp", appId: node.content.appId }
 			: null,
 		({ appId }) => client.getApp({ appId }).then((res) => res.app),
 	);
-	const app = useMemo(() => {
-		if (
-			isFromAppEntryNode({
-				node: props.node,
-				app: props.app,
-			})
-		) {
-			return data;
-		}
-		if (
-			isFromApp({
-				node: props.node,
-				app: props.app,
-			})
-		) {
-			return props.app;
-		}
-		return undefined;
-	}, [props.node, props.app, data]);
 
 	const [validationErrors, setValidationErrors] = useState<
 		Record<string, string>
