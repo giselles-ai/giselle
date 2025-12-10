@@ -185,20 +185,52 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 		});
 	}, [task]);
 
-	// Count total and completed steps
-	const { totalStepsCount, completedStepsCount } = task.sequences.reduce(
+	// Count total, completed, running, and preparing steps
+	const {
+		totalStepsCount,
+		completedStepsCount,
+		runningStepsCount,
+		preparingStepsCount,
+	} = task.sequences.reduce(
 		(counts, sequence) => {
 			const sequenceTotal = sequence.steps.length;
 			const sequenceCompleted = sequence.steps.filter(
 				(step) => step.status === "completed",
 			).length;
+			const sequenceRunning = sequence.steps.filter(
+				(step) => step.status === "running",
+			).length;
+			const sequencePreparing = sequence.steps.filter(
+				(step) => step.status === "queued",
+			).length;
 			return {
 				totalStepsCount: counts.totalStepsCount + sequenceTotal,
 				completedStepsCount: counts.completedStepsCount + sequenceCompleted,
+				runningStepsCount: counts.runningStepsCount + sequenceRunning,
+				preparingStepsCount: counts.preparingStepsCount + sequencePreparing,
 			};
 		},
-		{ totalStepsCount: 0, completedStepsCount: 0 },
+		{
+			totalStepsCount: 0,
+			completedStepsCount: 0,
+			runningStepsCount: 0,
+			preparingStepsCount: 0,
+		},
 	);
+
+	// Determine status text based on current step states (priority: Running > Preparing > Completed)
+	const getStatusText = () => {
+		if (runningStepsCount > 0) {
+			return `Running ${runningStepsCount} step${runningStepsCount !== 1 ? "s" : ""}`;
+		}
+		if (preparingStepsCount > 0) {
+			return `Preparing ${preparingStepsCount} step${preparingStepsCount !== 1 ? "s" : ""}`;
+		}
+		return `Completed ${completedStepsCount} step${completedStepsCount !== 1 ? "s" : ""}`;
+	};
+
+	const statusText = getStatusText();
+	const isActive = runningStepsCount > 0 || preparingStepsCount > 0;
 
 	const progressRatio =
 		totalStepsCount > 0 ? completedStepsCount / totalStepsCount : 0;
@@ -251,8 +283,7 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 						onClick={() => setIsStepsExpanded(!isStepsExpanded)}
 					>
 						<div className="flex items-center gap-2">
-							{task.status === "inProgress" &&
-							completedStepsCount < totalStepsCount ? (
+							{isActive ? (
 								<span
 									className="block bg-[length:200%_100%] bg-clip-text bg-gradient-to-r from-text-muted via-text-muted/50 to-text-muted text-transparent animate-shimmer"
 									style={{
@@ -260,12 +291,10 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 										animationTimingFunction: "linear",
 									}}
 								>
-									Completed {completedStepsCount} steps
+									{statusText}
 								</span>
 							) : (
-								<span className="block">
-									Completed {completedStepsCount} steps
-								</span>
+								<span className="block">{statusText}</span>
 							)}
 							{totalStepsCount > 0 ? (
 								<div className="flex items-center gap-1 text-[11px] text-text-muted/80">
