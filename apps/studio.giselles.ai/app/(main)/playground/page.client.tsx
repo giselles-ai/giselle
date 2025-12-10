@@ -657,19 +657,6 @@ function ChatInputArea({
 					</div>
 					<span className="leading-none">to send</span>
 				</div>
-				<div className="flex items-center gap-[6px]">
-					<div className="flex h-[18px] w-[18px] items-center justify-center rounded-[6px] border border-blue-muted/40 bg-blue-muted/10">
-						<span className="text-[10px] leading-none tracking-[0.08em]">
-							⇧
-						</span>
-					</div>
-					<div className="flex h-[18px] w-[18px] items-center justify-center rounded-[6px] border border-blue-muted/40 bg-blue-muted/10">
-						<span className="text-[10px] leading-none tracking-[0.08em]">
-							↵
-						</span>
-					</div>
-					<span className="leading-none">for newline</span>
-				</div>
 			</div>
 		</div>
 	);
