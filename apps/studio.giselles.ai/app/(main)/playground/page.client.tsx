@@ -23,6 +23,7 @@ import type { ReactNode } from "react";
 import {
 	use,
 	useCallback,
+	useEffect,
 	useMemo,
 	useRef,
 	useState,
@@ -363,11 +364,21 @@ function ChatInputArea({
 	const [fileRestrictionError, setFileRestrictionError] =
 		useState<FileRestrictionErrorState | null>(null);
 
-	const appOptions: SelectOption[] = apps.map((app) => ({
-		value: app.id,
-		label: app.name,
-		icon: <DynamicIcon name={app.iconName} className="h-4 w-4" />,
-	}));
+	const appOptions = apps.map(
+		(app) =>
+			({
+				value: app.id,
+				label: app.name,
+				icon: <DynamicIcon name={app.iconName} className="h-4 w-4" />,
+			}) satisfies SelectOption,
+	);
+	const firstAppOptionValue = appOptions[0]?.value;
+
+	useEffect(() => {
+		if (!selectedApp && firstAppOptionValue) {
+			onAppSelect(firstAppOptionValue);
+		}
+	}, [selectedApp, firstAppOptionValue, onAppSelect]);
 
 	const resizeTextarea = () => {
 		const textarea = textareaRef.current;
@@ -725,7 +736,7 @@ function ChatInputArea({
 								<Select
 									options={appOptions}
 									placeholder="Select an app..."
-									value={selectedApp?.id}
+									value={selectedApp?.id ?? firstAppOptionValue}
 									onValueChange={onAppSelect}
 									widthClassName="w-full"
 									triggerClassName="border-none !bg-[rgba(131,157,195,0.1)] hover:!bg-[rgba(131,157,195,0.18)] !px-2 !h-8 sm:!h-9 !rounded-[7px] sm:!rounded-[9px] text-[13px] [&_svg]:opacity-70"
