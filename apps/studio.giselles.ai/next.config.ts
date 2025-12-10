@@ -7,6 +7,7 @@ import type { NextConfig } from "next";
 
 export const serverExternalPackages = [
 	"@embedpdf/pdfium",
+	"@giselles-ai/document-preprocessor",
 	"pino",
 	"pino-pretty",
 	"happy-dom",
