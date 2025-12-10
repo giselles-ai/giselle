@@ -218,49 +218,58 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 		});
 	}, [task]);
 
-	// Count total, completed, running, and preparing steps
-	const {
-		totalStepsCount,
-		completedStepsCount,
-		runningStepsCount,
-		preparingStepsCount,
-	} = task.sequences.reduce(
-		(counts, sequence) => {
-			const sequenceTotal = sequence.steps.length;
-			const sequenceCompleted = sequence.steps.filter(
-				(step) => step.status === "completed",
-			).length;
-			const sequenceRunning = sequence.steps.filter(
+	// Count total, completed, and preparing steps
+	const { totalStepsCount, completedStepsCount, preparingStepsCount } =
+		task.sequences.reduce(
+			(counts, sequence) => {
+				const sequenceTotal = sequence.steps.length;
+				const sequenceCompleted = sequence.steps.filter(
+					(step) => step.status === "completed",
+				).length;
+				const sequencePreparing = sequence.steps.filter(
+					(step) => step.status === "queued",
+				).length;
+				return {
+					totalStepsCount: counts.totalStepsCount + sequenceTotal,
+					completedStepsCount: counts.completedStepsCount + sequenceCompleted,
+					preparingStepsCount: counts.preparingStepsCount + sequencePreparing,
+				};
+			},
+			{
+				totalStepsCount: 0,
+				completedStepsCount: 0,
+				preparingStepsCount: 0,
+			},
+		);
+
+	// Find the first running step's sequence number
+	const runningStepNumber = useMemo(() => {
+		for (
+			let sequenceIndex = 0;
+			sequenceIndex < task.sequences.length;
+			sequenceIndex++
+		) {
+			const sequence = task.sequences[sequenceIndex];
+			const hasRunningStep = sequence.steps.some(
 				(step) => step.status === "running",
-			).length;
-			const sequencePreparing = sequence.steps.filter(
-				(step) => step.status === "queued",
-			).length;
-			return {
-				totalStepsCount: counts.totalStepsCount + sequenceTotal,
-				completedStepsCount: counts.completedStepsCount + sequenceCompleted,
-				runningStepsCount: counts.runningStepsCount + sequenceRunning,
-				preparingStepsCount: counts.preparingStepsCount + sequencePreparing,
-			};
-		},
-		{
-			totalStepsCount: 0,
-			completedStepsCount: 0,
-			runningStepsCount: 0,
-			preparingStepsCount: 0,
-		},
-	);
+			);
+			if (hasRunningStep) {
+				return sequenceIndex + 1;
+			}
+		}
+		return null;
+	}, [task.sequences]);
 
 	// Determine status text based on current step states (priority: Running > Preparing > Completed)
 	const statusText = useMemo(() => {
-		if (runningStepsCount > 0) {
-			return `Running ${runningStepsCount} step${runningStepsCount !== 1 ? "s" : ""}`;
+		if (runningStepNumber !== null) {
+			return `Running Step ${runningStepNumber}`;
 		}
 		if (preparingStepsCount > 0) {
 			return `Preparing ${preparingStepsCount} step${preparingStepsCount !== 1 ? "s" : ""}`;
 		}
 		return `Completed ${completedStepsCount} step${completedStepsCount !== 1 ? "s" : ""}`;
-	}, [runningStepsCount, preparingStepsCount, completedStepsCount]);
+	}, [runningStepNumber, preparingStepsCount, completedStepsCount]);
 
 	const progressRatio =
 		totalStepsCount > 0 ? completedStepsCount / totalStepsCount : 0;
