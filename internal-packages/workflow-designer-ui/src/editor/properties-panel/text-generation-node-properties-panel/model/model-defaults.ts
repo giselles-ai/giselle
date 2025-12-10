@@ -25,7 +25,7 @@ export function createDefaultModelData(
 		case "anthropic":
 			return AnthropicLanguageModelData.parse({
 				provider: "anthropic",
-				id: "claude-haiku-4-5-20251001",
+				id: "claude-haiku-4.5",
 				configurations: {
 					temperature: 0.7,
 					topP: 1.0,

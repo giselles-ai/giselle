@@ -119,7 +119,7 @@ export const anthropicTokenPricing: ModelPriceTable = {
 			},
 		],
 	},
-	"claude-sonnet-4-5-20250929": {
+	"claude-sonnet-4.5": {
 		prices: [
 			{
 				validFrom: "2025-09-29T00:00:00Z",
@@ -134,7 +134,7 @@ export const anthropicTokenPricing: ModelPriceTable = {
 			},
 		],
 	},
-	"claude-haiku-4-5-20251001": {
+	"claude-haiku-4.5": {
 		prices: [
 			{
 				validFrom: "2025-10-01T00:00:00Z",

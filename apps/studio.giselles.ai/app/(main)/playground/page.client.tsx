@@ -32,6 +32,7 @@ import {
 	use,
 	useCallback,
 	useEffect,
+	useMemo,
 	useRef,
 	useState,
 	useTransition,
@@ -733,38 +734,6 @@ export function Page({
 	) => Promise<TaskId>;
 }) {
 	const data = use(dataLoader);
-	// TODO: Use history apps if needed in the future
-	const _historyApps = (() => {
-		const map = new Map<string, StageApp>();
-		for (const task of data.tasks) {
-			const app = data.apps.find(
-				(candidate) => candidate.workspaceId === task.workspaceId,
-			);
-			if (app === undefined) continue;
-			// Only include apps belonging to the currently selected team in history
-			if (
-				data.currentTeamId !== undefined &&
-				app.teamId !== data.currentTeamId
-			) {
-				continue;
-			}
-			if (!map.has(app.id)) {
-				map.set(app.id, app);
-			}
-		}
-		return Array.from(map.values());
-	})();
-
-	const teamApps = data.currentTeamId
-		? data.apps.filter((app) => app.teamId === data.currentTeamId)
-		: data.apps;
-	// TODO: Set up Giselle team apps later
-	const _myApps =
-		data.currentTeamId != null
-			? data.apps.filter(
-					(app) => app.isMine && app.teamId === data.currentTeamId,
-				)
-			: data.apps.filter((app) => app.isMine);
 
 	const router = useRouter();
 	const [selectedAppId, setSelectedAppId] = useState<string | undefined>();
@@ -777,12 +746,15 @@ export function Page({
 	const [isSearchActive, setIsSearchActive] = useState(false);
 	const appSearchInputRef = useRef<HTMLInputElement | null>(null);
 
-	const filteredTeamApps =
-		appSearchQuery.trim().length === 0
-			? teamApps
-			: teamApps.filter((app) =>
-					app.name.toLowerCase().includes(appSearchQuery.toLowerCase()),
-				);
+	const apps = useMemo(() => {
+		const normalizedQuery = appSearchQuery.trim().toLowerCase();
+		if (normalizedQuery.length === 0) {
+			return data.apps;
+		}
+		return data.apps.filter((app) =>
+			app.name.toLowerCase().includes(normalizedQuery),
+		);
+	}, [appSearchQuery, data.apps]);
 
 	// Validate selectedAppId during render - if invalid, treat as undefined
 	const selectedApp = selectedAppId
@@ -854,51 +826,72 @@ export function Page({
 					{/* App sections */}
 					<div className="flex flex-col gap-8 w-full pb-8 pt-12">
 						{/* Section 1: Sample apps from Giselle team */}
-						<div className="flex flex-col">
-							<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-2">
-								<h2 className="mt-1 text-[16px] text-text-muted/80">
-									Sample apps from Giselle team
-								</h2>
+						{data.sampleApps.length > 0 && (
+							<div className="flex flex-col">
+								<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-2">
+									<h2 className="mt-1 text-[16px] text-text-muted/80">
+										Sample apps from Giselle team
+									</h2>
+								</div>
+								<div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
+									{data.sampleApps.map((sampleApp) => (
+										<AppListCard
+											key={sampleApp.id}
+											title={sampleApp.name}
+											description={sampleApp.description}
+											badgeType="sample"
+											icon={
+												<AppIcon
+													defaultSize={false}
+													className="h-5 w-5 text-white/40"
+												/>
+											}
+											providers={sampleApp.llmProviders}
+										/>
+									))}
+									{/*
+
+									::::::::::: Sample implementations :::::::::
+
+									<AppListCard
+										title="Customer Support"
+										description="A ready-made workflow that triages customer tickets, summarizes conversation history, and suggests high-quality replies for your support team."
+										badgeType="sample"
+										icon={
+											<AppIcon
+												defaultSize={false}
+												className="h-5 w-5 text-white/40"
+											/>
+										}
+										providers={["openai", "anthropic", "google", "perplexity"]}
+									/>
+									<AppListCard
+										title="Tech Support"
+										description="Handles bug reports, reproduces issues based on logs, and proposes potential fixes that engineers can review quickly."
+										badgeType="sample"
+										icon={
+											<AppIcon
+												defaultSize={false}
+												className="h-5 w-5 text-white/40"
+											/>
+										}
+										providers={["openai", "anthropic", "google"]}
+									/>
+									<AppListCard
+										title="Product Manager"
+										description="Aggregates user feedback, highlights trends, and drafts product requirement ideas your team can refine."
+										badgeType="sample"
+										icon={
+											<AppIcon
+												defaultSize={false}
+												className="h-5 w-5 text-white/40"
+											/>
+										}
+										providers={["openai", "anthropic"]}
+									/>*/}
+								</div>
 							</div>
-							<div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
-								<AppListCard
-									title="Customer Support"
-									description="A ready-made workflow that triages customer tickets, summarizes conversation history, and suggests high-quality replies for your support team."
-									badgeType="sample"
-									icon={
-										<AppIcon
-											defaultSize={false}
-											className="h-5 w-5 text-white/40"
-										/>
-									}
-									providers={["openai", "anthropic", "google", "perplexity"]}
-								/>
-								<AppListCard
-									title="Tech Support"
-									description="Handles bug reports, reproduces issues based on logs, and proposes potential fixes that engineers can review quickly."
-									badgeType="sample"
-									icon={
-										<AppIcon
-											defaultSize={false}
-											className="h-5 w-5 text-white/40"
-										/>
-									}
-									providers={["openai", "anthropic", "google"]}
-								/>
-								<AppListCard
-									title="Product Manager"
-									description="Aggregates user feedback, highlights trends, and drafts product requirement ideas your team can refine."
-									badgeType="sample"
-									icon={
-										<AppIcon
-											defaultSize={false}
-											className="h-5 w-5 text-white/40"
-										/>
-									}
-									providers={["openai", "anthropic"]}
-								/>
-							</div>
-						</div>
+						)}
 
 						{/* Section 2: Select an Apps to Run */}
 						<div className="flex flex-col">
@@ -943,7 +936,7 @@ export function Page({
 									)}
 								</div>
 							</div>
-							{teamApps.length === 0 ? (
+							{apps.length === 0 ? (
 								<div className="pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
 									<div className="w-full rounded-lg bg-[rgba(255,255,255,0.03)] shadow-[0_4px_16px_rgba(0,0,0,0.06)] px-6 py-6 text-center">
 										<h3 className="flex items-center justify-center gap-2 text-[16px] font-medium text-blue-muted/80">
@@ -967,13 +960,13 @@ export function Page({
 										</div>
 									</div>
 								</div>
-							) : filteredTeamApps.length === 0 ? (
+							) : apps.length === 0 ? (
 								<p className="text-sm text-muted-foreground max-w-[960px] mx-auto w-full">
 									No apps match your search.
 								</p>
 							) : (
 								<div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
-									{filteredTeamApps.map((app) => (
+									{apps.map((app) => (
 										<AppCard
 											app={app}
 											key={app.id}

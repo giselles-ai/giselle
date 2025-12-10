@@ -99,9 +99,20 @@ export function Toolbar() {
 	} = useHoverState();
 	const [searchQuery, setSearchQuery] = useState<string>("");
 	const [selectedCategory, setSelectedCategory] = useState<string>("All");
-	const { llmProviders } = useWorkflowDesigner();
+	const { llmProviders, data: workspace } = useWorkflowDesigner();
 	const { stage, aiGatewayUnsupportedModels, generateContentNode } =
 		useFeatureFlag();
+	const hasAppRequestNode = useMemo(
+		() => workspace.nodes.some((node) => node.content.type === "appEntry"),
+		[workspace.nodes],
+	);
+	const hasEndNode = useMemo(
+		() => workspace.nodes.some((node) => node.content.type === "end"),
+		[workspace.nodes],
+	);
+	const appRequestNodeLimitTooltip =
+		"Only one App Request Node can exist per workspace.";
+	const endNodeLimitTooltip = "Only one End Node can exist per workspace.";
 
 	const availableLanguageModels = useMemo(
 		() =>
@@ -165,8 +176,8 @@ export function Toolbar() {
 	);
 	const anthropicModels = getAvailableModels(
 		isFreeUser
-			? ["claude-haiku-4-5-20251001"]
-			: ["claude-sonnet-4-5-20250929", "claude-opus-4.5"],
+			? ["claude-haiku-4.5"]
+			: ["claude-sonnet-4.5", "claude-opus-4.5"],
 		"anthropic",
 		llmProviders,
 		availableLanguageModels,
@@ -230,6 +241,9 @@ export function Toolbar() {
 					value={selectedTool?.action}
 					onValueChange={(value) => {
 						if (value === "addEnd") {
+							if (hasEndNode) {
+								return;
+							}
 							setSelectedTool(addNodeTool(createEndNode()));
 							return;
 						}
@@ -310,16 +324,39 @@ export function Toolbar() {
 														return;
 													}
 													if (value === "appEntry") {
+														if (hasAppRequestNode) {
+															return;
+														}
 														setSelectedTool(addNodeTool(createAppEntryNode()));
 													}
 												}}
 											>
-												{stage && (
-													<ToggleGroup.Item value="appEntry" data-tool>
-														<TriggerIcon className="size-[20px] shrink-0" />
-														<p className="text-[14px]">App Request</p>
-													</ToggleGroup.Item>
-												)}
+												{stage &&
+													(hasAppRequestNode ? (
+														<Tooltip
+															text={appRequestNodeLimitTooltip}
+															side="right"
+															align="start"
+														>
+															<span className="block w-full">
+																<ToggleGroup.Item
+																	value="appEntry"
+																	data-tool
+																	aria-disabled={true}
+																	disabled={true}
+																	className="cursor-not-allowed opacity-50 pointer-events-none"
+																>
+																	<TriggerIcon className="size-[20px] shrink-0" />
+																	<p className="text-[14px]">App Request</p>
+																</ToggleGroup.Item>
+															</span>
+														</Tooltip>
+													) : (
+														<ToggleGroup.Item value="appEntry" data-tool>
+															<TriggerIcon className="size-[20px] shrink-0" />
+															<p className="text-[14px]">App Request</p>
+														</ToggleGroup.Item>
+													))}
 												{triggerRegistry
 													.filter(
 														(triggerEntry) =>
@@ -1075,13 +1112,38 @@ export function Toolbar() {
 						)}
 					</ToggleGroup.Item>
 
-					{stage && (
-						<ToggleGroup.Item value="addEnd" data-tool className="relative">
-							<Tooltip text={<TooltipAndHotkey text="End" hotkey="e" />}>
-								<FlagIcon data-icon />
+					{stage &&
+						(hasEndNode ? (
+							<Tooltip
+								text={
+									<div className="flex flex-col gap-1 text-left">
+										<span>{endNodeLimitTooltip}</span>
+										<TooltipAndHotkey text="End" hotkey="e" />
+									</div>
+								}
+								side="right"
+								align="start"
+							>
+								<span className="block">
+									<ToggleGroup.Item
+										value="addEnd"
+										data-tool
+										className="relative cursor-not-allowed opacity-50 pointer-events-none"
+										aria-disabled={true}
+										disabled={true}
+										aria-label="End"
+									>
+										<FlagIcon data-icon />
+									</ToggleGroup.Item>
+								</span>
 							</Tooltip>
-						</ToggleGroup.Item>
-					)}
+						) : (
+							<ToggleGroup.Item value="addEnd" data-tool className="relative">
+								<Tooltip text={<TooltipAndHotkey text="End" hotkey="e" />}>
+									<FlagIcon data-icon />
+								</Tooltip>
+							</ToggleGroup.Item>
+						))}
 				</ToggleGroup.Root>
 			</div>
 		</div>

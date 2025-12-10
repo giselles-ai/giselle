@@ -51,9 +51,9 @@ export const anthropic = {
 		},
 		url: "https://www.anthropic.com/claude/opus",
 	}),
-	"anthropic/claude-sonnet-4-5": defineLanguageModel({
+	"anthropic/claude-sonnet-4.5": defineLanguageModel({
 		provider: anthropicProvider,
-		id: "anthropic/claude-sonnet-4-5",
+		id: "anthropic/claude-sonnet-4.5",
 		name: "Claude Sonnet 4.5",
 		description:
 			"Claude Sonnet 4.5 is the newest model in the Sonnet series, offering improvements and updates over Sonnet 4.",
@@ -86,9 +86,9 @@ export const anthropic = {
 		},
 		url: "https://www.anthropic.com/claude/sonnet",
 	}),
-	"anthropic/claude-haiku-4-5": defineLanguageModel({
+	"anthropic/claude-haiku-4.5": defineLanguageModel({
 		provider: anthropicProvider,
-		id: "anthropic/claude-haiku-4-5",
+		id: "anthropic/claude-haiku-4.5",
 		name: "Claude Haiku 4.5",
 		description:
 			"Claude Haiku 4.5 matches Sonnet 4's performance on coding, computer use, and agent tasks at substantially lower cost and faster speeds. It delivers near-frontier performance and Claude’s unique character at a price point that works for scaled sub-agent deployments, free tier products, and intelligence-sensitive applications with budget constraints.",
