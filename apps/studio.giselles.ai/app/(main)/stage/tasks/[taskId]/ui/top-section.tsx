@@ -4,6 +4,24 @@ import { FilePenLine } from "lucide-react";
 import Link from "next/link";
 import { use } from "react";
 import { giselle } from "@/app/giselle";
+import { db, tasks } from "@/db";
+
+async function getAppByTaskId(taskId: TaskId) {
+	const dbApp = await db.query.apps.findFirst({
+		columns: { id: true },
+		where: (apps, { and, exists, eq }) =>
+			exists(
+				db
+					.select({ id: tasks.id })
+					.from(tasks)
+					.where(and(eq(tasks.appDbId, apps.dbId), eq(tasks.id, taskId))),
+			),
+	});
+	if (dbApp === undefined) {
+		throw new Error(`App not found for task ID: ${taskId}`);
+	}
+	return await giselle.getApp({ appId: dbApp.id });
+}
 
 export async function getTopSectionData({
 	params,
@@ -17,9 +35,16 @@ export async function getTopSectionData({
 	}
 	const taskId = result.data;
 	const task = await giselle.getTask({ taskId });
-	const workspace = await giselle.getWorkspace(task.workspaceId);
+	const [workspace, app] = await Promise.all([
+		giselle.getWorkspace(task.workspaceId),
+		getAppByTaskId(taskId),
+	]);
+
 	return {
 		taskId,
+		app: {
+			description: app.description,
+		},
 		workspace: {
 			name: workspace.name,
 			id: workspace.id,
@@ -34,7 +59,7 @@ export function TopSection({
 }: {
 	topSectionDataPromise: Promise<TopSectionData>;
 }) {
-	const { taskId, workspace } = use(topSectionDataPromise);
+	const { app, taskId, workspace } = use(topSectionDataPromise);
 
 	return (
 		<div className="w-full pb-3 sticky top-0 z-10 bg-[color:var(--color-background)]">
@@ -69,15 +94,16 @@ export function TopSection({
 						</Link>
 					</div>
 					{/* App summary heading + text (2-column layout to reduce height) */}
-					<div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:gap-3 w-full">
-						<span className="text-text-muted text-[13px] font-semibold shrink-0">
-							App summary:
-						</span>
-						<p className="text-[14px] font-normal text-inverse leading-relaxed">
-							{/* App summary description will be displayed here */}
-							App summary description will be displayed here.
-						</p>
-					</div>
+					{app.description.length > 0 && (
+						<div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:gap-3 w-full">
+							<span className="text-text-muted text-[13px] font-semibold shrink-0">
+								App summary:
+							</span>
+							<p className="text-[14px] font-normal text-inverse leading-relaxed">
+								{app.description}
+							</p>
+						</div>
+					)}
 				</div>
 			</div>
 		</div>
