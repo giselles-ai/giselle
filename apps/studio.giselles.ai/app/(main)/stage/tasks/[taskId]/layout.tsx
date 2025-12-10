@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import type React from "react";
 import { Suspense } from "react";
-import { GlobalBanner } from "./ui/global-banner";
 import { InputAreaHeaderControls } from "./ui/input-area-header-controls";
 import { InputAreaPlaceholder } from "./ui/input-area-placeholder";
 import { StepsSection } from "./ui/steps-section";
@@ -37,7 +36,7 @@ export default async function ({
 				<div className="flex-1">
 					{/* Top Section */}
 					<Suspense fallback={<div>Loading...</div>}>
-						<TopSection data={topSectionData} />
+						<TopSection data={topSectionData} taskId={taskId} />
 					</Suspense>
 
 					{/* Task input preview placeholder (non-sticky, below summary) */}

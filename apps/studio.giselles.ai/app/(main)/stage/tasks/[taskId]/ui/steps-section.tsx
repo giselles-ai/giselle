@@ -33,13 +33,20 @@ interface StepsSectionProps {
 function OutputActions({ generation }: { generation: Generation }) {
 	const [copyFeedback, setCopyFeedback] = useState(false);
 
+	// Cleanup timeout when copyFeedback changes or component unmounts
+	useEffect(() => {
+		if (copyFeedback) {
+			const timer = setTimeout(() => setCopyFeedback(false), 2000);
+			return () => clearTimeout(timer);
+		}
+	}, [copyFeedback]);
+
 	const handleCopyToClipboard = async () => {
 		try {
 			const textContent = getAssistantTextFromGeneration(generation);
 			if (textContent) {
 				await navigator.clipboard.writeText(textContent);
 				setCopyFeedback(true);
-				setTimeout(() => setCopyFeedback(false), 2000);
 			}
 		} catch (error) {
 			console.error("Failed to copy to clipboard:", error);
@@ -434,9 +441,15 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 					{/* Output preview for last completed step */}
 					<div className="mt-4">
 						<div className="flex items-center justify-between text-text-muted text-[13px] font-semibold mb-2 w-full">
-							<span className="block">Output</span>
+							<span className="block">Output from last completed step</span>
 						</div>
-						{lastCompletedGeneration ? (
+						{task.status === "inProgress" || task.status === "failed" ? (
+							<p className="text-[13px] text-text-muted/70 italic">
+								{task.status === "inProgress"
+									? "Please wait, executing..."
+									: "No output available."}
+							</p>
+						) : lastCompletedGeneration ? (
 							<div className="rounded-xl bg-blue-muted/5 px-4 py-3">
 								<div className="flex items-center justify-between mb-2 w-full">
 									<div className="flex-1" />
