@@ -595,11 +595,6 @@ function ChatInputArea({
 						className="w-full resize-none bg-transparent text-[15px] text-foreground placeholder:text-blue-muted/50 outline-none disabled:cursor-not-allowed min-h-[2.4em] sm:min-h-[2.75em] pt-0 pb-[0.7em] px-1"
 					/>
 
-					<FileAttachments
-						files={attachedFiles}
-						onRemoveFile={handleRemoveFile}
-					/>
-
 					{/* Bottom row: App selector and buttons */}
 					<div className="flex items-center justify-between mt-2 sm:mt-3">
 						{/* Left side: Attachment + App selector */}
@@ -638,6 +633,12 @@ function ChatInputArea({
 							</button>
 						</div>
 					</div>
+
+					<FileAttachments
+						files={attachedFiles}
+						onRemoveFile={handleRemoveFile}
+					/>
+
 					<input
 						ref={fileInputRef}
 						type="file"
