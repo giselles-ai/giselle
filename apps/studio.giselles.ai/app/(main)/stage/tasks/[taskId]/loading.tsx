@@ -1,5 +1,5 @@
 import type { Generation } from "@giselles-ai/protocol";
-import { StepLayout } from "./[stepId]/ui/step-layout";
+import { StepLayout } from "./ui/step-layout";
 
 // Define a dummy generation object for the loading state to satisfy StepLayout's props
 const dummyGeneration: Generation = {
