@@ -474,51 +474,72 @@ export function Page({
 					{/* App sections */}
 					<div className="flex flex-col gap-8 w-full pb-8 pt-12">
 						{/* Section 1: Sample apps from Giselle team */}
-						<div className="flex flex-col">
-							<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-2">
-								<h2 className="mt-1 text-[16px] text-text-muted/80">
-									Sample apps from Giselle team
-								</h2>
+						{data.sampleApps.length > 0 && (
+							<div className="flex flex-col">
+								<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-2">
+									<h2 className="mt-1 text-[16px] text-text-muted/80">
+										Sample apps from Giselle team
+									</h2>
+								</div>
+								<div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
+									{data.sampleApps.map((sampleApp) => (
+										<AppListCard
+											key={sampleApp.id}
+											title={sampleApp.name}
+											description={sampleApp.description}
+											badgeType="sample"
+											icon={
+												<AppIcon
+													defaultSize={false}
+													className="h-5 w-5 text-white/40"
+												/>
+											}
+											providers={sampleApp.llmProviders}
+										/>
+									))}
+									{/*
+
+									::::::::::: Sample implementations :::::::::
+
+									<AppListCard
+										title="Customer Support"
+										description="A ready-made workflow that triages customer tickets, summarizes conversation history, and suggests high-quality replies for your support team."
+										badgeType="sample"
+										icon={
+											<AppIcon
+												defaultSize={false}
+												className="h-5 w-5 text-white/40"
+											/>
+										}
+										providers={["openai", "anthropic", "google", "perplexity"]}
+									/>
+									<AppListCard
+										title="Tech Support"
+										description="Handles bug reports, reproduces issues based on logs, and proposes potential fixes that engineers can review quickly."
+										badgeType="sample"
+										icon={
+											<AppIcon
+												defaultSize={false}
+												className="h-5 w-5 text-white/40"
+											/>
+										}
+										providers={["openai", "anthropic", "google"]}
+									/>
+									<AppListCard
+										title="Product Manager"
+										description="Aggregates user feedback, highlights trends, and drafts product requirement ideas your team can refine."
+										badgeType="sample"
+										icon={
+											<AppIcon
+												defaultSize={false}
+												className="h-5 w-5 text-white/40"
+											/>
+										}
+										providers={["openai", "anthropic"]}
+									/>*/}
+								</div>
 							</div>
-							<div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
-								<AppListCard
-									title="Customer Support"
-									description="A ready-made workflow that triages customer tickets, summarizes conversation history, and suggests high-quality replies for your support team."
-									badgeType="sample"
-									icon={
-										<AppIcon
-											defaultSize={false}
-											className="h-5 w-5 text-white/40"
-										/>
-									}
-									providers={["openai", "anthropic", "google", "perplexity"]}
-								/>
-								<AppListCard
-									title="Tech Support"
-									description="Handles bug reports, reproduces issues based on logs, and proposes potential fixes that engineers can review quickly."
-									badgeType="sample"
-									icon={
-										<AppIcon
-											defaultSize={false}
-											className="h-5 w-5 text-white/40"
-										/>
-									}
-									providers={["openai", "anthropic", "google"]}
-								/>
-								<AppListCard
-									title="Product Manager"
-									description="Aggregates user feedback, highlights trends, and drafts product requirement ideas your team can refine."
-									badgeType="sample"
-									icon={
-										<AppIcon
-											defaultSize={false}
-											className="h-5 w-5 text-white/40"
-										/>
-									}
-									providers={["openai", "anthropic"]}
-								/>
-							</div>
-						</div>
+						)}
 
 						{/* Section 2: Select an Apps to Run */}
 						<div className="flex flex-col">

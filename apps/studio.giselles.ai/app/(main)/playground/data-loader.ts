@@ -8,11 +8,16 @@ import { getDocumentVectorStores } from "@/lib/vector-stores/document/queries";
 import { fetchCurrentTeam } from "@/services/teams";
 import type { StageApp } from "./types";
 
-async function getApps(teamDbId: number, userDbId: number) {
+async function getAppsBySampleFlag(
+	teamDbId: number,
+	userDbId: number,
+	isSample: boolean,
+) {
 	const dbWorkspaces = await db.query.workspaces.findMany({
 		where: (workspaces, { eq, and, exists }) =>
 			and(
 				eq(workspaces.teamDbId, teamDbId),
+				eq(workspaces.metadata, { sample: isSample }),
 				exists(
 					db
 						.select({ workspaceDbId: appsDefinition.workspaceDbId })
@@ -208,6 +213,14 @@ async function getApps(teamDbId: number, userDbId: number) {
 	return apps;
 }
 
+async function getApps(teamDbId: number, userDbId: number) {
+	return await getAppsBySampleFlag(teamDbId, userDbId, false);
+}
+
+async function getSampleApps(teamDbId: number, userDbId: number) {
+	return await getAppsBySampleFlag(teamDbId, userDbId, true);
+}
+
 async function getTasks(teamDbId: number) {
 	const dbTasks = await db.query.tasks.findMany({
 		columns: { id: true },
@@ -226,15 +239,16 @@ export async function dataLoader() {
 		getCurrentUser(),
 		fetchCurrentTeam(),
 	]);
-	const [apps, tasks] = await Promise.all([
+	const [apps, sampleApps, tasks] = await Promise.all([
 		getApps(currentTeam.dbId, currentUser.dbId),
+		getSampleApps(currentTeam.dbId, currentUser.dbId),
 		getTasks(currentTeam.dbId),
 	]);
 
 	const currentTeamId = currentTeam.id;
 
 	logger.debug({ apps, tasks, currentTeamId });
-	return { apps, tasks, currentTeamId };
+	return { apps, sampleApps, tasks, currentTeamId };
 }
 
 export type LoaderData = Awaited<ReturnType<typeof dataLoader>>;
