@@ -22,6 +22,8 @@ import { getAssistantTextFromGeneration } from "../../../../../../../../internal
 import { GenerationView } from "../../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-view";
 import { fetchGenerationData } from "../actions";
 import { getModelInfo } from "../lib/utils";
+import { RunInStudioOnlyChip } from "./run-in-studio-only-chip";
+import { StepErrorState } from "./step-error-state";
 
 interface StepsSectionProps {
 	taskPromise: Promise<Task>;
@@ -397,7 +399,19 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 																	</span>
 																)}
 															</button>
+															{/* Layer 2: Run in Studio Only Chip (only for failed steps) */}
+															{step.status === "failed" && (
+																<RunInStudioOnlyChip />
+															)}
 														</div>
+
+														{/* Layer 3: Step Error State */}
+														{step.status === "failed" && (
+															<StepErrorState
+																workspaceId={task.workspaceId}
+																stepId={step.id}
+															/>
+														)}
 
 														{/* Step Content Accordion */}
 														{isExpanded && hasOutput && generation && (
