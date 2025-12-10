@@ -328,9 +328,18 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 										<div className="space-y-2">
 											{sequence.steps.map((step) => {
 												const generation = stepGenerations[step.id];
-												// Only allow expansion if generation exists (has output)
+												// Check if generation has actual output content
+												const hasOutput =
+													generation &&
+													generation.status === "completed" &&
+													(() => {
+														const textContent =
+															getAssistantTextFromGeneration(generation);
+														return textContent && textContent.trim().length > 0;
+													})();
+												// Only allow expansion if generation exists and has output
 												const isExpanded =
-													generation && expandedSteps.has(step.id);
+													hasOutput && expandedSteps.has(step.id);
 												const operationNode =
 													generation?.context.operationNode ??
 													stepOperationNodes[step.id];
@@ -342,15 +351,15 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 															<button
 																type="button"
 																className={`flex-1 flex items-center gap-3 text-left ${
-																	!generation ? "cursor-default" : ""
+																	!hasOutput ? "cursor-default" : ""
 																}`}
 																onClick={() => {
-																	// Only toggle if generation exists (has output)
-																	if (generation) {
+																	// Only toggle if generation exists and has output
+																	if (hasOutput) {
 																		handleStepToggle(step.id);
 																	}
 																}}
-																disabled={!generation}
+																disabled={!hasOutput}
 															>
 																{/* Step Status Icon */}
 																{step.status === "queued" && (
@@ -391,7 +400,7 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 														</div>
 
 														{/* Step Content Accordion */}
-														{isExpanded && generation && (
+														{isExpanded && hasOutput && generation && (
 															<div className="ml-4 pl-4 border-l-2 border-border">
 																<div className="py-4 [&_.markdown-renderer]:text-[13px] [&_*[class*='text-[14px]']]:text-[13px] [&_*]:text-text-muted/70 [&_*[class*='text-inverse']]:!text-text-muted/70">
 																	<GenerationView generation={generation} />
