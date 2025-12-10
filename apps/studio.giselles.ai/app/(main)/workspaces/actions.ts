@@ -1,7 +1,7 @@
 "use server";
 
 import type { WorkspaceId } from "@giselles-ai/protocol";
-import { isTriggerNode } from "@giselles-ai/protocol";
+import { AppId, isAppEntryNode, isTriggerNode } from "@giselles-ai/protocol";
 import type { AgentId } from "@giselles-ai/types";
 import { createId } from "@paralleldrive/cuid2";
 import { eq } from "drizzle-orm";
@@ -66,7 +66,8 @@ export async function copyAgent(
 		const newAgentId = `agnt_${createId()}` as AgentId;
 		const baseName = agent.name?.trim() || agentId;
 		const newName = `Copy of ${baseName}`;
-		const workspace = await giselle.copyWorkspace(agent.workspaceId, newName);
+		let workspace = await giselle.copyWorkspace(agent.workspaceId, newName);
+
 		// The agents table is deprecated, so we are inserting into the workspaces table.
 		await db.insert(agents).values({
 			id: newAgentId,
@@ -81,6 +82,46 @@ export async function copyAgent(
 			teamDbId: team.dbId,
 			creatorDbId: user.dbId,
 		});
+
+		const nodesWithDuplicatedApps = await Promise.all(
+			workspace.nodes.map(async (node) => {
+				if (!isAppEntryNode(node) || node.content.status !== "configured") {
+					return node;
+				}
+
+				const sourceApp = await giselle.getApp({
+					appId: node.content.appId,
+				});
+
+				const newAppId = AppId.generate();
+				await giselle.saveApp({
+					app: {
+						...sourceApp,
+						id: newAppId,
+						entryNodeId: node.id,
+						workspaceId: workspace.id,
+					},
+				});
+
+				return {
+					...node,
+					content: {
+						...node.content,
+						appId: newAppId,
+					},
+				};
+			}),
+		);
+		const hasAppDuplications = nodesWithDuplicatedApps.some(
+			(node, index) => node !== workspace.nodes[index],
+		);
+		if (hasAppDuplications) {
+			const updatedWorkspace = {
+				...workspace,
+				nodes: nodesWithDuplicatedApps,
+			};
+			workspace = await giselle.updateWorkspace(updatedWorkspace);
+		}
 
 		// Copy flowTrigger DB records for staged triggers
 		for (const node of workspace.nodes) {
