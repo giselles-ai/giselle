@@ -16,7 +16,7 @@ import {
 	type UploadedFileData,
 } from "@giselles-ai/protocol";
 import { APICallError, useGiselle } from "@giselles-ai/react";
-import { ArrowUpIcon, Paperclip, Search, Sparkles } from "lucide-react";
+import { ArrowUpIcon, Paperclip, Search, Sparkles, X } from "lucide-react";
 import { DynamicIcon, type IconName } from "lucide-react/dynamic";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
@@ -295,6 +295,49 @@ function useEnterSubmit(onSubmit: () => void) {
 	};
 }
 
+type FileRestrictionErrorState = {
+	rejectedFileNames: string[];
+};
+
+const ACCEPTED_FILE_TYPES = "application/pdf,image/*";
+const ALLOWED_FILE_MIME_TYPES = new Set(["application/pdf"]);
+const IMAGE_FILE_EXTENSIONS = new Set([
+	"png",
+	"jpg",
+	"jpeg",
+	"gif",
+	"bmp",
+	"webp",
+	"svg",
+	"tif",
+	"tiff",
+	"heic",
+	"heif",
+]);
+
+function getFileExtension(fileName: string) {
+	const index = fileName.lastIndexOf(".");
+	if (index === -1) {
+		return "";
+	}
+	return fileName.slice(index + 1).toLowerCase();
+}
+
+function isAllowedFileType(file: File) {
+	const mimeType = file.type?.toLowerCase() ?? "";
+	if (mimeType.startsWith("image/")) {
+		return true;
+	}
+	if (mimeType && ALLOWED_FILE_MIME_TYPES.has(mimeType)) {
+		return true;
+	}
+	const extension = getFileExtension(file.name);
+	if (extension === "pdf") {
+		return true;
+	}
+	return extension ? IMAGE_FILE_EXTENSIONS.has(extension) : false;
+}
+
 // Chat-style input area for running apps
 function ChatInputArea({
 	selectedApp,
@@ -317,6 +360,8 @@ function ChatInputArea({
 	const dragCounterRef = useRef(0);
 	const [isDragActive, setIsDragActive] = useState(false);
 	const [attachedFiles, setAttachedFiles] = useState<FileData[]>([]);
+	const [fileRestrictionError, setFileRestrictionError] =
+		useState<FileRestrictionErrorState | null>(null);
 
 	const appOptions: SelectOption[] = apps.map((app) => ({
 		value: app.id,
@@ -401,6 +446,7 @@ function ChatInputArea({
 				return;
 			}
 
+			const rejectedNames = new Set<string>();
 			const existingNames = new Set(attachedFiles.map((file) => file.name));
 			const batchSeen = new Set<string>();
 			const uploads: Array<{
@@ -410,6 +456,13 @@ function ChatInputArea({
 			}> = [];
 
 			for (const file of usableFiles) {
+				if (!isAllowedFileType(file)) {
+					const rejectedName =
+						file.name.trim().length > 0 ? file.name : "Unnamed file";
+					rejectedNames.add(rejectedName);
+					continue;
+				}
+
 				const name =
 					file.name || `file-${existingNames.size + batchSeen.size + 1}`;
 				if (existingNames.has(name) || batchSeen.has(name)) {
@@ -431,6 +484,12 @@ function ChatInputArea({
 					file,
 					uploading,
 					workspaceId: selectedApp.workspaceId,
+				});
+			}
+
+			if (rejectedNames.size > 0) {
+				setFileRestrictionError({
+					rejectedFileNames: Array.from(rejectedNames),
 				});
 			}
 
@@ -506,6 +565,10 @@ function ChatInputArea({
 
 	const handleRemoveFile = useCallback((fileId: string) => {
 		setAttachedFiles((current) => current.filter((file) => file.id !== fileId));
+	}, []);
+
+	const handleDismissFileRestrictionError = useCallback(() => {
+		setFileRestrictionError(null);
 	}, []);
 
 	const handleAttachmentButtonClick = () => {
@@ -609,6 +672,38 @@ function ChatInputArea({
 						className="w-full resize-none bg-transparent text-[15px] text-foreground placeholder:text-blue-muted/50 outline-none disabled:cursor-not-allowed min-h-[2.4em] sm:min-h-[2.75em] pt-0 pb-[0.7em] px-1"
 					/>
 
+					{fileRestrictionError ? (
+						<div
+							className="mt-3 rounded-xl border border-red-400/50 bg-red-500/10 px-3 py-2 text-left text-red-100"
+							role="alert"
+						>
+							<div className="flex items-start justify-between gap-3">
+								<div className="flex flex-col gap-1">
+									<p className="text-[13px] font-medium">
+										{fileRestrictionError.rejectedFileNames.length === 1
+											? `${fileRestrictionError.rejectedFileNames[0]} is not supported.`
+											: "Some files are not supported."}
+									</p>
+									<p className="text-[11px] text-red-200/80">
+										Only PDF and image files can be uploaded.
+									</p>
+									<p className="text-[11px] text-red-200/80">
+										Rejected:{" "}
+										{fileRestrictionError.rejectedFileNames.join(", ")}
+									</p>
+								</div>
+								<button
+									type="button"
+									onClick={handleDismissFileRestrictionError}
+									className="text-red-200/80 transition-colors hover:text-red-100"
+									aria-label="Dismiss file type error"
+								>
+									<X className="h-3.5 w-3.5" />
+								</button>
+							</div>
+						</div>
+					) : null}
+
 					<FileAttachments
 						files={attachedFiles}
 						onRemoveFile={handleRemoveFile}
@@ -657,6 +752,7 @@ function ChatInputArea({
 						type="file"
 						className="hidden"
 						multiple
+						accept={ACCEPTED_FILE_TYPES}
 						onChange={handleFileInputChange}
 					/>
 				</div>
