@@ -607,10 +607,10 @@ function ChatInputArea({
 							<button
 								type="button"
 								onClick={handleAttachmentButtonClick}
-								className="flex h-6 w-6 flex-shrink-0 items-center justify-center"
+								className="group flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[5px] transition-colors hover:bg-white/5"
 								aria-label="Attach files"
 							>
-								<Paperclip className="h-4 w-4 text-text-muted" />
+								<Paperclip className="h-4 w-4 text-text-muted transition-colors group-hover:text-white" />
 							</button>
 							<div className="flex-1">
 								<Select
