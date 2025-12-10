@@ -29,7 +29,10 @@ export default async function ({
 				<div className="flex-1">
 					{/* Top Section */}
 					<Suspense fallback={<div>Loading...</div>}>
-						<TopSection topSectionDataPromise={getTopSectionData({ params })} />
+						<TopSection
+							topSectionDataPromise={getTopSectionData({ params })}
+							taskId={taskId}
+						/>
 					</Suspense>
 
 					{/* Task input preview placeholder (non-sticky, below summary) */}

@@ -1,7 +1,7 @@
 "use client";
 
 import { StatusBadge } from "@giselle-internal/ui/status-badge";
-import type { TaskId } from "@giselles-ai/protocol";
+import { TaskId } from "@giselles-ai/protocol";
 import {
 	type StreamDataEventHandler,
 	TaskStreamReader,
