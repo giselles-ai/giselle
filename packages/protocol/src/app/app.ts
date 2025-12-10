@@ -25,6 +25,10 @@ export type AppParameter = z.infer<typeof AppParameter>;
 
 export const App = z.object({
 	id: AppId.schema,
+	/**
+	 * @deprecated The relationship between app and workspace is now 1:1,
+	 * and the Workspace name becomes the App name, so this should not be referenced
+	 */
 	name: z.string(),
 	description: z.string(),
 	iconName: z.string().min(1),
