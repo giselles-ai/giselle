@@ -6,6 +6,7 @@ import { TopSection } from "./ui/top-section";
 import "./mobile-scroll.css";
 import { TaskId } from "@giselles-ai/protocol";
 import { giselle } from "@/app/giselle";
+import { getTaskInput, TaskInput } from "./ui/task-input";
 
 export default async function ({
 	params,
@@ -37,10 +38,9 @@ export default async function ({
 
 					{/* Task input preview placeholder (non-sticky, below summary) */}
 					<div className="mt-3 max-w-[640px] min-w-[320px] mx-auto">
-						<div className="rounded-[10px] border border-blue-muted/40 bg-blue-muted/7 px-3 py-2 text-[13px] text-text/80">
-							{/* TODO: Replace with actual task input preview */}
-							Task input preview will be displayed here.
-						</div>
+						<Suspense fallback={<div>Loading task input...</div>}>
+							<TaskInput taskInputPromise={getTaskInput(taskId)} />
+						</Suspense>
 					</div>
 
 					{/* Steps Section */}
