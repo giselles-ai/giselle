@@ -3,14 +3,7 @@ import type {
 	UploadedFileData,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
-import {
-	AlertCircle,
-	Check,
-	FileText,
-	Loader2,
-	Paperclip,
-	X,
-} from "lucide-react";
+import { AlertCircle, Check, Loader2, Paperclip, X } from "lucide-react";
 
 interface FileAttachmentsProps {
 	files: FileData[];
@@ -57,9 +50,25 @@ function isImageFile(file: FileData): boolean {
 	return file.type.startsWith("image/");
 }
 
-function isPdfFile(file: FileData): boolean {
-	if (!file.type) return false;
-	return file.type === "application/pdf";
+function getFileExtension(fileName: string): string {
+	const lastDot = fileName.lastIndexOf(".");
+	if (lastDot === -1) return "";
+	return fileName.slice(lastDot).toLowerCase();
+}
+
+function getFileTypeBadge(file: FileData): string | null {
+	const ext = getFileExtension(file.name);
+	const typeMap: Record<string, string> = {
+		".pdf": "PDF",
+		".xlsx": "XLSX",
+		".xls": "XLS",
+		".docx": "DOCX",
+		".doc": "DOC",
+		".txt": "TXT",
+		".md": "MD",
+		".csv": "CSV",
+	};
+	return typeMap[ext] || null;
 }
 
 function getFileUrl(
@@ -89,7 +98,12 @@ export function FileAttachments({
 
 	const readyCount = files.filter(isUploadedFile).length;
 	const imageFiles = files.filter(isImageFile);
-	const nonImageFiles = files.filter((file) => !isImageFile(file));
+	const documentFiles = files.filter(
+		(file) => !isImageFile(file) && getFileTypeBadge(file) !== null,
+	);
+	const otherFiles = files.filter(
+		(file) => !isImageFile(file) && getFileTypeBadge(file) === null,
+	);
 
 	return (
 		<div className="mt-3 space-y-2" aria-live="polite">
@@ -117,7 +131,7 @@ export function FileAttachments({
 						return (
 							<div
 								key={file.id}
-								className="relative group shrink-0 rounded-lg overflow-hidden bg-white/5 border border-white/5 w-[120px] h-[120px]"
+								className="relative group shrink-0 rounded-lg overflow-hidden bg-white/5 border border-white/5 w-[60px] h-[60px]"
 							>
 								{imageUrl ? (
 									<img
@@ -156,10 +170,10 @@ export function FileAttachments({
 									onClick={() => {
 										onRemoveFile(file.id);
 									}}
-									className="absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-black/80"
+									className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-black/80"
 									aria-label={`Remove ${file.name}`}
 								>
-									<X className="h-3.5 w-3.5" />
+									<X className="h-2.5 w-2.5" />
 								</button>
 							</div>
 						);
@@ -167,10 +181,62 @@ export function FileAttachments({
 				</div>
 			)}
 
-			{/* Non-image files */}
-			{nonImageFiles.map((file) => {
+			{/* Document file previews - horizontal scroll */}
+			{documentFiles.length > 0 && (
+				<div className="flex gap-2 overflow-x-auto pb-1">
+					{documentFiles.map((file) => {
+						const fileTypeBadge = getFileTypeBadge(file);
+
+						return (
+							<div
+								key={file.id}
+								className="relative group shrink-0 rounded-lg overflow-hidden bg-white/5 border border-white/5 w-[60px] h-[60px] flex flex-col p-1.5"
+							>
+								{file.status === "uploading" ? (
+									<div className="w-full h-full flex items-center justify-center">
+										<Loader2 className="h-4 w-4 animate-spin text-blue-muted" />
+									</div>
+								) : file.status === "failed" ? (
+									<div className="w-full h-full flex items-center justify-center">
+										<AlertCircle className="h-4 w-4 text-red-400" />
+									</div>
+								) : (
+									<>
+										<div className="flex-1 flex items-start justify-center min-h-0">
+											<p className="text-[8px] text-white leading-tight line-clamp-2 text-center break-words">
+												{file.name}
+											</p>
+										</div>
+										{fileTypeBadge && (
+											<div className="mt-auto flex items-center justify-center">
+												<div className="px-1 py-0.5 rounded bg-white/10 border border-white/10">
+													<span className="text-[7px] text-white font-medium">
+														{fileTypeBadge}
+													</span>
+												</div>
+											</div>
+										)}
+									</>
+								)}
+								<button
+									type="button"
+									onClick={() => {
+										onRemoveFile(file.id);
+									}}
+									className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-black/80"
+									aria-label={`Remove ${file.name}`}
+								>
+									<X className="h-2.5 w-2.5" />
+								</button>
+							</div>
+						);
+					})}
+				</div>
+			)}
+
+			{/* Other files */}
+			{otherFiles.map((file) => {
 				const statusLabel = getFileStatusLabel(file);
-				const isPdf = isPdfFile(file);
 
 				return (
 					<div
@@ -181,11 +247,7 @@ export function FileAttachments({
 							{file.status === "uploading" ? (
 								<Loader2 className="h-4 w-4 animate-spin text-blue-muted" />
 							) : file.status === "uploaded" ? (
-								isPdf ? (
-									<FileText className="h-4 w-4 text-red-400" />
-								) : (
-									<Check className="h-4 w-4 text-emerald-300" />
-								)
+								<Check className="h-4 w-4 text-emerald-300" />
 							) : file.status === "failed" ? (
 								<AlertCircle className="h-4 w-4 text-red-400" />
 							) : (
