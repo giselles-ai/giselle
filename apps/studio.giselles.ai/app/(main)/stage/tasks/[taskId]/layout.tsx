@@ -41,9 +41,11 @@ export default async function ({
 
 					{/* Task input preview placeholder (non-sticky, below summary) */}
 					<div className="mt-3 max-w-[640px] min-w-[320px] mx-auto">
-						<div className="rounded-[10px] border border-blue-muted/40 bg-blue-muted/7 px-3 py-2 text-[13px] text-text/80">
-							{/* TODO: Replace with actual task input preview */}
-							Task input preview will be displayed here.
+						<div className="flex justify-end">
+							<div className="inline-block max-w-[80%] rounded-[10px] border border-blue-muted/40 bg-blue-muted/7 px-3 py-2 text-[13px] text-text/80">
+								{/* TODO: Replace with actual task input preview */}
+								Task input preview will be displayed here.
+							</div>
 						</div>
 					</div>
 
