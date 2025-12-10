@@ -17,7 +17,7 @@ import {
 	RefreshCw,
 	XIcon,
 } from "lucide-react";
-import { use, useCallback, useEffect, useRef, useState } from "react";
+import { use, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getAssistantTextFromGeneration } from "../../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-text";
 import { GenerationView } from "../../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-view";
 import { fetchGenerationData } from "../actions";
@@ -28,6 +28,39 @@ import { StepErrorState } from "./step-error-state";
 interface StepsSectionProps {
 	taskPromise: Promise<Task>;
 	taskId: TaskId;
+}
+
+const iconClassName =
+	"text-text-muted/70 group-hover:text-text-muted size-[16px] flex-shrink-0 transition-colors";
+
+function StepStatusIcon({
+	status,
+	operationNode,
+}: {
+	status: string;
+	operationNode?: Generation["context"]["operationNode"];
+}) {
+	if (status === "queued") {
+		return <CircleDashedIcon className={iconClassName} />;
+	}
+	if (status === "running") {
+		return <RefreshCw className={`${iconClassName} animate-spin`} />;
+	}
+	if (status === "completed") {
+		if (operationNode) {
+			return <NodeIcon node={operationNode} className={iconClassName} />;
+		}
+		return <BrainCircuit className={iconClassName} />;
+	}
+	if (status === "failed") {
+		return (
+			<XIcon className="text-red-400 size-[16px] flex-shrink-0 transition-colors" />
+		);
+	}
+	if (status === "cancelled") {
+		return <CircleSlashIcon className={iconClassName} />;
+	}
+	return null;
 }
 
 function OutputActions({ generation }: { generation: Generation }) {
@@ -219,7 +252,7 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 	);
 
 	// Determine status text based on current step states (priority: Running > Preparing > Completed)
-	const getStatusText = () => {
+	const statusText = useMemo(() => {
 		if (runningStepsCount > 0) {
 			return `Running ${runningStepsCount} step${runningStepsCount !== 1 ? "s" : ""}`;
 		}
@@ -227,16 +260,13 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 			return `Preparing ${preparingStepsCount} step${preparingStepsCount !== 1 ? "s" : ""}`;
 		}
 		return `Completed ${completedStepsCount} step${completedStepsCount !== 1 ? "s" : ""}`;
-	};
-
-	const statusText = getStatusText();
-	const isActive = runningStepsCount > 0 || preparingStepsCount > 0;
+	}, [runningStepsCount, preparingStepsCount, completedStepsCount]);
 
 	const progressRatio =
 		totalStepsCount > 0 ? completedStepsCount / totalStepsCount : 0;
 
 	// Find the last completed step's generation (if available)
-	const lastCompletedGeneration = (() => {
+	const lastCompletedGeneration = useMemo(() => {
 		for (
 			let sequenceIndex = task.sequences.length - 1;
 			sequenceIndex >= 0;
@@ -258,7 +288,14 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 			}
 		}
 		return undefined;
-	})();
+	}, [task.sequences, stepGenerations]);
+
+	// Auto-expand output when a new step completes
+	useEffect(() => {
+		if (lastCompletedGeneration) {
+			setIsOutputExpanded(true);
+		}
+	}, [lastCompletedGeneration]);
 
 	const handleStepToggle = (stepId: string) => {
 		setExpandedSteps((prev) => {
@@ -283,19 +320,7 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 						onClick={() => setIsStepsExpanded(!isStepsExpanded)}
 					>
 						<div className="flex items-center gap-2">
-							{isActive ? (
-								<span
-									className="block bg-[length:200%_100%] bg-clip-text bg-gradient-to-r from-text-muted via-text-muted/50 to-text-muted text-transparent animate-shimmer"
-									style={{
-										animationDuration: "1s",
-										animationTimingFunction: "linear",
-									}}
-								>
-									{statusText}
-								</span>
-							) : (
-								<span className="block">{statusText}</span>
-							)}
+							<span className="block">{statusText}</span>
 							{totalStepsCount > 0 ? (
 								<div className="flex items-center gap-1 text-[11px] text-text-muted/80">
 									<div
@@ -395,33 +420,10 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 																}}
 																disabled={!hasOutput}
 															>
-																{/* Step Status Icon */}
-																{step.status === "queued" && (
-																	<CircleDashedIcon className="text-text-muted/70 group-hover:text-text-muted size-[16px] flex-shrink-0 transition-colors" />
-																)}
-																{step.status === "running" && (
-																	<RefreshCw className="text-text-muted/70 group-hover:text-text-muted size-[16px] animate-spin flex-shrink-0 transition-colors" />
-																)}
-																{step.status === "completed" &&
-																	(() => {
-																		if (operationNode) {
-																			return (
-																				<NodeIcon
-																					node={operationNode}
-																					className="size-[16px] text-text-muted/70 group-hover:text-text-muted flex-shrink-0 transition-colors"
-																				/>
-																			);
-																		}
-																		return (
-																			<BrainCircuit className="text-text-muted/70 group-hover:text-text-muted size-[16px] flex-shrink-0 transition-colors" />
-																		);
-																	})()}
-																{step.status === "failed" && (
-																	<XIcon className="text-red-400 size-[16px] flex-shrink-0 transition-colors" />
-																)}
-																{step.status === "cancelled" && (
-																	<CircleSlashIcon className="text-text-muted/70 group-hover:text-text-muted size-[16px] flex-shrink-0 transition-colors" />
-																)}
+																<StepStatusIcon
+																	status={step.status}
+																	operationNode={operationNode}
+																/>
 																<span className="text-[13px] text-text-muted/70 group-hover:text-text-muted transition-colors">
 																	{step.name || "Untitled"}
 																</span>
