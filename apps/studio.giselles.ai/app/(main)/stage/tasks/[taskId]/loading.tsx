@@ -1,5 +1,5 @@
 import type { Generation } from "@giselles-ai/protocol";
-import { StepLayout } from "./[stepId]/ui/step-layout";
+import { StepLayout } from "./ui/step-layout";
 
 // Define a dummy generation object for the loading state to satisfy StepLayout's props
 const dummyGeneration: Generation = {
@@ -21,7 +21,7 @@ const dummyGeneration: Generation = {
 				type: "textGeneration",
 				llm: {
 					provider: "anthropic",
-					id: "claude-sonnet-4-5-20250929",
+					id: "claude-sonnet-4.5",
 					configurations: {
 						temperature: 0.7,
 						topP: 1,

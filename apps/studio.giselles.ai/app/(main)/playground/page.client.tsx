@@ -3,15 +3,35 @@
 import { AppIcon } from "@giselle-internal/ui/app-icon";
 import { Select, type SelectOption } from "@giselle-internal/ui/select";
 import { isIconName } from "@giselle-internal/ui/utils";
+import { useToast } from "@giselles-ai/contexts/toast";
 import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
-import type { GenerationContextInput, TaskId } from "@giselles-ai/protocol";
-import { ArrowUpIcon, Paperclip, Search, Sparkles } from "lucide-react";
+import {
+	createFailedFileData,
+	createUploadedFileData,
+	createUploadingFileData,
+	type FileData,
+	type GenerationContextInput,
+	type ParameterItem,
+	type TaskId,
+	type UploadedFileData,
+} from "@giselles-ai/protocol";
+import { APICallError, useGiselle } from "@giselles-ai/react";
+import { ArrowUpIcon, Paperclip, Search, Sparkles, X } from "lucide-react";
 import { DynamicIcon, type IconName } from "lucide-react/dynamic";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
-import { use, useCallback, useRef, useState, useTransition } from "react";
+import {
+	use,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+	useTransition,
+} from "react";
 import { LLMProviderIcon } from "@/app/(main)/workspaces/components/llm-provider-icon";
 import type { LoaderData } from "./data-loader";
+import { FileAttachments } from "./file-attachments";
 import type { StageApp } from "./types";
 
 type AppListCardBadgeType =
@@ -219,6 +239,106 @@ function StageTopCard({
 	);
 }
 
+function getUploadErrorMessage(error: unknown) {
+	if (APICallError.isInstance(error)) {
+		if (error.statusCode === 413) {
+			return "File size is too large.";
+		}
+		return error.message || "Upload failed";
+	}
+	if (error instanceof Error) {
+		return error.message || "Upload failed";
+	}
+	return "Upload failed";
+}
+
+function useEnterSubmit(onSubmit: () => void) {
+	const composingRef = useRef(false);
+
+	const handleCompositionStart = useCallback(() => {
+		composingRef.current = true;
+	}, []);
+
+	const handleCompositionEnd = useCallback(() => {
+		composingRef.current = false;
+	}, []);
+
+	const handleKeyDown = useCallback(
+		(event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+			const nativeEvent = event.nativeEvent;
+
+			if (
+				composingRef.current ||
+				nativeEvent.isComposing ||
+				nativeEvent.keyCode === 229
+			) {
+				return;
+			}
+
+			if (event.key !== "Enter") {
+				return;
+			}
+
+			if (event.shiftKey) {
+				return;
+			}
+
+			event.preventDefault();
+			onSubmit();
+		},
+		[onSubmit],
+	);
+
+	return {
+		handleCompositionStart,
+		handleCompositionEnd,
+		handleKeyDown,
+	};
+}
+
+type FileRestrictionErrorState = {
+	rejectedFileNames: string[];
+};
+
+const ACCEPTED_FILE_TYPES = "application/pdf,image/*";
+const ALLOWED_FILE_MIME_TYPES = new Set(["application/pdf"]);
+const IMAGE_FILE_EXTENSIONS = new Set([
+	"png",
+	"jpg",
+	"jpeg",
+	"gif",
+	"bmp",
+	"webp",
+	"svg",
+	"tif",
+	"tiff",
+	"heic",
+	"heif",
+]);
+
+function getFileExtension(fileName: string) {
+	const index = fileName.lastIndexOf(".");
+	if (index === -1) {
+		return "";
+	}
+	return fileName.slice(index + 1).toLowerCase();
+}
+
+function isAllowedFileType(file: File) {
+	const mimeType = file.type?.toLowerCase() ?? "";
+	if (mimeType.startsWith("image/")) {
+		return true;
+	}
+	if (mimeType && ALLOWED_FILE_MIME_TYPES.has(mimeType)) {
+		return true;
+	}
+	const extension = getFileExtension(file.name);
+	if (extension === "pdf") {
+		return true;
+	}
+	return extension ? IMAGE_FILE_EXTENSIONS.has(extension) : false;
+}
+
 // Chat-style input area for running apps
 function ChatInputArea({
 	selectedApp,
@@ -233,14 +353,32 @@ function ChatInputArea({
 	onSubmit: (event: { inputs: GenerationContextInput[] }) => void;
 	isRunning: boolean;
 }) {
+	const client = useGiselle();
+	const { addToast } = useToast();
 	const [inputValue, setInputValue] = useState("");
 	const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+	const fileInputRef = useRef<HTMLInputElement | null>(null);
+	const dragCounterRef = useRef(0);
+	const [isDragActive, setIsDragActive] = useState(false);
+	const [attachedFiles, setAttachedFiles] = useState<FileData[]>([]);
+	const [fileRestrictionError, setFileRestrictionError] =
+		useState<FileRestrictionErrorState | null>(null);
 
-	const appOptions: SelectOption[] = apps.map((app) => ({
-		value: app.id,
-		label: app.name,
-		icon: <DynamicIcon name={app.iconName} className="h-4 w-4" />,
-	}));
+	const appOptions = apps.map(
+		(app) =>
+			({
+				value: app.id,
+				label: app.name,
+				icon: <DynamicIcon name={app.iconName} className="h-4 w-4" />,
+			}) satisfies SelectOption,
+	);
+	const firstAppOptionValue = appOptions[0]?.value;
+
+	useEffect(() => {
+		if (!selectedApp && firstAppOptionValue) {
+			onAppSelect(firstAppOptionValue);
+		}
+	}, [selectedApp, firstAppOptionValue, onAppSelect]);
 
 	const resizeTextarea = () => {
 		const textarea = textareaRef.current;
@@ -256,18 +394,242 @@ function ChatInputArea({
 		resizeTextarea();
 	};
 
+	const containsFiles = useCallback(
+		(event: React.DragEvent<HTMLElement>) =>
+			Array.from(event.dataTransfer?.items ?? []).some(
+				(item) => item.kind === "file",
+			),
+		[],
+	);
+
+	const handleDragEnter = useCallback(
+		(event: React.DragEvent<HTMLDivElement>) => {
+			if (!containsFiles(event)) {
+				return;
+			}
+			event.preventDefault();
+			dragCounterRef.current += 1;
+			setIsDragActive(true);
+		},
+		[containsFiles],
+	);
+
+	const handleDragOver = useCallback(
+		(event: React.DragEvent<HTMLDivElement>) => {
+			if (!containsFiles(event)) {
+				return;
+			}
+			event.preventDefault();
+			event.dataTransfer.dropEffect = "copy";
+		},
+		[containsFiles],
+	);
+
+	const handleDragLeave = useCallback(
+		(event: React.DragEvent<HTMLDivElement>) => {
+			if (!containsFiles(event)) {
+				return;
+			}
+			event.preventDefault();
+			dragCounterRef.current = Math.max(dragCounterRef.current - 1, 0);
+			if (dragCounterRef.current === 0) {
+				setIsDragActive(false);
+			}
+		},
+		[containsFiles],
+	);
+
+	const handleFilesAdded = useCallback(
+		async (incomingFiles: File[]) => {
+			if (!selectedApp) {
+				addToast({
+					type: "warning",
+					title: "Select an app",
+					message: "Choose an app before attaching files.",
+				});
+				return;
+			}
+
+			const usableFiles = incomingFiles.filter(
+				(file): file is File => file instanceof File && file.size > 0,
+			);
+			if (usableFiles.length === 0) {
+				return;
+			}
+
+			const rejectedNames = new Set<string>();
+			const existingNames = new Set(attachedFiles.map((file) => file.name));
+			const batchSeen = new Set<string>();
+			const uploads: Array<{
+				file: File;
+				uploading: ReturnType<typeof createUploadingFileData>;
+				workspaceId: StageApp["workspaceId"];
+			}> = [];
+
+			for (const file of usableFiles) {
+				if (!isAllowedFileType(file)) {
+					const rejectedName =
+						file.name.trim().length > 0 ? file.name : "Unnamed file";
+					rejectedNames.add(rejectedName);
+					continue;
+				}
+
+				const name =
+					file.name || `file-${existingNames.size + batchSeen.size + 1}`;
+				if (existingNames.has(name) || batchSeen.has(name)) {
+					addToast({
+						type: "warning",
+						title: "Duplicate file",
+						message: `${name} is already attached.`,
+					});
+					continue;
+				}
+
+				batchSeen.add(name);
+				const uploading = createUploadingFileData({
+					name,
+					type: file.type || "application/octet-stream",
+					size: file.size,
+				});
+				uploads.push({
+					file,
+					uploading,
+					workspaceId: selectedApp.workspaceId,
+				});
+			}
+
+			if (rejectedNames.size > 0) {
+				setFileRestrictionError({
+					rejectedFileNames: Array.from(rejectedNames),
+				});
+			}
+
+			if (uploads.length === 0) {
+				return;
+			}
+
+			setAttachedFiles((current) => {
+				const currentNames = new Set(current.map((file) => file.name));
+				const newEntries = uploads
+					.filter(({ uploading }) => !currentNames.has(uploading.name))
+					.map(({ uploading }) => uploading);
+				if (newEntries.length === 0) {
+					return current;
+				}
+				return [...current, ...newEntries];
+			});
+
+			for (const { file, uploading, workspaceId } of uploads) {
+				try {
+					await client.uploadFile({
+						workspaceId,
+						file,
+						fileId: uploading.id,
+						fileName: uploading.name,
+					});
+					const uploaded = createUploadedFileData(uploading, Date.now());
+					setAttachedFiles((current) => {
+						return current.map((entry) =>
+							entry.id === uploaded.id ? uploaded : entry,
+						);
+					});
+				} catch (error) {
+					const message = getUploadErrorMessage(error);
+					addToast({
+						type: "error",
+						title: "Upload failed",
+						message,
+					});
+					const failed = createFailedFileData(uploading, message);
+					setAttachedFiles((current) => {
+						return current.map((entry) =>
+							entry.id === failed.id ? failed : entry,
+						);
+					});
+				}
+			}
+		},
+		[selectedApp, attachedFiles, client, addToast],
+	);
+
+	const handleDrop = useCallback(
+		(event: React.DragEvent<HTMLDivElement>) => {
+			if (!containsFiles(event)) {
+				return;
+			}
+			event.preventDefault();
+			dragCounterRef.current = 0;
+			setIsDragActive(false);
+			const droppedFiles = Array.from(event.dataTransfer?.files ?? []);
+			void handleFilesAdded(droppedFiles);
+		},
+		[containsFiles, handleFilesAdded],
+	);
+
+	const handleFileInputChange = (
+		event: React.ChangeEvent<HTMLInputElement>,
+	) => {
+		const files = event.target.files ? Array.from(event.target.files) : [];
+		void handleFilesAdded(files);
+		event.target.value = "";
+	};
+
+	const handleRemoveFile = useCallback((fileId: string) => {
+		setAttachedFiles((current) => current.filter((file) => file.id !== fileId));
+	}, []);
+
+	const handleDismissFileRestrictionError = useCallback(() => {
+		setFileRestrictionError(null);
+	}, []);
+
+	const handleAttachmentButtonClick = () => {
+		fileInputRef.current?.click();
+	};
+
+	const hasInput = inputValue.trim().length > 0;
+	const hasPendingUploads = attachedFiles.some(
+		(file) => file.status === "uploading",
+	);
+	const canSubmit =
+		!!selectedApp && hasInput && !isRunning && !hasPendingUploads;
+
 	const handleSubmit = () => {
 		if (!selectedApp || !inputValue.trim() || isRunning) return;
+		if (hasPendingUploads) {
+			addToast({
+				type: "info",
+				title: "Uploading files",
+				message: "Please wait for uploads to finish before sending.",
+			});
+			return;
+		}
 
-		// Build inputs from the single text input
-		// If app has parameters, use the first text parameter; otherwise send as generic input
+		// App parameters can be configured with various types in multiple settings,
+		// but currently when creating an App, we create one multiline-text and one files parameter as fixed,
+		// so we'll create parameters based on that assumption
 		const textParam = selectedApp.parameters.find(
-			(p) => p.type === "text" || p.type === "multiline-text",
+			(p) => p.type === "multiline-text",
 		);
+		const parameterItems: ParameterItem[] = [];
+		if (textParam) {
+			parameterItems.push({
+				name: textParam.id,
+				type: "string",
+				value: inputValue,
+			});
+		}
 
-		const parameterItems = textParam
-			? [{ name: textParam.id, type: "string" as const, value: inputValue }]
-			: [{ name: "input", type: "string" as const, value: inputValue }];
+		const filesParam = selectedApp.parameters.find((p) => p.type === "files");
+		if (filesParam) {
+			const uploadedFiles = attachedFiles.filter(
+				(file): file is UploadedFileData => file.status === "uploaded",
+			);
+			parameterItems.push({
+				name: filesParam.id,
+				type: "files",
+				value: uploadedFiles,
+			});
+		}
 
 		onSubmit({
 			inputs: [
@@ -277,6 +639,7 @@ function ChatInputArea({
 				},
 			],
 		});
+		setAttachedFiles([]);
 		setInputValue("");
 		// Reset textarea height after clearing - use requestAnimationFrame for better timing
 		requestAnimationFrame(() => {
@@ -284,82 +647,137 @@ function ChatInputArea({
 		});
 	};
 
-	const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-		if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-			e.preventDefault();
-			handleSubmit();
-		}
-	};
-
-	const hasInput = inputValue.trim().length > 0;
+	const {
+		handleCompositionStart,
+		handleCompositionEnd,
+		handleKeyDown: handleTextareaKeyDown,
+	} = useEnterSubmit(handleSubmit);
 
 	return (
 		<div className="relative w-full max-w-[640px] min-w-[320px] mx-auto">
-			<div className="rounded-2xl bg-[rgba(131,157,195,0.14)] shadow-[inset_0_1px_4px_rgba(0,0,0,0.22)] pt-4 pb-3 sm:pt-5 sm:pb-4 px-4">
-				{/* Textarea */}
-				<textarea
-					ref={textareaRef}
-					value={inputValue}
-					onChange={handleInputChange}
-					onKeyDown={handleKeyDown}
-					placeholder="Ask anything—powered by Giselle docs"
-					rows={1}
-					disabled={isRunning}
-					className="w-full resize-none bg-transparent text-[15px] text-foreground placeholder:text-blue-muted/50 outline-none disabled:cursor-not-allowed min-h-[2.4em] sm:min-h-[2.75em] pt-0 pb-[0.7em] px-1"
-				/>
+			<section
+				aria-label="Message input and dropzone"
+				className={`relative rounded-2xl bg-[rgba(131,157,195,0.14)] shadow-[inset_0_1px_4px_rgba(0,0,0,0.22)] pt-4 pb-3 sm:pt-5 sm:pb-4 px-4 transition-colors ${
+					isDragActive ? "ring-1 ring-blue-muted/50" : ""
+				}`}
+				onDragEnter={handleDragEnter}
+				onDragOver={handleDragOver}
+				onDragLeave={handleDragLeave}
+				onDrop={handleDrop}
+			>
+				{isDragActive ? (
+					<div className="pointer-events-none absolute inset-0 rounded-2xl border border-dashed border-blue-muted/60 bg-blue-muted/10" />
+				) : null}
+				<div className="relative z-10">
+					{/* Textarea */}
+					<textarea
+						ref={textareaRef}
+						value={inputValue}
+						onChange={handleInputChange}
+						onCompositionStart={handleCompositionStart}
+						onCompositionEnd={handleCompositionEnd}
+						onKeyDown={handleTextareaKeyDown}
+						placeholder="Ask anything—powered by Giselle docs"
+						rows={1}
+						disabled={isRunning}
+						className="w-full resize-none bg-transparent text-[15px] text-foreground placeholder:text-blue-muted/50 outline-none disabled:cursor-not-allowed min-h-[2.4em] sm:min-h-[2.75em] pt-0 pb-[0.7em] px-1"
+					/>
 
-				{/* Bottom row: App selector and buttons */}
-				<div className="flex items-center justify-between mt-2 sm:mt-3">
-					{/* Left side: Attachment + App selector */}
-					<div className="flex items-center gap-2 flex-1 max-w-[260px]">
-						<button
-							type="button"
-							className="flex h-6 w-6 flex-shrink-0 items-center justify-center"
+					{fileRestrictionError ? (
+						<div
+							className="mt-3 rounded-xl border border-red-400/50 bg-red-500/10 px-3 py-2 text-left text-red-100"
+							role="alert"
 						>
-							<Paperclip className="h-4 w-4 text-text-muted" />
-						</button>
-						<div className="flex-1">
-							<Select
-								options={appOptions}
-								placeholder="Select an app..."
-								value={selectedApp?.id}
-								onValueChange={onAppSelect}
-								widthClassName="w-full"
-								triggerClassName="border-none !bg-[rgba(131,157,195,0.1)] hover:!bg-[rgba(131,157,195,0.18)] !px-2 !h-8 sm:!h-9 !rounded-[7px] sm:!rounded-[9px] text-[13px] [&_svg]:opacity-70"
-							/>
+							<div className="flex items-start justify-between gap-3">
+								<div className="flex flex-col gap-1">
+									<p className="text-[13px] font-medium">
+										{fileRestrictionError.rejectedFileNames.length === 1
+											? `${fileRestrictionError.rejectedFileNames[0]} is not supported.`
+											: "Some files are not supported."}
+									</p>
+									<p className="text-[11px] text-red-200/80">
+										Only PDF and image files can be uploaded.
+									</p>
+									<p className="text-[11px] text-red-200/80">
+										Rejected:{" "}
+										{fileRestrictionError.rejectedFileNames.join(", ")}
+									</p>
+								</div>
+								<button
+									type="button"
+									onClick={handleDismissFileRestrictionError}
+									className="text-red-200/80 transition-colors hover:text-red-100"
+									aria-label="Dismiss file type error"
+								>
+									<X className="h-3.5 w-3.5" />
+								</button>
+							</div>
+						</div>
+					) : null}
+
+					<FileAttachments
+						files={attachedFiles}
+						onRemoveFile={handleRemoveFile}
+					/>
+
+					{/* Bottom row: App selector and buttons */}
+					<div className="flex items-center justify-between mt-2 sm:mt-3">
+						{/* Left side: Attachment + App selector */}
+						<div className="flex items-center gap-2 flex-1 max-w-[260px]">
+							<button
+								type="button"
+								onClick={handleAttachmentButtonClick}
+								className="flex h-6 w-6 flex-shrink-0 items-center justify-center"
+								aria-label="Attach files"
+							>
+								<Paperclip className="h-4 w-4 text-text-muted" />
+							</button>
+							<div className="flex-1">
+								<Select
+									options={appOptions}
+									placeholder="Select an app..."
+									value={selectedApp?.id ?? firstAppOptionValue}
+									onValueChange={onAppSelect}
+									widthClassName="w-full"
+									triggerClassName="border-none !bg-[rgba(131,157,195,0.1)] hover:!bg-[rgba(131,157,195,0.18)] !px-2 !h-8 sm:!h-9 !rounded-[7px] sm:!rounded-[9px] text-[13px] [&_svg]:opacity-70"
+								/>
+							</div>
+						</div>
+
+						{/* Right side: Send button */}
+						<div className="flex items-center gap-2">
+							<button
+								type="button"
+								onClick={handleSubmit}
+								disabled={!canSubmit}
+								className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[5px] bg-[color:var(--color-inverse)] disabled:cursor-not-allowed ${
+									hasInput && !hasPendingUploads ? "opacity-100" : "opacity-40"
+								}`}
+							>
+								<ArrowUpIcon className="h-3 w-3 text-[color:var(--color-background)]" />
+							</button>
 						</div>
 					</div>
-
-					{/* Right side: Send button */}
-					<div className="flex items-center gap-2">
-						<button
-							type="button"
-							onClick={handleSubmit}
-							disabled={isRunning || !selectedApp || !inputValue.trim()}
-							className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[5px] bg-[color:var(--color-inverse)] disabled:cursor-not-allowed ${
-								hasInput ? "opacity-100" : "opacity-40"
-							}`}
-						>
-							<ArrowUpIcon className="h-3 w-3 text-[color:var(--color-background)]" />
-						</button>
-					</div>
+					<input
+						ref={fileInputRef}
+						type="file"
+						className="hidden"
+						multiple
+						accept={ACCEPTED_FILE_TYPES}
+						onChange={handleFileInputChange}
+					/>
 				</div>
-			</div>
+			</section>
 			{/* Keyboard shortcut hint (outside chat container, aligned bottom-right) */}
-			<div className="mt-1 flex items-center justify-end gap-[6px] pr-0 text-[11px] text-blue-muted/60">
-				<div className="flex items-center gap-[4px]">
-					<div className="flex h-[18px] w-[18px] items-center justify-center rounded-[6px] border border-blue-muted/40 bg-blue-muted/10">
-						<span className="text-[10px] leading-none tracking-[0.08em]">
-							⌘
-						</span>
-					</div>
+			<div className="mt-1 flex flex-wrap items-center justify-end gap-3 pr-0 text-[11px] text-blue-muted/60">
+				<div className="flex items-center gap-[6px]">
 					<div className="flex h-[18px] w-[18px] items-center justify-center rounded-[6px] border border-blue-muted/40 bg-blue-muted/10">
 						<span className="text-[10px] leading-none tracking-[0.08em]">
 							↵
 						</span>
 					</div>
+					<span className="leading-none">to send</span>
 				</div>
-				<span className="leading-none">to send</span>
 			</div>
 		</div>
 	);
@@ -375,38 +793,6 @@ export function Page({
 	) => Promise<TaskId>;
 }) {
 	const data = use(dataLoader);
-	// TODO: Use history apps if needed in the future
-	const _historyApps = (() => {
-		const map = new Map<string, StageApp>();
-		for (const task of data.tasks) {
-			const app = data.apps.find(
-				(candidate) => candidate.workspaceId === task.workspaceId,
-			);
-			if (app === undefined) continue;
-			// Only include apps belonging to the currently selected team in history
-			if (
-				data.currentTeamId !== undefined &&
-				app.teamId !== data.currentTeamId
-			) {
-				continue;
-			}
-			if (!map.has(app.id)) {
-				map.set(app.id, app);
-			}
-		}
-		return Array.from(map.values());
-	})();
-
-	const teamApps = data.currentTeamId
-		? data.apps.filter((app) => app.teamId === data.currentTeamId)
-		: data.apps;
-	// TODO: Set up Giselle team apps later
-	const _myApps =
-		data.currentTeamId != null
-			? data.apps.filter(
-					(app) => app.isMine && app.teamId === data.currentTeamId,
-				)
-			: data.apps.filter((app) => app.isMine);
 
 	const router = useRouter();
 	const [selectedAppId, setSelectedAppId] = useState<string | undefined>();
@@ -419,32 +805,40 @@ export function Page({
 	const [isSearchActive, setIsSearchActive] = useState(false);
 	const appSearchInputRef = useRef<HTMLInputElement | null>(null);
 
-	const filteredTeamApps =
-		appSearchQuery.trim().length === 0
-			? teamApps
-			: teamApps.filter((app) =>
-					app.name.toLowerCase().includes(appSearchQuery.toLowerCase()),
-				);
+	const apps = useMemo(() => {
+		const normalizedQuery = appSearchQuery.trim().toLowerCase();
+		if (normalizedQuery.length === 0) {
+			return data.apps;
+		}
+		return data.apps.filter((app) =>
+			app.name.toLowerCase().includes(normalizedQuery),
+		);
+	}, [appSearchQuery, data.apps]);
+
+	const selectableApps = useMemo(
+		() => [...data.sampleApps, ...data.apps],
+		[data.sampleApps, data.apps],
+	);
 
 	// Validate selectedAppId during render - if invalid, treat as undefined
 	const selectedApp = selectedAppId
-		? data.apps.find((app) => app.id === selectedAppId)
+		? selectableApps.find((app) => app.id === selectedAppId)
 		: undefined;
 
 	const handleAppSelect = useCallback(
 		(appId: string) => {
 			// Validate app exists before setting
-			if (data.apps.some((app) => app.id === appId)) {
+			if (selectableApps.some((app) => app.id === appId)) {
 				setSelectedAppId(appId);
 			} else {
 				setSelectedAppId(undefined);
 			}
 		},
-		[data.apps],
+		[selectableApps],
 	);
 
 	const runningApp = runningAppId
-		? data.apps.find((app) => app.id === runningAppId)
+		? selectableApps.find((app) => app.id === runningAppId)
 		: undefined;
 
 	const handleRunSubmit = useCallback(
@@ -485,8 +879,9 @@ export function Page({
 
 						{/* Chat-style input area */}
 						<ChatInputArea
+							key={selectedApp?.workspaceId ?? "no-workspace"}
 							selectedApp={selectedApp}
-							apps={data.apps}
+							apps={selectableApps}
 							onAppSelect={handleAppSelect}
 							onSubmit={handleRunSubmit}
 							isRunning={isRunning}
@@ -496,51 +891,79 @@ export function Page({
 					{/* App sections */}
 					<div className="flex flex-col gap-8 w-full pb-8 pt-12">
 						{/* Section 1: Sample apps from Giselle team */}
-						<div className="flex flex-col">
-							<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-2">
-								<h2 className="mt-1 text-[16px] text-text-muted/80">
-									Sample apps from Giselle team
-								</h2>
+						{data.sampleApps.length > 0 && (
+							<div className="flex flex-col">
+								<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-2">
+									<h2 className="mt-1 text-[16px] text-text-muted/80">
+										Sample apps from Giselle team
+									</h2>
+								</div>
+								<div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
+									{data.sampleApps.map((sampleApp) => (
+										<AppListCard
+											key={sampleApp.id}
+											title={sampleApp.name}
+											description={sampleApp.description}
+											badgeType="sample"
+											icon={
+												<AppIcon
+													defaultSize={false}
+													className="h-5 w-5 text-white/40"
+												/>
+											}
+											providers={sampleApp.llmProviders}
+											isSelected={
+												selectedAppId === sampleApp.id ||
+												runningAppId === sampleApp.id
+											}
+											onClick={() => {
+												handleAppSelect(sampleApp.id);
+											}}
+										/>
+									))}
+									{/*
+
+									::::::::::: Sample implementations :::::::::
+
+									<AppListCard
+										title="Customer Support"
+										description="A ready-made workflow that triages customer tickets, summarizes conversation history, and suggests high-quality replies for your support team."
+										badgeType="sample"
+										icon={
+											<AppIcon
+												defaultSize={false}
+												className="h-5 w-5 text-white/40"
+											/>
+										}
+										providers={["openai", "anthropic", "google", "perplexity"]}
+									/>
+									<AppListCard
+										title="Tech Support"
+										description="Handles bug reports, reproduces issues based on logs, and proposes potential fixes that engineers can review quickly."
+										badgeType="sample"
+										icon={
+											<AppIcon
+												defaultSize={false}
+												className="h-5 w-5 text-white/40"
+											/>
+										}
+										providers={["openai", "anthropic", "google"]}
+									/>
+									<AppListCard
+										title="Product Manager"
+										description="Aggregates user feedback, highlights trends, and drafts product requirement ideas your team can refine."
+										badgeType="sample"
+										icon={
+											<AppIcon
+												defaultSize={false}
+												className="h-5 w-5 text-white/40"
+											/>
+										}
+										providers={["openai", "anthropic"]}
+									/>*/}
+								</div>
 							</div>
-							<div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
-								<AppListCard
-									title="Customer Support"
-									description="A ready-made workflow that triages customer tickets, summarizes conversation history, and suggests high-quality replies for your support team."
-									badgeType="sample"
-									icon={
-										<AppIcon
-											defaultSize={false}
-											className="h-5 w-5 text-white/40"
-										/>
-									}
-									providers={["openai", "anthropic", "google", "perplexity"]}
-								/>
-								<AppListCard
-									title="Tech Support"
-									description="Handles bug reports, reproduces issues based on logs, and proposes potential fixes that engineers can review quickly."
-									badgeType="sample"
-									icon={
-										<AppIcon
-											defaultSize={false}
-											className="h-5 w-5 text-white/40"
-										/>
-									}
-									providers={["openai", "anthropic", "google"]}
-								/>
-								<AppListCard
-									title="Product Manager"
-									description="Aggregates user feedback, highlights trends, and drafts product requirement ideas your team can refine."
-									badgeType="sample"
-									icon={
-										<AppIcon
-											defaultSize={false}
-											className="h-5 w-5 text-white/40"
-										/>
-									}
-									providers={["openai", "anthropic"]}
-								/>
-							</div>
-						</div>
+						)}
 
 						{/* Section 2: Select an Apps to Run */}
 						<div className="flex flex-col">
@@ -585,7 +1008,7 @@ export function Page({
 									)}
 								</div>
 							</div>
-							{teamApps.length === 0 ? (
+							{apps.length === 0 ? (
 								<div className="pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
 									<div className="w-full rounded-lg bg-[rgba(255,255,255,0.03)] shadow-[0_4px_16px_rgba(0,0,0,0.06)] px-6 py-6 text-center">
 										<h3 className="flex items-center justify-center gap-2 text-[16px] font-medium text-blue-muted/80">
@@ -609,13 +1032,13 @@ export function Page({
 										</div>
 									</div>
 								</div>
-							) : filteredTeamApps.length === 0 ? (
+							) : apps.length === 0 ? (
 								<p className="text-sm text-muted-foreground max-w-[960px] mx-auto w-full">
 									No apps match your search.
 								</p>
 							) : (
 								<div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
-									{filteredTeamApps.map((app) => (
+									{apps.map((app) => (
 										<AppCard
 											app={app}
 											key={app.id}

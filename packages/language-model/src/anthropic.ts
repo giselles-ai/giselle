@@ -19,15 +19,10 @@ const defaultConfigurations: AnthropicLanguageModelConfigurations = {
 };
 
 export const AnthropicLanguageModelId = z
-	.enum([
-		"claude-opus-4.5",
-		"claude-opus-4-1-20250805",
-		"claude-sonnet-4-5-20250929",
-		"claude-haiku-4-5-20251001",
-	])
+	.enum(["claude-opus-4.5", "claude-sonnet-4.5", "claude-haiku-4.5"])
 	.catch((ctx) => {
 		if (typeof ctx.value !== "string") {
-			return "claude-haiku-4-5-20251001";
+			return "claude-haiku-4.5";
 		}
 		const v = ctx.value;
 		if (/^claude-opus-4[.-]5(?:-.+)?$/.test(v)) {
@@ -37,39 +32,39 @@ export const AnthropicLanguageModelId = z
 			return "claude-opus-4.5";
 		}
 		if (/^claude-opus-4-1-/.test(v)) {
-			return "claude-opus-4-1-20250805";
+			return "claude-opus-4.5";
 		}
 		if (/^claude-4-opus-/.test(v)) {
-			return "claude-opus-4-1-20250805";
+			return "claude-opus-4.5";
 		}
-		if (/^claude-sonnet-4-5-/.test(v)) {
-			return "claude-sonnet-4-5-20250929";
+		if (/^claude-sonnet-4[.-]5(?:-.+)?$/.test(v)) {
+			return "claude-sonnet-4.5";
 		}
 		if (/^claude-4-sonnet-/.test(v)) {
-			return "claude-sonnet-4-5-20250929";
+			return "claude-sonnet-4.5";
 		}
 		if (/^claude-3-7-sonnet-/.test(v)) {
-			return "claude-sonnet-4-5-20250929";
+			return "claude-sonnet-4.5";
 		}
-		if (/^claude-haiku-4-5-/.test(v)) {
-			return "claude-haiku-4-5-20251001";
+		if (/^claude-haiku-4[.-]5(?:-.+)?$/.test(v)) {
+			return "claude-haiku-4.5";
 		}
 		if (/^claude-3-5-haiku-/.test(v)) {
-			return "claude-haiku-4-5-20251001";
+			return "claude-haiku-4.5";
 		}
 		if (/^claude-3-5-sonnet-/.test(v)) {
-			return "claude-sonnet-4-5-20250929";
+			return "claude-sonnet-4.5";
 		}
 		if (/^claude-3-sonnet-/.test(v)) {
-			return "claude-sonnet-4-5-20250929";
+			return "claude-sonnet-4.5";
 		}
 		if (/^claude-3-opus-/.test(v)) {
-			return "claude-opus-4-1-20250805";
+			return "claude-opus-4.5";
 		}
 		if (/^claude-3-haiku-/.test(v)) {
-			return "claude-haiku-4-5-20251001";
+			return "claude-haiku-4.5";
 		}
-		return "claude-haiku-4-5-20251001";
+		return "claude-haiku-4.5";
 	});
 
 const AnthropicLanguageModel = LanguageModelBase.extend({
@@ -93,7 +88,7 @@ const claude45Opus: AnthropicLanguageModel = {
 
 const claude45Haiku: AnthropicLanguageModel = {
 	provider: "anthropic",
-	id: "claude-haiku-4-5-20251001",
+	id: "claude-haiku-4.5",
 	capabilities:
 		Capability.TextGeneration |
 		Capability.Reasoning |
@@ -105,7 +100,7 @@ const claude45Haiku: AnthropicLanguageModel = {
 
 const claude45Sonnet: AnthropicLanguageModel = {
 	provider: "anthropic",
-	id: "claude-sonnet-4-5-20250929",
+	id: "claude-sonnet-4.5",
 	capabilities:
 		Capability.TextGeneration |
 		Capability.PdfFileInput |
@@ -115,24 +110,7 @@ const claude45Sonnet: AnthropicLanguageModel = {
 	configurations: defaultConfigurations,
 };
 
-const claude41Opus: AnthropicLanguageModel = {
-	provider: "anthropic",
-	id: "claude-opus-4-1-20250805",
-	capabilities:
-		Capability.TextGeneration |
-		Capability.PdfFileInput |
-		Capability.Reasoning |
-		Capability.ImageFileInput,
-	tier: Tier.enum.pro,
-	configurations: defaultConfigurations,
-};
-
-export const models = [
-	claude45Opus,
-	claude41Opus,
-	claude45Sonnet,
-	claude45Haiku,
-];
+export const models = [claude45Opus, claude45Sonnet, claude45Haiku];
 
 export const LanguageModel = AnthropicLanguageModel;
 export type LanguageModel = AnthropicLanguageModel;

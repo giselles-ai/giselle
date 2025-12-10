@@ -13,18 +13,30 @@ import {
 	type TextGenerationNode,
 } from "@giselles-ai/protocol";
 
+// Legacy model IDs that are no longer in the current schema but may exist in stored data
+type LegacyAnthropicModelId =
+	| "claude-opus-4-1-20250805"
+	| "claude-sonnet-4-5-20250929"
+	| "claude-haiku-4-5-20251001";
+type LegacyOpenAiModelId = "gpt-5-codex";
+type TextGenerationModelIdWithLegacy =
+	| TextGenerationNode["content"]["llm"]["id"]
+	| LegacyAnthropicModelId
+	| LegacyOpenAiModelId;
+
 function convertTextGenerationLanguageModelIdToContentGenerationLanguageModelId(
-	from: TextGenerationNode["content"]["llm"]["id"],
+	from: TextGenerationModelIdWithLegacy,
 ): LanguageModelId {
 	switch (from) {
+		case "claude-haiku-4.5":
 		case "claude-haiku-4-5-20251001":
-			return "anthropic/claude-haiku-4-5";
+			return "anthropic/claude-haiku-4.5";
 		case "claude-opus-4.5":
-			return "anthropic/claude-opus-4.5";
 		case "claude-opus-4-1-20250805":
-			return "anthropic/claude-opus-4.1";
+			return "anthropic/claude-opus-4.5";
+		case "claude-sonnet-4.5":
 		case "claude-sonnet-4-5-20250929":
-			return "anthropic/claude-sonnet-4-5";
+			return "anthropic/claude-sonnet-4.5";
 		case "gemini-2.5-flash":
 			return "google/gemini-2.5-flash";
 		case "gemini-2.5-flash-lite":
@@ -42,7 +54,7 @@ function convertTextGenerationLanguageModelIdToContentGenerationLanguageModelId(
 		case "gpt-5.1-codex":
 			return "openai/gpt-5.1-codex";
 		case "gpt-5-codex":
-			return "openai/gpt-5-codex";
+			return "openai/gpt-5.1-codex";
 		case "gpt-5-nano":
 			return "openai/gpt-5-nano";
 		case "sonar":
@@ -61,14 +73,12 @@ function convertContentGenerationLanguageModelIdToTextGenerationLanguageModelId(
 	from: LanguageModelId,
 ): TextGenerationNode["content"]["llm"]["id"] {
 	switch (from) {
-		case "anthropic/claude-haiku-4-5":
-			return "claude-haiku-4-5-20251001";
+		case "anthropic/claude-haiku-4.5":
+			return "claude-haiku-4.5";
 		case "anthropic/claude-opus-4.5":
 			return "claude-opus-4.5";
-		case "anthropic/claude-opus-4.1":
-			return "claude-opus-4-1-20250805";
-		case "anthropic/claude-sonnet-4-5":
-			return "claude-sonnet-4-5-20250929";
+		case "anthropic/claude-sonnet-4.5":
+			return "claude-sonnet-4.5";
 		case "google/gemini-2.5-flash":
 			return "gemini-2.5-flash";
 		case "google/gemini-2.5-flash-lite":
@@ -86,7 +96,7 @@ function convertContentGenerationLanguageModelIdToTextGenerationLanguageModelId(
 		case "openai/gpt-5.1-codex":
 			return "gpt-5.1-codex";
 		case "openai/gpt-5-codex":
-			return "gpt-5-codex";
+			return "gpt-5.1-codex";
 		case "openai/gpt-5-nano":
 			// When converting back, use gpt-5-nano (not sonar/sonar-pro)
 			// as we cannot determine the original source
@@ -109,7 +119,7 @@ export function convertTextGenerationToContentGeneration(
 
 	const languageModelId =
 		convertTextGenerationLanguageModelIdToContentGenerationLanguageModelId(
-			textGenerationContent.llm.id,
+			textGenerationContent.llm.id as TextGenerationModelIdWithLegacy,
 		);
 	// Convert language model from old format to new format
 	const languageModelEntry = getEntry(languageModelId);

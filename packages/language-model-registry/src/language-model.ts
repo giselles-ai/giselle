@@ -135,7 +135,7 @@ export function defineLanguageModel<
  *   thinking: "true", // invalid: should be boolean
  * };
  *
- * const parsed = parseConfiguration(anthropic["anthropic/claude-opus-4.1"], unknownData);
+ * const parsed = parseConfiguration(anthropic["anthropic/claude-opus-4.5"], unknownData);
  * // Result: { temperature: 0.8, thinking: false } (thinking falls back to default)
  * ```
  */

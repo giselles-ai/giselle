@@ -1,0 +1,2 @@
+ALTER TABLE "apps" DROP CONSTRAINT "apps_app_entry_node_id_unique";--> statement-breakpoint
+ALTER TABLE "apps" ADD CONSTRAINT "apps_workspace_db_id_app_entry_node_id_unique" UNIQUE("workspace_db_id","app_entry_node_id");

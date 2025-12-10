@@ -8,12 +8,12 @@ import { getEntry } from "@giselles-ai/language-model-registry";
 import {
 	type ActionNode,
 	type AppEntryNode,
+	AppParameterId,
 	type ContentGenerationNode,
 	createPendingCopyFileData,
 	DEFAULT_MAX_RESULTS,
 	DEFAULT_SIMILARITY_THRESHOLD,
 	type DraftApp,
-	DraftAppParameterId,
 	type EndNode,
 	type FileContent,
 	type FileData,
@@ -129,15 +129,21 @@ function cloneAndRenewInputIdsWithMap(
 
 function createDefaultDraftApp(): DraftApp {
 	return {
-		name: "",
+		name: "App Request",
 		description: "",
-		iconName: "",
+		iconName: "cable",
 		parameters: [
 			{
-				id: DraftAppParameterId.generate(),
-				name: "",
-				type: "text",
+				id: AppParameterId.generate(),
+				name: "Input(Text)",
+				type: "multiline-text",
 				required: true,
+			},
+			{
+				id: AppParameterId.generate(),
+				name: "Input(File)",
+				type: "files",
+				required: false,
 			},
 		],
 	};
@@ -652,16 +658,22 @@ const webPageFactoryImpl = {
 
 const appEntryFactoryImpl = {
 	create: (): AppEntryNode => {
+		const draftApp = createDefaultDraftApp();
 		return {
+			name: draftApp.name,
 			id: NodeId.generate(),
 			type: "operation",
 			content: {
 				type: "appEntry",
 				status: "unconfigured",
-				draftApp: createDefaultDraftApp(),
+				draftApp,
 			},
 			inputs: [],
-			outputs: [],
+			outputs: draftApp.parameters.map((parameter) => ({
+				id: OutputId.generate(),
+				label: parameter.name,
+				accessor: parameter.id,
+			})),
 		} satisfies AppEntryNode;
 	},
 	clone: (orig: AppEntryNode): NodeFactoryCloneResult<AppEntryNode> => {
@@ -684,7 +696,7 @@ const appEntryFactoryImpl = {
 							parameters: clonedContent.draftApp.parameters.map(
 								(parameter) => ({
 									...parameter,
-									id: DraftAppParameterId.generate(),
+									id: AppParameterId.generate(),
 								}),
 							),
 						},
