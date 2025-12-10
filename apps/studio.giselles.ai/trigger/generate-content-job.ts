@@ -33,10 +33,35 @@ export const generateContentJob = schemaJob({
 				userId: payload.userId,
 				team: payload.team,
 			},
+			skipOutputProcessing: true,
 			onComplete: async ({ generationMetadata, generation, ...events }) => {
 				const parsedMetadata = GenerationMetadata.parse(generationMetadata);
+				const sanitizedInputMessages = events.inputMessages.map((msg) => {
+					if (typeof msg.content === "string") {
+						return msg;
+					}
+					return {
+						...msg,
+						content: msg.content.map((part) => {
+							if (part.type === "image" && part.image instanceof Uint8Array) {
+								return {
+									...part,
+									image: new Uint8Array([]), // Empty buffer to save memory
+								};
+							}
+							if (part.type === "file" && part.data instanceof Uint8Array) {
+								return {
+									...part,
+									data: new Uint8Array([]), // Empty buffer to save memory
+								};
+							}
+							return part;
+						}),
+					};
+				});
 				await traceGenerationForTeam({
 					...events,
+					inputMessages: sanitizedInputMessages,
 					generation,
 					requestId: parsedMetadata.requestId,
 					userId: parsedMetadata.userId,
@@ -51,8 +76,32 @@ export const generateContentJob = schemaJob({
 			},
 			onError: async ({ generationMetadata, generation, ...events }) => {
 				const parsedMetadata = GenerationMetadata.parse(generationMetadata);
+				const sanitizedInputMessages = events.inputMessages.map((msg) => {
+					if (typeof msg.content === "string") {
+						return msg;
+					}
+					return {
+						...msg,
+						content: msg.content.map((part) => {
+							if (part.type === "image" && part.image instanceof Uint8Array) {
+								return {
+									...part,
+									image: new Uint8Array([]), // Empty buffer to save memory
+								};
+							}
+							if (part.type === "file" && part.data instanceof Uint8Array) {
+								return {
+									...part,
+									data: new Uint8Array([]), // Empty buffer to save memory
+								};
+							}
+							return part;
+						}),
+					};
+				});
 				await traceGenerationForTeam({
 					...events,
+					inputMessages: sanitizedInputMessages,
 					generation,
 					requestId: parsedMetadata.requestId,
 					userId: parsedMetadata.userId,

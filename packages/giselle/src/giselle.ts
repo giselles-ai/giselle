@@ -353,11 +353,13 @@ export function Giselle(config: GiselleConfig) {
 			metadata?: GenerationMetadata;
 			onComplete?: OnGenerationComplete;
 			onError?: OnGenerationError;
+			skipOutputProcessing?: boolean;
 		}) {
 			return generateContent({
 				...args,
 				onComplete: args.onComplete ?? config.callbacks?.generationComplete,
 				onError: args.onError ?? config.callbacks?.generationError,
+				skipOutputProcessing: args.skipOutputProcessing,
 				context: {
 					...context,
 					logger: args.logger ?? context.logger,
