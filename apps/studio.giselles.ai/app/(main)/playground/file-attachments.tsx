@@ -228,20 +228,22 @@ export function FileAttachments({
 								key={file.id}
 								className="relative group shrink-0 rounded-lg overflow-hidden bg-white/5 border border-white/5 h-[60px] px-3 py-2 flex items-center gap-3 min-w-[200px]"
 							>
-								{file.status === "uploading" ? (
-									<div className="w-full h-full flex items-center justify-center">
-										<Loader2 className="h-4 w-4 animate-spin text-blue-muted" />
-									</div>
-								) : file.status === "failed" ? (
+								{file.status === "failed" ? (
 									<div className="w-full h-full flex items-center justify-center">
 										<AlertCircle className="h-4 w-4 text-red-400" />
 									</div>
 								) : (
 									<>
-										{FileIcon && (
-											<div className="shrink-0 w-10 h-10 rounded bg-green-600/20 flex items-center justify-center">
-												<FileIcon className="w-5 h-5 text-green-400" />
+										{file.status === "uploading" ? (
+											<div className="shrink-0 w-10 h-10 rounded bg-white/10 flex items-center justify-center">
+												<Loader2 className="w-5 h-5 text-white/70 animate-spin" />
 											</div>
+										) : (
+											FileIcon && (
+												<div className="shrink-0 w-10 h-10 rounded bg-white/10 flex items-center justify-center">
+													<FileIcon className="w-5 h-5 text-white/70" />
+												</div>
+											)
 										)}
 										<div className="flex-1 min-w-0 flex flex-col justify-center">
 											<p className="text-[13px] text-white font-medium leading-tight truncate">
