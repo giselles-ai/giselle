@@ -454,12 +454,10 @@ export function generateContent({
 			});
 
 			let chunkCount = 0;
-			const uiMessageChunks: StreamItem<typeof uiMessageStream>[] = [];
 			for await (const chunk of uiMessageStream) {
 				chunkCount++;
 				logger.debug(`Adding chunk ${chunkCount}: ${chunk.type}`);
 				writer.add(chunk);
-				uiMessageChunks.push(chunk);
 			}
 			logger.debug(`Stream ended, total chunks: ${chunkCount}`);
 			await writer.close();
@@ -795,12 +793,10 @@ function generateContentV2({
 			});
 
 			let chunkCount = 0;
-			const uiMessageChunks: StreamItem<typeof uiMessageStream>[] = [];
 			for await (const chunk of uiMessageStream) {
 				chunkCount++;
 				logger.debug(`Adding chunk ${chunkCount}: ${chunk.type}`);
 				writer.add(chunk);
-				uiMessageChunks.push(chunk);
 			}
 			logger.debug(`Stream ended, total chunks: ${chunkCount}`);
 			await writer.close();
