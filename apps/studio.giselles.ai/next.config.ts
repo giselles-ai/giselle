@@ -9,7 +9,7 @@ const moduleRequire = createRequire(import.meta.url);
 const projectDir = fileURLToPath(new URL(".", import.meta.url));
 
 const pdfiumWasmPath = moduleRequire.resolve("@embedpdf/pdfium/pdfium.wasm");
-const pdfiumPackageDir = dirname(pdfiumWasmPath);
+const pdfiumDistDir = dirname(pdfiumWasmPath);
 
 export const serverExternalPackages = [
 	"@embedpdf/pdfium",
@@ -19,25 +19,15 @@ export const serverExternalPackages = [
 	"@supabase/supabase-js",
 	"@supabase/realtime-js",
 ];
-const pdfiumWasmInclude = relative(projectDir, pdfiumWasmPath).replace(
-	/\\/g,
-	"/",
-);
-const pdfiumPackageInclude = relative(projectDir, pdfiumPackageDir).replace(
-	/\\/g,
-	"/",
-);
+
+const pdfiumDistGlob = `${relative(projectDir, pdfiumDistDir).replace(/\\/g, "/")}/**/*`;
 
 const pdfiumTracingConfig = {
 	outputFileTracingIncludes: {
 		"/api/vector-stores/document/[documentVectorStoreId]/documents": [
-			pdfiumWasmInclude,
-			pdfiumPackageInclude,
+			pdfiumDistGlob,
 		],
-		"/api/vector-stores/cron/document/ingest": [
-			pdfiumWasmInclude,
-			pdfiumPackageInclude,
-		],
+		"/api/vector-stores/cron/document/ingest": [pdfiumDistGlob],
 	},
 };
 
