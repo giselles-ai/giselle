@@ -1,15 +1,6 @@
-import { createRequire } from "node:module";
-import { dirname, relative } from "node:path";
-import { fileURLToPath } from "node:url";
 import createBundleAnalyzer from "@next/bundle-analyzer";
 import type { SentryBuildOptions } from "@sentry/nextjs";
 import type { NextConfig } from "next";
-
-const moduleRequire = createRequire(import.meta.url);
-const projectDir = fileURLToPath(new URL(".", import.meta.url));
-
-const pdfiumWasmPath = moduleRequire.resolve("@embedpdf/pdfium/pdfium.wasm");
-const pdfiumDistDir = dirname(pdfiumWasmPath);
 
 export const serverExternalPackages = [
 	"@embedpdf/pdfium",
@@ -20,14 +11,14 @@ export const serverExternalPackages = [
 	"@supabase/realtime-js",
 ];
 
-const pdfiumDistGlob = `${relative(projectDir, pdfiumDistDir).replace(/\\/g, "/")}/**/*`;
-
 const pdfiumTracingConfig = {
 	outputFileTracingIncludes: {
 		"/api/vector-stores/document/[documentVectorStoreId]/documents": [
-			pdfiumDistGlob,
+			"./node_modules/@embedpdf/pdfium/dist/**/*",
 		],
-		"/api/vector-stores/cron/document/ingest": [pdfiumDistGlob],
+		"/api/vector-stores/cron/document/ingest": [
+			"./node_modules/@embedpdf/pdfium/dist/**/*",
+		],
 	},
 };
 
