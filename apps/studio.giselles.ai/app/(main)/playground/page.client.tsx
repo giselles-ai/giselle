@@ -688,25 +688,30 @@ export function Page({
 		);
 	}, [appSearchQuery, data.apps]);
 
+	const selectableApps = useMemo(
+		() => [...data.sampleApps, ...data.apps],
+		[data.sampleApps, data.apps],
+	);
+
 	// Validate selectedAppId during render - if invalid, treat as undefined
 	const selectedApp = selectedAppId
-		? data.apps.find((app) => app.id === selectedAppId)
+		? selectableApps.find((app) => app.id === selectedAppId)
 		: undefined;
 
 	const handleAppSelect = useCallback(
 		(appId: string) => {
 			// Validate app exists before setting
-			if (data.apps.some((app) => app.id === appId)) {
+			if (selectableApps.some((app) => app.id === appId)) {
 				setSelectedAppId(appId);
 			} else {
 				setSelectedAppId(undefined);
 			}
 		},
-		[data.apps],
+		[selectableApps],
 	);
 
 	const runningApp = runningAppId
-		? data.apps.find((app) => app.id === runningAppId)
+		? selectableApps.find((app) => app.id === runningAppId)
 		: undefined;
 
 	const handleRunSubmit = useCallback(
@@ -780,6 +785,13 @@ export function Page({
 												/>
 											}
 											providers={sampleApp.llmProviders}
+											isSelected={
+												selectedAppId === sampleApp.id ||
+												runningAppId === sampleApp.id
+											}
+											onClick={() => {
+												handleAppSelect(sampleApp.id);
+											}}
 										/>
 									))}
 									{/*
