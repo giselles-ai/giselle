@@ -16,13 +16,14 @@ import {
 	type UploadedFileData,
 } from "@giselles-ai/protocol";
 import { APICallError, useGiselle } from "@giselles-ai/react";
-import { ArrowUpIcon, Paperclip, Search, Sparkles } from "lucide-react";
+import { ArrowUpIcon, Paperclip, Search, Sparkles, X } from "lucide-react";
 import { DynamicIcon, type IconName } from "lucide-react/dynamic";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import {
 	use,
 	useCallback,
+	useEffect,
 	useMemo,
 	useRef,
 	useState,
@@ -251,6 +252,93 @@ function getUploadErrorMessage(error: unknown) {
 	return "Upload failed";
 }
 
+function useEnterSubmit(onSubmit: () => void) {
+	const composingRef = useRef(false);
+
+	const handleCompositionStart = useCallback(() => {
+		composingRef.current = true;
+	}, []);
+
+	const handleCompositionEnd = useCallback(() => {
+		composingRef.current = false;
+	}, []);
+
+	const handleKeyDown = useCallback(
+		(event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+			const nativeEvent = event.nativeEvent;
+
+			if (
+				composingRef.current ||
+				nativeEvent.isComposing ||
+				nativeEvent.keyCode === 229
+			) {
+				return;
+			}
+
+			if (event.key !== "Enter") {
+				return;
+			}
+
+			if (event.shiftKey) {
+				return;
+			}
+
+			event.preventDefault();
+			onSubmit();
+		},
+		[onSubmit],
+	);
+
+	return {
+		handleCompositionStart,
+		handleCompositionEnd,
+		handleKeyDown,
+	};
+}
+
+type FileRestrictionErrorState = {
+	rejectedFileNames: string[];
+};
+
+const ACCEPTED_FILE_TYPES = "application/pdf,image/*";
+const ALLOWED_FILE_MIME_TYPES = new Set(["application/pdf"]);
+const IMAGE_FILE_EXTENSIONS = new Set([
+	"png",
+	"jpg",
+	"jpeg",
+	"gif",
+	"bmp",
+	"webp",
+	"svg",
+	"tif",
+	"tiff",
+	"heic",
+	"heif",
+]);
+
+function getFileExtension(fileName: string) {
+	const index = fileName.lastIndexOf(".");
+	if (index === -1) {
+		return "";
+	}
+	return fileName.slice(index + 1).toLowerCase();
+}
+
+function isAllowedFileType(file: File) {
+	const mimeType = file.type?.toLowerCase() ?? "";
+	if (mimeType.startsWith("image/")) {
+		return true;
+	}
+	if (mimeType && ALLOWED_FILE_MIME_TYPES.has(mimeType)) {
+		return true;
+	}
+	const extension = getFileExtension(file.name);
+	if (extension === "pdf") {
+		return true;
+	}
+	return extension ? IMAGE_FILE_EXTENSIONS.has(extension) : false;
+}
+
 // Chat-style input area for running apps
 function ChatInputArea({
 	selectedApp,
@@ -273,12 +361,24 @@ function ChatInputArea({
 	const dragCounterRef = useRef(0);
 	const [isDragActive, setIsDragActive] = useState(false);
 	const [attachedFiles, setAttachedFiles] = useState<FileData[]>([]);
+	const [fileRestrictionError, setFileRestrictionError] =
+		useState<FileRestrictionErrorState | null>(null);
 
-	const appOptions: SelectOption[] = apps.map((app) => ({
-		value: app.id,
-		label: app.name,
-		icon: <DynamicIcon name={app.iconName} className="h-4 w-4" />,
-	}));
+	const appOptions = apps.map(
+		(app) =>
+			({
+				value: app.id,
+				label: app.name,
+				icon: <DynamicIcon name={app.iconName} className="h-4 w-4" />,
+			}) satisfies SelectOption,
+	);
+	const firstAppOptionValue = appOptions[0]?.value;
+
+	useEffect(() => {
+		if (!selectedApp && firstAppOptionValue) {
+			onAppSelect(firstAppOptionValue);
+		}
+	}, [selectedApp, firstAppOptionValue, onAppSelect]);
 
 	const resizeTextarea = () => {
 		const textarea = textareaRef.current;
@@ -357,6 +457,7 @@ function ChatInputArea({
 				return;
 			}
 
+			const rejectedNames = new Set<string>();
 			const existingNames = new Set(attachedFiles.map((file) => file.name));
 			const batchSeen = new Set<string>();
 			const uploads: Array<{
@@ -366,6 +467,13 @@ function ChatInputArea({
 			}> = [];
 
 			for (const file of usableFiles) {
+				if (!isAllowedFileType(file)) {
+					const rejectedName =
+						file.name.trim().length > 0 ? file.name : "Unnamed file";
+					rejectedNames.add(rejectedName);
+					continue;
+				}
+
 				const name =
 					file.name || `file-${existingNames.size + batchSeen.size + 1}`;
 				if (existingNames.has(name) || batchSeen.has(name)) {
@@ -387,6 +495,12 @@ function ChatInputArea({
 					file,
 					uploading,
 					workspaceId: selectedApp.workspaceId,
+				});
+			}
+
+			if (rejectedNames.size > 0) {
+				setFileRestrictionError({
+					rejectedFileNames: Array.from(rejectedNames),
 				});
 			}
 
@@ -464,6 +578,10 @@ function ChatInputArea({
 		setAttachedFiles((current) => current.filter((file) => file.id !== fileId));
 	}, []);
 
+	const handleDismissFileRestrictionError = useCallback(() => {
+		setFileRestrictionError(null);
+	}, []);
+
 	const handleAttachmentButtonClick = () => {
 		fileInputRef.current?.click();
 	};
@@ -529,43 +647,11 @@ function ChatInputArea({
 		});
 	};
 
-	const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-		if (event.key !== "Enter") {
-			return;
-		}
-
-		if (event.shiftKey) {
-			event.preventDefault();
-			const textarea = textareaRef.current;
-			if (!textarea) {
-				setInputValue((currentValue) => `${currentValue}\n`);
-				requestAnimationFrame(() => {
-					resizeTextarea();
-				});
-				return;
-			}
-
-			const selectionStart = textarea.selectionStart ?? textarea.value.length;
-			const selectionEnd = textarea.selectionEnd ?? textarea.value.length;
-
-			setInputValue((currentValue) => {
-				const before = currentValue.slice(0, selectionStart);
-				const after = currentValue.slice(selectionEnd);
-				return `${before}\n${after}`;
-			});
-
-			requestAnimationFrame(() => {
-				const cursorPosition = selectionStart + 1;
-				textarea.selectionStart = cursorPosition;
-				textarea.selectionEnd = cursorPosition;
-				resizeTextarea();
-			});
-			return;
-		}
-
-		event.preventDefault();
-		handleSubmit();
-	};
+	const {
+		handleCompositionStart,
+		handleCompositionEnd,
+		handleKeyDown: handleTextareaKeyDown,
+	} = useEnterSubmit(handleSubmit);
 
 	return (
 		<div className="relative w-full max-w-[640px] min-w-[320px] mx-auto">
@@ -588,12 +674,46 @@ function ChatInputArea({
 						ref={textareaRef}
 						value={inputValue}
 						onChange={handleInputChange}
-						onKeyDown={handleKeyDown}
+						onCompositionStart={handleCompositionStart}
+						onCompositionEnd={handleCompositionEnd}
+						onKeyDown={handleTextareaKeyDown}
 						placeholder="Ask anything—powered by Giselle docs"
 						rows={1}
 						disabled={isRunning}
 						className="w-full resize-none bg-transparent text-[15px] text-foreground placeholder:text-blue-muted/50 outline-none disabled:cursor-not-allowed min-h-[2.4em] sm:min-h-[2.75em] pt-0 pb-[0.7em] px-1"
 					/>
+
+					{fileRestrictionError ? (
+						<div
+							className="mt-3 rounded-xl border border-red-400/50 bg-red-500/10 px-3 py-2 text-left text-red-100"
+							role="alert"
+						>
+							<div className="flex items-start justify-between gap-3">
+								<div className="flex flex-col gap-1">
+									<p className="text-[13px] font-medium">
+										{fileRestrictionError.rejectedFileNames.length === 1
+											? `${fileRestrictionError.rejectedFileNames[0]} is not supported.`
+											: "Some files are not supported."}
+									</p>
+									<p className="text-[11px] text-red-200/80">
+										Only PDF and image files can be uploaded.
+									</p>
+									<p className="text-[11px] text-red-200/80">
+										Rejected:{" "}
+										{fileRestrictionError.rejectedFileNames.join(", ")}
+									</p>
+								</div>
+								<button
+									type="button"
+									onClick={handleDismissFileRestrictionError}
+									className="text-red-200/80 transition-colors hover:text-red-100"
+									aria-label="Dismiss file type error"
+								>
+									<X className="h-3.5 w-3.5" />
+								</button>
+							</div>
+						</div>
+					) : null}
 
 					<FileAttachments
 						files={attachedFiles}
@@ -616,7 +736,7 @@ function ChatInputArea({
 								<Select
 									options={appOptions}
 									placeholder="Select an app..."
-									value={selectedApp?.id}
+									value={selectedApp?.id ?? firstAppOptionValue}
 									onValueChange={onAppSelect}
 									widthClassName="w-full"
 									triggerClassName="border-none !bg-[rgba(131,157,195,0.1)] hover:!bg-[rgba(131,157,195,0.18)] !px-2 !h-8 sm:!h-9 !rounded-[7px] sm:!rounded-[9px] text-[13px] [&_svg]:opacity-70"
@@ -643,6 +763,7 @@ function ChatInputArea({
 						type="file"
 						className="hidden"
 						multiple
+						accept={ACCEPTED_FILE_TYPES}
 						onChange={handleFileInputChange}
 					/>
 				</div>
@@ -760,7 +881,7 @@ export function Page({
 						<ChatInputArea
 							key={selectedApp?.workspaceId ?? "no-workspace"}
 							selectedApp={selectedApp}
-							apps={data.apps}
+							apps={selectableApps}
 							onAppSelect={handleAppSelect}
 							onSubmit={handleRunSubmit}
 							isRunning={isRunning}
