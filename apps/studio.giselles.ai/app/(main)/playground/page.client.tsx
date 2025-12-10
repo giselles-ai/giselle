@@ -12,6 +12,7 @@ import {
 	type FileData,
 	type GenerationContextInput,
 	type TaskId,
+	type UploadedFileData,
 } from "@giselles-ai/protocol";
 import { APICallError, useGiselle } from "@giselles-ai/react";
 import { ArrowUpIcon, Paperclip, Search, Sparkles } from "lucide-react";
@@ -489,10 +490,22 @@ function ChatInputArea({
 		const textParam = selectedApp.parameters.find(
 			(p) => p.type === "text" || p.type === "multiline-text",
 		);
+		const filesParam = selectedApp.parameters.find((p) => p.type === "files");
+		const uploadedFiles = attachedFiles.filter(
+			(file): file is UploadedFileData => file.status === "uploaded",
+		);
 
 		const parameterItems = textParam
 			? [{ name: textParam.id, type: "string" as const, value: inputValue }]
 			: [{ name: "input", type: "string" as const, value: inputValue }];
+
+		if (filesParam) {
+			parameterItems.push({
+				name: filesParam.id,
+				type: "files" as const,
+				value: uploadedFiles,
+			});
+		}
 
 		onSubmit({
 			inputs: [
