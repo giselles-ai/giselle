@@ -1,33 +1,33 @@
 import { createRequire } from "node:module";
-import { dirname, relative } from "node:path";
+import { relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import createBundleAnalyzer from "@next/bundle-analyzer";
 import type { SentryBuildOptions } from "@sentry/nextjs";
 import type { NextConfig } from "next";
 
+const moduleRequire = createRequire(import.meta.url);
+const projectDir = fileURLToPath(new URL(".", import.meta.url));
+
+const pdfiumWasmPath = moduleRequire.resolve("@embedpdf/pdfium/pdfium.wasm");
+
 export const serverExternalPackages = [
 	"@embedpdf/pdfium",
-	"@giselles-ai/document-preprocessor",
 	"pino",
 	"pino-pretty",
 	"happy-dom",
 	"@supabase/supabase-js",
 	"@supabase/realtime-js",
 ];
-
-const moduleRequire = createRequire(import.meta.url);
-const projectDir = fileURLToPath(new URL(".", import.meta.url));
-
-const pdfiumWasmPath = moduleRequire.resolve("@embedpdf/pdfium/pdfium.wasm");
-const pdfiumDistDir = dirname(pdfiumWasmPath);
-const pdfiumDistGlob = `${relative(projectDir, pdfiumDistDir).replace(/\\/g, "/")}/**/*`;
+const pdfiumWasmInclude = relative(projectDir, pdfiumWasmPath).replace(
+	/\\/g,
+	"/",
+);
 
 const pdfiumTracingConfig = {
 	outputFileTracingIncludes: {
 		"/api/vector-stores/document/[documentVectorStoreId]/documents": [
-			pdfiumDistGlob,
+			pdfiumWasmInclude,
 		],
-		"/api/vector-stores/cron/document/ingest": [pdfiumDistGlob],
 	},
 };
 
