@@ -774,7 +774,7 @@ export function Page({
 						<ChatInputArea
 							key={selectedApp?.workspaceId ?? "no-workspace"}
 							selectedApp={selectedApp}
-							apps={data.apps}
+							apps={selectableApps}
 							onAppSelect={handleAppSelect}
 							onSubmit={handleRunSubmit}
 							isRunning={isRunning}
