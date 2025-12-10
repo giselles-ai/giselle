@@ -273,6 +273,9 @@ function ChatInputArea({
 	const dragCounterRef = useRef(0);
 	const [isDragActive, setIsDragActive] = useState(false);
 	const [attachedFiles, setAttachedFiles] = useState<FileData[]>([]);
+	const [localPreviews, setLocalPreviews] = useState<Map<string, string>>(
+		new Map(),
+	);
 
 	const appOptions: SelectOption[] = apps.map((app) => ({
 		value: app.id,
@@ -383,6 +386,17 @@ function ChatInputArea({
 					type: file.type || "application/octet-stream",
 					size: file.size,
 				});
+
+				// Create local preview URL for image files
+				if (file.type.startsWith("image/")) {
+					const previewUrl = URL.createObjectURL(file);
+					setLocalPreviews((prev) => {
+						const next = new Map(prev);
+						next.set(uploading.id, previewUrl);
+						return next;
+					});
+				}
+
 				uploads.push({
 					file,
 					uploading,
@@ -419,6 +433,8 @@ function ChatInputArea({
 							entry.id === uploaded.id ? uploaded : entry,
 						);
 					});
+					// Keep local preview URL until server URL is confirmed working
+					// It will be cleaned up when the image successfully loads from server
 				} catch (error) {
 					const message = getUploadErrorMessage(error);
 					addToast({
@@ -462,6 +478,31 @@ function ChatInputArea({
 
 	const handleRemoveFile = useCallback((fileId: string) => {
 		setAttachedFiles((current) => current.filter((file) => file.id !== fileId));
+		// Clean up local preview URL
+		setLocalPreviews((prev) => {
+			const previewUrl = prev.get(fileId);
+			if (previewUrl) {
+				URL.revokeObjectURL(previewUrl);
+				const next = new Map(prev);
+				next.delete(fileId);
+				return next;
+			}
+			return prev;
+		});
+	}, []);
+
+	const handleImageLoad = useCallback((fileId: string) => {
+		// Clean up local preview URL after server image loads successfully
+		setLocalPreviews((prev) => {
+			const previewUrl = prev.get(fileId);
+			if (previewUrl) {
+				URL.revokeObjectURL(previewUrl);
+				const next = new Map(prev);
+				next.delete(fileId);
+				return next;
+			}
+			return prev;
+		});
 	}, []);
 
 	const handleAttachmentButtonClick = () => {
@@ -637,6 +678,10 @@ function ChatInputArea({
 					<FileAttachments
 						files={attachedFiles}
 						onRemoveFile={handleRemoveFile}
+						workspaceId={selectedApp?.workspaceId}
+						basePath={client.basePath}
+						localPreviews={localPreviews}
+						onImageLoad={handleImageLoad}
 					/>
 
 					<input
