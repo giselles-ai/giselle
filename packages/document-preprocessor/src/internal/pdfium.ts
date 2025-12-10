@@ -22,9 +22,20 @@ const requireBaseUrl = moduleUrl.endsWith("/")
 const moduleRequire = createRequire(requireBaseUrl);
 
 // Resolve package entry, then derive the wasm path to avoid exports restrictions.
-const PDFIUM_PACKAGE_ENTRY = moduleRequire.resolve("@embedpdf/pdfium");
-const PDFIUM_WASM_DIR = dirname(PDFIUM_PACKAGE_ENTRY);
-const PDFIUM_WASM_PATH = join(PDFIUM_WASM_DIR, "pdfium.wasm");
+// In Next.js server environment (bundled), createRequire might not work as expected for resolving exports.
+// We try to locate the package relative to the current file or use a direct resolution.
+let pdfiumWasmPath: string;
+try {
+	const packagePath = moduleRequire.resolve("@embedpdf/pdfium");
+	const packageDir = dirname(packagePath);
+	pdfiumWasmPath = join(packageDir, "pdfium.wasm");
+} catch {
+	// Fallback for some environments where resolve might fail or point weirdly
+	// This assumes the standard node_modules structure
+	pdfiumWasmPath = moduleRequire.resolve("@embedpdf/pdfium/pdfium.wasm");
+}
+
+const PDFIUM_WASM_PATH = pdfiumWasmPath;
 
 type PdfiumRenderCallback = (frame: {
 	data: Uint8Array;
