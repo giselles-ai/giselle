@@ -11,7 +11,9 @@ import {
 	createUploadingFileData,
 	type FileData,
 	type GenerationContextInput,
+	type ParameterItem,
 	type TaskId,
+	type UploadedFileData,
 } from "@giselles-ai/protocol";
 import { APICallError, useGiselle } from "@giselles-ai/react";
 import { ArrowUpIcon, Paperclip, Search, Sparkles } from "lucide-react";
@@ -484,15 +486,32 @@ function ChatInputArea({
 			return;
 		}
 
-		// Build inputs from the single text input
-		// If app has parameters, use the first text parameter; otherwise send as generic input
+		// App parameters can be configured with various types in multiple settings,
+		// but currently when creating an App, we create one multiline-text and one files parameter as fixed,
+		// so we'll create parameters based on that assumption
 		const textParam = selectedApp.parameters.find(
-			(p) => p.type === "text" || p.type === "multiline-text",
+			(p) => p.type === "multiline-text",
 		);
+		const parameterItems: ParameterItem[] = [];
+		if (textParam) {
+			parameterItems.push({
+				name: textParam.id,
+				type: "string",
+				value: inputValue,
+			});
+		}
 
-		const parameterItems = textParam
-			? [{ name: textParam.id, type: "string" as const, value: inputValue }]
-			: [{ name: "input", type: "string" as const, value: inputValue }];
+		const filesParam = selectedApp.parameters.find((p) => p.type === "files");
+		if (filesParam) {
+			const uploadedFiles = attachedFiles.filter(
+				(file): file is UploadedFileData => file.status === "uploaded",
+			);
+			parameterItems.push({
+				name: filesParam.id,
+				type: "files",
+				value: uploadedFiles,
+			});
+		}
 
 		onSubmit({
 			inputs: [
