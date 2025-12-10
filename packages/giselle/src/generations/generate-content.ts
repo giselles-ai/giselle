@@ -550,6 +550,7 @@ function generateContentV2({
 	metadata,
 	onComplete,
 	onError,
+	skipOutputProcessing,
 }: {
 	context: GiselleContext;
 	generation: RunningGeneration;
