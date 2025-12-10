@@ -6,6 +6,30 @@ import { giselle } from "@/app/giselle";
 import { GenerationMetadata } from "@/lib/generation-metadata";
 import { traceGenerationForTeam } from "@/lib/trace";
 
+const EMPTY_BYTES = new Uint8Array([]);
+
+function stripImageBytesFromMessages(
+	inputMessages: ModelMessage[],
+): ModelMessage[] {
+	return inputMessages.map((msg) => {
+		if (typeof msg.content === "string") {
+			return msg;
+		}
+		return {
+			...msg,
+			content: msg.content.map((part) => {
+				if (part.type === "image" && part.image instanceof Uint8Array) {
+					return {
+						...part,
+						image: EMPTY_BYTES,
+					};
+				}
+				return part;
+			}),
+		};
+	}) as ModelMessage[];
+}
+
 export const generateContentJob = schemaJob({
 	id: "generate-content",
 	schema: z.object({
@@ -36,29 +60,9 @@ export const generateContentJob = schemaJob({
 			},
 			onComplete: async ({ generationMetadata, generation, ...events }) => {
 				const parsedMetadata = GenerationMetadata.parse(generationMetadata);
-				const sanitizedInputMessages = events.inputMessages.map((msg) => {
-					if (typeof msg.content === "string") {
-						return msg;
-					}
-					return {
-						...msg,
-						content: msg.content.map((part) => {
-							if (part.type === "image" && part.image instanceof Uint8Array) {
-								return {
-									...part,
-									image: new Uint8Array([]), // Empty buffer to save memory
-								};
-							}
-							if (part.type === "file" && part.data instanceof Uint8Array) {
-								return {
-									...part,
-									data: new Uint8Array([]), // Empty buffer to save memory
-								};
-							}
-							return part;
-						}),
-					};
-				}) as ModelMessage[];
+				const sanitizedInputMessages = stripImageBytesFromMessages(
+					events.inputMessages,
+				);
 				await traceGenerationForTeam({
 					...events,
 					inputMessages: sanitizedInputMessages,
@@ -76,29 +80,9 @@ export const generateContentJob = schemaJob({
 			},
 			onError: async ({ generationMetadata, generation, ...events }) => {
 				const parsedMetadata = GenerationMetadata.parse(generationMetadata);
-				const sanitizedInputMessages = events.inputMessages.map((msg) => {
-					if (typeof msg.content === "string") {
-						return msg;
-					}
-					return {
-						...msg,
-						content: msg.content.map((part) => {
-							if (part.type === "image" && part.image instanceof Uint8Array) {
-								return {
-									...part,
-									image: new Uint8Array([]), // Empty buffer to save memory
-								};
-							}
-							if (part.type === "file" && part.data instanceof Uint8Array) {
-								return {
-									...part,
-									data: new Uint8Array([]), // Empty buffer to save memory
-								};
-							}
-							return part;
-						}),
-					};
-				}) as ModelMessage[];
+				const sanitizedInputMessages = stripImageBytesFromMessages(
+					events.inputMessages,
+				);
 				await traceGenerationForTeam({
 					...events,
 					inputMessages: sanitizedInputMessages,
