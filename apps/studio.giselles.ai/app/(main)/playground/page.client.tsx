@@ -21,7 +21,6 @@ import type { ReactNode } from "react";
 import {
 	use,
 	useCallback,
-	useEffect,
 	useMemo,
 	useRef,
 	useState,
@@ -272,27 +271,12 @@ function ChatInputArea({
 	const dragCounterRef = useRef(0);
 	const [isDragActive, setIsDragActive] = useState(false);
 	const [attachedFiles, setAttachedFiles] = useState<FileData[]>([]);
-	const attachmentsRef = useRef<FileData[]>([]);
-	const workspaceIdRef = useRef<StageApp["workspaceId"] | undefined>(
-		selectedApp?.workspaceId,
-	);
 
 	const appOptions: SelectOption[] = apps.map((app) => ({
 		value: app.id,
 		label: app.name,
 		icon: <DynamicIcon name={app.iconName} className="h-4 w-4" />,
 	}));
-
-	useEffect(() => {
-		attachmentsRef.current = attachedFiles;
-	}, [attachedFiles]);
-
-	useEffect(() => {
-		if (workspaceIdRef.current !== selectedApp?.workspaceId) {
-			workspaceIdRef.current = selectedApp?.workspaceId;
-			setAttachedFiles([]);
-		}
-	}, [selectedApp?.workspaceId]);
 
 	const resizeTextarea = () => {
 		const textarea = textareaRef.current;
@@ -371,10 +355,8 @@ function ChatInputArea({
 				return;
 			}
 
-			const currentFiles = attachmentsRef.current;
-			const existingNames = new Set(currentFiles.map((file) => file.name));
+			const existingNames = new Set(attachedFiles.map((file) => file.name));
 			const batchSeen = new Set<string>();
-			const nextFiles = [...currentFiles];
 			const uploads: Array<{
 				file: File;
 				uploading: ReturnType<typeof createUploadingFileData>;
@@ -382,7 +364,8 @@ function ChatInputArea({
 			}> = [];
 
 			for (const file of usableFiles) {
-				const name = file.name || `file-${uploads.length + 1}`;
+				const name =
+					file.name || `file-${existingNames.size + batchSeen.size + 1}`;
 				if (existingNames.has(name) || batchSeen.has(name)) {
 					addToast({
 						type: "warning",
@@ -398,7 +381,6 @@ function ChatInputArea({
 					type: file.type || "application/octet-stream",
 					size: file.size,
 				});
-				nextFiles.push(uploading);
 				uploads.push({
 					file,
 					uploading,
@@ -410,7 +392,16 @@ function ChatInputArea({
 				return;
 			}
 
-			setAttachedFiles(nextFiles);
+			setAttachedFiles((current) => {
+				const currentNames = new Set(current.map((file) => file.name));
+				const newEntries = uploads
+					.filter(({ uploading }) => !currentNames.has(uploading.name))
+					.map(({ uploading }) => uploading);
+				if (newEntries.length === 0) {
+					return current;
+				}
+				return [...current, ...newEntries];
+			});
 
 			for (const { file, uploading, workspaceId } of uploads) {
 				try {
@@ -422,9 +413,6 @@ function ChatInputArea({
 					});
 					const uploaded = createUploadedFileData(uploading, Date.now());
 					setAttachedFiles((current) => {
-						if (workspaceIdRef.current !== workspaceId) {
-							return current;
-						}
 						return current.map((entry) =>
 							entry.id === uploaded.id ? uploaded : entry,
 						);
@@ -438,9 +426,6 @@ function ChatInputArea({
 					});
 					const failed = createFailedFileData(uploading, message);
 					setAttachedFiles((current) => {
-						if (workspaceIdRef.current !== workspaceId) {
-							return current;
-						}
 						return current.map((entry) =>
 							entry.id === failed.id ? failed : entry,
 						);
@@ -448,7 +433,7 @@ function ChatInputArea({
 				}
 			}
 		},
-		[selectedApp, client, addToast],
+		[selectedApp, attachedFiles, client, addToast],
 	);
 
 	const handleDrop = useCallback(
@@ -518,7 +503,6 @@ function ChatInputArea({
 			],
 		});
 		setAttachedFiles([]);
-		attachmentsRef.current = [];
 		setInputValue("");
 		// Reset textarea height after clearing - use requestAnimationFrame for better timing
 		requestAnimationFrame(() => {
@@ -724,6 +708,7 @@ export function Page({
 
 						{/* Chat-style input area */}
 						<ChatInputArea
+							key={selectedApp?.workspaceId ?? "no-workspace"}
 							selectedApp={selectedApp}
 							apps={data.apps}
 							onAppSelect={handleAppSelect}
