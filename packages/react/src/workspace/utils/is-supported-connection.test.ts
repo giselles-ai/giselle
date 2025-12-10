@@ -284,7 +284,7 @@ describe("isSupportedConnection", () => {
 		test("should allow Image Generation Node as input for Google(Nano banana)", () => {
 			const outputNode = createImageGenerationNode(NodeId.generate());
 			const nanoBanana = googleImageLanguageModels.find(
-				(m) => m.id === "gemini-2.5-flash-image-preview",
+				(m) => m.id === "gemini-2.5-flash-image",
 			);
 			const inputNode = createImageGenerationNode(
 				NodeId.generate(),
