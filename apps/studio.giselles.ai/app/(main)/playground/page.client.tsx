@@ -251,6 +251,50 @@ function getUploadErrorMessage(error: unknown) {
 	return "Upload failed";
 }
 
+function useEnterSubmit(onSubmit: () => void) {
+	const composingRef = useRef(false);
+
+	const handleCompositionStart = useCallback(() => {
+		composingRef.current = true;
+	}, []);
+
+	const handleCompositionEnd = useCallback(() => {
+		composingRef.current = false;
+	}, []);
+
+	const handleKeyDown = useCallback(
+		(event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+			const nativeEvent = event.nativeEvent;
+
+			if (
+				composingRef.current ||
+				nativeEvent.isComposing ||
+				nativeEvent.keyCode === 229
+			) {
+				return;
+			}
+
+			if (event.key !== "Enter") {
+				return;
+			}
+
+			if (event.shiftKey) {
+				return;
+			}
+
+			event.preventDefault();
+			onSubmit();
+		},
+		[onSubmit],
+	);
+
+	return {
+		handleCompositionStart,
+		handleCompositionEnd,
+		handleKeyDown,
+	};
+}
+
 // Chat-style input area for running apps
 function ChatInputArea({
 	selectedApp,
@@ -529,43 +573,11 @@ function ChatInputArea({
 		});
 	};
 
-	const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-		if (event.key !== "Enter") {
-			return;
-		}
-
-		if (event.shiftKey) {
-			event.preventDefault();
-			const textarea = textareaRef.current;
-			if (!textarea) {
-				setInputValue((currentValue) => `${currentValue}\n`);
-				requestAnimationFrame(() => {
-					resizeTextarea();
-				});
-				return;
-			}
-
-			const selectionStart = textarea.selectionStart ?? textarea.value.length;
-			const selectionEnd = textarea.selectionEnd ?? textarea.value.length;
-
-			setInputValue((currentValue) => {
-				const before = currentValue.slice(0, selectionStart);
-				const after = currentValue.slice(selectionEnd);
-				return `${before}\n${after}`;
-			});
-
-			requestAnimationFrame(() => {
-				const cursorPosition = selectionStart + 1;
-				textarea.selectionStart = cursorPosition;
-				textarea.selectionEnd = cursorPosition;
-				resizeTextarea();
-			});
-			return;
-		}
-
-		event.preventDefault();
-		handleSubmit();
-	};
+	const {
+		handleCompositionStart,
+		handleCompositionEnd,
+		handleKeyDown: handleTextareaKeyDown,
+	} = useEnterSubmit(handleSubmit);
 
 	return (
 		<div className="relative w-full max-w-[640px] min-w-[320px] mx-auto">
@@ -588,7 +600,9 @@ function ChatInputArea({
 						ref={textareaRef}
 						value={inputValue}
 						onChange={handleInputChange}
-						onKeyDown={handleKeyDown}
+						onCompositionStart={handleCompositionStart}
+						onCompositionEnd={handleCompositionEnd}
+						onKeyDown={handleTextareaKeyDown}
 						placeholder="Ask anything—powered by Giselle docs"
 						rows={1}
 						disabled={isRunning}
