@@ -3,15 +3,35 @@
 import { AppIcon } from "@giselle-internal/ui/app-icon";
 import { Select, type SelectOption } from "@giselle-internal/ui/select";
 import { isIconName } from "@giselle-internal/ui/utils";
+import { useToast } from "@giselles-ai/contexts/toast";
 import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
-import type { GenerationContextInput, TaskId } from "@giselles-ai/protocol";
-import { ArrowUpIcon, Paperclip, Search, Sparkles } from "lucide-react";
+import {
+	createFailedFileData,
+	createUploadedFileData,
+	createUploadingFileData,
+	type FileData,
+	type GenerationContextInput,
+	type TaskId,
+	type UploadedFileData,
+} from "@giselles-ai/protocol";
+import { APICallError, useGiselle } from "@giselles-ai/react";
+import {
+	AlertCircle,
+	ArrowUpIcon,
+	Check,
+	Loader2,
+	Paperclip,
+	Search,
+	Sparkles,
+	X,
+} from "lucide-react";
 import { DynamicIcon, type IconName } from "lucide-react/dynamic";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import {
 	use,
 	useCallback,
+	useEffect,
 	useMemo,
 	useRef,
 	useState,
@@ -226,6 +246,50 @@ function StageTopCard({
 	);
 }
 
+function formatFileSize(bytes: number) {
+	if (!Number.isFinite(bytes) || bytes <= 0) {
+		return "0 B";
+	}
+	const units = ["B", "KB", "MB", "GB", "TB"];
+	const exponent = Math.min(
+		Math.floor(Math.log(bytes) / Math.log(1024)),
+		units.length - 1,
+	);
+	const value = bytes / 1024 ** exponent;
+	const decimals = value >= 10 || exponent === 0 ? 0 : 1;
+	return `${value.toFixed(decimals)} ${units[exponent]}`;
+}
+
+function getFileStatusLabel(file: FileData) {
+	switch (file.status) {
+		case "uploading":
+			return "Uploading…";
+		case "uploaded":
+			return "Ready";
+		case "failed":
+			return "Upload failed";
+		default:
+			return file.status;
+	}
+}
+
+function isUploadedFile(file: FileData): file is UploadedFileData {
+	return file.status === "uploaded";
+}
+
+function getUploadErrorMessage(error: unknown) {
+	if (APICallError.isInstance(error)) {
+		if (error.statusCode === 413) {
+			return "File size is too large.";
+		}
+		return error.message || "Upload failed";
+	}
+	if (error instanceof Error) {
+		return error.message || "Upload failed";
+	}
+	return "Upload failed";
+}
+
 // Chat-style input area for running apps
 function ChatInputArea({
 	selectedApp,
@@ -240,14 +304,35 @@ function ChatInputArea({
 	onSubmit: (event: { inputs: GenerationContextInput[] }) => void;
 	isRunning: boolean;
 }) {
+	const client = useGiselle();
+	const { addToast } = useToast();
 	const [inputValue, setInputValue] = useState("");
 	const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+	const fileInputRef = useRef<HTMLInputElement | null>(null);
+	const dragCounterRef = useRef(0);
+	const [isDragActive, setIsDragActive] = useState(false);
+	const [attachedFiles, setAttachedFiles] = useState<FileData[]>([]);
+	const attachmentsRef = useRef<FileData[]>([]);
+	const workspaceIdRef = useRef<StageApp["workspaceId"] | undefined>(
+		selectedApp?.workspaceId,
+	);
 
 	const appOptions: SelectOption[] = apps.map((app) => ({
 		value: app.id,
 		label: app.name,
 		icon: <DynamicIcon name={app.iconName} className="h-4 w-4" />,
 	}));
+
+	useEffect(() => {
+		attachmentsRef.current = attachedFiles;
+	}, [attachedFiles]);
+
+	useEffect(() => {
+		if (workspaceIdRef.current !== selectedApp?.workspaceId) {
+			workspaceIdRef.current = selectedApp?.workspaceId;
+			setAttachedFiles([]);
+		}
+	}, [selectedApp?.workspaceId]);
 
 	const resizeTextarea = () => {
 		const textarea = textareaRef.current;
@@ -263,8 +348,197 @@ function ChatInputArea({
 		resizeTextarea();
 	};
 
+	const containsFiles = useCallback(
+		(event: React.DragEvent<HTMLElement>) =>
+			Array.from(event.dataTransfer?.items ?? []).some(
+				(item) => item.kind === "file",
+			),
+		[],
+	);
+
+	const handleDragEnter = useCallback(
+		(event: React.DragEvent<HTMLDivElement>) => {
+			if (!containsFiles(event)) {
+				return;
+			}
+			event.preventDefault();
+			dragCounterRef.current += 1;
+			setIsDragActive(true);
+		},
+		[containsFiles],
+	);
+
+	const handleDragOver = useCallback(
+		(event: React.DragEvent<HTMLDivElement>) => {
+			if (!containsFiles(event)) {
+				return;
+			}
+			event.preventDefault();
+			event.dataTransfer.dropEffect = "copy";
+		},
+		[containsFiles],
+	);
+
+	const handleDragLeave = useCallback(
+		(event: React.DragEvent<HTMLDivElement>) => {
+			if (!containsFiles(event)) {
+				return;
+			}
+			event.preventDefault();
+			dragCounterRef.current = Math.max(dragCounterRef.current - 1, 0);
+			if (dragCounterRef.current === 0) {
+				setIsDragActive(false);
+			}
+		},
+		[containsFiles],
+	);
+
+	const handleFilesAdded = useCallback(
+		async (incomingFiles: File[]) => {
+			if (!selectedApp) {
+				addToast({
+					type: "warning",
+					title: "Select an app",
+					message: "Choose an app before attaching files.",
+				});
+				return;
+			}
+
+			const usableFiles = incomingFiles.filter(
+				(file): file is File => file instanceof File && file.size > 0,
+			);
+			if (usableFiles.length === 0) {
+				return;
+			}
+
+			const currentFiles = attachmentsRef.current;
+			const existingNames = new Set(currentFiles.map((file) => file.name));
+			const batchSeen = new Set<string>();
+			const nextFiles = [...currentFiles];
+			const uploads: Array<{
+				file: File;
+				uploading: ReturnType<typeof createUploadingFileData>;
+				workspaceId: StageApp["workspaceId"];
+			}> = [];
+
+			for (const file of usableFiles) {
+				const name = file.name || `file-${uploads.length + 1}`;
+				if (existingNames.has(name) || batchSeen.has(name)) {
+					addToast({
+						type: "warning",
+						title: "Duplicate file",
+						message: `${name} is already attached.`,
+					});
+					continue;
+				}
+
+				batchSeen.add(name);
+				const uploading = createUploadingFileData({
+					name,
+					type: file.type || "application/octet-stream",
+					size: file.size,
+				});
+				nextFiles.push(uploading);
+				uploads.push({
+					file,
+					uploading,
+					workspaceId: selectedApp.workspaceId,
+				});
+			}
+
+			if (uploads.length === 0) {
+				return;
+			}
+
+			setAttachedFiles(nextFiles);
+
+			for (const { file, uploading, workspaceId } of uploads) {
+				try {
+					await client.uploadFile({
+						workspaceId,
+						file,
+						fileId: uploading.id,
+						fileName: uploading.name,
+					});
+					const uploaded = createUploadedFileData(uploading, Date.now());
+					setAttachedFiles((current) => {
+						if (workspaceIdRef.current !== workspaceId) {
+							return current;
+						}
+						return current.map((entry) =>
+							entry.id === uploaded.id ? uploaded : entry,
+						);
+					});
+				} catch (error) {
+					const message = getUploadErrorMessage(error);
+					addToast({
+						type: "error",
+						title: "Upload failed",
+						message,
+					});
+					const failed = createFailedFileData(uploading, message);
+					setAttachedFiles((current) => {
+						if (workspaceIdRef.current !== workspaceId) {
+							return current;
+						}
+						return current.map((entry) =>
+							entry.id === failed.id ? failed : entry,
+						);
+					});
+				}
+			}
+		},
+		[selectedApp, client, addToast],
+	);
+
+	const handleDrop = useCallback(
+		(event: React.DragEvent<HTMLDivElement>) => {
+			if (!containsFiles(event)) {
+				return;
+			}
+			event.preventDefault();
+			dragCounterRef.current = 0;
+			setIsDragActive(false);
+			const droppedFiles = Array.from(event.dataTransfer?.files ?? []);
+			void handleFilesAdded(droppedFiles);
+		},
+		[containsFiles, handleFilesAdded],
+	);
+
+	const handleFileInputChange = (
+		event: React.ChangeEvent<HTMLInputElement>,
+	) => {
+		const files = event.target.files ? Array.from(event.target.files) : [];
+		void handleFilesAdded(files);
+		event.target.value = "";
+	};
+
+	const handleRemoveFile = useCallback((fileId: string) => {
+		setAttachedFiles((current) => current.filter((file) => file.id !== fileId));
+	}, []);
+
+	const handleAttachmentButtonClick = () => {
+		fileInputRef.current?.click();
+	};
+
+	const hasInput = inputValue.trim().length > 0;
+	const uploadedFiles = attachedFiles.filter(isUploadedFile);
+	const hasPendingUploads = attachedFiles.some(
+		(file) => file.status === "uploading",
+	);
+	const canSubmit =
+		!!selectedApp && hasInput && !isRunning && !hasPendingUploads;
+
 	const handleSubmit = () => {
 		if (!selectedApp || !inputValue.trim() || isRunning) return;
+		if (hasPendingUploads) {
+			addToast({
+				type: "info",
+				title: "Uploading files",
+				message: "Please wait for uploads to finish before sending.",
+			});
+			return;
+		}
 
 		// Build inputs from the single text input
 		// If app has parameters, use the first text parameter; otherwise send as generic input
@@ -284,6 +558,8 @@ function ChatInputArea({
 				},
 			],
 		});
+		setAttachedFiles([]);
+		attachmentsRef.current = [];
 		setInputValue("");
 		// Reset textarea height after clearing - use requestAnimationFrame for better timing
 		requestAnimationFrame(() => {
@@ -298,60 +574,136 @@ function ChatInputArea({
 		}
 	};
 
-	const hasInput = inputValue.trim().length > 0;
-
 	return (
 		<div className="relative w-full max-w-[640px] min-w-[320px] mx-auto">
-			<div className="rounded-2xl bg-[rgba(131,157,195,0.14)] shadow-[inset_0_1px_4px_rgba(0,0,0,0.22)] pt-4 pb-3 sm:pt-5 sm:pb-4 px-4">
-				{/* Textarea */}
-				<textarea
-					ref={textareaRef}
-					value={inputValue}
-					onChange={handleInputChange}
-					onKeyDown={handleKeyDown}
-					placeholder="Ask anything—powered by Giselle docs"
-					rows={1}
-					disabled={isRunning}
-					className="w-full resize-none bg-transparent text-[15px] text-foreground placeholder:text-blue-muted/50 outline-none disabled:cursor-not-allowed min-h-[2.4em] sm:min-h-[2.75em] pt-0 pb-[0.7em] px-1"
-				/>
+			<section
+				aria-label="Message input and dropzone"
+				className={`relative rounded-2xl bg-[rgba(131,157,195,0.14)] shadow-[inset_0_1px_4px_rgba(0,0,0,0.22)] pt-4 pb-3 sm:pt-5 sm:pb-4 px-4 transition-colors ${
+					isDragActive ? "ring-1 ring-blue-muted/50" : ""
+				}`}
+				onDragEnter={handleDragEnter}
+				onDragOver={handleDragOver}
+				onDragLeave={handleDragLeave}
+				onDrop={handleDrop}
+			>
+				{isDragActive ? (
+					<div className="pointer-events-none absolute inset-0 rounded-2xl border border-dashed border-blue-muted/60 bg-blue-muted/10" />
+				) : null}
+				<div className="relative z-10">
+					{/* Textarea */}
+					<textarea
+						ref={textareaRef}
+						value={inputValue}
+						onChange={handleInputChange}
+						onKeyDown={handleKeyDown}
+						placeholder="Ask anything—powered by Giselle docs"
+						rows={1}
+						disabled={isRunning}
+						className="w-full resize-none bg-transparent text-[15px] text-foreground placeholder:text-blue-muted/50 outline-none disabled:cursor-not-allowed min-h-[2.4em] sm:min-h-[2.75em] pt-0 pb-[0.7em] px-1"
+					/>
 
-				{/* Bottom row: App selector and buttons */}
-				<div className="flex items-center justify-between mt-2 sm:mt-3">
-					{/* Left side: Attachment + App selector */}
-					<div className="flex items-center gap-2 flex-1 max-w-[260px]">
-						<button
-							type="button"
-							className="flex h-6 w-6 flex-shrink-0 items-center justify-center"
-						>
-							<Paperclip className="h-4 w-4 text-text-muted" />
-						</button>
-						<div className="flex-1">
-							<Select
-								options={appOptions}
-								placeholder="Select an app..."
-								value={selectedApp?.id}
-								onValueChange={onAppSelect}
-								widthClassName="w-full"
-								triggerClassName="border-none !bg-[rgba(131,157,195,0.1)] hover:!bg-[rgba(131,157,195,0.18)] !px-2 !h-8 sm:!h-9 !rounded-[7px] sm:!rounded-[9px] text-[13px] [&_svg]:opacity-70"
-							/>
+					{attachedFiles.length > 0 ? (
+						<div className="mt-3 space-y-2">
+							<div className="flex items-center justify-between text-[11px] text-blue-muted/70 px-1">
+								<span>Attachments</span>
+								<span>
+									{uploadedFiles.length}/{attachedFiles.length} ready
+								</span>
+							</div>
+							{attachedFiles.map((file) => {
+								const statusLabel = getFileStatusLabel(file);
+								return (
+									<div
+										key={file.id}
+										className="flex items-start gap-3 rounded-xl border border-white/5 bg-white/5 px-3 py-2 text-left"
+									>
+										<div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-white/10">
+											{file.status === "uploading" ? (
+												<Loader2 className="h-4 w-4 animate-spin text-blue-muted" />
+											) : file.status === "uploaded" ? (
+												<Check className="h-4 w-4 text-emerald-300" />
+											) : file.status === "failed" ? (
+												<AlertCircle className="h-4 w-4 text-red-400" />
+											) : (
+												<Paperclip className="h-4 w-4 text-blue-muted" />
+											)}
+										</div>
+										<div className="flex flex-1 flex-col gap-1 min-w-0">
+											<div className="flex items-center justify-between gap-2">
+												<p className="truncate text-[13px] text-white">
+													{file.name}
+												</p>
+												<button
+													type="button"
+													onClick={() => handleRemoveFile(file.id)}
+													className="text-text-muted hover:text-white transition-colors"
+													aria-label={`Remove ${file.name}`}
+												>
+													<X className="h-3.5 w-3.5" />
+												</button>
+											</div>
+											<p className="text-[11px] text-blue-muted/70">
+												{formatFileSize(file.size)} · {statusLabel}
+											</p>
+											{file.status === "failed" && file.errorMessage ? (
+												<p className="text-[11px] text-red-400">
+													{file.errorMessage}
+												</p>
+											) : null}
+										</div>
+									</div>
+								);
+							})}
+						</div>
+					) : null}
+
+					{/* Bottom row: App selector and buttons */}
+					<div className="flex items-center justify-between mt-2 sm:mt-3">
+						{/* Left side: Attachment + App selector */}
+						<div className="flex items-center gap-2 flex-1 max-w-[260px]">
+							<button
+								type="button"
+								onClick={handleAttachmentButtonClick}
+								className="flex h-6 w-6 flex-shrink-0 items-center justify-center"
+								aria-label="Attach files"
+							>
+								<Paperclip className="h-4 w-4 text-text-muted" />
+							</button>
+							<div className="flex-1">
+								<Select
+									options={appOptions}
+									placeholder="Select an app..."
+									value={selectedApp?.id}
+									onValueChange={onAppSelect}
+									widthClassName="w-full"
+									triggerClassName="border-none !bg-[rgba(131,157,195,0.1)] hover:!bg-[rgba(131,157,195,0.18)] !px-2 !h-8 sm:!h-9 !rounded-[7px] sm:!rounded-[9px] text-[13px] [&_svg]:opacity-70"
+								/>
+							</div>
+						</div>
+
+						{/* Right side: Send button */}
+						<div className="flex items-center gap-2">
+							<button
+								type="button"
+								onClick={handleSubmit}
+								disabled={!canSubmit}
+								className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[5px] bg-[color:var(--color-inverse)] disabled:cursor-not-allowed ${
+									hasInput && !hasPendingUploads ? "opacity-100" : "opacity-40"
+								}`}
+							>
+								<ArrowUpIcon className="h-3 w-3 text-[color:var(--color-background)]" />
+							</button>
 						</div>
 					</div>
-
-					{/* Right side: Send button */}
-					<div className="flex items-center gap-2">
-						<button
-							type="button"
-							onClick={handleSubmit}
-							disabled={isRunning || !selectedApp || !inputValue.trim()}
-							className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[5px] bg-[color:var(--color-inverse)] disabled:cursor-not-allowed ${
-								hasInput ? "opacity-100" : "opacity-40"
-							}`}
-						>
-							<ArrowUpIcon className="h-3 w-3 text-[color:var(--color-background)]" />
-						</button>
-					</div>
+					<input
+						ref={fileInputRef}
+						type="file"
+						className="hidden"
+						multiple
+						onChange={handleFileInputChange}
+					/>
 				</div>
-			</div>
+			</section>
 			{/* Keyboard shortcut hint (outside chat container, aligned bottom-right) */}
 			<div className="mt-1 flex items-center justify-end gap-[6px] pr-0 text-[11px] text-blue-muted/60">
 				<div className="flex items-center gap-[4px]">
