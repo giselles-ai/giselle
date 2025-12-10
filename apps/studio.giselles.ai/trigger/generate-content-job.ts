@@ -1,5 +1,6 @@
 import { GenerationId, isRunningGeneration } from "@giselles-ai/protocol";
 import { logger, schemaTask as schemaJob } from "@trigger.dev/sdk";
+import type { ModelMessage } from "ai";
 import { z } from "zod/v4";
 import { giselle } from "@/app/giselle";
 import { GenerationMetadata } from "@/lib/generation-metadata";
@@ -58,7 +59,7 @@ export const generateContentJob = schemaJob({
 							return part;
 						}),
 					};
-				});
+				}) as ModelMessage[];
 				await traceGenerationForTeam({
 					...events,
 					inputMessages: sanitizedInputMessages,
@@ -98,7 +99,7 @@ export const generateContentJob = schemaJob({
 							return part;
 						}),
 					};
-				});
+				}) as ModelMessage[];
 				await traceGenerationForTeam({
 					...events,
 					inputMessages: sanitizedInputMessages,
