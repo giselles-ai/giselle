@@ -34,7 +34,6 @@ export const generateContentJob = schemaJob({
 				userId: payload.userId,
 				team: payload.team,
 			},
-			skipOutputProcessing: true,
 			onComplete: async ({ generationMetadata, generation, ...events }) => {
 				const parsedMetadata = GenerationMetadata.parse(generationMetadata);
 				const sanitizedInputMessages = events.inputMessages.map((msg) => {

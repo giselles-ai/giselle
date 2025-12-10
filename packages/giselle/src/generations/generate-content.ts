@@ -71,14 +71,12 @@ export function generateContent({
 	metadata,
 	onComplete,
 	onError,
-	skipOutputProcessing,
 }: {
 	context: GiselleContext;
 	generation: RunningGeneration;
 	metadata?: GenerationMetadata;
 	onComplete?: OnGenerationComplete;
 	onError?: OnGenerationError;
-	skipOutputProcessing?: boolean;
 }) {
 	const logger = context.logger;
 
@@ -92,7 +90,6 @@ export function generateContent({
 			metadata,
 			onComplete,
 			onError,
-			skipOutputProcessing,
 		});
 	}
 	// biome-ignore lint/correctness/useHookAtTopLevel: it's nodejs use
@@ -101,7 +98,6 @@ export function generateContent({
 		generation,
 		metadata,
 		onError,
-		skipOutputProcessing,
 		execute: async ({
 			finishGeneration,
 			runningGeneration,
@@ -550,14 +546,12 @@ function generateContentV2({
 	metadata,
 	onComplete,
 	onError,
-	skipOutputProcessing,
 }: {
 	context: GiselleContext;
 	generation: RunningGeneration;
 	metadata?: GenerationMetadata;
 	onComplete?: OnGenerationComplete;
 	onError?: OnGenerationError;
-	skipOutputProcessing?: boolean;
 }) {
 	const logger = context.logger;
 	// biome-ignore lint/correctness/useHookAtTopLevel: it's nodejs use
@@ -566,7 +560,6 @@ function generateContentV2({
 		generation,
 		metadata,
 		onError,
-		skipOutputProcessing,
 		execute: async ({
 			finishGeneration,
 			runningGeneration,

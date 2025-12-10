@@ -104,7 +104,6 @@ export async function useGenerationExecutor<T>(args: {
 		finishGeneration: FinishGeneration;
 	}) => Promise<T>;
 	onError?: OnGenerationError;
-	skipOutputProcessing?: boolean;
 }): Promise<T> {
 	const generationContext = GenerationContext.parse(args.generation.context);
 
@@ -376,25 +375,23 @@ export async function useGenerationExecutor<T>(args: {
 		/** @todo create type alias */
 		const outputFileBlobs: OutputFileBlob[] = [];
 		const imageProcessingStartTime = Date.now();
-		if (args.skipOutputProcessing !== true) {
-			for (const output of outputs) {
-				if (output.type !== "generated-image") {
-					continue;
-				}
-				for (const content of output.contents) {
-					const bytes = await getGeneratedImage({
-						storage: args.context.storage,
-						generation: args.generation,
-						filename: content.filename,
-					});
+		for (const output of outputs) {
+			if (output.type !== "generated-image") {
+				continue;
+			}
+			for (const content of output.contents) {
+				const bytes = await getGeneratedImage({
+					storage: args.context.storage,
+					generation: args.generation,
+					filename: content.filename,
+				});
 
-					outputFileBlobs.push({
-						id: content.id,
-						outputId: output.outputId,
-						contentType: content.contentType,
-						bytes,
-					});
-				}
+				outputFileBlobs.push({
+					id: content.id,
+					outputId: output.outputId,
+					contentType: content.contentType,
+					bytes,
+				});
 			}
 		}
 		args.context.logger.info(
