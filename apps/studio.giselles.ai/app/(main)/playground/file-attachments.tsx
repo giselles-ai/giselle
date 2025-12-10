@@ -1,9 +1,16 @@
+import {
+	DocxFileIcon,
+	PdfFileIcon,
+	TextFileIcon,
+	XlsxFileIcon,
+} from "@giselle-internal/workflow-designer-ui";
 import type {
 	FileData,
 	UploadedFileData,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import { AlertCircle, Check, Loader2, Paperclip, X } from "lucide-react";
+import type React from "react";
 
 interface FileAttachmentsProps {
 	files: FileData[];
@@ -71,6 +78,36 @@ function getFileTypeBadge(file: FileData): string | null {
 	return typeMap[ext] || null;
 }
 
+function getFileTypeIcon(file: FileData) {
+	const ext = getFileExtension(file.name);
+	const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+		".pdf": PdfFileIcon,
+		".xlsx": XlsxFileIcon,
+		".xls": XlsxFileIcon,
+		".docx": DocxFileIcon,
+		".doc": DocxFileIcon,
+		".txt": TextFileIcon,
+		".md": TextFileIcon,
+		".csv": TextFileIcon,
+	};
+	return iconMap[ext] || null;
+}
+
+function getFileTypeLabel(file: FileData): string | null {
+	const ext = getFileExtension(file.name);
+	const labelMap: Record<string, string> = {
+		".pdf": "PDF",
+		".xlsx": "スプレッドシート",
+		".xls": "スプレッドシート",
+		".docx": "Word",
+		".doc": "Word",
+		".txt": "テキスト",
+		".md": "マークダウン",
+		".csv": "CSV",
+	};
+	return labelMap[ext] || null;
+}
+
 function getFileUrl(
 	file: UploadedFileData,
 	workspaceId: WorkspaceId,
@@ -97,9 +134,8 @@ export function FileAttachments({
 	}
 
 	const readyCount = files.filter(isUploadedFile).length;
-	const imageFiles = files.filter(isImageFile);
-	const documentFiles = files.filter(
-		(file) => !isImageFile(file) && getFileTypeBadge(file) !== null,
+	const thumbnailFiles = files.filter(
+		(file) => isImageFile(file) || getFileTypeBadge(file) !== null,
 	);
 	const otherFiles = files.filter(
 		(file) => !isImageFile(file) && getFileTypeBadge(file) === null,
@@ -114,83 +150,83 @@ export function FileAttachments({
 				</span>
 			</div>
 
-			{/* Image previews - horizontal scroll */}
-			{imageFiles.length > 0 && (
+			{/* Thumbnail previews - horizontal scroll */}
+			{thumbnailFiles.length > 0 && (
 				<div className="flex gap-2 overflow-x-auto pb-1">
-					{imageFiles.map((file) => {
-						const isUploaded = isUploadedFile(file);
-						const localPreview = localPreviews?.get(file.id);
-						let imageUrl: string | null = null;
+					{thumbnailFiles.map((file) => {
+						const isImage = isImageFile(file);
 
-						if (isUploaded && workspaceId && basePath) {
-							imageUrl = getFileUrl(file, workspaceId, basePath);
-						} else if (localPreview) {
-							imageUrl = localPreview;
+						// Image file rendering
+						if (isImage) {
+							const isUploaded = isUploadedFile(file);
+							const localPreview = localPreviews?.get(file.id);
+							let imageUrl: string | null = null;
+
+							if (isUploaded && workspaceId && basePath) {
+								imageUrl = getFileUrl(file, workspaceId, basePath);
+							} else if (localPreview) {
+								imageUrl = localPreview;
+							}
+
+							return (
+								<div
+									key={file.id}
+									className="relative group shrink-0 rounded-lg overflow-hidden bg-white/5 border border-white/5 w-[60px] h-[60px]"
+								>
+									{imageUrl ? (
+										<img
+											src={imageUrl}
+											alt={file.name}
+											className="object-cover w-full h-full"
+											onError={(e) => {
+												// If server URL fails, fallback to local preview
+												if (
+													isUploaded &&
+													localPreview &&
+													e.currentTarget.src !== localPreview
+												) {
+													e.currentTarget.src = localPreview;
+												}
+											}}
+											onLoad={() => {
+												// Notify parent that server image loaded successfully
+												// Parent will clean up local preview URL
+												if (isUploaded && onImageLoad) {
+													onImageLoad(file.id);
+												}
+											}}
+										/>
+									) : (
+										<div className="w-full h-full flex items-center justify-center text-blue-muted/50">
+											{file.status === "uploading" ? (
+												<Loader2 className="h-6 w-6 animate-spin" />
+											) : (
+												<Paperclip className="h-6 w-6" />
+											)}
+										</div>
+									)}
+									<button
+										type="button"
+										onClick={() => {
+											onRemoveFile(file.id);
+										}}
+										className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-black/80"
+										aria-label={`Remove ${file.name}`}
+									>
+										<X className="h-2.5 w-2.5" />
+									</button>
+								</div>
+							);
 						}
 
-						return (
-							<div
-								key={file.id}
-								className="relative group shrink-0 rounded-lg overflow-hidden bg-white/5 border border-white/5 w-[60px] h-[60px]"
-							>
-								{imageUrl ? (
-									<img
-										src={imageUrl}
-										alt={file.name}
-										className="object-cover w-full h-full"
-										onError={(e) => {
-											// If server URL fails, fallback to local preview
-											if (
-												isUploaded &&
-												localPreview &&
-												e.currentTarget.src !== localPreview
-											) {
-												e.currentTarget.src = localPreview;
-											}
-										}}
-										onLoad={() => {
-											// Notify parent that server image loaded successfully
-											// Parent will clean up local preview URL
-											if (isUploaded && onImageLoad) {
-												onImageLoad(file.id);
-											}
-										}}
-									/>
-								) : (
-									<div className="w-full h-full flex items-center justify-center text-blue-muted/50">
-										{file.status === "uploading" ? (
-											<Loader2 className="h-6 w-6 animate-spin" />
-										) : (
-											<Paperclip className="h-6 w-6" />
-										)}
-									</div>
-								)}
-								<button
-									type="button"
-									onClick={() => {
-										onRemoveFile(file.id);
-									}}
-									className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-black/80"
-									aria-label={`Remove ${file.name}`}
-								>
-									<X className="h-2.5 w-2.5" />
-								</button>
-							</div>
-						);
-					})}
-				</div>
-			)}
-
-			{/* Document file previews - horizontal scroll */}
-			{documentFiles.length > 0 && (
-				<div className="flex gap-2 overflow-x-auto pb-1">
-					{documentFiles.map((file) => {
-						const fileTypeBadge = getFileTypeBadge(file);
+						// Document file rendering
+						const FileIcon = getFileTypeIcon(file);
+						const fileTypeLabel = getFileTypeLabel(file);
 
 						return (
 							<div
 								key={file.id}
-								className="relative group shrink-0 rounded-lg overflow-hidden bg-white/5 border border-white/5 w-[60px] h-[60px] flex flex-col p-1.5"
+								className="relative group shrink-0 rounded-lg overflow-hidden bg-white/5 border border-white/5 h-[60px] px-3 py-2 flex items-center gap-3 min-w-[200px]"
 							>
 								{file.status === "uploading" ? (
 									<div className="w-full h-full flex items-center justify-center">
@@ -202,20 +238,21 @@ export function FileAttachments({
 									</div>
 								) : (
 									<>
-										<div className="flex-1 flex items-start justify-center min-h-0">
-											<p className="text-[8px] text-white leading-tight line-clamp-2 text-center break-words">
-												{file.name}
-											</p>
-										</div>
-										{fileTypeBadge && (
-											<div className="mt-auto flex items-center justify-center">
-												<div className="px-1 py-0.5 rounded bg-white/10 border border-white/10">
-													<span className="text-[7px] text-white font-medium">
-														{fileTypeBadge}
-													</span>
-												</div>
+										{FileIcon && (
+											<div className="shrink-0 w-10 h-10 rounded bg-green-600/20 flex items-center justify-center">
+												<FileIcon className="w-5 h-5 text-green-400" />
 											</div>
 										)}
+										<div className="flex-1 min-w-0 flex flex-col justify-center">
+											<p className="text-[13px] text-white font-medium leading-tight truncate">
+												{file.name}
+											</p>
+											{fileTypeLabel && (
+												<p className="text-[10px] text-blue-muted/70 leading-tight mt-0.5">
+													{fileTypeLabel}
+												</p>
+											)}
+										</div>
 									</>
 								)}
 								<button
