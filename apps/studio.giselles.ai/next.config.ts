@@ -1,5 +1,5 @@
 import { createRequire } from "node:module";
-import { relative } from "node:path";
+import { dirname, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import createBundleAnalyzer from "@next/bundle-analyzer";
 import type { SentryBuildOptions } from "@sentry/nextjs";
@@ -9,6 +9,9 @@ const moduleRequire = createRequire(import.meta.url);
 const projectDir = fileURLToPath(new URL(".", import.meta.url));
 
 const pdfiumWasmPath = moduleRequire.resolve("@embedpdf/pdfium/pdfium.wasm");
+const pdfiumPackageDir = dirname(
+	moduleRequire.resolve("@embedpdf/pdfium/package.json"),
+);
 
 export const serverExternalPackages = [
 	"@embedpdf/pdfium",
@@ -22,11 +25,20 @@ const pdfiumWasmInclude = relative(projectDir, pdfiumWasmPath).replace(
 	/\\/g,
 	"/",
 );
+const pdfiumPackageInclude = relative(projectDir, pdfiumPackageDir).replace(
+	/\\/g,
+	"/",
+);
 
 const pdfiumTracingConfig = {
 	outputFileTracingIncludes: {
 		"/api/vector-stores/document/[documentVectorStoreId]/documents": [
 			pdfiumWasmInclude,
+			pdfiumPackageInclude,
+		],
+		"/api/vector-stores/cron/document/ingest": [
+			pdfiumWasmInclude,
+			pdfiumPackageInclude,
 		],
 	},
 };
