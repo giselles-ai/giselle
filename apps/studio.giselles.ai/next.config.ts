@@ -9,9 +9,7 @@ const moduleRequire = createRequire(import.meta.url);
 const projectDir = fileURLToPath(new URL(".", import.meta.url));
 
 const pdfiumWasmPath = moduleRequire.resolve("@embedpdf/pdfium/pdfium.wasm");
-const pdfiumPackageDir = dirname(
-	moduleRequire.resolve("@embedpdf/pdfium/package.json"),
-);
+const pdfiumPackageDir = dirname(pdfiumWasmPath);
 
 export const serverExternalPackages = [
 	"@embedpdf/pdfium",
