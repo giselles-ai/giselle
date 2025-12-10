@@ -14,10 +14,10 @@ export const serverExternalPackages = [
 const pdfiumTracingConfig = {
 	outputFileTracingIncludes: {
 		"/api/vector-stores/document/[documentVectorStoreId]/documents": [
-			"./node_modules/@embedpdf/pdfium/dist/**/*",
+			"node_modules/@embedpdf/pdfium/dist/**/*",
 		],
 		"/api/vector-stores/cron/document/ingest": [
-			"./node_modules/@embedpdf/pdfium/dist/**/*",
+			"node_modules/@embedpdf/pdfium/dist/**/*",
 		],
 	},
 };
