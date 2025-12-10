@@ -366,16 +366,12 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 										<div className="space-y-2">
 											{sequence.steps.map((step) => {
 												const generation = stepGenerations[step.id];
-												// Check if generation has actual output content
+												// Check if generation exists and is completed
+												// Allow expansion if generation is completed, even if there's no text output
+												// (e.g., generation nodes may have other output types)
 												const hasOutput =
-													generation &&
-													generation.status === "completed" &&
-													(() => {
-														const textContent =
-															getAssistantTextFromGeneration(generation);
-														return textContent && textContent.trim().length > 0;
-													})();
-												// Only allow expansion if generation exists and has output
+													generation && generation.status === "completed";
+												// Only allow expansion if generation exists and is completed
 												const isExpanded =
 													hasOutput && expandedSteps.has(step.id);
 												const operationNode =
@@ -474,9 +470,19 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 						</div>
 						{task.status === "inProgress" || task.status === "failed" ? (
 							<p className="text-[13px] text-text-muted/70 italic">
-								{task.status === "inProgress"
-									? "Please wait, executing..."
-									: "No output available."}
+								{task.status === "inProgress" ? (
+									<span
+										className="bg-[length:200%_100%] bg-clip-text bg-gradient-to-r from-text-muted/70 via-text-muted/35 to-text-muted/70 text-transparent animate-shimmer"
+										style={{
+											animationDuration: "1s",
+											animationTimingFunction: "linear",
+										}}
+									>
+										Please wait, executing...
+									</span>
+								) : (
+									"No output available."
+								)}
 							</p>
 						) : lastCompletedGeneration ? (
 							<div className="rounded-xl bg-blue-muted/5 px-4 py-3">
