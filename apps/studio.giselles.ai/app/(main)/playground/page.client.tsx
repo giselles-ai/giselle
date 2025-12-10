@@ -319,11 +319,14 @@ function ChatInputArea({
 	const [isDragActive, setIsDragActive] = useState(false);
 	const [attachedFiles, setAttachedFiles] = useState<FileData[]>([]);
 
-	const appOptions: SelectOption[] = apps.map((app) => ({
-		value: app.id,
-		label: app.name,
-		icon: <DynamicIcon name={app.iconName} className="h-4 w-4" />,
-	}));
+	const appOptions = apps.map(
+		(app) =>
+			({
+				value: app.id,
+				label: app.name,
+				icon: <DynamicIcon name={app.iconName} className="h-4 w-4" />,
+			}) satisfies SelectOption,
+	);
 	const firstAppOptionValue = appOptions[0]?.value;
 
 	useEffect(() => {
