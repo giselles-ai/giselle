@@ -361,6 +361,9 @@ function ChatInputArea({
 	const dragCounterRef = useRef(0);
 	const [isDragActive, setIsDragActive] = useState(false);
 	const [attachedFiles, setAttachedFiles] = useState<FileData[]>([]);
+	const [localPreviews, setLocalPreviews] = useState<Map<string, string>>(
+		new Map(),
+	);
 	const [fileRestrictionError, setFileRestrictionError] =
 		useState<FileRestrictionErrorState | null>(null);
 
@@ -491,6 +494,17 @@ function ChatInputArea({
 					type: file.type || "application/octet-stream",
 					size: file.size,
 				});
+
+				// Create local preview URL for image files
+				if (file.type.startsWith("image/")) {
+					const previewUrl = URL.createObjectURL(file);
+					setLocalPreviews((prev) => {
+						const next = new Map(prev);
+						next.set(uploading.id, previewUrl);
+						return next;
+					});
+				}
+
 				uploads.push({
 					file,
 					uploading,
@@ -533,6 +547,8 @@ function ChatInputArea({
 							entry.id === uploaded.id ? uploaded : entry,
 						);
 					});
+					// Keep local preview URL until server URL is confirmed working
+					// It will be cleaned up when the image successfully loads from server
 				} catch (error) {
 					const message = getUploadErrorMessage(error);
 					addToast({
@@ -576,6 +592,31 @@ function ChatInputArea({
 
 	const handleRemoveFile = useCallback((fileId: string) => {
 		setAttachedFiles((current) => current.filter((file) => file.id !== fileId));
+		// Clean up local preview URL
+		setLocalPreviews((prev) => {
+			const previewUrl = prev.get(fileId);
+			if (previewUrl) {
+				URL.revokeObjectURL(previewUrl);
+				const next = new Map(prev);
+				next.delete(fileId);
+				return next;
+			}
+			return prev;
+		});
+	}, []);
+
+	const handleImageLoad = useCallback((fileId: string) => {
+		// Clean up local preview URL after server image loads successfully
+		setLocalPreviews((prev) => {
+			const previewUrl = prev.get(fileId);
+			if (previewUrl) {
+				URL.revokeObjectURL(previewUrl);
+				const next = new Map(prev);
+				next.delete(fileId);
+				return next;
+			}
+			return prev;
+		});
 	}, []);
 
 	const handleDismissFileRestrictionError = useCallback(() => {
@@ -677,7 +718,7 @@ function ChatInputArea({
 						onCompositionStart={handleCompositionStart}
 						onCompositionEnd={handleCompositionEnd}
 						onKeyDown={handleTextareaKeyDown}
-						placeholder="Ask anything—powered by Giselle docs"
+						placeholder={selectedApp?.description ?? ""}
 						rows={1}
 						disabled={isRunning}
 						className="w-full resize-none bg-transparent text-[15px] text-foreground placeholder:text-blue-muted/50 outline-none disabled:cursor-not-allowed min-h-[2.4em] sm:min-h-[2.75em] pt-0 pb-[0.7em] px-1"
@@ -715,11 +756,6 @@ function ChatInputArea({
 						</div>
 					) : null}
 
-					<FileAttachments
-						files={attachedFiles}
-						onRemoveFile={handleRemoveFile}
-					/>
-
 					{/* Bottom row: App selector and buttons */}
 					<div className="flex items-center justify-between mt-2 sm:mt-3">
 						{/* Left side: Attachment + App selector */}
@@ -727,10 +763,10 @@ function ChatInputArea({
 							<button
 								type="button"
 								onClick={handleAttachmentButtonClick}
-								className="flex h-6 w-6 flex-shrink-0 items-center justify-center"
+								className="group flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[5px] transition-colors hover:bg-white/5"
 								aria-label="Attach files"
 							>
-								<Paperclip className="h-4 w-4 text-text-muted" />
+								<Paperclip className="h-4 w-4 text-text-muted transition-colors group-hover:text-white" />
 							</button>
 							<div className="flex-1">
 								<Select
@@ -758,6 +794,16 @@ function ChatInputArea({
 							</button>
 						</div>
 					</div>
+
+					<FileAttachments
+						files={attachedFiles}
+						onRemoveFile={handleRemoveFile}
+						workspaceId={selectedApp?.workspaceId}
+						basePath={client.basePath}
+						localPreviews={localPreviews}
+						onImageLoad={handleImageLoad}
+					/>
+
 					<input
 						ref={fileInputRef}
 						type="file"
