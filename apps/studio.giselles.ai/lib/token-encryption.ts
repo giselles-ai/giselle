@@ -50,6 +50,11 @@ export function decryptToken(value: string): string {
 	const key = getEncryptionKey();
 	const data = Buffer.from(value.slice(ENCRYPTED_PREFIX.length), "base64");
 
+	if (data.length < IV_LENGTH + AUTH_TAG_LENGTH) {
+		throw new Error(
+			"Encrypted token is malformed: insufficient data for IV and auth tag",
+		);
+	}
 	const iv = data.subarray(0, IV_LENGTH);
 	const authTag = data.subarray(IV_LENGTH, IV_LENGTH + AUTH_TAG_LENGTH);
 	const encrypted = data.subarray(IV_LENGTH + AUTH_TAG_LENGTH);
