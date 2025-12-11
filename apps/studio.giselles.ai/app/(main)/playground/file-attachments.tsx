@@ -97,12 +97,12 @@ function getFileTypeLabel(file: FileData): string | null {
 	const ext = getFileExtension(file.name);
 	const labelMap: Record<string, string> = {
 		".pdf": "PDF",
-		".xlsx": "スプレッドシート",
-		".xls": "スプレッドシート",
-		".docx": "Word",
-		".doc": "Word",
-		".txt": "テキスト",
-		".md": "マークダウン",
+		".xlsx": "Spreadsheet",
+		".xls": "Spreadsheet",
+		".docx": "Word Document",
+		".doc": "Word Document",
+		".txt": "Text File",
+		".md": "Markdown",
 		".csv": "CSV",
 	};
 	return labelMap[ext] || null;
