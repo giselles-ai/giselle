@@ -472,3 +472,4 @@ function calculateRenderSize(
 	const width = Math.max(Math.floor(baseWidth * scale), 1);
 	const height = Math.max(Math.floor(baseHeight * scale), 1);
 	return { width, height };
+}
