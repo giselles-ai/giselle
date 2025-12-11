@@ -78,6 +78,7 @@
 		"input-otp": "1.4.2",
 		"jsdom": "catalog:",
 		"lucide-react": "catalog:",
+		"motion": "catalog:",
 		"next": "catalog:",
 		"next-themes": "0.3.0",
 		"nodemailer": "7.0.11",
