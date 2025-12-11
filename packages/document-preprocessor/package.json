@@ -5,7 +5,7 @@
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"scripts": {
-		"build": "tsup",
+		"build": "tsup && cp node_modules/@embedpdf/pdfium/dist/pdfium.wasm dist/",
 		"check-types": "tsc --noEmit",
 		"dev": "tsup --watch",
 		"test": "vitest run",

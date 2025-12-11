@@ -1,6 +1,7 @@
+import { existsSync } from "node:fs";
 import { createRequire } from "node:module";
-import { dirname } from "node:path";
-import { pathToFileURL } from "node:url";
+import { dirname, join } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { init as initPdfium, type WrappedPdfiumModule } from "@embedpdf/pdfium";
 
 import { assertNotAborted } from "./abort.js";
@@ -22,10 +23,23 @@ const requireBaseUrl = moduleUrl.endsWith("/")
 const moduleRequire = createRequire(requireBaseUrl);
 
 function getPdfiumWasmPath(): string {
-	// Allow overriding via environment variable for serverless environments
+	// 1. Allow overriding via environment variable for serverless environments
 	if (process.env.PDFIUM_WASM_PATH) {
 		return process.env.PDFIUM_WASM_PATH;
 	}
+
+	// 2. Try to find the WASM file relative to this module (bundled with dist/)
+	try {
+		const moduleDir = dirname(fileURLToPath(moduleUrl));
+		const bundledWasmPath = join(moduleDir, "pdfium.wasm");
+		if (existsSync(bundledWasmPath)) {
+			return bundledWasmPath;
+		}
+	} catch {
+		// Ignore errors and try next method
+	}
+
+	// 3. Fall back to require.resolve (works in development)
 	return moduleRequire.resolve("@embedpdf/pdfium/pdfium.wasm");
 }
 
