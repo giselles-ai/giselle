@@ -24,7 +24,7 @@ async function getAppByTaskId(taskId: TaskId) {
 	return await giselle.getApp({ appId: dbApp.id });
 }
 
-export async function getTopSectionData({
+async function getTopSectionData({
 	params,
 }: {
 	params: Promise<{ taskId: string }>;
