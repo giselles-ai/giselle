@@ -1,5 +1,5 @@
 import { createRequire } from "node:module";
-import { relative } from "node:path";
+import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import createBundleAnalyzer from "@next/bundle-analyzer";
 import type { SentryBuildOptions } from "@sentry/nextjs";
@@ -34,6 +34,7 @@ const pdfiumTracingConfig = {
 
 const nextConfig: NextConfig = {
 	serverExternalPackages,
+	outputFileTracingRoot: join(projectDir, "../../"),
 	images: {
 		remotePatterns: [
 			{
@@ -98,7 +99,6 @@ const nextConfig: NextConfig = {
 		typedEnv: true,
 		webpackMemoryOptimizations: true,
 		webpackBuildWorker: true,
-		serverComponentsExternalPackages: ["@embedpdf/pdfium"],
 	},
 	...pdfiumTracingConfig,
 };
