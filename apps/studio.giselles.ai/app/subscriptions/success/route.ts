@@ -23,7 +23,9 @@ export async function GET(_request: Request) {
 		);
 		const checkoutItem = checkoutSession.checkout_items?.[0];
 		if (checkoutItem?.type !== "pricing_plan_subscription_item") {
-			throw new Error("Invalid checkout item type");
+			throw new Error(
+				`Expected checkout item type 'pricing_plan_subscription_item', but got '${checkoutItem?.type}'`,
+			);
 		}
 
 		const subscriptionId =
