@@ -33,7 +33,7 @@ export default async function ({
 			<TaskOverlayReset />
 			{/* Top Section */}
 			<TaskHeader {...taskHeaderData} />
-			<div className="flex-1 overflow-y-auto pb-8">
+			<div className="flex-1 overflow-y-auto overflow-x-hidden pb-8">
 				{/* Steps Section */}
 				<Suspense fallback={<div>Loading steps...</div>}>
 					<StepsSection taskPromise={taskPromise} taskId={taskId} />

@@ -247,11 +247,7 @@ function useEnterSubmit(onSubmit: () => void) {
 		(event: React.KeyboardEvent<HTMLTextAreaElement>) => {
 			const nativeEvent = event.nativeEvent;
 
-			if (
-				composingRef.current ||
-				nativeEvent.isComposing ||
-				nativeEvent.keyCode === 229
-			) {
+			if (composingRef.current || nativeEvent.isComposing) {
 				return;
 			}
 
