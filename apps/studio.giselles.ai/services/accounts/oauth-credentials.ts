@@ -19,6 +19,10 @@ export async function getOauthCredential(provider: OAuthProvider) {
 			),
 		);
 
+	if (!result) {
+		return undefined;
+	}
+
 	const cred = result.oauthCredentials;
 	return {
 		...cred,
