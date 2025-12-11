@@ -1,15 +1,13 @@
 import { notFound } from "next/navigation";
-import type React from "react";
 import { Suspense } from "react";
 import { InputAreaHeaderControls } from "./ui/input-area-header-controls";
 import { InputAreaPlaceholder } from "./ui/input-area-placeholder";
 import { StepsSection } from "./ui/steps-section";
-import { getTaskInput } from "./ui/task-input-data";
-import { TopSection } from "./ui/top-section";
-import { getTopSectionData } from "./ui/top-section-data";
 import "./mobile-scroll.css";
 import { TaskId } from "@giselles-ai/protocol";
 import { giselle } from "@/app/giselle";
+import { TaskLayout } from "@/components/task/task-layout";
+import { TaskHeader } from "./ui/task-header";
 
 export default async function ({
 	params,
@@ -25,46 +23,38 @@ export default async function ({
 	const taskId = result.data;
 	// Fetch task once and reuse for both sections
 	const taskPromise = giselle.getTask({ taskId });
-	const topSectionDataPromise = getTopSectionData({ params });
-	const taskInputPromise = getTaskInput(taskId);
 
 	return (
-		<div className="bg-bg text-foreground h-full font-sans overflow-y-hidden">
-			<div className="max-w-[640px] mx-auto px-4 flex flex-col h-full">
-				{/* Top Section */}
-				<Suspense fallback={<div>Loading...</div>}>
-					<TopSection
-						topSectionDataPromise={topSectionDataPromise}
-						taskId={taskId}
-						taskInputPromise={taskInputPromise}
-					/>
+		<TaskLayout>
+			{/* Top Section */}
+			<Suspense fallback={<div>Loading...</div>}>
+				<TaskHeader params={params} />
+			</Suspense>
+			<div className="flex-1 overflow-y-auto overflow-x-hidden pb-8">
+				{/* Steps Section */}
+				<Suspense fallback={<div>Loading steps...</div>}>
+					<StepsSection taskPromise={taskPromise} taskId={taskId} />
 				</Suspense>
-				<div className="flex-1 overflow-y-auto pb-8">
-					{/* Steps Section */}
-					<Suspense fallback={<div>Loading steps...</div>}>
-						<StepsSection taskPromise={taskPromise} taskId={taskId} />
+			</div>
+
+			{/* Main Content Area - Request new tasks section (sticky inside main container) */}
+			<div
+				className="bg-[color:var(--color-background)] pb-4 relative"
+				style={{ marginBottom: "-1px" }}
+			>
+				{/* Top gradient separator */}
+				<div className="w-full absolute h-6 -top-6 bg-gradient-to-t from-[color:var(--color-background)] to-transparent pointer-events-none" />
+				<div className="flex items-center justify-between mb-2">
+					<h2 className="text-text-muted text-[13px] font-semibold">
+						Request new tasks in a new session
+					</h2>
+					<Suspense fallback={null}>
+						<InputAreaHeaderControls taskPromise={taskPromise} />
 					</Suspense>
 				</div>
-
-				{/* Main Content Area - Request new tasks section (sticky inside main container) */}
-				<div
-					className="bg-[color:var(--color-background)] pb-4 relative"
-					style={{ marginBottom: "-1px" }}
-				>
-					{/* Top gradient separator */}
-					<div className="w-full absolute h-6 -top-6 bg-gradient-to-t from-[color:var(--color-background)] to-transparent pointer-events-none" />
-					<div className="flex items-center justify-between mb-2">
-						<h2 className="text-text-muted text-[13px] font-semibold">
-							Request new tasks in a new session
-						</h2>
-						<Suspense fallback={null}>
-							<InputAreaHeaderControls taskPromise={taskPromise} />
-						</Suspense>
-					</div>
-					{/* TODO: Input area will be added here - placeholder for future functionality */}
-					<InputAreaPlaceholder taskPromise={taskPromise} />
-				</div>
+				{/* TODO: Input area will be added here - placeholder for future functionality */}
+				<InputAreaPlaceholder />
 			</div>
-		</div>
+		</TaskLayout>
 	);
 }
