@@ -1,5 +1,5 @@
 import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import {
 	extractPdfText,
@@ -8,10 +8,11 @@ import {
 import { resolveSupportedDocumentFile } from "../utils";
 
 let pdfiumWasmBinaryPromise: Promise<Buffer> | null = null;
+const pdfiumWasmUrl = new URL("./pdfium.wasm", import.meta.url);
 
 function getPdfiumWasmBinary(): Promise<Buffer> {
 	if (pdfiumWasmBinaryPromise === null) {
-		pdfiumWasmBinaryPromise = readFile(join("./pdfium.wasm"));
+		pdfiumWasmBinaryPromise = readFile(fileURLToPath(pdfiumWasmUrl));
 	}
 	return pdfiumWasmBinaryPromise;
 }
