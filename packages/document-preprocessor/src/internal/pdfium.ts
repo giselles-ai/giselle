@@ -20,8 +20,14 @@ const requireBaseUrl = moduleUrl.endsWith("/")
 	: moduleUrl;
 
 const moduleRequire = createRequire(requireBaseUrl);
-const PDFIUM_WASM_PATH = moduleRequire.resolve("@embedpdf/pdfium/pdfium.wasm");
-const PDFIUM_WASM_DIR = dirname(PDFIUM_WASM_PATH);
+
+function getPdfiumWasmPath(): string {
+	// Allow overriding via environment variable for serverless environments
+	if (process.env.PDFIUM_WASM_PATH) {
+		return process.env.PDFIUM_WASM_PATH;
+	}
+	return moduleRequire.resolve("@embedpdf/pdfium/pdfium.wasm");
+}
 
 type PdfiumRenderCallback = (frame: {
 	data: Uint8Array;
@@ -95,15 +101,17 @@ async function getPdfiumModule(): Promise<WrappedPdfiumModule> {
 	}
 
 	if (pendingModule === null) {
+		const wasmPath = getPdfiumWasmPath();
+		const wasmDir = dirname(wasmPath);
 		pendingModule = initPdfium({
 			locateFile: (fileName: string, prefix: string) => {
 				if (fileName === "pdfium.wasm") {
-					return PDFIUM_WASM_PATH;
+					return wasmPath;
 				}
 				if (prefix) {
 					return `${prefix}${fileName}`;
 				}
-				return `${PDFIUM_WASM_DIR}/${fileName}`;
+				return `${wasmDir}/${fileName}`;
 			},
 		})
 			.then((module) => {
