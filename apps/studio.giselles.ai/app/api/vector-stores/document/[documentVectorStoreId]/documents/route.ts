@@ -162,222 +162,215 @@ export async function POST(
 	request: NextRequest,
 	{ params }: { params: Promise<{ documentVectorStoreId: string }> },
 ) {
-	try {
-		const team = await fetchTeam();
-		if (!team) {
-			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-		}
-		const user = await fetchUser();
-		if (!user) {
-			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-		}
-
-		const formData = await request.formData();
-		const files = formData
-			.getAll("files")
-			.filter((item): item is File => item instanceof File);
-
-		if (files.length === 0) {
-			return NextResponse.json({ error: "No files provided" }, { status: 400 });
-		}
-
-		const { documentVectorStoreId: documentVectorStoreIdParam } = await params;
-		const documentVectorStoreId =
-			documentVectorStoreIdParam as DocumentVectorStoreId;
-		const store = await findAccessibleStore(documentVectorStoreId, team.dbId);
-		if (!store) {
-			return NextResponse.json(
-				{ error: "Vector store not found" },
-				{ status: 404 },
-			);
-		}
-
-		const successes: Array<{
-			fileName: string;
-			sourceId: DocumentVectorStoreSourceId;
-			storageKey: string;
-		}> = [];
-		const failures: Array<{
-			fileName: string;
-			error: string;
-			code:
-				| "unsupported-type"
-				| "empty"
-				| "oversize"
-				| "read-error"
-				| "upload-error"
-				| "metadata-error"
-				| "rollback-error";
-		}> = [];
-
-		for (const file of files) {
-			const trimmedFileName = file.name.trim();
-			const resolvedFile = resolveSupportedDocumentFile(file);
-			const fallbackFileName = trimmedFileName || file.name || "document";
-
-			if (!resolvedFile) {
-				failures.push({
-					fileName: fallbackFileName,
-					error: `Unsupported file type. Supported types: ${DOCUMENT_VECTOR_STORE_SUPPORTED_FILE_TYPE_LABEL}`,
-					code: "unsupported-type",
-				});
-				continue;
-			}
-
-			const sanitizedFileName = sanitizeDocumentFileName(
-				fallbackFileName,
-				resolvedFile.extension,
-			);
-			const originalFileName = trimmedFileName || sanitizedFileName;
-
-			if (file.size === 0) {
-				failures.push({
-					fileName: originalFileName,
-					error: "File is empty and cannot be uploaded",
-					code: "empty",
-				});
-				continue;
-			}
-
-			if (file.size > DOCUMENT_VECTOR_STORE_MAX_FILE_SIZE_BYTES) {
-				failures.push({
-					fileName: originalFileName,
-					error: `File exceeds the ${DOCUMENT_VECTOR_STORE_MAX_FILE_SIZE_MB.toFixed(1)}MB limit`,
-					code: "oversize",
-				});
-				continue;
-			}
-
-			const storageKey = buildStorageKey(
-				documentVectorStoreId,
-				sanitizedFileName,
-			);
-
-			let buffer: Buffer;
-			try {
-				const arrayBuffer = await file.arrayBuffer();
-				buffer = Buffer.from(arrayBuffer);
-			} catch (bufferError) {
-				console.error("Failed to read file contents for upload:", bufferError);
-				failures.push({
-					fileName: originalFileName,
-					error: "Failed to read file contents",
-					code: "read-error",
-				});
-				continue;
-			}
-
-			const checksum = createHash("sha256").update(buffer).digest("hex");
-			const { error: uploadError } = await supabase.storage
-				.from(STORAGE_BUCKET)
-				.upload(storageKey, buffer, {
-					contentType: resolvedFile.contentType,
-					upsert: true,
-				});
-
-			if (uploadError) {
-				console.error(
-					"Failed to upload document file to storage:",
-					uploadError,
-				);
-				failures.push({
-					fileName: originalFileName,
-					error: "Failed to upload file",
-					code: "upload-error",
-				});
-				continue;
-			}
-
-			const sourceId = `dvss_${createId()}` as DocumentVectorStoreSourceId;
-
-			try {
-				await db.insert(documentVectorStoreSources).values({
-					id: sourceId,
-					documentVectorStoreDbId: store.dbId,
-					storageBucket: STORAGE_BUCKET,
-					storageKey,
-					fileName: originalFileName,
-					fileSizeBytes: file.size,
-					fileChecksum: checksum,
-					uploadStatus: "uploaded",
-				});
-				successes.push({
-					fileName: originalFileName,
-					sourceId,
-					storageKey,
-				});
-
-				// Trigger ingestion immediately after response is sent
-				// If this fails or times out, cron job will retry (/api/vector-stores/cron/document/ingest)
-				after(() =>
-					ingestDocument(sourceId, {
-						embeddingProfileIds: store.embeddingProfileIds,
-						trigger: { type: "manual", userId: user.id },
-					}).catch((error) => {
-						console.error(`Failed to ingest document ${sourceId}:`, error);
-					}),
-				);
-			} catch (dbError) {
-				console.error(
-					`Failed to persist metadata for ${originalFileName}. Rolling back this file.`,
-					dbError,
-				);
-				let rollbackFailed = false;
-				try {
-					await rollbackUploads([storageKey], []);
-				} catch (rollbackError) {
-					rollbackFailed = true;
-					console.error(
-						"Rollback failed after metadata persistence error:",
-						rollbackError,
-					);
-				}
-				failures.push({
-					fileName: originalFileName,
-					error: rollbackFailed
-						? "Failed to save metadata and roll back storage"
-						: "Failed to save metadata",
-					code: rollbackFailed ? "rollback-error" : "metadata-error",
-				});
-			}
-		}
-
-		const hasSuccesses = successes.length > 0;
-		const hasFailures = failures.length > 0;
-		const validationFailureCodes = new Set([
-			"unsupported-type",
-			"empty",
-			"oversize",
-		]);
-		const allValidationFailures =
-			hasFailures &&
-			failures.every((failure) => validationFailureCodes.has(failure.code));
-		const hasOversizeFailure = failures.some(
-			(failure) => failure.code === "oversize",
-		);
-		let status: number;
-		if (hasSuccesses && hasFailures) {
-			status = 207;
-		} else if (hasSuccesses) {
-			status = 200;
-		} else if (allValidationFailures) {
-			status = hasOversizeFailure ? 413 : 400;
-		} else if (hasFailures) {
-			status = 500;
-		} else {
-			status = 200;
-		}
-
-		return NextResponse.json(
-			{
-				successes,
-				failures,
-			},
-			{ status },
-		);
-	} catch (e) {
-		console.error(e);
+	const team = await fetchTeam();
+	if (!team) {
+		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 	}
+	const user = await fetchUser();
+	if (!user) {
+		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+	}
+
+	const formData = await request.formData();
+	const files = formData
+		.getAll("files")
+		.filter((item): item is File => item instanceof File);
+
+	if (files.length === 0) {
+		return NextResponse.json({ error: "No files provided" }, { status: 400 });
+	}
+
+	const { documentVectorStoreId: documentVectorStoreIdParam } = await params;
+	const documentVectorStoreId =
+		documentVectorStoreIdParam as DocumentVectorStoreId;
+	const store = await findAccessibleStore(documentVectorStoreId, team.dbId);
+	if (!store) {
+		return NextResponse.json(
+			{ error: "Vector store not found" },
+			{ status: 404 },
+		);
+	}
+
+	const successes: Array<{
+		fileName: string;
+		sourceId: DocumentVectorStoreSourceId;
+		storageKey: string;
+	}> = [];
+	const failures: Array<{
+		fileName: string;
+		error: string;
+		code:
+			| "unsupported-type"
+			| "empty"
+			| "oversize"
+			| "read-error"
+			| "upload-error"
+			| "metadata-error"
+			| "rollback-error";
+	}> = [];
+
+	for (const file of files) {
+		const trimmedFileName = file.name.trim();
+		const resolvedFile = resolveSupportedDocumentFile(file);
+		const fallbackFileName = trimmedFileName || file.name || "document";
+
+		if (!resolvedFile) {
+			failures.push({
+				fileName: fallbackFileName,
+				error: `Unsupported file type. Supported types: ${DOCUMENT_VECTOR_STORE_SUPPORTED_FILE_TYPE_LABEL}`,
+				code: "unsupported-type",
+			});
+			continue;
+		}
+
+		const sanitizedFileName = sanitizeDocumentFileName(
+			fallbackFileName,
+			resolvedFile.extension,
+		);
+		const originalFileName = trimmedFileName || sanitizedFileName;
+
+		if (file.size === 0) {
+			failures.push({
+				fileName: originalFileName,
+				error: "File is empty and cannot be uploaded",
+				code: "empty",
+			});
+			continue;
+		}
+
+		if (file.size > DOCUMENT_VECTOR_STORE_MAX_FILE_SIZE_BYTES) {
+			failures.push({
+				fileName: originalFileName,
+				error: `File exceeds the ${DOCUMENT_VECTOR_STORE_MAX_FILE_SIZE_MB.toFixed(1)}MB limit`,
+				code: "oversize",
+			});
+			continue;
+		}
+
+		const storageKey = buildStorageKey(
+			documentVectorStoreId,
+			sanitizedFileName,
+		);
+
+		let buffer: Buffer;
+		try {
+			const arrayBuffer = await file.arrayBuffer();
+			buffer = Buffer.from(arrayBuffer);
+		} catch (bufferError) {
+			console.error("Failed to read file contents for upload:", bufferError);
+			failures.push({
+				fileName: originalFileName,
+				error: "Failed to read file contents",
+				code: "read-error",
+			});
+			continue;
+		}
+
+		const checksum = createHash("sha256").update(buffer).digest("hex");
+		const { error: uploadError } = await supabase.storage
+			.from(STORAGE_BUCKET)
+			.upload(storageKey, buffer, {
+				contentType: resolvedFile.contentType,
+				upsert: true,
+			});
+
+		if (uploadError) {
+			console.error("Failed to upload document file to storage:", uploadError);
+			failures.push({
+				fileName: originalFileName,
+				error: "Failed to upload file",
+				code: "upload-error",
+			});
+			continue;
+		}
+
+		const sourceId = `dvss_${createId()}` as DocumentVectorStoreSourceId;
+
+		try {
+			await db.insert(documentVectorStoreSources).values({
+				id: sourceId,
+				documentVectorStoreDbId: store.dbId,
+				storageBucket: STORAGE_BUCKET,
+				storageKey,
+				fileName: originalFileName,
+				fileSizeBytes: file.size,
+				fileChecksum: checksum,
+				uploadStatus: "uploaded",
+			});
+			successes.push({
+				fileName: originalFileName,
+				sourceId,
+				storageKey,
+			});
+
+			// Trigger ingestion immediately after response is sent
+			// If this fails or times out, cron job will retry (/api/vector-stores/cron/document/ingest)
+			after(() =>
+				ingestDocument(sourceId, {
+					embeddingProfileIds: store.embeddingProfileIds,
+					trigger: { type: "manual", userId: user.id },
+				}).catch((error) => {
+					console.error(`Failed to ingest document ${sourceId}:`, error);
+				}),
+			);
+		} catch (dbError) {
+			console.error(
+				`Failed to persist metadata for ${originalFileName}. Rolling back this file.`,
+				dbError,
+			);
+			let rollbackFailed = false;
+			try {
+				await rollbackUploads([storageKey], []);
+			} catch (rollbackError) {
+				rollbackFailed = true;
+				console.error(
+					"Rollback failed after metadata persistence error:",
+					rollbackError,
+				);
+			}
+			failures.push({
+				fileName: originalFileName,
+				error: rollbackFailed
+					? "Failed to save metadata and roll back storage"
+					: "Failed to save metadata",
+				code: rollbackFailed ? "rollback-error" : "metadata-error",
+			});
+		}
+	}
+
+	const hasSuccesses = successes.length > 0;
+	const hasFailures = failures.length > 0;
+	const validationFailureCodes = new Set([
+		"unsupported-type",
+		"empty",
+		"oversize",
+	]);
+	const allValidationFailures =
+		hasFailures &&
+		failures.every((failure) => validationFailureCodes.has(failure.code));
+	const hasOversizeFailure = failures.some(
+		(failure) => failure.code === "oversize",
+	);
+	let status: number;
+	if (hasSuccesses && hasFailures) {
+		status = 207;
+	} else if (hasSuccesses) {
+		status = 200;
+	} else if (allValidationFailures) {
+		status = hasOversizeFailure ? 413 : 400;
+	} else if (hasFailures) {
+		status = 500;
+	} else {
+		status = 200;
+	}
+
+	return NextResponse.json(
+		{
+			successes,
+			failures,
+		},
+		{ status },
+	);
 }
 
 export async function DELETE(

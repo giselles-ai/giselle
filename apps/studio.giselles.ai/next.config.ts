@@ -1,14 +1,14 @@
-// import { createRequire } from "node:module";
-// import { relative } from "node:path";
-// import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
+import { relative } from "node:path";
+import { fileURLToPath } from "node:url";
 import createBundleAnalyzer from "@next/bundle-analyzer";
 import type { SentryBuildOptions } from "@sentry/nextjs";
 import type { NextConfig } from "next";
 
-// const moduleRequire = createRequire(import.meta.url);
-// const projectDir = fileURLToPath(new URL(".", import.meta.url));
+const moduleRequire = createRequire(import.meta.url);
+const projectDir = fileURLToPath(new URL(".", import.meta.url));
 
-// const pdfiumWasmPath = moduleRequire.resolve("@embedpdf/pdfium/pdfium.wasm");
+const pdfiumWasmPath = moduleRequire.resolve("@embedpdf/pdfium/pdfium.wasm");
 
 export const serverExternalPackages = [
 	"@embedpdf/pdfium",
@@ -18,20 +18,18 @@ export const serverExternalPackages = [
 	"@supabase/supabase-js",
 	"@supabase/realtime-js",
 ];
-// const pdfiumWasmInclude = relative(projectDir, pdfiumWasmPath).replace(
-// 	/\\/g,
-// 	"/",
-// );
+const pdfiumWasmInclude = relative(projectDir, pdfiumWasmPath).replace(
+	/\\/g,
+	"/",
+);
 
-// console.log("pdfiumWasmInclude", pdfiumWasmInclude);
-
-// const pdfiumTracingConfig = {
-// 	outputFileTracingIncludes: {
-// 		"/api/vector-stores/document/[documentVectorStoreId]/documents": [
-// 			pdfiumWasmInclude,
-// 		],
-// 	},
-// };
+const pdfiumTracingConfig = {
+	outputFileTracingIncludes: {
+		"/api/vector-stores/document/[documentVectorStoreId]/documents": [
+			pdfiumWasmInclude,
+		],
+	},
+};
 
 const nextConfig: NextConfig = {
 	serverExternalPackages,
@@ -100,7 +98,7 @@ const nextConfig: NextConfig = {
 		webpackMemoryOptimizations: true,
 		webpackBuildWorker: true,
 	},
-	// ...pdfiumTracingConfig,
+	...pdfiumTracingConfig,
 };
 
 const sentryBuildOptions: SentryBuildOptions = {
