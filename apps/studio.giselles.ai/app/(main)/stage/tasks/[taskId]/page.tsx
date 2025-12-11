@@ -30,7 +30,7 @@ export default async function ({
 			<Suspense fallback={<div>Loading...</div>}>
 				<TaskHeader params={params} />
 			</Suspense>
-			<div className="flex-1 overflow-y-auto pb-8">
+			<div className="flex-1 overflow-y-auto overflow-x-hidden pb-8">
 				{/* Steps Section */}
 				<Suspense fallback={<div>Loading steps...</div>}>
 					<StepsSection taskPromise={taskPromise} taskId={taskId} />
