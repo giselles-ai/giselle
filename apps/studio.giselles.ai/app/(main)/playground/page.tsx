@@ -9,7 +9,7 @@ import { Page } from "./page.client";
 export default function HomePage() {
 	return (
 		<ToastProvider>
-			<div className="min-h-screen bg-background overflow-x-hidden">
+			<div className="bg-background overflow-x-hidden">
 				<Suspense
 					fallback={
 						<div className="min-h-screen flex flex-col items-center justify-center">

@@ -12,6 +12,7 @@ import {
 	type FileData,
 	type GenerationContextInput,
 	type ParameterItem,
+	type ParametersInput,
 	type TaskId,
 	type UploadedFileData,
 } from "@giselles-ai/protocol";
@@ -29,6 +30,8 @@ import {
 	useState,
 	useTransition,
 } from "react";
+import { useShallow } from "zustand/shallow";
+import { useTaskOverlayStore } from "@/app/(main)/stores/task-overlay-store";
 import { LLMProviderIcon } from "@/app/(main)/workspaces/components/llm-provider-icon";
 import type { LoaderData } from "./data-loader";
 import { FileAttachments } from "./file-attachments";
@@ -213,29 +216,6 @@ function AppCard({
 			isSelected={isSelected}
 			onClick={onSelect}
 		/>
-	);
-}
-
-interface StageTopCardProps {
-	runningApp?: StageApp;
-	runStatus: "idle" | "running" | "completed";
-}
-
-function StageTopCard({
-	runningApp: _runningApp,
-	runStatus: _runStatus,
-}: StageTopCardProps) {
-	return (
-		<div className="relative flex w-full max-w-[960px] min-w-[320px] mx-auto flex-col overflow-hidden">
-			<div className="w-full flex justify-center items-center pt-1 pb-1 sm:pt-2 sm:pb-2">
-				<div className="flex flex-col items-center relative z-10">
-					<p className="font-thin text-[36px] font-sans text-blue-muted/70 text-center">
-						What's the task?
-						<span className="block sm:inline"> Your agent's on it.</span>
-					</p>
-				</div>
-			</div>
-		</div>
 	);
 }
 
@@ -705,7 +685,7 @@ function ChatInputArea({
 				{isDragActive ? (
 					<div className="pointer-events-none absolute inset-0 rounded-2xl border border-dashed border-blue-muted/60 bg-blue-muted/10" />
 				) : null}
-				<div className="relative z-10">
+				<div className="relative">
 					{/* Textarea */}
 					<textarea
 						ref={textareaRef}
@@ -840,12 +820,15 @@ export function Page({
 	const [selectedAppId, setSelectedAppId] = useState<string | undefined>();
 	const [runningAppId, setRunningAppId] = useState<string | undefined>();
 	const [isRunning, startTransition] = useTransition();
-	const [runStatus, setRunStatus] = useState<"idle" | "running" | "completed">(
-		"idle",
-	);
 	const [appSearchQuery, setAppSearchQuery] = useState("");
 	const [isSearchActive, setIsSearchActive] = useState(false);
 	const appSearchInputRef = useRef<HTMLInputElement | null>(null);
+	const { showOverlay, hideOverlay } = useTaskOverlayStore(
+		useShallow((state) => ({
+			showOverlay: state.showOverlay,
+			hideOverlay: state.hideOverlay,
+		})),
+	);
 
 	const apps = useMemo(() => {
 		const normalizedQuery = appSearchQuery.trim().toLowerCase();
@@ -879,15 +862,21 @@ export function Page({
 		[selectableApps],
 	);
 
-	const runningApp = runningAppId
-		? selectableApps.find((app) => app.id === runningAppId)
-		: undefined;
-
 	const handleRunSubmit = useCallback(
 		(event: { inputs: GenerationContextInput[] }) => {
 			if (!selectedApp) return;
+			const parametersInput = event.inputs.find(
+				(input): input is ParametersInput => input.type === "parameters",
+			);
+			showOverlay({
+				app: {
+					name: selectedApp.name,
+					description: selectedApp.description,
+					workspaceId: selectedApp.workspaceId,
+				},
+				input: parametersInput ?? null,
+			});
 			setRunningAppId(selectedApp.id);
-			setRunStatus("running");
 			startTransition(async () => {
 				try {
 					const taskId = await createAndStartTaskAction({
@@ -896,18 +885,17 @@ export function Page({
 						inputs: event.inputs,
 						workspaceId: selectedApp.workspaceId,
 					});
-					setRunStatus("completed");
 					// Navigate to task page immediately when completed
 					router.push(`/stage/tasks/${taskId}`);
 				} catch (error) {
 					// eslint-disable-next-line no-console
 					console.error("Failed to create and start task from stage:", error);
-					setRunStatus("idle");
 					setRunningAppId(undefined);
+					hideOverlay();
 				}
 			});
 		},
-		[selectedApp, createAndStartTaskAction, router],
+		[selectedApp, createAndStartTaskAction, router, showOverlay, hideOverlay],
 	);
 
 	return (
@@ -917,7 +905,19 @@ export function Page({
 				<div className="flex-1 min-w-0 flex flex-col px-4 sm:px-[24px] pt-[24px]">
 					{/* Top section: app info + chat input */}
 					<div className="space-y-4 pb-8">
-						<StageTopCard runningApp={runningApp} runStatus={runStatus} />
+						<div className="relative flex w-full max-w-[960px] min-w-[320px] mx-auto flex-col overflow-hidden">
+							<div className="w-full flex justify-center items-center pt-1 pb-1 sm:pt-2 sm:pb-2">
+								<div className="flex flex-col items-center relative">
+									<p className="font-thin text-[36px] font-sans text-blue-muted/70 text-center">
+										What's the task?
+										<span className="block sm:inline">
+											{" "}
+											Your agent's on it.
+										</span>
+									</p>
+								</div>
+							</div>
+						</div>
 
 						{/* Chat-style input area */}
 						<ChatInputArea
