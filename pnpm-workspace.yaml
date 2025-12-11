@@ -103,5 +103,5 @@ catalog:
   zustand: 5.0.8
 
 minimumReleaseAge: 1440
-
+# Use minimumReleaseAgeExclude temporarily for emergency security vulnerability fixes
 minimumReleaseAgeExclude: []
