@@ -68,80 +68,34 @@ const PDFIUM_ERROR_MESSAGES: Record<number, string> = {
 	6: "PDFium: page not found or content error", // PAGE
 };
 
-let cachedModule: WrappedPdfiumModule | null = null;
-let cachedModuleWasmBinary: PdfiumWasmBinary | null = null;
-let pendingModule: Promise<WrappedPdfiumModule> | null = null;
-let pendingModuleWasmBinary: PdfiumWasmBinary | null = null;
+let modulePromise: Promise<WrappedPdfiumModule> | null = null;
+let initializedWasmBinary: PdfiumWasmBinary | null = null;
 
-function isSameWasmBinary(
-	left: PdfiumWasmBinary | null | undefined,
-	right: PdfiumWasmBinary | null | undefined,
-): boolean {
-	if (left === right) {
-		return true;
-	}
-	if (!left || !right) {
-		return false;
-	}
-
-	const leftBuffer = left instanceof ArrayBuffer ? left : left.buffer;
-	const rightBuffer = right instanceof ArrayBuffer ? right : right.buffer;
-
-	if (leftBuffer !== rightBuffer) {
-		return false;
-	}
-
-	const leftOffset = left instanceof ArrayBuffer ? 0 : left.byteOffset;
-	const rightOffset = right instanceof ArrayBuffer ? 0 : right.byteOffset;
-
-	if (leftOffset !== rightOffset) {
-		return false;
-	}
-
-	const leftLength =
-		left instanceof ArrayBuffer ? left.byteLength : left.byteLength;
-	const rightLength =
-		right instanceof ArrayBuffer ? right.byteLength : right.byteLength;
-
-	return leftLength === rightLength;
-}
-
-async function getPdfiumModule(
+function getPdfiumModule(
 	wasmBinary: PdfiumWasmBinary,
 ): Promise<WrappedPdfiumModule> {
 	if (!wasmBinary) {
 		throw new Error("PDFium: wasm binary is required to initialize the module");
 	}
 
-	if (
-		cachedModule !== null &&
-		isSameWasmBinary(cachedModuleWasmBinary, wasmBinary)
-	) {
-		return cachedModule;
+	if (modulePromise !== null) {
+		if (
+			initializedWasmBinary !== null &&
+			initializedWasmBinary !== wasmBinary
+		) {
+			throw new Error("PDFium: module already initialized with a wasm binary");
+		}
+		return modulePromise;
 	}
 
-	if (
-		pendingModule !== null &&
-		isSameWasmBinary(pendingModuleWasmBinary, wasmBinary)
-	) {
-		return await pendingModule;
-	}
+	initializedWasmBinary = wasmBinary;
+	modulePromise = init({ wasmBinary }).then((module) => {
+		module.FPDF_InitLibrary();
+		module.PDFiumExt_Init();
+		return module;
+	});
 
-	pendingModuleWasmBinary = wasmBinary;
-	pendingModule = init({ wasmBinary })
-		.then((module) => {
-			module.FPDF_InitLibrary();
-			module.PDFiumExt_Init();
-			cachedModule = module;
-			cachedModuleWasmBinary = wasmBinary;
-			return module;
-		})
-		.finally(() => {
-			pendingModule = null;
-			pendingModuleWasmBinary = null;
-		});
-
-	return await pendingModule;
+	return modulePromise;
 }
 
 function getHeap(pdfium: WrappedPdfiumModule["pdfium"]): Uint8Array {
