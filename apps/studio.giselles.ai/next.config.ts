@@ -28,6 +28,7 @@ const pdfiumTracingConfig = {
 		"/api/vector-stores/document/[documentVectorStoreId]/documents": [
 			pdfiumWasmInclude,
 		],
+		"/api/vector-stores/cron/document/ingest": [pdfiumWasmInclude],
 	},
 };
 
