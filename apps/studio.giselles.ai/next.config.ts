@@ -23,6 +23,8 @@ const pdfiumWasmInclude = relative(projectDir, pdfiumWasmPath).replace(
 	"/",
 );
 
+console.log("pdfiumWasmInclude", pdfiumWasmInclude);
+
 const pdfiumTracingConfig = {
 	outputFileTracingIncludes: {
 		"/api/vector-stores/document/[documentVectorStoreId]/documents": [
