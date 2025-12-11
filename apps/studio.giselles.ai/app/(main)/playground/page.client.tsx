@@ -30,6 +30,8 @@ import {
 	useTransition,
 } from "react";
 import { LLMProviderIcon } from "@/app/(main)/workspaces/components/llm-provider-icon";
+import { TaskHeader } from "@/components/task/task-header";
+import { TaskLayout } from "@/components/task/task-layout";
 import type { LoaderData } from "./data-loader";
 import { FileAttachments } from "./file-attachments";
 import type { StageApp } from "./types";
@@ -213,29 +215,6 @@ function AppCard({
 			isSelected={isSelected}
 			onClick={onSelect}
 		/>
-	);
-}
-
-interface StageTopCardProps {
-	runningApp?: StageApp;
-	runStatus: "idle" | "running" | "completed";
-}
-
-function StageTopCard({
-	runningApp: _runningApp,
-	runStatus: _runStatus,
-}: StageTopCardProps) {
-	return (
-		<div className="relative flex w-full max-w-[960px] min-w-[320px] mx-auto flex-col overflow-hidden">
-			<div className="w-full flex justify-center items-center pt-1 pb-1 sm:pt-2 sm:pb-2">
-				<div className="flex flex-col items-center relative z-10">
-					<p className="font-thin text-[36px] font-sans text-blue-muted/70 text-center">
-						What's the task?
-						<span className="block sm:inline"> Your agent's on it.</span>
-					</p>
-				</div>
-			</div>
-		</div>
 	);
 }
 
@@ -709,7 +688,7 @@ function ChatInputArea({
 				{isDragActive ? (
 					<div className="pointer-events-none absolute inset-0 rounded-2xl border border-dashed border-blue-muted/60 bg-blue-muted/10" />
 				) : null}
-				<div className="relative z-10">
+				<div className="relative">
 					{/* Textarea */}
 					<textarea
 						ref={textareaRef}
@@ -915,59 +894,72 @@ export function Page({
 	);
 
 	return (
-		<div className="w-full flex flex-col">
-			<div className="flex items-stretch gap-4 min-w-0">
-				{/* Main content: apps area */}
-				<div className="flex-1 min-w-0 flex flex-col px-4 sm:px-[24px] pt-[24px]">
-					{/* Top section: app info + chat input */}
-					<div className="space-y-4 pb-8">
-						<StageTopCard runningApp={runningApp} runStatus={runStatus} />
-
-						{/* Chat-style input area */}
-						<ChatInputArea
-							key={selectedApp?.workspaceId ?? "no-workspace"}
-							selectedApp={selectedApp}
-							apps={selectableApps}
-							onAppSelect={handleAppSelect}
-							onSubmit={handleRunSubmit}
-							isRunning={isRunning}
-						/>
-					</div>
-
-					{/* App sections */}
-					<div className="flex flex-col gap-8 w-full pb-8 pt-12">
-						{/* Section 1: Sample apps from Giselle team */}
-						{data.sampleApps.length > 0 && (
-							<div className="flex flex-col">
-								<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-2">
-									<h2 className="mt-1 text-[16px] text-text-muted/80">
-										Sample apps from Giselle team
-									</h2>
+		<>
+			<div className="w-full flex flex-col">
+				<div className="flex items-stretch gap-4 min-w-0">
+					{/* Main content: apps area */}
+					<div className="flex-1 min-w-0 flex flex-col px-4 sm:px-[24px] pt-[24px]">
+						{/* Top section: app info + chat input */}
+						<div className="space-y-4 pb-8">
+							<div className="relative flex w-full max-w-[960px] min-w-[320px] mx-auto flex-col overflow-hidden">
+								<div className="w-full flex justify-center items-center pt-1 pb-1 sm:pt-2 sm:pb-2">
+									<div className="flex flex-col items-center relative">
+										<p className="font-thin text-[36px] font-sans text-blue-muted/70 text-center">
+											What's the task?
+											<span className="block sm:inline">
+												{" "}
+												Your agent's on it.
+											</span>
+										</p>
+									</div>
 								</div>
-								<div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
-									{data.sampleApps.map((sampleApp) => (
-										<AppListCard
-											key={sampleApp.id}
-											title={sampleApp.name}
-											description={sampleApp.description}
-											badgeType="sample"
-											icon={
-												<AppIcon
-													defaultSize={false}
-													className="h-5 w-5 text-white/40"
-												/>
-											}
-											providers={sampleApp.llmProviders}
-											isSelected={
-												selectedAppId === sampleApp.id ||
-												runningAppId === sampleApp.id
-											}
-											onClick={() => {
-												handleAppSelect(sampleApp.id);
-											}}
-										/>
-									))}
-									{/*
+							</div>
+
+							{/* Chat-style input area */}
+							<ChatInputArea
+								key={selectedApp?.workspaceId ?? "no-workspace"}
+								selectedApp={selectedApp}
+								apps={selectableApps}
+								onAppSelect={handleAppSelect}
+								onSubmit={handleRunSubmit}
+								isRunning={isRunning}
+							/>
+						</div>
+
+						{/* App sections */}
+						<div className="flex flex-col gap-8 w-full pb-8 pt-12">
+							{/* Section 1: Sample apps from Giselle team */}
+							{data.sampleApps.length > 0 && (
+								<div className="flex flex-col">
+									<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-2">
+										<h2 className="mt-1 text-[16px] text-text-muted/80">
+											Sample apps from Giselle team
+										</h2>
+									</div>
+									<div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
+										{data.sampleApps.map((sampleApp) => (
+											<AppListCard
+												key={sampleApp.id}
+												title={sampleApp.name}
+												description={sampleApp.description}
+												badgeType="sample"
+												icon={
+													<AppIcon
+														defaultSize={false}
+														className="h-5 w-5 text-white/40"
+													/>
+												}
+												providers={sampleApp.llmProviders}
+												isSelected={
+													selectedAppId === sampleApp.id ||
+													runningAppId === sampleApp.id
+												}
+												onClick={() => {
+													handleAppSelect(sampleApp.id);
+												}}
+											/>
+										))}
+										{/*
 
 									::::::::::: Sample implementations :::::::::
 
@@ -1007,101 +999,113 @@ export function Page({
 										}
 										providers={["openai", "anthropic"]}
 									/>*/}
+									</div>
 								</div>
-							</div>
-						)}
+							)}
 
-						{/* Section 2: Select an Apps to Run */}
-						<div className="flex flex-col">
-							<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-2">
-								<h2 className="mt-1 text-[16px] text-text-muted/80">
-									Select Your App to Run
-								</h2>
-								<div className="relative">
-									{isSearchActive ? (
-										<div className="flex items-center gap-2 rounded-full bg-white/5 px-3 py-1 text-[13px] text-text shadow-[0_0_0_1px_rgba(255,255,255,0.12)] transition-all duration-150">
-											<input
-												ref={appSearchInputRef}
-												type="text"
-												value={appSearchQuery}
-												onChange={(event) => {
-													setAppSearchQuery(event.target.value);
-												}}
-												onBlur={() => {
-													if (appSearchQuery.trim().length === 0) {
-														setIsSearchActive(false);
-													}
-												}}
-												placeholder="Search apps"
-												className="w-[160px] bg-transparent text-[13px] text-text placeholder:text-text-muted outline-none border-none"
-											/>
-											<Search className="h-4 w-4 text-text-muted" />
-										</div>
-									) : (
-										<button
-											type="button"
-											onClick={() => {
-												setIsSearchActive(true);
-												requestAnimationFrame(() => {
-													appSearchInputRef.current?.focus();
-												});
-											}}
-											className="group flex items-center gap-2 rounded-full px-3 py-1 text-[13px] text-text-muted transition-colors hover:bg-white/5"
-										>
-											<Search className="h-4 w-4 text-text-muted group-hover:text-text" />
-											<span>Search apps</span>
-										</button>
-									)}
-								</div>
-							</div>
-							{apps.length === 0 ? (
-								<div className="pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
-									<div className="w-full rounded-lg bg-[rgba(255,255,255,0.03)] shadow-[0_4px_16px_rgba(0,0,0,0.06)] px-6 py-6 text-center">
-										<h3 className="flex items-center justify-center gap-2 text-[16px] font-medium text-blue-muted/80">
-											<Sparkles className="h-4 w-4 text-blue-muted/80" />
-											<span>No apps yet</span>
-										</h3>
-										<p className="mt-2 text-[13px] text-blue-muted/60 leading-relaxed">
-											Build your first agent in Studio. Agents you create will
-											appear here, ready to run in Stage.
-										</p>
-										<div className="mt-6 flex justify-center">
+							{/* Section 2: Select an Apps to Run */}
+							<div className="flex flex-col">
+								<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-2">
+									<h2 className="mt-1 text-[16px] text-text-muted/80">
+										Select Your App to Run
+									</h2>
+									<div className="relative">
+										{isSearchActive ? (
+											<div className="flex items-center gap-2 rounded-full bg-white/5 px-3 py-1 text-[13px] text-text shadow-[0_0_0_1px_rgba(255,255,255,0.12)] transition-all duration-150">
+												<input
+													ref={appSearchInputRef}
+													type="text"
+													value={appSearchQuery}
+													onChange={(event) => {
+														setAppSearchQuery(event.target.value);
+													}}
+													onBlur={() => {
+														if (appSearchQuery.trim().length === 0) {
+															setIsSearchActive(false);
+														}
+													}}
+													placeholder="Search apps"
+													className="w-[160px] bg-transparent text-[13px] text-text placeholder:text-text-muted outline-none border-none"
+												/>
+												<Search className="h-4 w-4 text-text-muted" />
+											</div>
+										) : (
 											<button
 												type="button"
 												onClick={() => {
-													router.push("/workspaces");
+													setIsSearchActive(true);
+													requestAnimationFrame(() => {
+														appSearchInputRef.current?.focus();
+													});
 												}}
-												className="inline-flex items-center justify-center rounded-lg border border-[rgba(131,157,195,0.3)] px-4 py-2 text-[13px] text-[rgba(131,157,195,0.7)] transition-colors hover:border-[rgba(131,157,195,0.4)] hover:bg-[rgba(131,157,195,0.1)]"
+												className="group flex items-center gap-2 rounded-full px-3 py-1 text-[13px] text-text-muted transition-colors hover:bg-white/5"
 											>
-												Create your first app
+												<Search className="h-4 w-4 text-text-muted group-hover:text-text" />
+												<span>Search apps</span>
 											</button>
-										</div>
+										)}
 									</div>
 								</div>
-							) : apps.length === 0 ? (
-								<p className="text-sm text-muted-foreground max-w-[960px] mx-auto w-full">
-									No apps match your search.
-								</p>
-							) : (
-								<div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
-									{apps.map((app) => (
-										<AppCard
-											app={app}
-											key={app.id}
-											isSelected={
-												selectedAppId === app.id || runningAppId === app.id
-											}
-											onSelect={() => {
-												handleAppSelect(app.id);
-											}}
-										/>
-									))}
-								</div>
-							)}
+								{apps.length === 0 ? (
+									<div className="pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
+										<div className="w-full rounded-lg bg-[rgba(255,255,255,0.03)] shadow-[0_4px_16px_rgba(0,0,0,0.06)] px-6 py-6 text-center">
+											<h3 className="flex items-center justify-center gap-2 text-[16px] font-medium text-blue-muted/80">
+												<Sparkles className="h-4 w-4 text-blue-muted/80" />
+												<span>No apps yet</span>
+											</h3>
+											<p className="mt-2 text-[13px] text-blue-muted/60 leading-relaxed">
+												Build your first agent in Studio. Agents you create will
+												appear here, ready to run in Stage.
+											</p>
+											<div className="mt-6 flex justify-center">
+												<button
+													type="button"
+													onClick={() => {
+														router.push("/workspaces");
+													}}
+													className="inline-flex items-center justify-center rounded-lg border border-[rgba(131,157,195,0.3)] px-4 py-2 text-[13px] text-[rgba(131,157,195,0.7)] transition-colors hover:border-[rgba(131,157,195,0.4)] hover:bg-[rgba(131,157,195,0.1)]"
+												>
+													Create your first app
+												</button>
+											</div>
+										</div>
+									</div>
+								) : apps.length === 0 ? (
+									<p className="text-sm text-muted-foreground max-w-[960px] mx-auto w-full">
+										No apps match your search.
+									</p>
+								) : (
+									<div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
+										{apps.map((app) => (
+											<AppCard
+												app={app}
+												key={app.id}
+												isSelected={
+													selectedAppId === app.id || runningAppId === app.id
+												}
+												onSelect={() => {
+													handleAppSelect(app.id);
+												}}
+											/>
+										))}
+									</div>
+								)}
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+			{/*<div className="absolute inset-0 bg-background">
+				<TaskLayout>
+					<TaskHeader
+						status="inProgress"
+						title="Header"
+						description=""
+						workspaceId="wrks-123bbb"
+						input={null}
+					/>
+				</TaskLayout>
+			</div>*/}
+		</>
 	);
 }
