@@ -11,7 +11,7 @@
 		"dev-debug": "LOGLEVEL=debug pnpm run dev",
 		"email:dev": "email dev --dir emails --port 3333",
 		"email:export": "email export --dir emails --outDir out",
-		"build": "next build",
+		"build": "next build --webpack",
 		"build:analyze": "ANALYZE=true next build",
 		"start": "next start",
 		"format": "biome check --write .",
