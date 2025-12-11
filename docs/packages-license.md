@@ -11587,7 +11587,7 @@ Unknown manually approved
 
 
 <a name="stripe"></a>
-### stripe v20.1.0-alpha.3
+### stripe v20.1.0-alpha.4
 #### 
 
 ##### Paths
