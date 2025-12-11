@@ -1,5 +1,6 @@
+import { existsSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
-import { dirname } from "node:path";
+import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { init as initPdfium, type WrappedPdfiumModule } from "@embedpdf/pdfium";
 
@@ -7,21 +8,68 @@ import { assertNotAborted } from "./abort.js";
 
 declare const __filename: string;
 
-const moduleUrl =
-	typeof import.meta !== "undefined" && typeof import.meta.url === "string"
-		? import.meta.url
-		: typeof __filename !== "undefined"
-			? pathToFileURL(__filename).href
-			: new URL("index.js", pathToFileURL(process.cwd())).href;
+// Lazily resolve the wasm path to avoid Turbopack static analysis issues
+// See: https://github.com/vercel/next.js/issues/84972
+let cachedWasmPath: string | null = null;
+function getPdfiumWasmPath(): string {
+	if (cachedWasmPath !== null) {
+		return cachedWasmPath;
+	}
 
-// Ensure createRequire always receives a concrete file URL
-const requireBaseUrl = moduleUrl.endsWith("/")
-	? new URL("index.js", moduleUrl).href
-	: moduleUrl;
+	// Try multiple paths to find the wasm file
+	// This is needed because Vercel serverless has a different file structure
+	const possiblePaths = [
+		// Standard node_modules resolution
+		() => {
+			const moduleUrl =
+				typeof import.meta !== "undefined" &&
+				typeof import.meta.url === "string"
+					? import.meta.url
+					: typeof __filename !== "undefined"
+						? pathToFileURL(__filename).href
+						: new URL("index.js", pathToFileURL(process.cwd())).href;
 
-const moduleRequire = createRequire(requireBaseUrl);
-const PDFIUM_WASM_PATH = moduleRequire.resolve("@embedpdf/pdfium/pdfium.wasm");
-const PDFIUM_WASM_DIR = dirname(PDFIUM_WASM_PATH);
+			const requireBaseUrl = moduleUrl.endsWith("/")
+				? new URL("index.js", moduleUrl).href
+				: moduleUrl;
+
+			const moduleRequire = createRequire(requireBaseUrl);
+			return moduleRequire.resolve("@embedpdf/pdfium/pdfium.wasm");
+		},
+		// Relative to process.cwd() (for Vercel)
+		() => join(process.cwd(), "node_modules/@embedpdf/pdfium/dist/pdfium.wasm"),
+		// Relative to __dirname
+		() =>
+			join(
+				typeof __dirname !== "undefined" ? __dirname : process.cwd(),
+				"../node_modules/@embedpdf/pdfium/dist/pdfium.wasm",
+			),
+		// Vercel serverless function structure
+		() =>
+			join(
+				process.cwd(),
+				".next/server/node_modules/@embedpdf/pdfium/dist/pdfium.wasm",
+			),
+	];
+
+	const searchedPaths: string[] = [];
+	for (const getPath of possiblePaths) {
+		try {
+			const path = getPath();
+			searchedPaths.push(path);
+			if (existsSync(path)) {
+				cachedWasmPath = path;
+				return cachedWasmPath;
+			}
+		} catch {
+			// Try next path
+		}
+	}
+
+	throw new Error(
+		`Could not find pdfium.wasm. Searched paths:\n${searchedPaths.map((p) => `  - ${p}`).join("\n")}`,
+	);
+}
 
 type PdfiumRenderCallback = (frame: {
 	data: Uint8Array;
@@ -95,16 +143,11 @@ async function getPdfiumModule(): Promise<WrappedPdfiumModule> {
 	}
 
 	if (pendingModule === null) {
+		// Read wasm file directly to avoid Turbopack module resolution issues
+		// See: https://github.com/vercel/next.js/issues/84972
+		const wasmBinary = readFileSync(getPdfiumWasmPath());
 		pendingModule = initPdfium({
-			locateFile: (fileName: string, prefix: string) => {
-				if (fileName === "pdfium.wasm") {
-					return PDFIUM_WASM_PATH;
-				}
-				if (prefix) {
-					return `${prefix}${fileName}`;
-				}
-				return `${PDFIUM_WASM_DIR}/${fileName}`;
-			},
+			wasmBinary,
 		})
 			.then((module) => {
 				module.FPDF_InitLibrary();
