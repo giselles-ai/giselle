@@ -98,17 +98,24 @@ async function getPdfiumModule(): Promise<WrappedPdfiumModule> {
 		pendingModule = initPdfium({
 			locateFile: (fileName: string, prefix: string) => {
 				if (fileName === "pdfium.wasm") {
+					console.log("PDFIUM_WASM_PATH", PDFIUM_WASM_PATH);
 					return PDFIUM_WASM_PATH;
 				}
 				if (prefix) {
+					console.log("prefix, fileName", `${prefix}${fileName}`);
 					return `${prefix}${fileName}`;
 				}
+				console.log(
+					"PDFIUM_WASM_DIR, fileName",
+					`${PDFIUM_WASM_DIR}/${fileName}`,
+				);
 				return `${PDFIUM_WASM_DIR}/${fileName}`;
 			},
 		})
 			.then((module) => {
 				module.FPDF_InitLibrary();
 				module.PDFiumExt_Init();
+				console.log("module", module);
 				cachedModule = module;
 				return module;
 			})
@@ -465,4 +472,3 @@ function calculateRenderSize(
 	const width = Math.max(Math.floor(baseWidth * scale), 1);
 	const height = Math.max(Math.floor(baseHeight * scale), 1);
 	return { width, height };
-}
