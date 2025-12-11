@@ -86,5 +86,25 @@ describe("token-encryption", () => {
 				"TOKEN_ENCRYPTION_KEY must be 32 bytes",
 			);
 		});
+
+		describe("when dencryption key is invalid", () => {
+			test("throws error when decrypting without key", () => {
+				const encrypted = encryptToken("test-token");
+				process.env.TOKEN_ENCRYPTION_KEY = "";
+
+				expect(() => decryptToken(encrypted)).toThrow(
+					"TOKEN_ENCRYPTION_KEY is not set",
+				);
+			});
+
+			test("throws error when decrypting with wrong key length", () => {
+				const encrypted = encryptToken("test-token");
+				process.env.TOKEN_ENCRYPTION_KEY = randomBytes(16).toString("base64");
+
+				expect(() => decryptToken(encrypted)).toThrow(
+					"TOKEN_ENCRYPTION_KEY must be 32 bytes",
+				);
+			});
+		});
 	});
 });
