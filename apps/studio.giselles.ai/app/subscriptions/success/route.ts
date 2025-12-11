@@ -36,12 +36,11 @@ export async function GET(_request: Request) {
 
 		const teamId = await getTeamIdFromSubscription(subscriptionId);
 		await updateGiselleSession({ teamId, checkoutSessionId: undefined });
-		redirect("/settings/team");
 	} catch (error) {
 		// fallback
 		captureException(error);
-		redirect("/settings/team");
 	}
+	redirect("/settings/team");
 }
 
 async function getTeamIdFromSubscription(subscriptionId: string) {
