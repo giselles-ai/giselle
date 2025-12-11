@@ -18,8 +18,8 @@ import {
 	XIcon,
 } from "lucide-react";
 import { use, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { getAssistantTextFromGeneration } from "../../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-text";
-import { GenerationView } from "../../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-view";
+import { getAssistantTextFromGeneration } from "../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-text";
+import { GenerationView } from "../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-view";
 import { fetchGenerationData } from "../actions";
 import { getModelInfo } from "../lib/utils";
 import { RunInStudioOnlyChip } from "./run-in-studio-only-chip";

@@ -886,7 +886,7 @@ export function Page({
 						workspaceId: selectedApp.workspaceId,
 					});
 					// Navigate to task page immediately when completed
-					router.push(`/stage/tasks/${taskId}`);
+					router.push(`/tasks/${taskId}`);
 				} catch (error) {
 					// eslint-disable-next-line no-console
 					console.error("Failed to create and start task from stage:", error);
