@@ -1,15 +1,12 @@
 import { notFound } from "next/navigation";
-import type React from "react";
 import { Suspense } from "react";
 import { InputAreaHeaderControls } from "./ui/input-area-header-controls";
 import { InputAreaPlaceholder } from "./ui/input-area-placeholder";
 import { StepsSection } from "./ui/steps-section";
-import { getTaskInput } from "./ui/task-input-data";
-import { TopSection } from "./ui/top-section";
-import { getTopSectionData } from "./ui/top-section-data";
 import "./mobile-scroll.css";
 import { TaskId } from "@giselles-ai/protocol";
 import { giselle } from "@/app/giselle";
+import { TaskHeader } from "./ui/task-header";
 
 export default async function ({
 	params,
@@ -25,19 +22,13 @@ export default async function ({
 	const taskId = result.data;
 	// Fetch task once and reuse for both sections
 	const taskPromise = giselle.getTask({ taskId });
-	const topSectionDataPromise = getTopSectionData({ params });
-	const taskInputPromise = getTaskInput(taskId);
 
 	return (
 		<div className="bg-bg text-foreground h-full font-sans overflow-y-hidden">
 			<div className="max-w-[640px] mx-auto px-4 flex flex-col h-full">
 				{/* Top Section */}
 				<Suspense fallback={<div>Loading...</div>}>
-					<TopSection
-						topSectionDataPromise={topSectionDataPromise}
-						taskId={taskId}
-						taskInputPromise={taskInputPromise}
-					/>
+					<TaskHeader params={params} />
 				</Suspense>
 				<div className="flex-1 overflow-y-auto pb-8">
 					{/* Steps Section */}

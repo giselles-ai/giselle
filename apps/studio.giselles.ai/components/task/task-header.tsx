@@ -67,19 +67,22 @@ function TaskInputItem({ item }: { item: ParameterItem }) {
 		}
 	}
 }
+
+export interface TaskHeaderProps {
+	status: Task["status"];
+	title: string;
+	description: string;
+	workspaceId: WorkspaceId;
+	input: ParametersInput | null;
+}
+
 export function TaskHeader({
 	status,
 	title,
 	description,
 	workspaceId,
 	input,
-}: {
-	title: string;
-	description: string;
-	status: Task["status"];
-	workspaceId: WorkspaceId;
-	input: ParametersInput | null;
-}) {
+}: TaskHeaderProps) {
 	return (
 		<div className="w-full pb-3  bg-[color:var(--color-background)]">
 			{/* Top gradient separator to soften the edge against the header */}
