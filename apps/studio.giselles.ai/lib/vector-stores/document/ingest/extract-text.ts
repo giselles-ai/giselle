@@ -1,23 +1,11 @@
 import { readFile } from "node:fs/promises";
-import { createRequire } from "node:module";
+import { join } from "node:path";
 
 import {
 	extractPdfText,
 	extractText,
 } from "@giselles-ai/document-preprocessor";
 import { resolveSupportedDocumentFile } from "../utils";
-
-const moduleRequire = createRequire(import.meta.url);
-const PDFIUM_WASM_PATH = moduleRequire.resolve("@embedpdf/pdfium/pdfium.wasm");
-let pdfiumWasmBinaryPromise: Promise<Uint8Array> | null = null;
-
-function getPdfiumWasmBinary(): Promise<Uint8Array> {
-	if (pdfiumWasmBinaryPromise === null) {
-		pdfiumWasmBinaryPromise = readFile(PDFIUM_WASM_PATH);
-	}
-
-	return pdfiumWasmBinaryPromise;
-}
 
 interface ExtractTextOptions {
 	signal?: AbortSignal;
@@ -63,7 +51,8 @@ export async function extractTextFromDocument(
 	const normalizedExtension = fileTypeInfo.extension.toLowerCase();
 
 	if (normalizedExtension === PDF_EXTENSION) {
-		const pdfiumWasmBinary = await getPdfiumWasmBinary();
+		const wasmPath = join(process.cwd(), "public/pdfium/pdfium.wasm");
+		const pdfiumWasmBinary = await readFile(wasmPath);
 		const result = await extractPdfText(buffer, { signal, pdfiumWasmBinary });
 		const text = result.pages.map((page) => page.text).join("\n\n");
 		return {
