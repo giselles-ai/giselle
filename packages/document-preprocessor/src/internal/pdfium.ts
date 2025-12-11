@@ -1,27 +1,8 @@
-import { createRequire } from "node:module";
-import { dirname } from "node:path";
-import { pathToFileURL } from "node:url";
-import { init as initPdfium, type WrappedPdfiumModule } from "@embedpdf/pdfium";
+import { init, type WrappedPdfiumModule } from "@embedpdf/pdfium";
 
 import { assertNotAborted } from "./abort.js";
 
-declare const __filename: string;
-
-const moduleUrl =
-	typeof import.meta !== "undefined" && typeof import.meta.url === "string"
-		? import.meta.url
-		: typeof __filename !== "undefined"
-			? pathToFileURL(__filename).href
-			: new URL("index.js", pathToFileURL(process.cwd())).href;
-
-// Ensure createRequire always receives a concrete file URL
-const requireBaseUrl = moduleUrl.endsWith("/")
-	? new URL("index.js", moduleUrl).href
-	: moduleUrl;
-
-const moduleRequire = createRequire(requireBaseUrl);
-const PDFIUM_WASM_PATH = moduleRequire.resolve("@embedpdf/pdfium/pdfium.wasm");
-const PDFIUM_WASM_DIR = dirname(PDFIUM_WASM_PATH);
+type PdfiumWasmBinary = ArrayBuffer | ArrayBufferView;
 
 type PdfiumRenderCallback = (frame: {
 	data: Uint8Array;
@@ -64,6 +45,7 @@ interface PdfiumDocument {
 type WithPdfDocumentOptions = {
 	password?: string;
 	signal?: AbortSignal;
+	wasmBinary: PdfiumWasmBinary;
 };
 
 const FORM_INFO_SIZE = 256;
@@ -87,35 +69,77 @@ const PDFIUM_ERROR_MESSAGES: Record<number, string> = {
 };
 
 let cachedModule: WrappedPdfiumModule | null = null;
+let cachedModuleWasmBinary: PdfiumWasmBinary | null = null;
 let pendingModule: Promise<WrappedPdfiumModule> | null = null;
+let pendingModuleWasmBinary: PdfiumWasmBinary | null = null;
 
-async function getPdfiumModule(): Promise<WrappedPdfiumModule> {
-	if (cachedModule !== null) {
+function isSameWasmBinary(
+	left: PdfiumWasmBinary | null | undefined,
+	right: PdfiumWasmBinary | null | undefined,
+): boolean {
+	if (left === right) {
+		return true;
+	}
+	if (!left || !right) {
+		return false;
+	}
+
+	const leftBuffer = left instanceof ArrayBuffer ? left : left.buffer;
+	const rightBuffer = right instanceof ArrayBuffer ? right : right.buffer;
+
+	if (leftBuffer !== rightBuffer) {
+		return false;
+	}
+
+	const leftOffset = left instanceof ArrayBuffer ? 0 : left.byteOffset;
+	const rightOffset = right instanceof ArrayBuffer ? 0 : right.byteOffset;
+
+	if (leftOffset !== rightOffset) {
+		return false;
+	}
+
+	const leftLength =
+		left instanceof ArrayBuffer ? left.byteLength : left.byteLength;
+	const rightLength =
+		right instanceof ArrayBuffer ? right.byteLength : right.byteLength;
+
+	return leftLength === rightLength;
+}
+
+async function getPdfiumModule(
+	wasmBinary: PdfiumWasmBinary,
+): Promise<WrappedPdfiumModule> {
+	if (!wasmBinary) {
+		throw new Error("PDFium: wasm binary is required to initialize the module");
+	}
+
+	if (
+		cachedModule !== null &&
+		isSameWasmBinary(cachedModuleWasmBinary, wasmBinary)
+	) {
 		return cachedModule;
 	}
 
-	if (pendingModule === null) {
-		pendingModule = initPdfium({
-			locateFile: (fileName: string, prefix: string) => {
-				if (fileName === "pdfium.wasm") {
-					return PDFIUM_WASM_PATH;
-				}
-				if (prefix) {
-					return `${prefix}${fileName}`;
-				}
-				return `${PDFIUM_WASM_DIR}/${fileName}`;
-			},
-		})
-			.then((module) => {
-				module.FPDF_InitLibrary();
-				module.PDFiumExt_Init();
-				cachedModule = module;
-				return module;
-			})
-			.finally(() => {
-				pendingModule = null;
-			});
+	if (
+		pendingModule !== null &&
+		isSameWasmBinary(pendingModuleWasmBinary, wasmBinary)
+	) {
+		return await pendingModule;
 	}
+
+	pendingModuleWasmBinary = wasmBinary;
+	pendingModule = init({ wasmBinary })
+		.then((module) => {
+			module.FPDF_InitLibrary();
+			module.PDFiumExt_Init();
+			cachedModule = module;
+			cachedModuleWasmBinary = wasmBinary;
+			return module;
+		})
+		.finally(() => {
+			pendingModule = null;
+			pendingModuleWasmBinary = null;
+		});
 
 	return await pendingModule;
 }
@@ -130,7 +154,7 @@ export async function withPdfDocument<T>(
 	handler: (document: PdfiumDocument) => Promise<T> | T,
 ): Promise<T> {
 	assertNotAborted(options.signal);
-	const module = await getPdfiumModule();
+	const module = await getPdfiumModule(options.wasmBinary);
 	assertNotAborted(options.signal);
 	const document = loadDocument(module, data, options.password ?? "");
 	try {
