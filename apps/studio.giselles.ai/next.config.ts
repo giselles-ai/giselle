@@ -98,6 +98,7 @@ const nextConfig: NextConfig = {
 		typedEnv: true,
 		webpackMemoryOptimizations: true,
 		webpackBuildWorker: true,
+		serverComponentsExternalPackages: ["@embedpdf/pdfium"],
 	},
 	...pdfiumTracingConfig,
 };
