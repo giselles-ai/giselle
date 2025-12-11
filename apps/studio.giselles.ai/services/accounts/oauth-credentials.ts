@@ -1,6 +1,7 @@
 import { and, eq } from "drizzle-orm";
 import { db, oauthCredentials, supabaseUserMappings, users } from "@/db";
 import { getUser } from "@/lib/supabase";
+import { decryptToken } from "@/lib/token-encryption";
 
 export type OAuthProvider = "github" | "google";
 
@@ -17,5 +18,11 @@ export async function getOauthCredential(provider: OAuthProvider) {
 				eq(oauthCredentials.provider, provider),
 			),
 		);
-	return result?.oauthCredentials;
+
+	const cred = result.oauthCredentials;
+	return {
+		...cred,
+		accessToken: decryptToken(cred.accessToken),
+		refreshToken: cred.refreshToken ? decryptToken(cred.refreshToken) : null,
+	};
 }

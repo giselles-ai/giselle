@@ -7,6 +7,7 @@ import { isValidReturnUrl } from "@/app/(auth)/lib";
 import { db, oauthCredentials, supabaseUserMappings, users } from "@/db";
 import { logger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase";
+import { encryptToken } from "@/lib/token-encryption";
 import { initializeAccount, type OAuthProvider } from "@/services/accounts";
 
 function isValidOAuthProvider(provider: string): provider is OAuthProvider {
@@ -186,14 +187,19 @@ async function storeProviderTokens(
 			eq(users.dbId, supabaseUserMappings.userDbId),
 		)
 		.where(eq(supabaseUserMappings.supabaseUserId, user.id));
+	const encryptedAccessToken = encryptToken(provider_token);
+	const encryptedRefreshToken = provider_refresh_token
+		? encryptToken(provider_refresh_token)
+		: null;
+
 	await db
 		.insert(oauthCredentials)
 		.values({
 			userId: dbUser.dbid,
 			provider,
 			providerAccountId,
-			accessToken: provider_token,
-			refreshToken: provider_refresh_token,
+			accessToken: encryptedAccessToken,
+			refreshToken: encryptedRefreshToken,
 		})
 		.onConflictDoUpdate({
 			target: [
@@ -202,8 +208,8 @@ async function storeProviderTokens(
 				oauthCredentials.providerAccountId,
 			],
 			set: {
-				accessToken: provider_token,
-				refreshToken: provider_refresh_token,
+				accessToken: encryptedAccessToken,
+				refreshToken: encryptedRefreshToken,
 				updatedAt: new Date(),
 			},
 		});

@@ -1,6 +1,7 @@
 import { and, eq } from "drizzle-orm";
 import { db, oauthCredentials, supabaseUserMappings } from "@/db";
 import { getUser } from "@/lib/supabase";
+import { encryptToken } from "@/lib/token-encryption";
 
 export async function refreshOauthCredential(
 	provider: string,
@@ -19,9 +20,9 @@ export async function refreshOauthCredential(
 	await db
 		.update(oauthCredentials)
 		.set({
-			accessToken,
+			accessToken: encryptToken(accessToken),
 			expiresAt,
-			refreshToken,
+			refreshToken: encryptToken(refreshToken),
 			updatedAt: new Date(),
 			scope,
 			tokenType,
