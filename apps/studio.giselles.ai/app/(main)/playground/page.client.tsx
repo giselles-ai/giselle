@@ -718,7 +718,7 @@ function ChatInputArea({
 						onCompositionStart={handleCompositionStart}
 						onCompositionEnd={handleCompositionEnd}
 						onKeyDown={handleTextareaKeyDown}
-						placeholder="Ask anything—powered by Giselle docs"
+						placeholder={selectedApp?.description ?? ""}
 						rows={1}
 						disabled={isRunning}
 						className="w-full resize-none bg-transparent text-[15px] text-foreground placeholder:text-blue-muted/50 outline-none disabled:cursor-not-allowed min-h-[2.4em] sm:min-h-[2.75em] pt-0 pb-[0.7em] px-1"
