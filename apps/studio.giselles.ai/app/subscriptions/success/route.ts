@@ -15,8 +15,12 @@ export async function GET(_request: Request) {
 	}
 
 	try {
-		const checkoutSession =
-			await stripe.checkout.sessions.retrieve(checkoutSessionId);
+		const checkoutSession = await stripe.checkout.sessions.retrieve(
+			checkoutSessionId,
+			{
+				apiVersion: "2025-11-17.preview;checkout_product_catalog_preview=v1",
+			},
+		);
 		const checkoutItem = checkoutSession.checkout_items?.[0];
 		if (checkoutItem?.type !== "pricing_plan_subscription_item") {
 			throw new Error("Invalid checkout item type");
