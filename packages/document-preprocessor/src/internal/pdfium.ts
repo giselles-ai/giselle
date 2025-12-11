@@ -20,8 +20,41 @@ const requireBaseUrl = moduleUrl.endsWith("/")
 	: moduleUrl;
 
 const moduleRequire = createRequire(requireBaseUrl);
-const PDFIUM_WASM_PATH = moduleRequire.resolve("@embedpdf/pdfium/pdfium.wasm");
-const PDFIUM_WASM_DIR = dirname(PDFIUM_WASM_PATH);
+function resolvePdfiumWasmPath(): { path: string; dir: string } {
+	const fallbackPaths = [
+		// Typical install location when the package is available normally
+		() => moduleRequire.resolve("@embedpdf/pdfium/pdfium.wasm"),
+		// Monorepo/Turbopack deployments may place node_modules alongside the app root
+		() =>
+			new URL(
+				"../node_modules/@embedpdf/pdfium/dist/pdfium.wasm",
+				pathToFileURL(`${process.cwd()}/`),
+			).pathname,
+		// Or inside the package workspace (e.g., Vercel output tracing copies this path)
+		() =>
+			new URL(
+				"../packages/document-preprocessor/node_modules/@embedpdf/pdfium/dist/pdfium.wasm",
+				pathToFileURL(`${process.cwd()}/`),
+			).pathname,
+	];
+
+	for (const getPath of fallbackPaths) {
+		try {
+			const resolvedPath = getPath();
+			return {
+				path: resolvedPath,
+				dir: dirname(resolvedPath),
+			};
+		} catch (_error) {
+			// Try the next candidate
+		}
+	}
+
+	throw new Error("PDFium wasm file could not be resolved");
+}
+
+const { path: PDFIUM_WASM_PATH, dir: PDFIUM_WASM_DIR } =
+	resolvePdfiumWasmPath();
 
 type PdfiumRenderCallback = (frame: {
 	data: Uint8Array;
