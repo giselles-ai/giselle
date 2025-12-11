@@ -619,9 +619,9 @@ function ChatInputArea({
 		});
 	}, []);
 
-	const handleDismissFileRestrictionError = useCallback(() => {
+	const handleDismissFileRestrictionError = () => {
 		setFileRestrictionError(null);
-	}, []);
+	};
 
 	const handleAttachmentButtonClick = () => {
 		fileInputRef.current?.click();
