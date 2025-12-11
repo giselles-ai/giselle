@@ -7,7 +7,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 		<SentryUserWrapper>
 			<div className="h-screen flex flex-col bg-bg">
 				<Header />
-				<div className="flex overflow-y-hidden divide-x divide-border">
+				<div className="flex overflow-y-hidden divide-x divide-border flex-1">
 					<Sidebar />
 					<main className="flex-1 overflow-y-auto">{children}</main>
 				</div>

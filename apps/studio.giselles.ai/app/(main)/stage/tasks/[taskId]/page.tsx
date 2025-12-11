@@ -29,44 +29,40 @@ export default async function ({
 	const taskInputPromise = getTaskInput(taskId);
 
 	return (
-		<div className="bg-bg text-foreground min-h-screen font-sans">
-			<div className="max-w-7xl mx-auto px-4 pt-0 pb-0 flex flex-col min-h-screen">
-				<div className="flex-1">
-					{/* Top Section */}
-					<Suspense fallback={<div>Loading...</div>}>
-						<TopSection
-							topSectionDataPromise={topSectionDataPromise}
-							taskId={taskId}
-							taskInputPromise={taskInputPromise}
-						/>
-					</Suspense>
-
+		<div className="bg-bg text-foreground h-full font-sans overflow-y-hidden">
+			<div className="max-w-[640px] mx-auto px-4 flex flex-col h-full">
+				{/* Top Section */}
+				<Suspense fallback={<div>Loading...</div>}>
+					<TopSection
+						topSectionDataPromise={topSectionDataPromise}
+						taskId={taskId}
+						taskInputPromise={taskInputPromise}
+					/>
+				</Suspense>
+				<div className="flex-1 overflow-y-auto pb-8">
 					{/* Steps Section */}
 					<Suspense fallback={<div>Loading steps...</div>}>
 						<StepsSection taskPromise={taskPromise} taskId={taskId} />
 					</Suspense>
-
 				</div>
 
 				{/* Main Content Area - Request new tasks section (sticky inside main container) */}
 				<div
-					className="mt-8 sticky bottom-0 z-10 bg-[color:var(--color-background)] pb-4"
+					className="bg-[color:var(--color-background)] pb-4 relative"
 					style={{ marginBottom: "-1px" }}
 				>
 					{/* Top gradient separator */}
-					<div className="h-6 -mt-6 bg-gradient-to-t from-[color:var(--color-background)] to-transparent pointer-events-none" />
-					<div className="max-w-[640px] min-w-[320px] mx-auto">
-						<div className="flex items-center justify-between mb-2">
-							<h2 className="text-text-muted text-[13px] font-semibold">
-								Request new tasks in a new session
-							</h2>
-							<Suspense fallback={null}>
-								<InputAreaHeaderControls taskPromise={taskPromise} />
-							</Suspense>
-						</div>
-						{/* TODO: Input area will be added here - placeholder for future functionality */}
-						<InputAreaPlaceholder taskPromise={taskPromise} />
+					<div className="w-full absolute h-6 -top-6 bg-gradient-to-t from-[color:var(--color-background)] to-transparent pointer-events-none" />
+					<div className="flex items-center justify-between mb-2">
+						<h2 className="text-text-muted text-[13px] font-semibold">
+							Request new tasks in a new session
+						</h2>
+						<Suspense fallback={null}>
+							<InputAreaHeaderControls taskPromise={taskPromise} />
+						</Suspense>
 					</div>
+					{/* TODO: Input area will be added here - placeholder for future functionality */}
+					<InputAreaPlaceholder taskPromise={taskPromise} />
 				</div>
 			</div>
 		</div>
