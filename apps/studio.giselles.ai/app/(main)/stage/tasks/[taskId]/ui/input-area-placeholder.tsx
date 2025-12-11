@@ -1,64 +1,32 @@
 "use client";
 
-import { Select } from "@giselle-internal/ui/select";
 import type { Task } from "@giselles-ai/protocol";
-import { ArrowUpIcon, Paperclip } from "lucide-react";
-import { use } from "react";
+import { ArrowUpIcon } from "lucide-react";
 
 export function InputAreaPlaceholder({
 	taskPromise,
 }: {
 	taskPromise: Promise<Task>;
 }) {
-	const task = use(taskPromise);
-	const appLabel = task.name ?? "Selected app";
-
 	return (
 		<div className="relative w-full max-w-[640px] min-w-[320px] mx-auto">
-			<div className="rounded-2xl bg-[rgba(131,157,195,0.14)] shadow-[inset_0_1px_4px_rgba(0,0,0,0.22)] pt-4 pb-3 sm:pt-5 sm:pb-4 px-4">
-				{/* Textarea */}
-				<textarea
-					placeholder="Ask anything—powered by Giselle docs"
-					rows={1}
-					disabled
-					className="w-full resize-none bg-transparent text-[15px] text-foreground placeholder:text-blue-muted/50 outline-none disabled:cursor-not-allowed min-h-[2.4em] sm:min-h-[2.75em] pt-0 pb-[0.7em] px-1"
-					aria-label="Input area placeholder (not yet functional)"
-				/>
-
-				{/* Bottom row: Attachment + App selector + send */}
-				<div className="flex items-center justify-between mt-2 sm:mt-3">
-					{/* Left side: Attachment + App selector */}
-					<div className="flex items-center gap-2 flex-1 max-w-[260px]">
-						<button
-							type="button"
-							disabled
-							className="flex h-6 w-6 flex-shrink-0 items-center justify-center"
-						>
-							<Paperclip className="h-4 w-4 text-text-muted/70" />
-						</button>
-						<div className="flex-1">
-							<Select
-								options={[{ value: task.id, label: appLabel }]}
-								placeholder={appLabel}
-								value={task.id}
-								onValueChange={() => {}}
-								widthClassName="w-full"
-								disabled
-								triggerClassName="border-none !bg-[rgba(131,157,195,0.1)] hover:!bg-[rgba(131,157,195,0.18)] !px-2 !h-8 sm:!h-9 !rounded-[7px] sm:!rounded-[9px] text-[13px] [&_svg]:opacity-70"
-							/>
-						</div>
-					</div>
-
-					{/* Right side: Send button */}
-					<div className="flex items-center gap-2">
-						<button
-							type="button"
-							disabled
-							className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[5px] bg-[color:var(--color-inverse)] disabled:cursor-not-allowed opacity-40"
-						>
-							<ArrowUpIcon className="h-3 w-3 text-[color:var(--color-background)]" />
-						</button>
-					</div>
+			<div className="rounded-xl bg-[rgba(131,157,195,0.14)] shadow-[inset_0_1px_4px_rgba(0,0,0,0.22)] pt-3 pb-2 px-4">
+				{/* Textarea and Send button in one row */}
+				<div className="flex items-center gap-2">
+					<textarea
+						placeholder="Ask anything—powered by Giselle docs"
+						rows={1}
+						disabled
+						className="flex-1 resize-none bg-transparent text-[14px] text-foreground placeholder:text-blue-muted/50 outline-none disabled:cursor-not-allowed min-h-[1.75em] pt-0 pb-[0.4em] px-1"
+						aria-label="Input area placeholder (not yet functional)"
+					/>
+					<button
+						type="button"
+						disabled
+						className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-inverse)] disabled:cursor-not-allowed opacity-40"
+					>
+						<ArrowUpIcon className="h-2.5 w-2.5 text-[color:var(--color-background)]" />
+					</button>
 				</div>
 			</div>
 		</div>
