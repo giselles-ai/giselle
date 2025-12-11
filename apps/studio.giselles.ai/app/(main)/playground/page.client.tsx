@@ -12,6 +12,7 @@ import {
 	type FileData,
 	type GenerationContextInput,
 	type ParameterItem,
+	type ParametersInput,
 	type TaskId,
 	type UploadedFileData,
 } from "@giselles-ai/protocol";
@@ -826,6 +827,9 @@ export function Page({
 	const [runStatus, setRunStatus] = useState<"idle" | "running" | "completed">(
 		"idle",
 	);
+	const [pendingInput, setPendingInput] = useState<ParametersInput | null>(
+		null,
+	);
 	const [appSearchQuery, setAppSearchQuery] = useState("");
 	const [isSearchActive, setIsSearchActive] = useState(false);
 	const appSearchInputRef = useRef<HTMLInputElement | null>(null);
@@ -869,6 +873,10 @@ export function Page({
 	const handleRunSubmit = useCallback(
 		(event: { inputs: GenerationContextInput[] }) => {
 			if (!selectedApp) return;
+			const parametersInput = event.inputs.find(
+				(input): input is ParametersInput => input.type === "parameters",
+			);
+			setPendingInput(parametersInput ?? null);
 			setRunningAppId(selectedApp.id);
 			setRunStatus("running");
 			startTransition(async () => {
@@ -886,12 +894,18 @@ export function Page({
 					// eslint-disable-next-line no-console
 					console.error("Failed to create and start task from stage:", error);
 					setRunStatus("idle");
+					setPendingInput(null);
 					setRunningAppId(undefined);
 				}
 			});
 		},
 		[selectedApp, createAndStartTaskAction, router],
 	);
+
+	const overlayApp = runningApp ?? selectedApp;
+	const overlayInput = pendingInput;
+	const shouldShowTaskOverlay =
+		(runStatus === "running" || isRunning) && overlayApp;
 
 	return (
 		<>
@@ -1095,17 +1109,31 @@ export function Page({
 					</div>
 				</div>
 			</div>
-			{/*<div className="absolute inset-0 bg-background">
-				<TaskLayout>
-					<TaskHeader
-						status="inProgress"
-						title="Header"
-						description=""
-						workspaceId="wrks-123bbb"
-						input={null}
-					/>
-				</TaskLayout>
-			</div>*/}
+			{shouldShowTaskOverlay && (
+				<div className="absolute inset-0 bg-background">
+					<TaskLayout>
+						<TaskHeader
+							status="inProgress"
+							title={overlayApp?.name ?? "Running task"}
+							description={overlayApp?.description ?? ""}
+							workspaceId={overlayApp?.workspaceId ?? ""}
+							input={overlayInput}
+						/>
+
+						<p className="text-[13px] text-text-muted/70 italic">
+							<span
+								className="bg-[length:200%_100%] bg-clip-text bg-gradient-to-r from-text-muted/70 via-text-muted/35 to-text-muted/70 text-transparent animate-shimmer"
+								style={{
+									animationDuration: "1s",
+									animationTimingFunction: "linear",
+								}}
+							>
+								Creating task...
+							</span>
+						</p>
+					</TaskLayout>
+				</div>
+			)}
 		</>
 	);
 }
