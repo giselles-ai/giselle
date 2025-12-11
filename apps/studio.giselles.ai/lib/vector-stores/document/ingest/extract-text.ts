@@ -51,7 +51,7 @@ export async function extractTextFromDocument(
 	const normalizedExtension = fileTypeInfo.extension.toLowerCase();
 
 	if (normalizedExtension === PDF_EXTENSION) {
-		const wasmPath = join(process.cwd(), "public/pdfium/pdfium.wasm");
+		const wasmPath = join("./pdfium.wasm");
 		const pdfiumWasmBinary = await readFile(wasmPath);
 		const result = await extractPdfText(buffer, { signal, pdfiumWasmBinary });
 		const text = result.pages.map((page) => page.text).join("\n\n");
