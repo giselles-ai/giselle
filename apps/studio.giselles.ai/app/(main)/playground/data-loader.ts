@@ -82,9 +82,22 @@ async function getAppsBySampleFlag(
 				);
 				return null;
 			}
-			const giselleApp = await giselle.getApp({
-				appId: dbWorkspace.app.id,
-			});
+			const giselleApp = await giselle
+				.getApp({
+					appId: dbWorkspace.app.id,
+				})
+				.catch((error) => {
+					logger.error(
+						{
+							err: error,
+							appId: dbWorkspace.app.id,
+							workspaceId: dbWorkspace.id,
+							appEntryNodeId: dbWorkspace.app.appEntryNodeId,
+						},
+						"Failed to load app via giselle.getApp",
+					);
+					throw error;
+				});
 			// Extract vector store / LLM metadata for this app
 			const githubRepositories: string[] = [];
 			const documentFiles: string[] = [];
