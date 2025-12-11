@@ -150,15 +150,6 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 		setTask(data.task);
 	}, []);
 
-	// Keep refs in sync with state
-	useEffect(() => {
-		stepGenerationsRef.current = stepGenerations;
-	}, [stepGenerations]);
-
-	useEffect(() => {
-		stepOperationNodesRef.current = stepOperationNodes;
-	}, [stepOperationNodes]);
-
 	// Fetch generation data for completed steps
 	useEffect(() => {
 		const fetchGenerations = async () => {
@@ -195,16 +186,26 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 				try {
 					const generation = await fetchGenerationData(generationId);
 					if (generation) {
-						setStepGenerations((prev) => ({
-							...prev,
-							[stepId]: generation,
-						}));
+						setStepGenerations((prev) => {
+							const updated = {
+								...prev,
+								[stepId]: generation,
+							};
+							// Update ref immediately for use in async operations
+							stepGenerationsRef.current = updated;
+							return updated;
+						});
 						// Save operationNode even if generation has no output
 						if (generation.context.operationNode) {
-							setStepOperationNodes((prev) => ({
-								...prev,
-								[stepId]: generation.context.operationNode,
-							}));
+							setStepOperationNodes((prev) => {
+								const updated = {
+									...prev,
+									[stepId]: generation.context.operationNode,
+								};
+								// Update ref immediately for use in async operations
+								stepOperationNodesRef.current = updated;
+								return updated;
+							});
 						}
 					}
 				} catch (error) {
@@ -300,6 +301,8 @@ export function StepsSection({ taskPromise, taskId }: StepsSectionProps) {
 	}, [task.sequences, stepGenerations]);
 
 	// Auto-expand output when a new step completes
+	// This is a side effect that should happen when lastCompletedGeneration changes,
+	// not during render, so useEffect is necessary here
 	useEffect(() => {
 		if (lastCompletedGeneration) {
 			setIsOutputExpanded(true);

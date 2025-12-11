@@ -8,15 +8,19 @@ import {
 } from "@giselles-ai/react";
 import { FilePenLine } from "lucide-react";
 import Link from "next/link";
-import { use, useCallback, useState } from "react";
+import { Suspense, use, useCallback, useState } from "react";
+import { TaskInput } from "./task-input";
+import type { TaskInputData } from "./task-input-types";
 import type { TopSectionData } from "./top-section-data";
 
 export function TopSection({
 	topSectionDataPromise,
 	taskId,
+	taskInputPromise,
 }: {
 	topSectionDataPromise: Promise<TopSectionData>;
 	taskId: TaskId;
+	taskInputPromise?: Promise<TaskInputData>;
 }) {
 	const { app, task: initialTask, workspace } = use(topSectionDataPromise);
 	const [task, setTask] = useState(initialTask);
@@ -82,6 +86,13 @@ export function TopSection({
 								</p>
 							</div>
 						)}
+					</div>
+
+					{/* Task input preview */}
+					<div className="mt-3">
+						<Suspense fallback={<div>Loading task input...</div>}>
+							<TaskInput taskInputPromise={taskInputPromise} />
+						</Suspense>
 					</div>
 				</div>
 			</div>

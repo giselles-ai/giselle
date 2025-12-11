@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { InputAreaHeaderControls } from "./ui/input-area-header-controls";
 import { InputAreaPlaceholder } from "./ui/input-area-placeholder";
 import { StepsSection } from "./ui/steps-section";
+import { getTaskInput } from "./ui/task-input-data";
 import { TopSection } from "./ui/top-section";
 import { getTopSectionData } from "./ui/top-section-data";
 import "./mobile-scroll.css";
@@ -27,6 +28,7 @@ export default async function ({
 	// Fetch task once and reuse for both sections
 	const taskPromise = giselle.getTask({ taskId });
 	const topSectionDataPromise = getTopSectionData({ params });
+	const taskInputPromise = getTaskInput(taskId);
 
 	return (
 		<div className="bg-bg text-foreground min-h-screen font-sans">
@@ -37,18 +39,9 @@ export default async function ({
 						<TopSection
 							topSectionDataPromise={topSectionDataPromise}
 							taskId={taskId}
+							taskInputPromise={taskInputPromise}
 						/>
 					</Suspense>
-
-					{/* Task input preview placeholder (non-sticky, below summary) */}
-					<div className="mt-3 max-w-[640px] min-w-[320px] mx-auto">
-						<div className="flex justify-end">
-							<div className="inline-block max-w-[80%] rounded-[10px] border border-blue-muted/40 bg-blue-muted/7 px-3 py-2 text-[13px] text-text/80">
-								{/* TODO: Replace with actual task input preview */}
-								Task input preview will be displayed here.
-							</div>
-						</div>
-					</div>
 
 					{/* Steps Section */}
 					<Suspense fallback={<div>Loading steps...</div>}>
