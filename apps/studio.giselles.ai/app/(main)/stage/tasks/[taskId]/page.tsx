@@ -6,8 +6,10 @@ import { StepsSection } from "./ui/steps-section";
 import "./mobile-scroll.css";
 import { TaskId } from "@giselles-ai/protocol";
 import { giselle } from "@/app/giselle";
+import { TaskHeader } from "@/components/task/task-header";
 import { TaskLayout } from "@/components/task/task-layout";
-import { TaskHeader } from "./ui/task-header";
+import { getTaskHeaderData } from "./ui/task-header";
+import { TaskOverlayReset } from "./ui/task-overlay-reset";
 
 export default async function ({
 	params,
@@ -15,6 +17,8 @@ export default async function ({
 	params: Promise<{ taskId: string }>;
 }) {
 	const { taskId: taskIdParam } = await params;
+
+	const taskHeaderData = await getTaskHeaderData({ params });
 
 	const result = TaskId.safeParse(taskIdParam);
 	if (!result.success) {
@@ -26,10 +30,9 @@ export default async function ({
 
 	return (
 		<TaskLayout>
+			<TaskOverlayReset />
 			{/* Top Section */}
-			<Suspense fallback={<div>Loading...</div>}>
-				<TaskHeader params={params} />
-			</Suspense>
+			<TaskHeader {...taskHeaderData} />
 			<div className="flex-1 overflow-y-auto pb-8">
 				{/* Steps Section */}
 				<Suspense fallback={<div>Loading steps...</div>}>

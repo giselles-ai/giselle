@@ -1,9 +1,6 @@
 import { TaskId } from "@giselles-ai/protocol";
 import { giselle } from "@/app/giselle";
-import {
-	TaskHeader as TaskHeaderUI,
-	type TaskHeaderProps as TaskHeaderUIProps,
-} from "@/components/task/task-header";
+import type { TaskHeaderProps } from "@/components/task/task-header";
 import { db, tasks } from "@/db";
 import { logger } from "@/lib/logger";
 
@@ -24,7 +21,7 @@ async function getAppByTaskId(taskId: TaskId) {
 	return await giselle.getApp({ appId: dbApp.id });
 }
 
-async function getTopSectionData({
+export async function getTaskHeaderData({
 	params,
 }: {
 	params: Promise<{ taskId: string }>;
@@ -48,7 +45,7 @@ async function getTopSectionData({
 		description: app.description,
 		workspaceId: task.workspaceId,
 		input,
-	} satisfies TaskHeaderUIProps;
+	} satisfies TaskHeaderProps;
 }
 
 /**
@@ -83,13 +80,4 @@ async function getTaskInput(taskId: TaskId) {
 		return null;
 	}
 	return firstInput;
-}
-
-export async function TaskHeader({
-	params,
-}: {
-	params: Promise<{ taskId: string }>;
-}) {
-	const data = await getTopSectionData({ params });
-	return <TaskHeaderUI {...data} />;
 }
