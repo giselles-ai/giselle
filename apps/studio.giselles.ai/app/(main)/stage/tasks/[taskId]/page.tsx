@@ -53,7 +53,7 @@ export default async function ({
 						</Suspense>
 					</div>
 					{/* TODO: Input area will be added here - placeholder for future functionality */}
-					<InputAreaPlaceholder taskPromise={taskPromise} />
+					<InputAreaPlaceholder />
 				</div>
 			</div>
 		</div>

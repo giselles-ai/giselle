@@ -1,13 +1,8 @@
 "use client";
 
-import type { Task } from "@giselles-ai/protocol";
 import { ArrowUpIcon } from "lucide-react";
 
-export function InputAreaPlaceholder({
-	taskPromise,
-}: {
-	taskPromise: Promise<Task>;
-}) {
+export function InputAreaPlaceholder() {
 	return (
 		<div className="relative w-full max-w-[640px] min-w-[320px] mx-auto">
 			<div className="rounded-xl bg-[rgba(131,157,195,0.14)] shadow-[inset_0_1px_4px_rgba(0,0,0,0.22)] pt-3 pb-2 px-4">
