@@ -1,4 +1,12 @@
 {
+	"functions": {
+		"app/api/vector-stores/document/[documentVectorStoreId]/documents/route.ts": {
+			"includeFiles": "../packages/document-preprocessor/node_modules/@embedpdf/pdfium/**"
+		},
+		"app/api/vector-stores/cron/document/ingest/route.ts": {
+			"includeFiles": "../packages/document-preprocessor/node_modules/@embedpdf/pdfium/**"
+		}
+	},
 	"crons": [
 		{
 			"path": "/api/vector-stores/cron/github/ingest",
