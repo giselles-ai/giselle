@@ -14,6 +14,7 @@ export const serverExternalPackages = [
 	"@embedpdf/pdfium",
 	"pino",
 	"pino-pretty",
+	"thread-stream",
 	"happy-dom",
 	"@supabase/supabase-js",
 	"@supabase/realtime-js",
