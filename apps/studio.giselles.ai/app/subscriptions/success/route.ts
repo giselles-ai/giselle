@@ -17,13 +17,17 @@ export async function GET(_request: Request) {
 	try {
 		const checkoutSession =
 			await stripe.checkout.sessions.retrieve(checkoutSessionId);
-		const subscription = checkoutSession.subscription;
-		if (subscription == null) {
-			throw new Error("Subscription not found");
+		const checkoutItem = checkoutSession.checkout_items?.[0];
+		if (checkoutItem?.type !== "pricing_plan_subscription_item") {
+			throw new Error("Invalid checkout item type");
 		}
 
 		const subscriptionId =
-			typeof subscription === "string" ? subscription : subscription.id;
+			checkoutItem.pricing_plan_subscription_item?.pricing_plan_subscription;
+		if (subscriptionId === undefined) {
+			throw new Error("Subscription ID not found in checkout session");
+		}
+
 		const teamId = await getTeamIdFromSubscription(subscriptionId);
 		await updateGiselleSession({ teamId, checkoutSessionId: undefined });
 		redirect("/settings/team");
