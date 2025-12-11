@@ -64,5 +64,9 @@ export function decryptToken(value: string): string {
 	});
 	decipher.setAuthTag(authTag);
 
-	return decipher.update(encrypted).toString("utf8") + decipher.final("utf8");
+	const decrypted = Buffer.concat([
+		decipher.update(encrypted),
+		decipher.final(),
+	]);
+	return decrypted.toString("utf-8");
 }
