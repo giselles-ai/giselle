@@ -89,11 +89,17 @@ function getPdfiumModule(
 	}
 
 	initializedWasmBinary = wasmBinary;
-	modulePromise = init({ wasmBinary }).then((module) => {
-		module.FPDF_InitLibrary();
-		module.PDFiumExt_Init();
-		return module;
-	});
+	modulePromise = init({ wasmBinary })
+		.then((module) => {
+			module.FPDF_InitLibrary();
+			module.PDFiumExt_Init();
+			return module;
+		})
+		.catch((error) => {
+			modulePromise = null;
+			initializedWasmBinary = null;
+			throw error;
+		});
 
 	return modulePromise;
 }
