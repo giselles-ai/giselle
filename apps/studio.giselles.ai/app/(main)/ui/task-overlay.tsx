@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion";
+import { AnimatePresence, motion } from "motion/react";
 import { useShallow } from "zustand/shallow";
 import { TaskHeader } from "@/components/task/task-header";
 import { TaskLayout } from "@/components/task/task-layout";
