@@ -34,7 +34,7 @@ export const openai = {
 			"GPT-5.2 is OpenAI's best general-purpose model, part of the GPT-5 flagship model family. It's their most intelligent model yet for both general and agentic tasks.",
 		contextWindow: 400_000,
 		maxOutputTokens: 128_000,
-		knowledgeCutoff: new Date(2025, 9, 31).getTime(),
+		knowledgeCutoff: new Date(2025, 7, 31).getTime(),
 		pricing: {
 			input: definePricing(1.75),
 			output: definePricing(14.0),
