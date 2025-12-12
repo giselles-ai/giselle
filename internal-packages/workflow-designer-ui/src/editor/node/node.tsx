@@ -318,7 +318,7 @@ export function NodeComponent({
 				return "var(--color-trigger-node-1)";
 			if (variant.isAction) return "var(--color-action-node-1)";
 			if (variant.isQuery) return "var(--color-query-node-1)";
-			if (variant.isEnd) return "var(--color-end-node-1)";
+			if (variant.isEnd) return "var(--color-trigger-node-1)";
 			return undefined;
 		},
 		[],
@@ -328,6 +328,8 @@ export function NodeComponent({
 	// - not selected: pill
 	// - selected: same square card as other nodes
 	const isAppEntryPill = v.isAppEntry && !selected && !preview;
+	const isEndPill = v.isEnd && !selected && !preview;
+	const isStagePill = isAppEntryPill || isEndPill;
 
 	const borderGradientStyle = useMemo(() => {
 		if (requiresSetup) return undefined;
@@ -355,6 +357,10 @@ export function NodeComponent({
 
 	const appEntryPrimaryOutputId = node.outputs?.[0]?.id;
 	const isAppEntryAnyOutputConnected = connectedOutputIds.length > 0;
+	const endPrimaryInputId = node.inputs?.[0]?.id ?? "blank-handle";
+	const isEndAnyInputConnected =
+		(connectedInputIds?.length ?? 0) > 0 ||
+		connectedInputIds?.some((id) => id === endPrimaryInputId);
 
 	return (
 		<div
@@ -369,15 +375,15 @@ export function NodeComponent({
 			}
 			className={clsx(
 				"group relative rounded-[16px]",
-				isAppEntryPill
-					? "flex items-center gap-[8px] px-[16px] py-[10px] rounded-full"
+				isStagePill
+					? "flex items-center gap-[8px] px-[14px] py-[8px] rounded-full"
 					: "flex flex-col py-[16px] gap-[16px] min-w-[180px]",
-				// App Entry changes shape between selected/unselected, so avoid animating layout/border-radius.
-				v.isAppEntry
+				// Stage Request / Stage Response changes shape between selected/unselected, so avoid animating layout/border-radius.
+				v.isAppEntry || v.isEnd
 					? "backdrop-blur-[4px]"
 					: "transition-all backdrop-blur-[4px]",
 				v.isAppEntry && "bg-trigger-node-1",
-				v.isEnd && "bg-end-node-1",
+				v.isEnd && "bg-trigger-node-1",
 				!v.isAppEntry && !v.isEnd && "bg-transparent",
 				!selected &&
 					!highlighted &&
@@ -394,7 +400,7 @@ export function NodeComponent({
 				selected && v.isTrigger && "shadow-trigger-node-1",
 				selected && v.isAppEntry && "shadow-trigger-node-1",
 				selected && v.isAction && "shadow-action-node-1",
-				selected && v.isEnd && "shadow-end-node-1",
+				selected && v.isEnd && "shadow-trigger-node-1",
 				selected && v.isQuery && "shadow-query-node-1",
 				selected && "shadow-[0px_0px_20px_1px_rgba(0,_0,_0,_0.4)]",
 				selected &&
@@ -412,14 +418,14 @@ export function NodeComponent({
 				highlighted && v.isTrigger && "shadow-trigger-node-1",
 				highlighted && v.isAppEntry && "shadow-trigger-node-1",
 				highlighted && v.isAction && "shadow-action-node-1",
-				highlighted && v.isEnd && "shadow-end-node-1",
+				highlighted && v.isEnd && "shadow-trigger-node-1",
 				highlighted && v.isQuery && "shadow-query-node-1",
 				highlighted && "shadow-[0px_0px_20px_1px_rgba(0,_0,_0,_0.4)]",
 				highlighted &&
 					(v.isTrigger || v.isAppEntry) &&
 					"shadow-[0px_0px_20px_1px_hsla(220,_15%,_50%,_0.4)]",
 				preview && "opacity-50",
-				!preview && !isAppEntryPill && "min-h-[110px]",
+				!preview && !isStagePill && "min-h-[110px]",
 				requiresSetup && "opacity-80",
 			)}
 		>
@@ -469,11 +475,11 @@ export function NodeComponent({
 					</motion.div>
 				)}
 			</AnimatePresence>
-			{v.isAppEntry && selected && (
+			{(v.isAppEntry || v.isEnd) && selected && (
 				<div
 					className={clsx(
 						"absolute inset-0 z-[-2] pointer-events-none",
-						isAppEntryPill ? "rounded-full" : "rounded-[16px]",
+						isStagePill ? "rounded-full" : "rounded-[16px]",
 						"shadow-[0_0_22px_4px_hsla(220,_15%,_50%,_0.7)]",
 					)}
 				/>
@@ -481,7 +487,7 @@ export function NodeComponent({
 			<div
 				className={clsx(
 					"absolute z-[-1] inset-0",
-					isAppEntryPill ? "rounded-full" : "rounded-[16px]",
+					isStagePill ? "rounded-full" : "rounded-[16px]",
 					(v.isAppEntry || v.isEnd) && "hidden",
 				)}
 				style={backgroundGradientStyle}
@@ -489,7 +495,7 @@ export function NodeComponent({
 			<div
 				className={clsx(
 					"absolute z-0 inset-0 border-[1.5px] mask-fill",
-					isAppEntryPill ? "rounded-full" : "rounded-[16px]",
+					isStagePill ? "rounded-full" : "rounded-[16px]",
 					requiresSetup
 						? "border-black/60 border-dashed [border-width:2px]"
 						: "border-transparent",
@@ -568,9 +574,9 @@ export function NodeComponent({
 						/>
 					</div>
 				)}
-			{isAppEntryPill ? (
+			{isStagePill ? (
 				<>
-					{appEntryPrimaryOutputId && (
+					{isAppEntryPill && appEntryPrimaryOutputId && (
 						<Handle
 							id={appEntryPrimaryOutputId}
 							type="source"
@@ -584,28 +590,57 @@ export function NodeComponent({
 							)}
 						/>
 					)}
-					{node.outputs
-						?.filter((output) => output.id !== appEntryPrimaryOutputId)
-						.map((output) => (
-							<Handle
-								key={output.id}
-								id={output.id}
-								type="source"
-								position={Position.Right}
-								className={clsx(
-									"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !right-[-0.5px] !top-1/2 !opacity-0 !pointer-events-none",
-								)}
-							/>
-						))}
+					{isAppEntryPill &&
+						node.outputs
+							?.filter((output) => output.id !== appEntryPrimaryOutputId)
+							.map((output) => (
+								<Handle
+									key={output.id}
+									id={output.id}
+									type="source"
+									position={Position.Right}
+									className={clsx(
+										"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !right-[-0.5px] !top-1/2 !opacity-0 !pointer-events-none",
+									)}
+								/>
+							))}
+					{isEndPill && endPrimaryInputId && (
+						<Handle
+							id={endPrimaryInputId}
+							type="target"
+							position={Position.Left}
+							className={clsx(
+								"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !left-[-0.5px] !top-1/2",
+								isEndAnyInputConnected ? "!bg-trigger-node-1" : "!bg-bg",
+								"!border-trigger-node-1",
+								isEndAnyInputConnected &&
+									"[box-shadow:0_0_0_1.5px_rgba(0,0,0,0.8)]",
+							)}
+						/>
+					)}
+					{isEndPill &&
+						node.inputs
+							?.filter((input) => input.id !== endPrimaryInputId)
+							.map((input) => (
+								<Handle
+									key={input.id}
+									id={input.id}
+									type="target"
+									position={Position.Left}
+									className={clsx(
+										"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !left-[-0.5px] !top-1/2 !opacity-0 !pointer-events-none",
+									)}
+								/>
+							))}
 					<div
 						className={clsx(
-							"w-[32px] h-[32px] flex items-center justify-center padding-[8px] rounded-full bg-inverse shrink-0",
+							"w-[28px] h-[28px] flex items-center justify-center rounded-full bg-inverse shrink-0",
 						)}
 					>
 						<NodeIcon
 							node={node}
 							className={clsx(
-								"w-[16px] h-[16px] stroke-current fill-none text-gray-900",
+								"w-[14px] h-[14px] stroke-current fill-none text-gray-900",
 							)}
 						/>
 					</div>
@@ -659,7 +694,7 @@ export function NodeComponent({
 									v.isGithubTrigger && "fill-current",
 									v.isAppEntry && "stroke-current fill-none",
 									v.isAction && "fill-current",
-									v.isEnd && "fill-current",
+									v.isEnd && "stroke-current fill-none",
 									v.isQuery && "stroke-current fill-none",
 									v.isGithub && "fill-current",
 									v.isText && "text-background",
@@ -718,9 +753,9 @@ export function NodeComponent({
 					</div>
 				</div>
 			)}
-			{!isAppEntryPill && <DocumentNodeInfo node={node} />}
-			{!isAppEntryPill && <GitHubNodeInfo node={node} />}
-			{!isAppEntryPill && !preview && (
+			{!isStagePill && <DocumentNodeInfo node={node} />}
+			{!isStagePill && <GitHubNodeInfo node={node} />}
+			{!isStagePill && !preview && (
 				<div className="flex justify-between">
 					<div className="grid">
 						{node.content.type !== "action" &&
@@ -809,7 +844,7 @@ export function NodeComponent({
 											v.isContentGeneration && "!border-generation-node-1",
 											v.isImageGeneration && "!border-image-generation-node-1",
 											v.isQuery && "!border-query-node-1",
-											v.isEnd && "!border-end-node-1",
+											v.isEnd && "!border-trigger-node-1",
 										)}
 									/>
 									<div className="absolute left-[-12px] text-[12px] text-text-muted whitespace-nowrap -translate-x-[100%]">
@@ -866,7 +901,7 @@ export function NodeComponent({
 										v.isQuery &&
 											"!border-query-node-1 group-data-[state=connected]:!bg-query-node-1 group-data-[state=connected]:!border-query-node-1",
 										v.isEnd &&
-											"!border-end-node-1 group-data-[state=connected]:!bg-end-node-1 group-data-[state=connected]:!border-end-node-1",
+											"!border-trigger-node-1 group-data-[state=connected]:!bg-trigger-node-1 group-data-[state=connected]:!border-trigger-node-1",
 									)}
 								/>
 								<div

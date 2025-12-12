@@ -106,7 +106,7 @@ export function Toolbar() {
 		[workspace.nodes],
 	);
 	const appRequestNodeLimitTooltip =
-		"Only one Stage Request Node can exist per workspace.";
+		"Only one Stage Request can exist per workspace.";
 
 	const availableLanguageModels = useMemo(
 		() =>
@@ -369,7 +369,7 @@ export function Toolbar() {
 													))}
 											</ToggleGroup.Root>
 											<p className="text-[#505D7B] text-[12px] font-medium leading-[170%] mt-[8px] mb-[4px] px-[8px]">
-												End
+												Stage Response
 											</p>
 											<ToggleGroup.Root
 												type="single"
@@ -403,7 +403,7 @@ export function Toolbar() {
 													className="relative"
 												>
 													<FlagIcon className="size-[20px] shrink-0" />
-													<p className="text-[14px]">Stage End</p>
+													<p className="text-[14px]">Stage Response</p>
 												</ToggleGroup.Item>
 												{actionRegistry.map((actionEntry) => (
 													<ToggleGroup.Item

@@ -87,7 +87,7 @@ export function defaultName(node: NodeLike) {
 					if (!isEndNode(node)) {
 						throw new Error(`Expected end node, got ${node.type}`);
 					}
-					return node.name ?? "End";
+					return node.name ?? "Stage Response";
 				case "appEntry":
 					return node.name ?? "App Entry";
 				default: {

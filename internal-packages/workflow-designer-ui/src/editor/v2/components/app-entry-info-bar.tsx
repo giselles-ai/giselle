@@ -2,7 +2,7 @@
 
 import { useWorkflowDesignerStore } from "@giselles-ai/react";
 import { InfoIcon } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useShallow } from "zustand/shallow";
 
 export function AppEntryInfoBar() {
@@ -18,6 +18,12 @@ export function AppEntryInfoBar() {
 		}),
 	);
 
+	useEffect(() => {
+		if (hasAppEntry) {
+			setIsEntryConfigured(false);
+		}
+	}, [hasAppEntry]);
+
 	const handleClick = useCallback(() => {
 		setIsEntryConfigured(true);
 	}, []);
@@ -25,7 +31,7 @@ export function AppEntryInfoBar() {
 	const message = useMemo(() => {
 		if (!hasAppEntry) return null;
 		if (!isEntryConfigured) return "Set up Stage Request.";
-		if (!hasEnd) return "Add Stage End.";
+		if (!hasEnd) return "Add Stage Response.";
 		return null;
 	}, [hasAppEntry, isEntryConfigured, hasEnd]);
 
