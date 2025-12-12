@@ -13,7 +13,7 @@ export function getAuthCallbackUrl({
 	next = "/",
 	provider,
 }: {
-	next: string;
+	next?: string;
 	provider: OAuthProvider;
 }): string {
 	return `${getSiteOrigin()}/auth/callback/${provider}?next=${encodeURIComponent(next)}`;
