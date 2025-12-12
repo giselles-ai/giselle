@@ -136,7 +136,7 @@ export function StepsSection({
 	const progressRatio =
 		totalStepsCount > 0 ? completedStepsCount / totalStepsCount : 0;
 	return (
-		<Accordion.Root type="single" className="w-full mt-6">
+		<Accordion.Root type="single" className="w-full mt-6" collapsible>
 			<Accordion.Item value="step-list">
 				<Accordion.Header>
 					<Accordion.Trigger
@@ -188,7 +188,7 @@ export function StepsSection({
 								</p>
 								<div className="space-y-2">
 									{step.items.map((item) => (
-										<Accordion.Root type="single" key={item.id}>
+										<Accordion.Root type="single" key={item.id} collapsible>
 											<Accordion.Item value={item.id} disabled={!item.finished}>
 												<Accordion.Header>
 													<Accordion.Trigger className="group flex-1 flex items-center gap-3 text-left cursor-pointer disabled:cursor-default">
