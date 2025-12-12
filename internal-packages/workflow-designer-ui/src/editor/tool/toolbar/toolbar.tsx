@@ -14,7 +14,6 @@ import {
 	createAppEntryNode,
 	createContentGenerationNode,
 	createDocumentVectorStoreNode,
-	createEndNode,
 	createFileNode,
 	createGitHubVectorStoreNode,
 	createQueryNode,
@@ -37,7 +36,6 @@ import clsx from "clsx/lite";
 import {
 	DatabaseZapIcon,
 	FileSlidersIcon,
-	FlagIcon,
 	FolderInputIcon,
 	SparklesIcon,
 	SquareArrowOutUpRightIcon,
@@ -106,13 +104,8 @@ export function Toolbar() {
 		() => workspace.nodes.some((node) => node.content.type === "appEntry"),
 		[workspace.nodes],
 	);
-	const hasEndNode = useMemo(
-		() => workspace.nodes.some((node) => node.content.type === "end"),
-		[workspace.nodes],
-	);
 	const appRequestNodeLimitTooltip =
 		"Only one App Request Node can exist per workspace.";
-	const endNodeLimitTooltip = "Only one End Node can exist per workspace.";
 
 	const availableLanguageModels = useMemo(
 		() =>
@@ -240,13 +233,6 @@ export function Toolbar() {
 					)}
 					value={selectedTool?.action}
 					onValueChange={(value) => {
-						if (value === "addEnd") {
-							if (hasEndNode) {
-								return;
-							}
-							setSelectedTool(addNodeTool(createEndNode()));
-							return;
-						}
 						if (isToolAction(value)) {
 							switch (value) {
 								case "selectLanguageModel":
@@ -1111,39 +1097,6 @@ export function Toolbar() {
 							</Popover.Root>
 						)}
 					</ToggleGroup.Item>
-
-					{stage &&
-						(hasEndNode ? (
-							<Tooltip
-								text={
-									<div className="flex flex-col gap-1 text-left">
-										<span>{endNodeLimitTooltip}</span>
-										<TooltipAndHotkey text="End" hotkey="e" />
-									</div>
-								}
-								side="right"
-								align="start"
-							>
-								<span className="block">
-									<ToggleGroup.Item
-										value="addEnd"
-										data-tool
-										className="relative cursor-not-allowed opacity-50 pointer-events-none"
-										aria-disabled={true}
-										disabled={true}
-										aria-label="End"
-									>
-										<FlagIcon data-icon />
-									</ToggleGroup.Item>
-								</span>
-							</Tooltip>
-						) : (
-							<ToggleGroup.Item value="addEnd" data-tool className="relative">
-								<Tooltip text={<TooltipAndHotkey text="End" hotkey="e" />}>
-									<FlagIcon data-icon />
-								</Tooltip>
-							</ToggleGroup.Item>
-						))}
 				</ToggleGroup.Root>
 			</div>
 		</div>
