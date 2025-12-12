@@ -1,4 +1,4 @@
-import { createHmac } from "node:crypto";
+import { createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import invariant from "tiny-invariant";
 
@@ -21,7 +21,14 @@ function verify(signed: string): string | null {
 		.update(value)
 		.digest("hex");
 
-	return signature === expectedSignature ? value : null;
+	const signatureBuffer = Buffer.from(signature, "hex");
+	const expectedBuffer = Buffer.from(expectedSignature, "hex");
+
+	if (signatureBuffer.length !== expectedBuffer.length) {
+		return null;
+	}
+
+	return timingSafeEqual(signatureBuffer, expectedBuffer) ? value : null;
 }
 
 type JsonPrimitive = string | number | boolean | null;
