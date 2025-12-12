@@ -10,7 +10,6 @@ import {
 	type Connection,
 	type Edge,
 	type IsValidConnection,
-	MiniMap,
 	type NodeMouseHandler,
 	type OnEdgesChange,
 	type OnNodesChange,
@@ -155,6 +154,7 @@ function V2NodeCanvas() {
 
 	// When opening a workspace, automatically fit the viewport to visible nodes
 	// so users don't get "lost" on an empty-looking canvas.
+	// requestAnimationFrame ensures the first layout/measures are applied before fit.
 	useEffect(() => {
 		if (didInitialFitViewRef.current) {
 			return;
@@ -399,16 +399,6 @@ function V2NodeCanvas() {
 			onEdgesChange={handleEdgesChange}
 		>
 			<Background />
-			<XYFlowPanel position="top-right">
-				<div className="rounded-[12px] overflow-hidden border border-border/40 bg-black/20 backdrop-blur-md">
-					<MiniMap
-						pannable={true}
-						zoomable={true}
-						className="h-[120px] w-[180px]"
-						maskColor="rgba(0, 0, 0, 0.45)"
-					/>
-				</div>
-			</XYFlowPanel>
 			{selectedTool?.action === "addNode" && (
 				<FloatingNodePreview node={selectedTool.node} />
 			)}
