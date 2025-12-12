@@ -3,7 +3,7 @@
 import type { Session, User } from "@supabase/supabase-js";
 import { eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
-import { isValidReturnUrl } from "@/app/(auth)/lib";
+import { getSiteOrigin, isValidReturnUrl } from "@/app/(auth)/lib";
 import { db, oauthCredentials, supabaseUserMappings, users } from "@/db";
 import { logger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase";
@@ -44,7 +44,6 @@ export async function GET(
 	if (errorMessage) {
 		// Instead of returning an error response, redirect with the error message
 		return handleRedirect(
-			request,
 			next,
 			`authError=${encodeURIComponent(errorMessage)}`,
 		);
@@ -62,7 +61,6 @@ export async function GET(
 		const { code, message, name, status } = error;
 		// Redirect with error instead of showing error page
 		return handleRedirect(
-			request,
 			next,
 			`authError=${encodeURIComponent(`${name} occurred: ${code} (${status}): ${message}`)}`,
 		);
@@ -84,15 +82,11 @@ export async function GET(
 		const errorMsg =
 			error instanceof Error ? error.message : "Unknown error occurred";
 		// Redirect with error instead of showing error page
-		return handleRedirect(
-			request,
-			next,
-			`authError=${encodeURIComponent(errorMsg)}`,
-		);
+		return handleRedirect(next, `authError=${encodeURIComponent(errorMsg)}`);
 	}
 
 	// Success case - redirect to the next page without error
-	return handleRedirect(request, next);
+	return handleRedirect(next);
 }
 
 function checkError(searchParams: URLSearchParams) {
@@ -106,24 +100,9 @@ function checkError(searchParams: URLSearchParams) {
 	return "";
 }
 
-function handleRedirect(
-	request: NextRequest,
-	path: string,
-	queryString?: string,
-) {
-	const { origin } = new URL(request.url);
+function handleRedirect(path: string, queryString?: string) {
 	const redirectPath = queryString ? `${path}?${queryString}` : path;
-
-	// Check for forwarded host (load balancer case)
-	const forwardedHost = request.headers.get("x-forwarded-host");
-	if (forwardedHost) {
-		const forwardedProto = request.headers.get("x-forwarded-proto") ?? "https";
-		return NextResponse.redirect(
-			`${forwardedProto}://${forwardedHost}${redirectPath}`,
-		);
-	}
-
-	return NextResponse.redirect(`${origin}${redirectPath}`);
+	return NextResponse.redirect(`${getSiteOrigin()}${redirectPath}`);
 }
 
 async function initializeUserIfNeeded(user: User) {
