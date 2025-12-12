@@ -40,7 +40,6 @@ export * from "./text-generation";
 export * from "./texts";
 export * from "./tool";
 export * from "./triangle-alert";
-export * from "./trigger";
 export * from "./variable";
 export { VideoIcon } from "./video";
 export * from "./view";

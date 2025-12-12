@@ -103,7 +103,6 @@ export function NodeHandleDot({
 					: "!right-[-0.5px] !w-[12px] !h-[12px]",
 				borderToneByType[safeContentType],
 				isConnected ? fillToneByType[safeContentType] : "",
-				isConnected && "[box-shadow:0_0_0_1.5px_rgba(0,0,0,0.8)]",
 			)}
 		/>
 	);
