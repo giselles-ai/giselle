@@ -1,45 +1,10 @@
-import type {
-	GenerationId,
-	GenerationStatus,
-	OperationNode,
-	StepId,
-	WorkspaceId,
-} from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import Link from "next/link";
 import { Accordion } from "radix-ui";
-import { Suspense } from "react";
-import { giselle } from "@/app/giselle";
 import { logger } from "@/lib/logger";
 import { GenerationView } from "../../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-view";
 import { StepItemStatusIcon } from "./step-item-icon";
-
-type UIStepItemBase = {
-	/**
-	 * In the protocol, the structure is Sequence > Step,
-	 * but in the UI it's Step > StepItem,
-	 * so this is awkward but works
-	 */
-	id: StepId;
-	title: string;
-	subLabel?: string;
-	node: OperationNode;
-	finished: boolean;
-};
-
-export type UIStepItem =
-	| (UIStepItemBase & {
-			status: "completed";
-			generationId: GenerationId;
-	  })
-	| (UIStepItemBase & {
-			status: "failed";
-			error: string;
-			workspaceId: WorkspaceId;
-	  })
-	| (UIStepItemBase & {
-			status: Exclude<GenerationStatus, "completed" | "failed">;
-	  });
+import type { UIStepItem } from "./steps-section-data";
 
 function StepItemHeader({
 	item,
@@ -96,31 +61,29 @@ export function StepItem({ item }: { item: UIStepItem }) {
 				</Accordion.Header>
 
 				<Accordion.Content className="overflow-hidden data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown">
-					<StepOutput step={item} />
+					<StepItemOutput item={item} />
 				</Accordion.Content>
 			</Accordion.Item>
 		</Accordion.Root>
 	);
 }
 
-export function StepOutput({ step }: { step: UIStepItem }) {
-	const stepId = step.id;
-	switch (step.status) {
+export function StepItemOutput({ item }: { item: UIStepItem }) {
+	const stepId = item.id;
+	switch (item.status) {
 		case "created":
 		case "queued":
 		case "running":
 		case "cancelled":
 			logger.warn(
-				`Step ${step.id}: Unexpected step status "${step.status}" - this status should not reach here`,
+				`Step ${item.id}: Unexpected step status "${item.status}" - this status should not reach here`,
 			);
 			return null;
 		case "completed":
 			return (
 				<div className="ml-4 pl-4 border-l-2 border-border">
 					<div className="py-4 [&_.markdown-renderer]:text-[13px] [&_*[class*='text-[14px]']]:text-[13px] [&_*]:text-text-muted/70 [&_*[class*='text-inverse']]:!text-text-muted/70">
-						<Suspense fallback={<div>Loading...</div>}>
-							<ComletedStepOutput generationId={step.generationId} />
-						</Suspense>
+						<GenerationView generation={item.generation} />
 					</div>
 				</div>
 			);
@@ -131,7 +94,7 @@ export function StepOutput({ step }: { step: UIStepItem }) {
 						<p className="text-[13px] text-text-muted leading-relaxed">
 							This step failed during the last run.
 							<br />
-							<span className="break-words">{step.error}</span>
+							<span className="break-words">{item.error}</span>
 							<br />
 							Individual step execution is not available on this page.
 							<br />
@@ -139,7 +102,7 @@ export function StepOutput({ step }: { step: UIStepItem }) {
 						</p>
 						<div className="flex items-center gap-2 mt-3">
 							<Link
-								href={`/workspaces/${step.workspaceId}`}
+								href={`/workspaces/${item.workspaceId}`}
 								target="_blank"
 								rel="noreferrer"
 								className="text-[13px] text-[hsl(192,73%,84%)] hover:text-[hsl(192,73%,70%)] transition-colors font-medium"
@@ -161,18 +124,9 @@ export function StepOutput({ step }: { step: UIStepItem }) {
 				</div>
 			);
 		default: {
-			const _exhaustiveCheck: never = step;
+			const _exhaustiveCheck: never = item;
 			logger.warn(`Step ${stepId}: Unhandled step status: ${_exhaustiveCheck}`);
 			return null;
 		}
 	}
-}
-
-async function ComletedStepOutput({
-	generationId,
-}: {
-	generationId: GenerationId;
-}) {
-	const generation = await giselle.getGeneration(generationId);
-	return <GenerationView generation={generation} />;
 }
