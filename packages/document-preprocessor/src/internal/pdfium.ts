@@ -1,75 +1,8 @@
-import { existsSync, readFileSync } from "node:fs";
-import { createRequire } from "node:module";
-import { join } from "node:path";
-import { pathToFileURL } from "node:url";
-import { init as initPdfium, type WrappedPdfiumModule } from "@embedpdf/pdfium";
+import { init, type WrappedPdfiumModule } from "@embedpdf/pdfium";
 
 import { assertNotAborted } from "./abort.js";
 
-declare const __filename: string;
-
-// Lazily resolve the wasm path to avoid Turbopack static analysis issues
-// See: https://github.com/vercel/next.js/issues/84972
-let cachedWasmPath: string | null = null;
-function getPdfiumWasmPath(): string {
-	if (cachedWasmPath !== null) {
-		return cachedWasmPath;
-	}
-
-	// Try multiple paths to find the wasm file
-	// This is needed because Vercel serverless has a different file structure
-	const possiblePaths = [
-		// Standard node_modules resolution
-		() => {
-			const moduleUrl =
-				typeof import.meta !== "undefined" &&
-				typeof import.meta.url === "string"
-					? import.meta.url
-					: typeof __filename !== "undefined"
-						? pathToFileURL(__filename).href
-						: new URL("index.js", pathToFileURL(process.cwd())).href;
-
-			const requireBaseUrl = moduleUrl.endsWith("/")
-				? new URL("index.js", moduleUrl).href
-				: moduleUrl;
-
-			const moduleRequire = createRequire(requireBaseUrl);
-			return moduleRequire.resolve("@embedpdf/pdfium/pdfium.wasm");
-		},
-		// Relative to process.cwd() (for Vercel)
-		() => join(process.cwd(), "node_modules/@embedpdf/pdfium/dist/pdfium.wasm"),
-		// Relative to __dirname
-		() =>
-			join(
-				typeof __dirname !== "undefined" ? __dirname : process.cwd(),
-				"../node_modules/@embedpdf/pdfium/dist/pdfium.wasm",
-			),
-		// Vercel serverless function structure
-		() =>
-			join(
-				process.cwd(),
-				".next/server/node_modules/@embedpdf/pdfium/dist/pdfium.wasm",
-			),
-	];
-
-	const searchedPaths: string[] = [];
-	for (const getPath of possiblePaths) {
-		try {
-			const path = getPath();
-			searchedPaths.push(path);
-			if (existsSync(path)) {
-				cachedWasmPath = path;
-				return cachedWasmPath;
-			}
-		} catch {
-			// Try next path
-		}
-	}
-
-	throw new Error(
-		`Could not find pdfium.wasm. Searched paths:\n${searchedPaths.map((p) => `  - ${p}`).join("\n")}`,
-	);
-}
+type PdfiumWasmBinary = ArrayBuffer | ArrayBufferView;
 
 type PdfiumRenderCallback = (frame: {
 	data: Uint8Array;
@@ -112,6 +45,7 @@ interface PdfiumDocument {
 type WithPdfDocumentOptions = {
 	password?: string;
 	signal?: AbortSignal;
+	wasmBinary: PdfiumWasmBinary;
 };
 
 const FORM_INFO_SIZE = 256;
@@ -134,33 +68,40 @@ const PDFIUM_ERROR_MESSAGES: Record<number, string> = {
 	6: "PDFium: page not found or content error", // PAGE
 };
 
-let cachedModule: WrappedPdfiumModule | null = null;
-let pendingModule: Promise<WrappedPdfiumModule> | null = null;
+let modulePromise: Promise<WrappedPdfiumModule> | null = null;
+let initializedWasmBinary: PdfiumWasmBinary | null = null;
 
-async function getPdfiumModule(): Promise<WrappedPdfiumModule> {
-	if (cachedModule !== null) {
-		return cachedModule;
+function getPdfiumModule(
+	wasmBinary: PdfiumWasmBinary,
+): Promise<WrappedPdfiumModule> {
+	if (!wasmBinary) {
+		throw new Error("PDFium: wasm binary is required to initialize the module");
 	}
 
-	if (pendingModule === null) {
-		// Read wasm file directly to avoid Turbopack module resolution issues
-		// See: https://github.com/vercel/next.js/issues/84972
-		const wasmBinary = readFileSync(getPdfiumWasmPath());
-		pendingModule = initPdfium({
-			wasmBinary,
+	if (modulePromise !== null) {
+		if (
+			initializedWasmBinary !== null &&
+			initializedWasmBinary !== wasmBinary
+		) {
+			throw new Error("PDFium: module already initialized with a wasm binary");
+		}
+		return modulePromise;
+	}
+
+	initializedWasmBinary = wasmBinary;
+	modulePromise = init({ wasmBinary })
+		.then((module) => {
+			module.FPDF_InitLibrary();
+			module.PDFiumExt_Init();
+			return module;
 		})
-			.then((module) => {
-				module.FPDF_InitLibrary();
-				module.PDFiumExt_Init();
-				cachedModule = module;
-				return module;
-			})
-			.finally(() => {
-				pendingModule = null;
-			});
-	}
+		.catch((error) => {
+			modulePromise = null;
+			initializedWasmBinary = null;
+			throw error;
+		});
 
-	return await pendingModule;
+	return modulePromise;
 }
 
 function getHeap(pdfium: WrappedPdfiumModule["pdfium"]): Uint8Array {
@@ -173,7 +114,7 @@ export async function withPdfDocument<T>(
 	handler: (document: PdfiumDocument) => Promise<T> | T,
 ): Promise<T> {
 	assertNotAborted(options.signal);
-	const module = await getPdfiumModule();
+	const module = await getPdfiumModule(options.wasmBinary);
 	assertNotAborted(options.signal);
 	const document = loadDocument(module, data, options.password ?? "");
 	try {

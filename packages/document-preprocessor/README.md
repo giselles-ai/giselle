@@ -35,12 +35,19 @@ console.log(text);
 
 ```ts
 import { readFile } from "node:fs/promises";
+import { createRequire } from "node:module";
 import { extractPdfText } from "@giselles-ai/document-preprocessor";
+
+const require = createRequire(import.meta.url);
+const pdfiumWasmBinary = await readFile(
+  require.resolve("@embedpdf/pdfium/pdfium.wasm")
+);
 
 const binary = await readFile("./contract.pdf");
 const { totalPages, pages } = await extractPdfText(binary, {
   password: process.env.PDF_PASSWORD,
   maxPages: 10,
+  pdfiumWasmBinary,
 });
 
 for (const page of pages) {
@@ -53,13 +60,20 @@ for (const page of pages) {
 
 ```ts
 import { readFile } from "node:fs/promises";
+import { createRequire } from "node:module";
 import { renderPdfPageImages } from "@giselles-ai/document-preprocessor";
+
+const require = createRequire(import.meta.url);
+const pdfiumWasmBinary = await readFile(
+  require.resolve("@embedpdf/pdfium/pdfium.wasm")
+);
 
 const binary = await readFile("./whitepaper.pdf");
 const { pages } = await renderPdfPageImages(binary, {
   targetDpi: 150,
   maxPages: 5,
   renderFormFields: true,
+  pdfiumWasmBinary,
 });
 
 for (const page of pages) {
@@ -75,7 +89,10 @@ All public APIs accept an optional `AbortSignal` to cancel ongoing work, which i
 const abortController = new AbortController();
 setTimeout(() => abortController.abort("timeout"), 5_000);
 
-await extractPdfText(data, { signal: abortController.signal });
+await extractPdfText(data, {
+  signal: abortController.signal,
+  pdfiumWasmBinary,
+});
 ```
 
 ## API surface
@@ -83,8 +100,8 @@ await extractPdfText(data, { signal: abortController.signal });
 | Function | Description |
 | --- | --- |
 | `extractText(input, options?)` | Extracts text from plain text or Markdown files with configurable encoding. |
-| `extractPdfText(input, options?)` | Returns normalised text content for each PDF page. |
-| `renderPdfPageImages(input, options?)` | Produces PNG buffers (RGB + alpha) per page at the requested DPI. |
+| `extractPdfText(input, options)` | Returns normalised text content for each PDF page. |
+| `renderPdfPageImages(input, options)` | Produces PNG buffers (RGB + alpha) per page at the requested DPI. |
 
 ### Type Exports
 
@@ -104,6 +121,7 @@ export interface PdfTextExtractionOptions {
   password?: string;
   maxPages?: number;
   signal?: AbortSignal;
+  pdfiumWasmBinary: ArrayBuffer | ArrayBufferView;
 }
 
 export interface PdfTextExtractionResult {
@@ -118,6 +136,7 @@ export interface PdfImageRenderOptions {
   maxPages?: number;
   signal?: AbortSignal;
   renderFormFields?: boolean;
+  pdfiumWasmBinary: ArrayBuffer | ArrayBufferView;
 }
 
 export interface PdfImageRenderResult {
