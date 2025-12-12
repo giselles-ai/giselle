@@ -16,40 +16,6 @@ import {
 	TopPSlider,
 } from "./shared-model-controls";
 
-type ReasoningEffortConfig = {
-	options: readonly string[];
-	defaultValue: string;
-};
-
-/**
- * Returns the available reasoning effort options and default value for the given model.
- *
- * GPT-5.2 defaults:
- * - Reasoning depth: "none" (for lower latency)
- * - Output verbosity: "medium"
- *
- * @see https://platform.openai.com/docs/guides/latest-model#gpt-5-2-parameter-compatibility
- */
-function getReasoningEffortConfig(modelId: string): ReasoningEffortConfig {
-	// GPT-5.2 and GPT-5.1 variants support none/low/medium/high/xhigh
-	// GPT-5.2 defaults to "none" for lower latency
-	if (
-		modelId === "gpt-5.2" ||
-		modelId === "gpt-5.1-thinking" ||
-		modelId === "gpt-5.1-codex"
-	) {
-		return {
-			options: ["none", "low", "medium", "high", "xhigh"] as const,
-			defaultValue: "none",
-		};
-	}
-	// Older models (gpt-5, gpt-5-mini, gpt-5-nano) support minimal/low/medium/high
-	return {
-		options: ["minimal", "low", "medium", "high"] as const,
-		defaultValue: "medium",
-	};
-}
-
 export function OpenAIModelPanel({
 	openaiLanguageModel,
 	onModelChange,
@@ -64,6 +30,25 @@ export function OpenAIModelPanel({
 	onWebSearchChange: (enabled: boolean) => void;
 }) {
 	useUsageLimits();
+
+	const reasoningEffortOptions = useMemo(() => {
+		/**
+		 * GPT-5.2 defaults:
+		 * - Reasoning depth: "none" (for lower latency)
+		 * - Output verbosity: "medium"
+		 *
+		 * @see https://platform.openai.com/docs/guides/latest-model#gpt-5-2-parameter-compatibility
+		 */
+		const options =
+			openaiLanguageModel.id === "gpt-5.2" ||
+			openaiLanguageModel.id === "gpt-5.1-thinking" ||
+			openaiLanguageModel.id === "gpt-5.1-codex"
+				? (["none", "low", "medium", "high", "xhigh"] as const)
+				: (["minimal", "low", "medium", "high"] as const);
+
+		return options.map((value) => ({ value, label: value }));
+	}, [openaiLanguageModel.id]);
+
 	const languageModel = useMemo(
 		() => openaiLanguageModels.find((lm) => lm.id === openaiLanguageModel.id),
 		[openaiLanguageModel.id],
@@ -102,12 +87,7 @@ export function OpenAIModelPanel({
 									}),
 								);
 							}}
-							options={getReasoningEffortConfig(
-								openaiLanguageModel.id,
-							).options.map((v) => ({
-								value: v,
-								label: v,
-							}))}
+							options={reasoningEffortOptions}
 						/>
 					</SettingRow>
 
