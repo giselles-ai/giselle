@@ -1481,7 +1481,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@next/third-parties"></a>
-### @next/third-parties v16.0.7
+### @next/third-parties v16.0.10
 #### 
 
 ##### Paths
