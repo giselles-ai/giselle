@@ -117,17 +117,45 @@ export async function getStepsSectionData(taskId: TaskId) {
 								: undefined
 							: undefined;
 
-				return {
-					id: step.id,
-					title: step.name || "Untitled",
-					subLabel,
-					node,
-					status: step.status,
-					finished:
-						step.status === "completed" ||
-						step.status === "failed" ||
-						step.status === "cancelled",
-				} satisfies UIStepItem;
+				switch (generation.status) {
+					case "cancelled":
+					case "created":
+					case "queued":
+					case "running":
+						return {
+							id: step.id,
+							title: step.name,
+							subLabel,
+							node,
+							status: generation.status,
+							finished: generation.status === "cancelled",
+						} satisfies UIStepItem;
+					case "failed":
+						return {
+							id: step.id,
+							title: step.name,
+							subLabel,
+							node,
+							status: "failed",
+							finished: true,
+							error: generation.error.message,
+							workspaceId: task.workspaceId,
+						} satisfies UIStepItem;
+					case "completed":
+						return {
+							id: step.id,
+							title: step.name,
+							subLabel,
+							node,
+							status: "completed",
+							finished: true,
+							generationId: generation.id,
+						} satisfies UIStepItem;
+					default: {
+						const _exhaustiveCheck: never = generation;
+						throw new Error(`Unhandled status: ${_exhaustiveCheck}`);
+					}
+				}
 			})
 			.filter((itemOrNull) => itemOrNull !== null),
 	}));

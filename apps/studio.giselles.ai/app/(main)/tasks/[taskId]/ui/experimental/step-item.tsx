@@ -1,15 +1,20 @@
 import type {
+	GenerationId,
 	GenerationStatus,
 	OperationNode,
 	StepId,
+	WorkspaceId,
 } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import Link from "next/link";
 import { Accordion } from "radix-ui";
+import { Suspense } from "react";
+import { giselle } from "@/app/giselle";
 import { logger } from "@/lib/logger";
+import { GenerationView } from "../../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-view";
 import { StepItemStatusIcon } from "./step-item-icon";
 
-export interface UIStepItem {
+type UIStepItemBase = {
 	/**
 	 * In the protocol, the structure is Sequence > Step,
 	 * but in the UI it's Step > StepItem,
@@ -19,9 +24,22 @@ export interface UIStepItem {
 	title: string;
 	subLabel?: string;
 	node: OperationNode;
-	status: GenerationStatus;
 	finished: boolean;
-}
+};
+
+export type UIStepItem =
+	| (UIStepItemBase & {
+			status: "completed";
+			generationId: GenerationId;
+	  })
+	| (UIStepItemBase & {
+			status: "failed";
+			error: string;
+			workspaceId: WorkspaceId;
+	  })
+	| (UIStepItemBase & {
+			status: Exclude<GenerationStatus, "completed" | "failed">;
+	  });
 
 function StepItemHeader({
 	item,
@@ -79,12 +97,6 @@ export function StepItem({ item }: { item: UIStepItem }) {
 
 				<Accordion.Content className="overflow-hidden data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown">
 					<StepOutput step={item} />
-					<div className="ml-4 pl-4 border-l-2 border-border">
-						<div className="py-4 [&_.markdown-renderer]:text-[13px] [&_*[class*='text-[14px]']]:text-[13px] [&_*]:text-text-muted/70 [&_*[class*='text-inverse']]:!text-text-muted/70">
-							{/*<GenerationView generation={generation} />*/}
-							todo: generation
-						</div>
-					</div>
 				</Accordion.Content>
 			</Accordion.Item>
 		</Accordion.Root>
@@ -92,6 +104,7 @@ export function StepItem({ item }: { item: UIStepItem }) {
 }
 
 export function StepOutput({ step }: { step: UIStepItem }) {
+	const stepId = step.id;
 	switch (step.status) {
 		case "created":
 		case "queued":
@@ -105,8 +118,9 @@ export function StepOutput({ step }: { step: UIStepItem }) {
 			return (
 				<div className="ml-4 pl-4 border-l-2 border-border">
 					<div className="py-4 [&_.markdown-renderer]:text-[13px] [&_*[class*='text-[14px]']]:text-[13px] [&_*]:text-text-muted/70 [&_*[class*='text-inverse']]:!text-text-muted/70">
-						{/*<GenerationView generation={generation} />*/}
-						todo: generation
+						<Suspense fallback={<div>Loading...</div>}>
+							<ComletedStepOutput generationId={step.generationId} />
+						</Suspense>
 					</div>
 				</div>
 			);
@@ -117,13 +131,15 @@ export function StepOutput({ step }: { step: UIStepItem }) {
 						<p className="text-[13px] text-text-muted leading-relaxed">
 							This step failed during the last run.
 							<br />
+							<span className="break-words">{step.error}</span>
+							<br />
 							Individual step execution is not available on this page.
 							<br />
 							To review or debug this step, open it in Studio.
 						</p>
 						<div className="flex items-center gap-2 mt-3">
 							<Link
-								href={`/workspaces/${workspaceId}`}
+								href={`/workspaces/${step.workspaceId}`}
 								target="_blank"
 								rel="noreferrer"
 								className="text-[13px] text-[hsl(192,73%,84%)] hover:text-[hsl(192,73%,70%)] transition-colors font-medium"
@@ -145,11 +161,18 @@ export function StepOutput({ step }: { step: UIStepItem }) {
 				</div>
 			);
 		default: {
-			const _exhaustiveCheck: never = step.status;
-			logger.warn(
-				`Step ${step.id}: Unhandled step status: ${_exhaustiveCheck}`,
-			);
+			const _exhaustiveCheck: never = step;
+			logger.warn(`Step ${stepId}: Unhandled step status: ${_exhaustiveCheck}`);
 			return null;
 		}
 	}
+}
+
+async function ComletedStepOutput({
+	generationId,
+}: {
+	generationId: GenerationId;
+}) {
+	const generation = await giselle.getGeneration(generationId);
+	return <GenerationView generation={generation} />;
 }
