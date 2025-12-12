@@ -7,8 +7,10 @@ import "./mobile-scroll.css";
 import { TaskId } from "@giselles-ai/protocol";
 import { TaskHeader } from "@/components/task/task-header";
 import { TaskLayout } from "@/components/task/task-layout";
-import { getStepsSectionData } from "./ui/experimental/steps-section-data";
-import { StepsSectionWithStore } from "./ui/experimental/steps-section-with-store";
+import {
+	getStepsSectionData,
+	StepsSection,
+} from "./ui/experimental/steps-section";
 import { getTaskHeaderData } from "./ui/task-header";
 import { TaskOverlayReset } from "./ui/task-overlay-reset";
 
@@ -37,7 +39,7 @@ export default async function ({
 			<TaskHeader {...taskHeaderData} />
 			<div className="flex-1 overflow-y-auto overflow-x-hidden pb-8">
 				{/* Steps Section */}
-				<StepsSectionWithStore initialData={stepsSectionData} />
+				<StepsSection {...stepsSectionData} />
 			</div>
 
 			{/* Main Content Area - Request new tasks section (sticky inside main container) */}
