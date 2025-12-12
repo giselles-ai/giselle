@@ -1,4 +1,4 @@
-import { TaskId } from "@giselles-ai/protocol";
+import type { TaskId } from "@giselles-ai/protocol";
 import { giselle } from "@/app/giselle";
 import type { TaskHeaderProps } from "@/components/task/task-header";
 import { db, tasks } from "@/db";
@@ -21,17 +21,7 @@ async function getAppByTaskId(taskId: TaskId) {
 	return await giselle.getApp({ appId: dbApp.id });
 }
 
-export async function getTaskHeaderData({
-	params,
-}: {
-	params: Promise<{ taskId: string }>;
-}) {
-	const { taskId: taskIdParam } = await params;
-	const result = TaskId.safeParse(taskIdParam);
-	if (!result.success) {
-		throw new Error(`Invalid task ID: ${taskIdParam}`);
-	}
-	const taskId = result.data;
+export async function getTaskHeaderData({ taskId }: { taskId: TaskId }) {
 	const task = await giselle.getTask({ taskId });
 	const [workspace, app, input] = await Promise.all([
 		giselle.getWorkspace(task.workspaceId),

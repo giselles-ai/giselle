@@ -1,11 +1,9 @@
-import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { InputAreaHeaderControls } from "./ui/input-area-header-controls";
 import { InputAreaPlaceholder } from "./ui/input-area-placeholder";
 import { StepsSection } from "./ui/steps-section";
 import "./mobile-scroll.css";
 import { TaskId } from "@giselles-ai/protocol";
-import { giselle } from "@/app/giselle";
 import { TaskHeader } from "@/components/task/task-header";
 import { TaskLayout } from "@/components/task/task-layout";
 import { getTaskHeaderData } from "./ui/task-header";
@@ -17,16 +15,12 @@ export default async function ({
 	params: Promise<{ taskId: string }>;
 }) {
 	const { taskId: taskIdParam } = await params;
-
-	const taskHeaderData = await getTaskHeaderData({ params });
-
 	const result = TaskId.safeParse(taskIdParam);
 	if (!result.success) {
-		notFound();
+		throw new Error(`Invalid task ID: ${taskIdParam}`);
 	}
 	const taskId = result.data;
-	// Fetch task once and reuse for both sections
-	const taskPromise = giselle.getTask({ taskId });
+	const taskHeaderData = await getTaskHeaderData({ taskId });
 
 	return (
 		<TaskLayout>
@@ -36,7 +30,7 @@ export default async function ({
 			<div className="flex-1 overflow-y-auto overflow-x-hidden pb-8">
 				{/* Steps Section */}
 				<Suspense fallback={<div>Loading steps...</div>}>
-					<StepsSection taskPromise={taskPromise} taskId={taskId} />
+					<StepsSection taskId={taskId} />
 				</Suspense>
 			</div>
 
