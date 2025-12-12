@@ -320,6 +320,8 @@ export function NodeComponent({
 
 	const borderGradientStyle = useMemo(() => {
 		if (requiresSetup) return undefined;
+		// For App Entry / End nodes, we use a fixed (white) gradient border defined in classes.
+		if (v.isAppEntry || v.isEnd) return undefined;
 		const colorVar = getNodeColorVariable(v);
 		if (!colorVar) return undefined;
 
@@ -330,6 +332,8 @@ export function NodeComponent({
 
 	const backgroundGradientStyle = useMemo(() => {
 		if (requiresSetup) return undefined;
+		// For App Entry / End nodes, we use a solid container background instead of a subtle gradient.
+		if (v.isAppEntry || v.isEnd) return undefined;
 		const colorVar = getNodeColorVariable(v);
 		if (!colorVar) return undefined;
 
@@ -337,6 +341,9 @@ export function NodeComponent({
 			backgroundImage: `radial-gradient(ellipse farthest-corner at center, color-mix(in srgb, ${colorVar} 15%, transparent 85%) 0%, color-mix(in srgb, ${colorVar} 6%, transparent 94%) 50%, color-mix(in srgb, ${colorVar} 3%, transparent 97%) 75%, transparent 100%)`,
 		};
 	}, [v, requiresSetup, getNodeColorVariable]);
+
+	const isAppEntryPill = v.isAppEntry && !selected && !preview;
+	const appEntryOutputCount = node.outputs?.length ?? 0;
 
 	return (
 		<div
@@ -350,8 +357,14 @@ export function NodeComponent({
 				isVectorStoreNode(node) ? node.content.source.provider : undefined
 			}
 			className={clsx(
-				"group relative flex flex-col rounded-[16px] py-[16px] gap-[16px] min-w-[180px]",
-				"bg-transparent transition-all backdrop-blur-[4px]",
+				"group relative rounded-[16px]",
+				isAppEntryPill
+					? "flex items-center gap-[12px] px-[14px] py-[10px] min-w-[220px] rounded-full"
+					: "flex flex-col py-[16px] gap-[16px] min-w-[180px]",
+				"transition-all backdrop-blur-[4px]",
+				v.isAppEntry && "bg-trigger-node-1",
+				v.isEnd && "bg-end-node-1",
+				!v.isAppEntry && !v.isEnd && "bg-transparent",
 				!selected && !highlighted && "shadow-[4px_4px_8px_4px_rgba(0,0,0,0.5)]",
 				selected && v.isText && "shadow-text-node-1",
 				selected && v.isFile && "shadow-file-node-1",
@@ -390,7 +403,7 @@ export function NodeComponent({
 					(v.isTrigger || v.isAppEntry) &&
 					"shadow-[0px_0px_20px_1px_hsla(220,15%,50%,0.4)]",
 				preview && "opacity-50",
-				!preview && "min-h-[110px]",
+				!preview && !isAppEntryPill && "min-h-[110px]",
 				requiresSetup && "opacity-80",
 			)}
 		>
@@ -441,56 +454,82 @@ export function NodeComponent({
 				)}
 			</AnimatePresence>
 			<div
-				className={clsx("absolute z-[-1] rounded-[16px] inset-0")}
+				className={clsx(
+					"absolute z-[-1] inset-0",
+					isAppEntryPill ? "rounded-full" : "rounded-[16px]",
+					(v.isAppEntry || v.isEnd) && "hidden",
+				)}
 				style={backgroundGradientStyle}
 			/>
 			<div
 				className={clsx(
-					"absolute z-0 rounded-[16px] inset-0 border-[1.5px] mask-fill",
+					"absolute z-0 inset-0 border-[1.5px] mask-fill",
+					isAppEntryPill ? "rounded-full" : "rounded-[16px]",
 					requiresSetup
 						? "border-black/60 border-dashed [border-width:2px]"
 						: "border-transparent",
 					!borderGradientStyle && "bg-gradient-to-br",
 					!borderGradientStyle &&
+						(v.isAppEntry || v.isEnd) &&
+						"from-inverse/80 via-inverse/30 to-inverse/60",
+					!borderGradientStyle &&
+						!v.isAppEntry &&
+						!v.isEnd &&
 						v.isText &&
 						"from-text-node-1/30 via-text-node-1/50 to-text-node-1",
 					!borderGradientStyle &&
+						!v.isAppEntry &&
+						!v.isEnd &&
 						v.isFile &&
 						"from-file-node-1/30 via-file-node-1/50 to-file-node-1",
 					!borderGradientStyle &&
+						!v.isAppEntry &&
+						!v.isEnd &&
 						v.isWebPage &&
 						"from-webPage-node-1/30 via-webPage-node-1/50 to-webPage-node-1",
 					!borderGradientStyle &&
+						!v.isAppEntry &&
+						!v.isEnd &&
 						v.isTextGeneration &&
 						"from-generation-node-1/30 via-generation-node-1/50 to-generation-node-1",
 					!borderGradientStyle &&
+						!v.isAppEntry &&
+						!v.isEnd &&
 						v.isContentGeneration &&
 						"from-generation-node-1/30 via-generation-node-1/50 to-generation-node-1",
 					!borderGradientStyle &&
+						!v.isAppEntry &&
+						!v.isEnd &&
 						v.isImageGeneration &&
 						"from-image-generation-node-1/30 via-image-generation-node-1/50 to-image-generation-node-1",
 					!borderGradientStyle &&
+						!v.isAppEntry &&
+						!v.isEnd &&
 						v.isGithub &&
 						"from-github-node-1/30 via-github-node-1/50 to-github-node-1",
 					!borderGradientStyle &&
+						!v.isAppEntry &&
+						!v.isEnd &&
 						v.isVectorStoreGithub &&
 						"from-github-node-1/30 via-github-node-1/50 to-github-node-1",
 					!borderGradientStyle &&
+						!v.isAppEntry &&
+						!v.isEnd &&
 						v.isVectorStoreDocument &&
 						"from-github-node-1/30 via-github-node-1/50 to-github-node-1",
 					!borderGradientStyle &&
+						!v.isAppEntry &&
+						!v.isEnd &&
 						v.isTrigger &&
 						"from-trigger-node-1/30 via-trigger-node-1/50 to-trigger-node-1",
 					!borderGradientStyle &&
-						v.isAppEntry &&
-						"from-trigger-node-1/30 via-trigger-node-1/50 to-trigger-node-1",
-					!borderGradientStyle &&
+						!v.isAppEntry &&
+						!v.isEnd &&
 						v.isAction &&
 						"from-action-node-1/30 via-action-node-1/50 to-action-node-1",
 					!borderGradientStyle &&
-						v.isEnd &&
-						"from-end-node-1/30 via-end-node-1/50 to-end-node-1",
-					!borderGradientStyle &&
+						!v.isAppEntry &&
+						!v.isEnd &&
 						v.isQuery &&
 						"from-query-node-1/30 via-query-node-1/50 to-query-node-1",
 				)}
@@ -505,107 +544,141 @@ export function NodeComponent({
 						/>
 					</div>
 				)}
-			<div className={clsx("px-[16px] relative")}>
-				<div className="flex items-center gap-[8px]">
+			{isAppEntryPill ? (
+				<>
 					<div
 						className={clsx(
-							"w-[32px] h-[32px] flex items-center justify-center rounded-[8px] padding-[8px]",
-							v.isText && "bg-text-node-1",
-							v.isFile && "bg-file-node-1",
-							v.isWebPage && "bg-webPage-node-1",
-							v.isTextGeneration && "bg-generation-node-1",
-							v.isContentGeneration && "bg-generation-node-1",
-							v.isImageGeneration && "bg-image-generation-node-1",
-							v.isGithub && "bg-github-node-1",
-							v.isVectorStoreGithub && "bg-github-node-1",
-							v.isVectorStoreDocument && "bg-github-node-1",
-							v.isTrigger && "bg-trigger-node-1",
-							v.isAppEntry && "bg-trigger-node-1",
-							v.isAction && "bg-action-node-1",
-							v.isEnd && "bg-end-node-1",
-							v.isQuery && "bg-query-node-1",
+							"w-[32px] h-[32px] flex items-center justify-center padding-[8px] rounded-full bg-inverse shrink-0",
 						)}
 					>
 						<NodeIcon
 							node={node}
 							className={clsx(
-								"w-[16px] h-[16px]",
-								v.isText && "fill-current",
-								v.isFile && "fill-current",
-								v.isWebPage && "fill-current",
-								v.isTextGeneration && "fill-current",
-								v.isContentGeneration && "fill-current",
-								v.isImageGeneration && "fill-current",
-								v.isVectorStore &&
-									!v.isVectorStoreGithub &&
-									"stroke-current fill-none",
-								v.isVectorStoreGithub && "fill-current",
-								v.isVectorStoreDocument && "stroke-current fill-none",
-								v.isTrigger && !v.isGithubTrigger && "stroke-current fill-none",
-								v.isGithubTrigger && "fill-current",
-								v.isAppEntry && "stroke-current fill-none",
-								v.isAction && "fill-current",
-								v.isEnd && "fill-current",
-								v.isQuery && "stroke-current fill-none",
-								v.isGithub && "fill-current",
-								v.isText && "text-background",
-								v.isFile && "text-background",
-								v.isWebPage && "text-background",
-								v.isTextGeneration && "text-inverse",
-								v.isImageGeneration && "text-inverse",
-								v.isGithub && "text-background",
-								v.isVectorStoreGithub && "text-background",
-								v.isVectorStoreDocument && "text-background",
-								v.isTrigger && !v.isGithubTrigger && "text-inverse",
-								v.isGithubTrigger && "text-background",
-								v.isAppEntry && "text-inverse",
-								v.isAction && "text-inverse",
-								v.isEnd && "text-inverse",
-								v.isQuery && "text-background",
+								"w-[16px] h-[16px] stroke-current fill-none text-gray-900",
 							)}
 						/>
 					</div>
-					<div>
-						<div className="flex items-center gap-[2px] pl-[4px] text-[10px] font-mono [&>*:not(:last-child)]:after:content-['/'] [&>*:not(:last-child)]:after:ml-[2px] [&>*:not(:last-child)]:after:text-text/60">
-							{metadataTexts.map((item, _index) => (
-								<div key={item.label} className="text-[10px] text-inverse">
-									{selected ? (
-										<Tooltip text={item.tooltip} variant="dark">
-											<button type="button">{item.label}</button>
-										</Tooltip>
-									) : (
-										item.label
-									)}
-								</div>
-							))}
+					<div className="flex-1 min-w-0">
+						<p className="text-[14px] font-medium text-inverse leading-none truncate">
+							{defaultName(node)}
+						</p>
+					</div>
+					{/* Pill view: collapse multiple outputs into a single indicator */}
+					<div className="relative shrink-0">
+						<div className="h-[14px] w-[14px] rounded-full border border-inverse/50 bg-inverse/10" />
+						{appEntryOutputCount > 1 && (
+							<div className="absolute -right-[6px] -top-[6px] h-[16px] min-w-[16px] px-[4px] rounded-full bg-inverse text-gray-900 text-[10px] font-medium flex items-center justify-center leading-none">
+								{appEntryOutputCount}
+							</div>
+						)}
+					</div>
+				</>
+			) : (
+				<div className={clsx("px-[16px] relative")}>
+					<div className="flex items-center gap-[8px]">
+						<div
+							className={clsx(
+								"w-[32px] h-[32px] flex items-center justify-center padding-[8px]",
+								v.isAppEntry || v.isEnd ? "rounded-full" : "rounded-[8px]",
+								v.isText && "bg-text-node-1",
+								v.isFile && "bg-file-node-1",
+								v.isWebPage && "bg-webPage-node-1",
+								v.isTextGeneration && "bg-generation-node-1",
+								v.isContentGeneration && "bg-generation-node-1",
+								v.isImageGeneration && "bg-image-generation-node-1",
+								v.isGithub && "bg-github-node-1",
+								v.isVectorStoreGithub && "bg-github-node-1",
+								v.isVectorStoreDocument && "bg-github-node-1",
+								v.isTrigger && "bg-trigger-node-1",
+								v.isAppEntry && "bg-inverse",
+								v.isAction && "bg-action-node-1",
+								v.isEnd && "bg-inverse",
+								v.isQuery && "bg-query-node-1",
+							)}
+						>
+							<NodeIcon
+								node={node}
+								className={clsx(
+									"w-[16px] h-[16px]",
+									v.isText && "fill-current",
+									v.isFile && "fill-current",
+									v.isWebPage && "fill-current",
+									v.isTextGeneration && "fill-current",
+									v.isContentGeneration && "fill-current",
+									v.isImageGeneration && "fill-current",
+									v.isVectorStore &&
+										!v.isVectorStoreGithub &&
+										"stroke-current fill-none",
+									v.isVectorStoreGithub && "fill-current",
+									v.isVectorStoreDocument && "stroke-current fill-none",
+									v.isTrigger &&
+										!v.isGithubTrigger &&
+										"stroke-current fill-none",
+									v.isGithubTrigger && "fill-current",
+									v.isAppEntry && "stroke-current fill-none",
+									v.isAction && "fill-current",
+									v.isEnd && "fill-current",
+									v.isQuery && "stroke-current fill-none",
+									v.isGithub && "fill-current",
+									v.isText && "text-background",
+									v.isFile && "text-background",
+									v.isWebPage && "text-background",
+									v.isTextGeneration && "text-inverse",
+									v.isImageGeneration && "text-inverse",
+									v.isGithub && "text-background",
+									v.isVectorStoreGithub && "text-background",
+									v.isVectorStoreDocument && "text-background",
+									v.isTrigger && !v.isGithubTrigger && "text-inverse",
+									v.isGithubTrigger && "text-background",
+									v.isAppEntry && "text-gray-900",
+									v.isAction && "text-inverse",
+									v.isEnd && "text-gray-900",
+									v.isQuery && "text-background",
+								)}
+							/>
 						</div>
-						<EditableText
-							className="group-data-[selected=false]:pointer-events-none **:data-input:w-full"
-							text={defaultName(node)}
-							onValueChange={(value) => {
-								if (value === defaultName(node)) {
-									return;
-								}
-								if (value.trim().length === 0) {
-									updateNodeData(node.id, { name: undefined });
-									return;
-								}
-								updateNodeData(node.id, { name: value });
-							}}
-							onClickToEditMode={(e) => {
-								if (!selected) {
-									e.preventDefault();
-									return;
-								}
-								e.stopPropagation();
-							}}
-						/>
+						<div>
+							<div className="flex items-center gap-[2px] pl-[4px] text-[10px] font-mono [&>*:not(:last-child)]:after:content-['/'] [&>*:not(:last-child)]:after:ml-[2px] [&>*:not(:last-child)]:after:text-text/60">
+								{metadataTexts.map((item, _index) => (
+									<div key={item.label} className="text-[10px] text-inverse">
+										{selected ? (
+											<Tooltip text={item.tooltip} variant="dark">
+												<button type="button">{item.label}</button>
+											</Tooltip>
+										) : (
+											item.label
+										)}
+									</div>
+								))}
+							</div>
+							<EditableText
+								className="group-data-[selected=false]:pointer-events-none **:data-input:w-full"
+								text={defaultName(node)}
+								onValueChange={(value) => {
+									if (value === defaultName(node)) {
+										return;
+									}
+									if (value.trim().length === 0) {
+										updateNodeData(node.id, { name: undefined });
+										return;
+									}
+									updateNodeData(node.id, { name: value });
+								}}
+								onClickToEditMode={(e) => {
+									if (!selected) {
+										e.preventDefault();
+										return;
+									}
+									e.stopPropagation();
+								}}
+							/>
+						</div>
 					</div>
 				</div>
-			</div>
-			<DocumentNodeInfo node={node} />
-			<GitHubNodeInfo node={node} />
-			{!preview && (
+			)}
+			{!isAppEntryPill && <DocumentNodeInfo node={node} />}
+			{!isAppEntryPill && <GitHubNodeInfo node={node} />}
+			{!isAppEntryPill && !preview && (
 				<div className="flex justify-between">
 					<div className="grid">
 						{node.content.type !== "action" &&
