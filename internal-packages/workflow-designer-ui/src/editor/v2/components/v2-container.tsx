@@ -15,6 +15,7 @@ import {
 	type OnNodesChange,
 	ReactFlow,
 	type Node as RFNode,
+	useNodesInitialized,
 	useReactFlow,
 	useUpdateNodeInternals,
 	Panel as XYFlowPanel,
@@ -29,7 +30,7 @@ import {
 	workspaceActions,
 } from "@giselles-ai/react";
 import clsx from "clsx/lite";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useShallow } from "zustand/shallow";
 import { Background } from "../../../ui/background";
@@ -82,10 +83,12 @@ function V2NodeCanvas() {
 		null,
 	);
 	const reactFlowRef = useRef<HTMLDivElement>(null);
+	const didInitialAutoFitViewRef = useRef(false);
 
 	const reactFlowInstance = useReactFlow();
 	const updateNodeInternals = useUpdateNodeInternals();
 	const { handleKeyDown } = useKeyboardShortcuts();
+	const nodesInitialized = useNodesInitialized();
 
 	const cacheNodesRef = useRef<Map<NodeId, RFNode>>(new Map());
 	const nodes = useMemo(() => {
@@ -124,6 +127,72 @@ function V2NodeCanvas() {
 		cacheNodesRef.current = next;
 		return arr;
 	}, [data.nodes, data.nodeState, updateNodeInternals]);
+
+	useEffect(() => {
+		if (didInitialAutoFitViewRef.current) {
+			return;
+		}
+		if (!nodesInitialized) {
+			return;
+		}
+
+		const pane = reactFlowRef.current?.getBoundingClientRect();
+		if (!pane) {
+			return;
+		}
+
+		const internalNodes = reactFlowInstance.getNodes();
+		if (internalNodes.length === 0) {
+			didInitialAutoFitViewRef.current = true;
+			return;
+		}
+
+		const topLeft = reactFlowInstance.screenToFlowPosition({
+			x: pane.left,
+			y: pane.top,
+		});
+		const bottomRight = reactFlowInstance.screenToFlowPosition({
+			x: pane.right,
+			y: pane.bottom,
+		});
+
+		const viewportRect = {
+			minX: Math.min(topLeft.x, bottomRight.x),
+			minY: Math.min(topLeft.y, bottomRight.y),
+			maxX: Math.max(topLeft.x, bottomRight.x),
+			maxY: Math.max(topLeft.y, bottomRight.y),
+		};
+
+		const isAnyNodeVisible = internalNodes.some((node) => {
+			const position = node.position;
+			const width = node.measured?.width ?? node.width ?? 0;
+			const height = node.measured?.height ?? node.height ?? 0;
+
+			if (width <= 0 || height <= 0) {
+				return false;
+			}
+
+			const nodeRect = {
+				minX: position.x,
+				minY: position.y,
+				maxX: position.x + width,
+				maxY: position.y + height,
+			};
+
+			return (
+				nodeRect.minX <= viewportRect.maxX &&
+				nodeRect.maxX >= viewportRect.minX &&
+				nodeRect.minY <= viewportRect.maxY &&
+				nodeRect.maxY >= viewportRect.minY
+			);
+		});
+
+		if (!isAnyNodeVisible) {
+			reactFlowInstance.fitView({ padding: 0.2 });
+		}
+
+		didInitialAutoFitViewRef.current = true;
+	}, [nodesInitialized, reactFlowInstance]);
 
 	const cacheEdgesRef = useRef<Map<string, Edge>>(new Map());
 	const edges = useMemo(() => {
