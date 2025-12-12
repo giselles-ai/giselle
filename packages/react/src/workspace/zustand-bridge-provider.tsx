@@ -136,6 +136,18 @@ export function ZustandBridgeProvider({
 
 			const appId = AppId.generate();
 			const draftApp = node.content.draftApp;
+			// Avoid auto-configuring a freshly placed App Entry node unless the user
+			// has actually provided any draft app information. Otherwise, the node
+			// will "flip" to configured immediately after placement, which feels
+			// like an unexpected state change in the workflow designer UI.
+			const hasDraftAppInput =
+				(draftApp.name?.trim()?.length ?? 0) > 0 ||
+				(draftApp.description?.trim()?.length ?? 0) > 0 ||
+				(draftApp.iconName?.trim()?.length ?? 0) > 0 ||
+				(draftApp.parameters?.length ?? 0) > 0;
+			if (!hasDraftAppInput) {
+				return;
+			}
 			const fallbackNodeName = ensureNonEmpty(
 				(node as { name?: string }).name,
 				"App Entry",

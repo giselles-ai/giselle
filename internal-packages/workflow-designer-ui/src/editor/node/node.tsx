@@ -109,7 +109,7 @@ function CustomXyFlowNode({ id, selected }: NodeProps) {
 	const { node, connections, highlighted } = useWorkflowDesignerStore(
 		useShallow((s) => ({
 			node: s.workspace.nodes.find((node) => node.id === id),
-			connections: s.workspace.connections,
+			connections: s.workspace.connections ?? [],
 			highlighted: s.workspace.ui.nodeState[id as NodeId]?.highlighted,
 		})),
 	);
@@ -149,8 +149,8 @@ export function NodeComponent({
 	node,
 	selected,
 	highlighted,
-	connectedInputIds,
-	connectedOutputIds,
+	connectedInputIds = [],
+	connectedOutputIds = [],
 	preview = false,
 }: {
 	node: NodeLike;
@@ -318,6 +318,11 @@ export function NodeComponent({
 		[],
 	);
 
+	// App Entry: shape change only.
+	// - not selected: pill
+	// - selected: same square card as other nodes
+	const isAppEntryPill = v.isAppEntry && !selected && !preview;
+
 	const borderGradientStyle = useMemo(() => {
 		if (requiresSetup) return undefined;
 		// For App Entry / End nodes, we use a fixed (white) gradient border defined in classes.
@@ -342,8 +347,8 @@ export function NodeComponent({
 		};
 	}, [v, requiresSetup, getNodeColorVariable]);
 
-	const isAppEntryPill = v.isAppEntry && !selected && !preview;
-	const appEntryOutputCount = node.outputs?.length ?? 0;
+	const appEntryPrimaryOutputId = node.outputs?.[0]?.id;
+	const isAppEntryAnyOutputConnected = connectedOutputIds.length > 0;
 
 	return (
 		<div
@@ -359,9 +364,12 @@ export function NodeComponent({
 			className={clsx(
 				"group relative rounded-[16px]",
 				isAppEntryPill
-					? "flex items-center gap-[12px] px-[14px] py-[10px] min-w-[220px] rounded-full"
+					? "flex items-center gap-[8px] px-[16px] py-[10px] rounded-full"
 					: "flex flex-col py-[16px] gap-[16px] min-w-[180px]",
-				"transition-all backdrop-blur-[4px]",
+				// App Entry changes shape between selected/unselected, so avoid animating layout/border-radius.
+				v.isAppEntry
+					? "backdrop-blur-[4px]"
+					: "transition-all backdrop-blur-[4px]",
 				v.isAppEntry && "bg-trigger-node-1",
 				v.isEnd && "bg-end-node-1",
 				!v.isAppEntry && !v.isEnd && "bg-transparent",
@@ -535,7 +543,6 @@ export function NodeComponent({
 				)}
 				style={borderGradientStyle}
 			/>
-
 			{isTriggerNode(node, "github") &&
 				node.content.state.status === "configured" && (
 					<div className="absolute top-[-20px] left-0 z-10">
@@ -546,6 +553,31 @@ export function NodeComponent({
 				)}
 			{isAppEntryPill ? (
 				<>
+					{appEntryPrimaryOutputId && (
+						<Handle
+							id={appEntryPrimaryOutputId}
+							type="source"
+							position={Position.Right}
+							className={clsx(
+								"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !right-[-0.5px] !top-1/2",
+								isAppEntryAnyOutputConnected ? "!bg-trigger-node-1" : "!bg-bg",
+								"!border-trigger-node-1",
+							)}
+						/>
+					)}
+					{node.outputs
+						?.filter((output) => output.id !== appEntryPrimaryOutputId)
+						.map((output) => (
+							<Handle
+								key={output.id}
+								id={output.id}
+								type="source"
+								position={Position.Right}
+								className={clsx(
+									"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !right-[-0.5px] !top-1/2 !opacity-0 !pointer-events-none",
+								)}
+							/>
+						))}
 					<div
 						className={clsx(
 							"w-[32px] h-[32px] flex items-center justify-center padding-[8px] rounded-full bg-inverse shrink-0",
@@ -562,15 +594,6 @@ export function NodeComponent({
 						<p className="text-[14px] font-medium text-inverse leading-none truncate">
 							{defaultName(node)}
 						</p>
-					</div>
-					{/* Pill view: collapse multiple outputs into a single indicator */}
-					<div className="relative shrink-0">
-						<div className="h-[14px] w-[14px] rounded-full border border-inverse/50 bg-inverse/10" />
-						{appEntryOutputCount > 1 && (
-							<div className="absolute -right-[6px] -top-[6px] h-[16px] min-w-[16px] px-[4px] rounded-full bg-inverse text-gray-900 text-[10px] font-medium flex items-center justify-center leading-none">
-								{appEntryOutputCount}
-							</div>
-						)}
 					</div>
 				</>
 			) : (
