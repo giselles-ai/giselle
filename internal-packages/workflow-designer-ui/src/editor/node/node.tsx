@@ -330,6 +330,17 @@ export function NodeComponent({
 	const isAppEntryPill = v.isAppEntry && !selected && !preview;
 	const isEndPill = v.isEnd && !selected && !preview;
 	const isStagePill = isAppEntryPill || isEndPill;
+	const nodeRadiusClass = isStagePill ? "rounded-full" : "rounded-[16px]";
+	const stagePillLayoutClass =
+		"flex items-center gap-[8px] px-[14px] py-[8px] rounded-full";
+	const nodeLayoutClass = isStagePill
+		? stagePillLayoutClass
+		: "flex flex-col py-[16px] gap-[16px] min-w-[180px]";
+	const stageShapeClass =
+		v.isAppEntry || v.isEnd
+			? "backdrop-blur-[4px]"
+			: "transition-all backdrop-blur-[4px]";
+	const stageBackgroundClass = (v.isAppEntry || v.isEnd) && "bg-trigger-node-1";
 
 	const borderGradientStyle = useMemo(() => {
 		if (requiresSetup) return undefined;
@@ -362,6 +373,71 @@ export function NodeComponent({
 		(connectedInputIds?.length ?? 0) > 0 ||
 		connectedInputIds?.some((id) => id === endPrimaryInputId);
 
+	function renderAppEntryPillHandles() {
+		if (!appEntryPrimaryOutputId) return null;
+		return (
+			<>
+				<Handle
+					id={appEntryPrimaryOutputId}
+					type="source"
+					position={Position.Right}
+					className={clsx(
+						"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !right-[-0.5px] !top-1/2",
+						isAppEntryAnyOutputConnected ? "!bg-trigger-node-1" : "!bg-bg",
+						"!border-trigger-node-1",
+						isAppEntryAnyOutputConnected &&
+							"[box-shadow:0_0_0_1.5px_rgba(0,0,0,0.8)]",
+					)}
+				/>
+				{node.outputs
+					?.filter((output) => output.id !== appEntryPrimaryOutputId)
+					.map((output) => (
+						<Handle
+							key={output.id}
+							id={output.id}
+							type="source"
+							position={Position.Right}
+							className={clsx(
+								"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !right-[-0.5px] !top-1/2 !opacity-0 !pointer-events-none",
+							)}
+						/>
+					))}
+			</>
+		);
+	}
+
+	function renderEndPillHandles() {
+		return (
+			<>
+				<Handle
+					id={endPrimaryInputId}
+					type="target"
+					position={Position.Left}
+					className={clsx(
+						"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !left-[-0.5px] !top-1/2",
+						isEndAnyInputConnected ? "!bg-trigger-node-1" : "!bg-bg",
+						"!border-trigger-node-1",
+						isEndAnyInputConnected &&
+							"[box-shadow:0_0_0_1.5px_rgba(0,0,0,0.8)]",
+					)}
+				/>
+				{node.inputs
+					?.filter((input) => input.id !== endPrimaryInputId)
+					.map((input) => (
+						<Handle
+							key={input.id}
+							id={input.id}
+							type="target"
+							position={Position.Left}
+							className={clsx(
+								"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !left-[-0.5px] !top-1/2 !opacity-0 !pointer-events-none",
+							)}
+						/>
+					))}
+			</>
+		);
+	}
+
 	return (
 		<div
 			data-type={node.type}
@@ -375,15 +451,10 @@ export function NodeComponent({
 			}
 			className={clsx(
 				"group relative rounded-[16px]",
-				isStagePill
-					? "flex items-center gap-[8px] px-[14px] py-[8px] rounded-full"
-					: "flex flex-col py-[16px] gap-[16px] min-w-[180px]",
+				nodeLayoutClass,
 				// Stage Request / Stage Response changes shape between selected/unselected, so avoid animating layout/border-radius.
-				v.isAppEntry || v.isEnd
-					? "backdrop-blur-[4px]"
-					: "transition-all backdrop-blur-[4px]",
-				v.isAppEntry && "bg-trigger-node-1",
-				v.isEnd && "bg-trigger-node-1",
+				stageShapeClass,
+				stageBackgroundClass,
 				!v.isAppEntry && !v.isEnd && "bg-transparent",
 				!selected &&
 					!highlighted &&
@@ -479,7 +550,7 @@ export function NodeComponent({
 				<div
 					className={clsx(
 						"absolute inset-0 z-[-2] pointer-events-none",
-						isStagePill ? "rounded-full" : "rounded-[16px]",
+						nodeRadiusClass,
 						"shadow-[0_0_22px_4px_hsla(220,_15%,_50%,_0.7)]",
 					)}
 				/>
@@ -487,7 +558,7 @@ export function NodeComponent({
 			<div
 				className={clsx(
 					"absolute z-[-1] inset-0",
-					isStagePill ? "rounded-full" : "rounded-[16px]",
+					nodeRadiusClass,
 					(v.isAppEntry || v.isEnd) && "hidden",
 				)}
 				style={backgroundGradientStyle}
@@ -495,7 +566,7 @@ export function NodeComponent({
 			<div
 				className={clsx(
 					"absolute z-0 inset-0 border-[1.5px] mask-fill",
-					isStagePill ? "rounded-full" : "rounded-[16px]",
+					nodeRadiusClass,
 					requiresSetup
 						? "border-black/60 border-dashed [border-width:2px]"
 						: "border-transparent",
@@ -576,62 +647,8 @@ export function NodeComponent({
 				)}
 			{isStagePill ? (
 				<>
-					{isAppEntryPill && appEntryPrimaryOutputId && (
-						<Handle
-							id={appEntryPrimaryOutputId}
-							type="source"
-							position={Position.Right}
-							className={clsx(
-								"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !right-[-0.5px] !top-1/2",
-								isAppEntryAnyOutputConnected ? "!bg-trigger-node-1" : "!bg-bg",
-								"!border-trigger-node-1",
-								isAppEntryAnyOutputConnected &&
-									"[box-shadow:0_0_0_1.5px_rgba(0,0,0,0.8)]",
-							)}
-						/>
-					)}
-					{isAppEntryPill &&
-						node.outputs
-							?.filter((output) => output.id !== appEntryPrimaryOutputId)
-							.map((output) => (
-								<Handle
-									key={output.id}
-									id={output.id}
-									type="source"
-									position={Position.Right}
-									className={clsx(
-										"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !right-[-0.5px] !top-1/2 !opacity-0 !pointer-events-none",
-									)}
-								/>
-							))}
-					{isEndPill && endPrimaryInputId && (
-						<Handle
-							id={endPrimaryInputId}
-							type="target"
-							position={Position.Left}
-							className={clsx(
-								"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !left-[-0.5px] !top-1/2",
-								isEndAnyInputConnected ? "!bg-trigger-node-1" : "!bg-bg",
-								"!border-trigger-node-1",
-								isEndAnyInputConnected &&
-									"[box-shadow:0_0_0_1.5px_rgba(0,0,0,0.8)]",
-							)}
-						/>
-					)}
-					{isEndPill &&
-						node.inputs
-							?.filter((input) => input.id !== endPrimaryInputId)
-							.map((input) => (
-								<Handle
-									key={input.id}
-									id={input.id}
-									type="target"
-									position={Position.Left}
-									className={clsx(
-										"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !left-[-0.5px] !top-1/2 !opacity-0 !pointer-events-none",
-									)}
-								/>
-							))}
+					{isAppEntryPill ? renderAppEntryPillHandles() : null}
+					{isEndPill ? renderEndPillHandles() : null}
 					<div
 						className={clsx(
 							"w-[28px] h-[28px] flex items-center justify-center rounded-full bg-inverse shrink-0",
