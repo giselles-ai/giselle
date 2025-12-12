@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import invariant from "tiny-invariant";
 
 const SEPARATOR = ".";
+const SIGNATURE_LENGTH = 64; // SHA-256 hex string length (256 bits = 32 bytes = 64 hex chars)
 
 function sign(value: string): string {
 	const SECRET = process.env.COOKIE_SECRET;
@@ -17,7 +18,7 @@ function verify(signed: string): string | null {
 	invariant(SECRET, "COOKIE_SECRET is not set");
 
 	const [value, signature] = signed.split(SEPARATOR);
-	if (!value || !signature) {
+	if (!value || !signature || signature.length !== SIGNATURE_LENGTH) {
 		return null;
 	}
 	const expectedSignature = createHmac("sha256", SECRET)
