@@ -17,8 +17,12 @@ function verify(signed: string): string | null {
 	const SECRET = process.env.COOKIE_SECRET;
 	invariant(SECRET, "COOKIE_SECRET is not set");
 
-	const [value, signature] = signed.split(SEPARATOR);
-	if (!value || !signature || signature.length !== SIGNATURE_LENGTH) {
+	const separatorIndex = signed.lastIndexOf(SEPARATOR);
+	if (separatorIndex <= 0) return null;
+
+	const value = signed.slice(0, separatorIndex);
+	const signature = signed.slice(separatorIndex + 1);
+	if (signature.length !== SIGNATURE_LENGTH) {
 		return null;
 	}
 	const expectedSignature = createHmac("sha256", SECRET)

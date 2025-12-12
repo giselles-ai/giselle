@@ -70,4 +70,12 @@ describe("signed-cookie", () => {
 		const result = await getCookie("odd-hex");
 		expect(result).toBeNull();
 	});
+
+	test("should handle value containing separator", async () => {
+		const testData = { url: "https://example.com" };
+		await setCookie("dot-value", testData);
+
+		const result = await getCookie("dot-value");
+		expect(result).toEqual(testData);
+	});
 });
