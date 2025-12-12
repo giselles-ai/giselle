@@ -1,12 +1,19 @@
+import { Button } from "@giselle-internal/ui/button";
 import { useToasts } from "@giselle-internal/ui/toast";
 import type { App, AppEntryNode } from "@giselles-ai/protocol";
 import { AppParameterId } from "@giselles-ai/protocol";
 import { useGiselle } from "@giselles-ai/react";
-import { LoaderIcon } from "lucide-react";
+import { LoaderIcon, PlusIcon } from "lucide-react";
 import { type FormEvent, useCallback, useEffect, useState } from "react";
 import type { KeyedMutator } from "swr";
 import { SettingDetail, SettingLabel } from "../ui/setting-label";
 import { AppIconSelect } from "./app-icon-select";
+
+function getAppEntryInputLabel(label: string): string {
+	const match = /^Input\((.+)\)$/.exec(label);
+	if (!match) return label;
+	return match[1] ?? label;
+}
 
 export function AppEntryConfiguredView({
 	node,
@@ -147,18 +154,28 @@ export function AppEntryConfiguredView({
 									<li key={output.id}>
 										<div className="flex items-center justify-between">
 											<div className="flex items-center gap-[8px]">
-												<span className="text-[14px]">{output.label}</span>
+												<span className="text-[14px]">
+													{getAppEntryInputLabel(output.label)}
+												</span>
+												{parameter && (
+													<span className="text-[12px] text-text-muted">
+														{parameter.type}
+													</span>
+												)}
 												{parameter?.required && (
 													<span className="bg-red-900/20 text-red-900 text-[12px] font-medium px-[6px] py-[1px] rounded-full">
 														required
 													</span>
 												)}
 											</div>
-											{parameter && (
-												<span className="text-[12px] text-text-muted">
-													{parameter.type}
-												</span>
-											)}
+											<Button
+												type="button"
+												variant="subtle"
+												size="default"
+												leftIcon={<PlusIcon className="size-[12px]" />}
+											>
+												Select Source
+											</Button>
 										</div>
 									</li>
 								);
