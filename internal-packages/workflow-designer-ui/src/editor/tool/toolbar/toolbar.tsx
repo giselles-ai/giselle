@@ -36,6 +36,7 @@ import clsx from "clsx/lite";
 import {
 	DatabaseZapIcon,
 	FileSlidersIcon,
+	FlagIcon,
 	FolderInputIcon,
 	PowerIcon,
 	SparklesIcon,
@@ -261,7 +262,7 @@ export function Toolbar() {
 						data-tool
 						className="relative"
 					>
-						<Tooltip text={<TooltipAndHotkey text="Start / End" hotkey="t" />}>
+						<Tooltip text={<TooltipAndHotkey text="Start / End" hotkey="s" />}>
 							<PowerIcon data-icon />
 						</Tooltip>
 						{selectedTool?.action === "selectTrigger" && (
@@ -332,14 +333,14 @@ export function Toolbar() {
 																	className="cursor-not-allowed opacity-50 pointer-events-none"
 																>
 																	<ZapIcon className="size-[20px] shrink-0" />
-																	<p className="text-[14px]">App Entry</p>
+																	<p className="text-[14px]">Stage Entry</p>
 																</ToggleGroup.Item>
 															</span>
 														</Tooltip>
 													) : (
 														<ToggleGroup.Item value="appEntry" data-tool>
 															<ZapIcon className="size-[20px] shrink-0" />
-															<p className="text-[14px]">App Entry</p>
+															<p className="text-[14px]">Stage Entry</p>
 														</ToggleGroup.Item>
 													))}
 												{triggerRegistry
@@ -391,6 +392,16 @@ export function Toolbar() {
 													}
 												}}
 											>
+												<ToggleGroup.Item
+													value="stageEnd"
+													data-tool
+													aria-disabled={true}
+													disabled={true}
+													className="cursor-not-allowed opacity-50 pointer-events-none"
+												>
+													<FlagIcon className="size-[20px] shrink-0" />
+													<p className="text-[14px]">Stage End</p>
+												</ToggleGroup.Item>
 												{actionRegistry.map((actionEntry) => (
 													<ToggleGroup.Item
 														key={`${actionValuePrefix}${actionEntry.provider}`}
@@ -444,7 +455,10 @@ export function Toolbar() {
 											blurClass="backdrop-blur-lg"
 											zIndexClass="z-0"
 										/>
-										<div className="relative flex flex-col gap-[8px]">
+										<div className="relative flex flex-col gap-0">
+											<p className="text-[#505D7B] text-[12px] font-medium leading-[170%] mb-[4px] px-[8px]">
+												Files
+											</p>
 											<ToggleGroup.Root
 												type="single"
 												className={clsx(
@@ -501,6 +515,30 @@ export function Toolbar() {
 													<TextFileIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">Text Upload</p>
 												</ToggleGroup.Item>
+											</ToggleGroup.Root>
+											<p className="text-[#505D7B] text-[12px] font-medium leading-[170%] mt-[8px] mb-[4px] px-[8px]">
+												Vector Stores
+											</p>
+											<ToggleGroup.Root
+												type="single"
+												className={clsx(
+													"flex flex-col gap-[8px]",
+													"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
+													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-surface-hover",
+													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
+												)}
+												onValueChange={(sourceType) => {
+													if (sourceType === "githubVectorStore") {
+														setSelectedTool(
+															addNodeTool(createGitHubVectorStoreNode()),
+														);
+													} else if (sourceType === "documentVectorStore") {
+														setSelectedTool(
+															addNodeTool(createDocumentVectorStoreNode()),
+														);
+													}
+												}}
+											>
 												<ToggleGroup.Item value="documentVectorStore" data-tool>
 													<DocumentVectorStoreIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">Document Vector Store</p>

@@ -85,7 +85,7 @@ export function useKeyboardShortcuts(
 		data.ui.currentShortcutScope === "properties-panel";
 
 	// Tool shortcuts using the simplified hook
-	useToolAction("t", selectTriggerTool);
+	useToolAction("s", selectTriggerTool);
 	useToolAction("i", selectSourceCategoryTool);
 	useToolAction("g", selectLanguageModelTool);
 	useToolAction("r", selectRetrievalCategoryTool);
