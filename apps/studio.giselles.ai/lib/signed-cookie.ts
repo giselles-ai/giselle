@@ -1,8 +1,9 @@
-import { createHmac } from "node:crypto";
+import { createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import invariant from "tiny-invariant";
 
 const SEPARATOR = ".";
+const SIGNATURE_LENGTH = 64; // SHA-256 hex string length (256 bits = 32 bytes = 64 hex chars)
 
 function sign(value: string): string {
 	const SECRET = process.env.COOKIE_SECRET;
@@ -16,12 +17,26 @@ function verify(signed: string): string | null {
 	const SECRET = process.env.COOKIE_SECRET;
 	invariant(SECRET, "COOKIE_SECRET is not set");
 
-	const [value, signature] = signed.split(SEPARATOR);
+	const separatorIndex = signed.lastIndexOf(SEPARATOR);
+	if (separatorIndex <= 0) return null;
+
+	const value = signed.slice(0, separatorIndex);
+	const signature = signed.slice(separatorIndex + 1);
+	if (signature.length !== SIGNATURE_LENGTH) {
+		return null;
+	}
 	const expectedSignature = createHmac("sha256", SECRET)
 		.update(value)
 		.digest("hex");
 
-	return signature === expectedSignature ? value : null;
+	const signatureBuffer = Buffer.from(signature, "hex");
+	const expectedBuffer = Buffer.from(expectedSignature, "hex");
+
+	if (signatureBuffer.length !== expectedBuffer.length) {
+		return null;
+	}
+
+	return timingSafeEqual(signatureBuffer, expectedBuffer) ? value : null;
 }
 
 type JsonPrimitive = string | number | boolean | null;

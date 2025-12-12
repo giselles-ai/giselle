@@ -47,4 +47,35 @@ describe("signed-cookie", () => {
 		const result = await getCookie("tampered-cookie");
 		expect(result).toBeNull();
 	});
+
+	test("should return null for cookie without separator", async () => {
+		mockCookieStore.cookies.set("no-separator", "noseparatorvalue");
+
+		const result = await getCookie("no-separator");
+		expect(result).toBeNull();
+	});
+
+	test("should return null for non-hex characters in signature", async () => {
+		const validLength = "x".repeat(64); // 64 chars but not hex
+		mockCookieStore.cookies.set("non-hex", `{"foo":"bar"}.${validLength}`);
+
+		const result = await getCookie("non-hex");
+		expect(result).toBeNull();
+	});
+
+	test("should return null for odd-length hex signature", async () => {
+		const oddLengthHex = "abc"; // odd length
+		mockCookieStore.cookies.set("odd-hex", `{"foo":"bar"}.${oddLengthHex}`);
+
+		const result = await getCookie("odd-hex");
+		expect(result).toBeNull();
+	});
+
+	test("should handle value containing separator", async () => {
+		const testData = { url: "https://example.com" };
+		await setCookie("dot-value", testData);
+
+		const result = await getCookie("dot-value");
+		expect(result).toEqual(testData);
+	});
 });
