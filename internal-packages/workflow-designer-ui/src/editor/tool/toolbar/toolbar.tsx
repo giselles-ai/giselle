@@ -106,7 +106,7 @@ export function Toolbar() {
 		[workspace.nodes],
 	);
 	const appRequestNodeLimitTooltip =
-		"Only one App Request Node can exist per workspace.";
+		"Only one Stage Request Node can exist per workspace.";
 
 	const availableLanguageModels = useMemo(
 		() =>
@@ -334,14 +334,14 @@ export function Toolbar() {
 																	className="cursor-not-allowed opacity-50 pointer-events-none"
 																>
 																	<ZapIcon className="size-[20px] shrink-0" />
-																	<p className="text-[14px]">Stage Entry</p>
+																	<p className="text-[14px]">Stage Request</p>
 																</ToggleGroup.Item>
 															</span>
 														</Tooltip>
 													) : (
 														<ToggleGroup.Item value="appEntry" data-tool>
 															<ZapIcon className="size-[20px] shrink-0" />
-															<p className="text-[14px]">Stage Entry</p>
+															<p className="text-[14px]">Stage Request</p>
 														</ToggleGroup.Item>
 													))}
 												{triggerRegistry

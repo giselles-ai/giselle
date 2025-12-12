@@ -73,6 +73,12 @@ function getInputHandleContentType(node: NodeLike): NodeHandleContentType {
 	}
 }
 
+function getAppEntryPortLabel(label: string): string {
+	const match = /^Input\((.+)\)$/.exec(label);
+	if (!match) return label;
+	return match[1] ?? label;
+}
+
 // Helper function to get completion label from node LLM provider
 function getCompletionLabel(node: NodeLike): string {
 	if (isTextGenerationNode(node) || isImageGenerationNode(node)) {
@@ -871,7 +877,9 @@ export function NodeComponent({
 										"group-data-[state=connected]:text-inverse group-data-[state=disconnected]:text-text-muted",
 									)}
 								>
-									{output.label}
+									{v.isAppEntry
+										? getAppEntryPortLabel(output.label)
+										: output.label}
 								</div>
 							</div>
 						))}

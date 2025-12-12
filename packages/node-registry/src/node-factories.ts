@@ -129,19 +129,19 @@ function cloneAndRenewInputIdsWithMap(
 
 function createDefaultDraftApp(): DraftApp {
 	return {
-		name: "App Request",
+		name: "Stage Request",
 		description: "",
 		iconName: "cable",
 		parameters: [
 			{
 				id: AppParameterId.generate(),
-				name: "Input(Text)",
+				name: "Text",
 				type: "multiline-text",
 				required: true,
 			},
 			{
 				id: AppParameterId.generate(),
-				name: "Input(File)",
+				name: "File",
 				type: "files",
 				required: false,
 			},

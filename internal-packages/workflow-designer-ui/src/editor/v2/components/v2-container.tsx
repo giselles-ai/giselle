@@ -44,6 +44,7 @@ import { RunHistoryTable } from "../../run-history/run-history-table";
 import { SecretTable } from "../../secret/secret-table";
 import { FloatingNodePreview, Toolbar, useToolbar } from "../../tool";
 import type { V2LayoutState } from "../state";
+import { AppEntryInfoBar } from "./app-entry-info-bar";
 import { FloatingPropertiesPanel } from "./floating-properties-panel";
 import { LeftPanel } from "./left-panel";
 
@@ -382,6 +383,9 @@ function V2NodeCanvas() {
 			{selectedTool?.action === "addNode" && (
 				<FloatingNodePreview node={selectedTool.node} />
 			)}
+			<XYFlowPanel position="top-left" className="m-[16px]">
+				<AppEntryInfoBar />
+			</XYFlowPanel>
 			<XYFlowPanel position="bottom-center">
 				<Toolbar />
 			</XYFlowPanel>
