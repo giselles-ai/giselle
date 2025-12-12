@@ -37,8 +37,12 @@ function getInputHandleContentType(node: NodeLike): NodeHandleContentType {
 	// Allow upcoming content types without forcing every caller to loosen their typing.
 	const contentType = node.content.type as
 		| NodeHandleContentType
-		| "vectorStore";
+		| "vectorStore"
+		| "appEntry";
 	switch (contentType) {
+		case "appEntry":
+		case "end":
+			return "trigger";
 		case "textGeneration":
 		case "contentGeneration":
 		case "imageGeneration":

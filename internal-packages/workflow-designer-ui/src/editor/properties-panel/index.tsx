@@ -2,6 +2,7 @@ import {
 	isActionNode,
 	isAppEntryNode,
 	isContentGenerationNode,
+	isEndNode,
 	isFileNode,
 	isImageGenerationNode,
 	isQueryNode,
@@ -16,6 +17,7 @@ import clsx from "clsx/lite";
 import { useShallow } from "zustand/shallow";
 import { ActionNodePropertiesPanel } from "./action-node-properties-panel";
 import { AppEntryNodePropertiesPanel } from "./app-entry-node-properties-panel";
+import { EndNodePropertiesPanel } from "./end-node-properties-panel";
 import { FileNodePropertiesPanel } from "./file-node-properties-panel";
 import { ImageGenerationNodePropertiesPanel } from "./image-generation-node-properties-panel";
 import { QueryNodePropertiesPanel } from "./query-node-properties-panel";
@@ -105,6 +107,12 @@ export function PropertiesPanel() {
 			)}
 			{isAppEntryNode(selectedNodes[0]) && (
 				<AppEntryNodePropertiesPanel
+					node={selectedNodes[0]}
+					key={selectedNodes[0].id}
+				/>
+			)}
+			{isEndNode(selectedNodes[0]) && (
+				<EndNodePropertiesPanel
 					node={selectedNodes[0]}
 					key={selectedNodes[0].id}
 				/>

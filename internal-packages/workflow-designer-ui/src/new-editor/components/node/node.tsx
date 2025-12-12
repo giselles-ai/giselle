@@ -192,6 +192,9 @@ function CanvasNode({
 		Parameters<typeof NodeHandleDot>[0]["contentType"]
 	>(() => {
 		switch (contentType) {
+			case "appEntry":
+			case "end":
+				return "trigger";
 			case "textGeneration":
 			case "imageGeneration":
 			case "github":
