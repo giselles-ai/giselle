@@ -167,7 +167,7 @@ export function StepsSection({
 						</div>
 					</Accordion.Trigger>
 				</Accordion.Header>
-				<Accordion.Content>
+				<Accordion.Content className="overflow-hidden data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown">
 					<div className="mb-8 border-l border-border pl-3 space-y-4">
 						{steps.map((step) => (
 							<div
@@ -227,7 +227,7 @@ export function StepsSection({
 													</div>
 												</div>
 											)}*/}
-												<Accordion.Content>
+												<Accordion.Content className="overflow-hidden data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown">
 													<div className="ml-4 pl-4 border-l-2 border-border">
 														<div className="py-4 [&_.markdown-renderer]:text-[13px] [&_*[class*='text-[14px]']]:text-[13px] [&_*]:text-text-muted/70 [&_*[class*='text-inverse']]:!text-text-muted/70">
 															{/*<GenerationView generation={generation} />*/}
