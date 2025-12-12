@@ -18,7 +18,8 @@ export function transformGiselleLanguageModelToAiSdkLanguageModelCallOptions(
 		case "openai/gpt-5-mini":
 		case "openai/gpt-5-nano":
 		case "openai/gpt-5.1-codex":
-		case "openai/gpt-5.1-thinking": {
+		case "openai/gpt-5.1-thinking":
+		case "openai/gpt-5.2": {
 			const config = parseConfiguration(
 				languageModel,
 				content.languageModel.configuration,

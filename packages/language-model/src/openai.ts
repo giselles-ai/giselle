@@ -29,6 +29,7 @@ const defaultConfigurations: OpenAILanguageModelConfigurations = {
 
 export const OpenAILanguageModelId = z
 	.enum([
+		"gpt-5.2",
 		"gpt-5.1-thinking",
 		"gpt-5.1-codex",
 		"gpt-5",
@@ -40,6 +41,10 @@ export const OpenAILanguageModelId = z
 			return "gpt-5-nano";
 		}
 		const v = ctx.value;
+
+		if (/^gpt-5\.2(?:-.+)?$/.test(v)) {
+			return "gpt-5.2";
+		}
 
 		if (/^gpt-5\.1-thinking(?:-.+)?$/.test(v)) {
 			return "gpt-5.1-thinking";
@@ -91,6 +96,18 @@ const OpenAILanguageModel = LanguageModelBase.extend({
 	configurations: OpenAILanguageModelConfigurations,
 });
 type OpenAILanguageModel = z.infer<typeof OpenAILanguageModel>;
+
+const gpt52: OpenAILanguageModel = {
+	provider: "openai",
+	id: "gpt-5.2",
+	capabilities:
+		Capability.ImageFileInput |
+		Capability.TextGeneration |
+		Capability.OptionalSearchGrounding |
+		Capability.Reasoning,
+	tier: Tier.enum.pro,
+	configurations: defaultConfigurations,
+};
 
 const gpt51Thinking: OpenAILanguageModel = {
 	provider: "openai",
@@ -151,7 +168,14 @@ const gpt5nano: OpenAILanguageModel = {
 	configurations: defaultConfigurations,
 };
 
-export const models = [gpt51Thinking, gpt51codex, gpt5, gpt5mini, gpt5nano];
+export const models = [
+	gpt52,
+	gpt51Thinking,
+	gpt51codex,
+	gpt5,
+	gpt5mini,
+	gpt5nano,
+];
 
 export const LanguageModel = OpenAILanguageModel;
 export type LanguageModel = OpenAILanguageModel;
