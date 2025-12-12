@@ -10,6 +10,7 @@ import {
 	type Connection,
 	type Edge,
 	type IsValidConnection,
+	MiniMap,
 	type NodeMouseHandler,
 	type OnEdgesChange,
 	type OnNodesChange,
@@ -29,7 +30,7 @@ import {
 	workspaceActions,
 } from "@giselles-ai/react";
 import clsx from "clsx/lite";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useShallow } from "zustand/shallow";
 import { Background } from "../../../ui/background";
@@ -86,6 +87,7 @@ function V2NodeCanvas() {
 	const reactFlowInstance = useReactFlow();
 	const updateNodeInternals = useUpdateNodeInternals();
 	const { handleKeyDown } = useKeyboardShortcuts();
+	const didInitialFitViewRef = useRef(false);
 
 	const cacheNodesRef = useRef<Map<NodeId, RFNode>>(new Map());
 	const nodes = useMemo(() => {
@@ -150,6 +152,24 @@ function V2NodeCanvas() {
 		cacheEdgesRef.current = next;
 		return arr;
 	}, [data.connections, data.selectedConnectionIds]);
+
+	// When opening a workspace, automatically fit the viewport to visible nodes
+	// so users don't get "lost" on an empty-looking canvas.
+	useEffect(() => {
+		if (didInitialFitViewRef.current) {
+			return;
+		}
+		if (nodes.length === 0) {
+			return;
+		}
+		didInitialFitViewRef.current = true;
+		requestAnimationFrame(() => {
+			reactFlowInstance.fitView({
+				padding: 0.2,
+				duration: 400,
+			});
+		});
+	}, [nodes.length, reactFlowInstance]);
 
 	const handleConnect = useCallback(
 		(connection: Connection) => {
@@ -379,6 +399,16 @@ function V2NodeCanvas() {
 			onEdgesChange={handleEdgesChange}
 		>
 			<Background />
+			<XYFlowPanel position="top-right">
+				<div className="rounded-[12px] overflow-hidden border border-border/40 bg-black/20 backdrop-blur-md">
+					<MiniMap
+						pannable={true}
+						zoomable={true}
+						className="h-[120px] w-[180px]"
+						maskColor="rgba(0, 0, 0, 0.45)"
+					/>
+				</div>
+			</XYFlowPanel>
 			{selectedTool?.action === "addNode" && (
 				<FloatingNodePreview node={selectedTool.node} />
 			)}
