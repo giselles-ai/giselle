@@ -1,13 +1,104 @@
-import type { TaskId } from "@giselles-ai/protocol";
+import type { Generation, StepId, TaskId } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import { ChevronDownIcon } from "lucide-react";
 import { Accordion } from "radix-ui";
 import { giselle } from "@/app/giselle";
+import { getModelInfo } from "../../lib/utils";
 import { StepItemStatusIcon } from "./step-item-icon";
-import type { UIStep } from "./types";
+import type { UIStep, UIStepItem } from "./types";
 
 export async function getStepsSectionData(taskId: TaskId) {
 	const task = await giselle.getTask({ taskId });
+
+	const allSteps = task.sequences.flatMap((sequence) => sequence.steps);
+
+	const generationsByStepId = new Map<StepId, Generation | undefined>();
+
+	await Promise.all(
+		allSteps.map(async (step) => {
+			try {
+				const generation = await giselle.getGeneration(step.generationId);
+				generationsByStepId.set(step.id, generation);
+			} catch (error) {
+				console.warn(
+					`Failed to fetch generation for task ${taskId}, step ${step.id}:`,
+					error,
+				);
+				generationsByStepId.set(step.id, undefined);
+			}
+		}),
+	);
+
+	const totalStepsCount = allSteps.length;
+	const completedStepsCount = allSteps.filter(
+		(step) => step.status === "completed",
+	).length;
+	const preparingStepsCount = allSteps.filter(
+		(step) => step.status === "queued",
+	).length;
+
+	// Find the first running step's sequence number (1-based)
+	let runningStepNumber: number | null = null;
+	for (
+		let sequenceIndex = 0;
+		sequenceIndex < task.sequences.length;
+		sequenceIndex++
+	) {
+		const sequence = task.sequences[sequenceIndex];
+		const hasRunningStep = sequence.steps.some(
+			(step) => step.status === "running",
+		);
+		if (hasRunningStep) {
+			runningStepNumber = sequenceIndex + 1;
+			break;
+		}
+	}
+
+	// Determine status text based on current step states (priority: Running > Preparing > Completed)
+	const title =
+		runningStepNumber !== null
+			? `Running Step ${runningStepNumber}`
+			: preparingStepsCount > 0
+				? `Preparing ${preparingStepsCount} step${
+						preparingStepsCount !== 1 ? "s" : ""
+					}`
+				: `Completed ${completedStepsCount} step${
+						completedStepsCount !== 1 ? "s" : ""
+					}`;
+
+	const steps: UIStep[] = task.sequences.map((sequence, sequenceIndex) => ({
+		id: sequence.id,
+		index: sequenceIndex,
+		title: `Step ${sequenceIndex + 1}`,
+		status: sequence.status,
+		items: sequence.steps.map((step) => {
+			const generation = generationsByStepId.get(step.id);
+			const operationNode = generation?.context.operationNode;
+			const modelInfo = getModelInfo(generation);
+
+			return {
+				id: step.id,
+				title: step.name || "Untitled",
+				subLabel:
+					step.status === "completed" && generation
+						? modelInfo.modelName
+						: undefined,
+				node: operationNode,
+				status: step.status,
+				finished:
+					step.status === "completed" ||
+					step.status === "failed" ||
+					step.status === "cancelled",
+			} satisfies UIStepItem;
+		}),
+	}));
+
+	return {
+		title,
+		totalStepsCount,
+		completedStepsCount,
+		steps,
+	} satisfies StepsSectionProps;
 }
 
 interface StepsSectionProps {
@@ -23,6 +114,8 @@ export function StepsSection({
 	completedStepsCount,
 	steps,
 }: StepsSectionProps) {
+	const progressRatio =
+		totalStepsCount > 0 ? completedStepsCount / totalStepsCount : 0;
 	return (
 		<Accordion.Root type="single" className="w-full mt-6">
 			<Accordion.Item value="step-list">
@@ -41,7 +134,7 @@ export function StepsSection({
 									<div
 										className="absolute inset-y-0 left-0 rounded-full bg-[linear-gradient(90deg,rgba(131,157,195,1),rgba(129,140,248,1))] transition-[width] duration-500 ease-out"
 										style={{
-											width: `${(completedStepsCount / totalStepsCount) * 100}%`,
+											width: `${Math.min(Math.max(progressRatio, 0), 1) * 100}%`,
 										}}
 									/>
 								</div>
