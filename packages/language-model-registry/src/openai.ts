@@ -43,7 +43,7 @@ export const openai = {
 		configurationOptions: {
 			reasoningEffort: {
 				description: reasoningEffortDescription,
-				schema: z.enum(["none", "low", "medium", "high"]),
+				schema: z.enum(["none", "low", "medium", "high", "xhigh"]),
 			},
 			textVerbosity: {
 				description: textVerbosityDescription,
