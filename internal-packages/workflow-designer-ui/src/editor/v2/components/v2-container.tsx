@@ -29,7 +29,7 @@ import {
 	workspaceActions,
 } from "@giselles-ai/react";
 import clsx from "clsx/lite";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useShallow } from "zustand/shallow";
 import { Background } from "../../../ui/background";
@@ -86,6 +86,7 @@ function V2NodeCanvas() {
 	const reactFlowInstance = useReactFlow();
 	const updateNodeInternals = useUpdateNodeInternals();
 	const { handleKeyDown } = useKeyboardShortcuts();
+	const didInitialFitViewRef = useRef(false);
 
 	const cacheNodesRef = useRef<Map<NodeId, RFNode>>(new Map());
 	const nodes = useMemo(() => {
@@ -150,6 +151,39 @@ function V2NodeCanvas() {
 		cacheEdgesRef.current = next;
 		return arr;
 	}, [data.connections, data.selectedConnectionIds]);
+
+	// When opening a workspace, automatically fit the viewport to visible nodes
+	// so users don't get "lost" on an empty-looking canvas.
+	// requestAnimationFrame ensures the first layout/measures are applied before fit.
+	useEffect(() => {
+		if (didInitialFitViewRef.current) {
+			return;
+		}
+		// Respect the last saved viewport. Only auto-fit when the viewport is still the default.
+		const isDefaultViewport =
+			Math.abs(data.viewport.x) < 1 &&
+			Math.abs(data.viewport.y) < 1 &&
+			Math.abs(data.viewport.zoom - 1) < 0.001;
+		if (!isDefaultViewport) {
+			return;
+		}
+		if (nodes.length === 0) {
+			return;
+		}
+		didInitialFitViewRef.current = true;
+		requestAnimationFrame(() => {
+			reactFlowInstance.fitView({
+				padding: 0.2,
+				duration: 400,
+			});
+		});
+	}, [
+		data.viewport.x,
+		data.viewport.y,
+		data.viewport.zoom,
+		nodes.length,
+		reactFlowInstance,
+	]);
 
 	const handleConnect = useCallback(
 		(connection: Connection) => {
@@ -370,7 +404,7 @@ function V2NodeCanvas() {
 			zoomOnScroll={false}
 			zoomOnPinch={true}
 			tabIndex={0}
-			onMoveEnd={(_, viewport) => setUiViewport(viewport)}
+			onMoveEnd={(_, viewport) => setUiViewport(viewport, { save: true })}
 			onNodesChange={handleNodesChange}
 			onNodeClick={handleNodeClick}
 			onPaneClick={handlePanelClick}
