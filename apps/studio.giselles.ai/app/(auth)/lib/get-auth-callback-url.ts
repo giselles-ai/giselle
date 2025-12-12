@@ -14,7 +14,8 @@ export function getSiteOrigin(): string {
 	try {
 		const url = new URL(envOrigin);
 
-		if (url.protocol === "http:" || url.protocol === "https:") {
+		// Only allow http or https protocols
+		if (url.protocol !== "http:" && url.protocol !== "https:") {
 			return DEFAULT_ORIGIN;
 		}
 
