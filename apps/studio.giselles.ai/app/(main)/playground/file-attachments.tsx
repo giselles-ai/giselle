@@ -174,6 +174,7 @@ export function FileAttachments({
 									className="relative group shrink-0 rounded-lg overflow-hidden bg-white/5 border border-white/5 w-[60px] h-[60px]"
 								>
 									{imageUrl ? (
+										// biome-ignore lint/performance/noImgElement: We intentionally render a small thumbnail with a dynamic URL and a direct fallback to a local preview.
 										<img
 											src={imageUrl}
 											alt={file.name}
