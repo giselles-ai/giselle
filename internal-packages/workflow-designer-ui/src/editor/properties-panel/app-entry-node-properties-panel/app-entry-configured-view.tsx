@@ -90,48 +90,50 @@ export function AppEntryConfiguredView({
 	return (
 		<div className="flex flex-col gap-[16px] p-0 px-1 overflow-y-auto">
 			<div className="flex flex-col gap-[8px]">
-				<SettingLabel className="py-[1.5px]">App Icon</SettingLabel>
-				<SettingDetail size="md" className="text-text-muted">
-					Choose the icon shown for this app across the workspace.
-				</SettingDetail>
-				<div className="w-full flex items-center gap-[8px]">
-					<AppIconSelect
-						value={selectedIconName}
-						onValueChange={handleIconChange}
-					/>
-					{isSavingIcon && (
-						<LoaderIcon className="size-[16px] text-text-muted animate-spin" />
-					)}
+				<SettingLabel className="py-[1.5px]">App Settings</SettingLabel>
+
+				<div className="flex items-center justify-between gap-[12px]">
+					<SettingDetail size="md" className="text-text-muted shrink-0">
+						Icon
+					</SettingDetail>
+					<div className="flex items-center justify-end gap-[8px] min-w-0">
+						<AppIconSelect
+							value={selectedIconName}
+							onValueChange={handleIconChange}
+						/>
+						{isSavingIcon && (
+							<LoaderIcon className="size-[16px] text-text-muted animate-spin" />
+						)}
+					</div>
+				</div>
+
+				<div className="flex flex-col gap-[8px]">
+					<SettingDetail size="md" className="text-text-muted">
+						Description
+					</SettingDetail>
+					<form onSubmit={handleDescriptionSubmit} className="relative w-full">
+						<textarea
+							id="app-description"
+							placeholder="Enter app description"
+							value={appDescription}
+							onChange={(event) => setAppDescription(event.target.value)}
+							className="w-full rounded-[8px] py-[8px] px-[12px] pr-[96px] outline-none focus:outline-none border-none bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-inverse text-[14px] resize-none"
+							rows={3}
+							data-1p-ignore
+						/>
+						{isSavingDescription && (
+							<div className="absolute right-[12px] bottom-[12px]">
+								<LoaderIcon className="size-[14px] text-text-muted animate-spin" />
+							</div>
+						)}
+					</form>
 				</div>
 			</div>
 
-			<div className="flex flex-col gap-[8px]">
-				<SettingLabel className="py-[1.5px]" htmlFor="app-description">
-					App Description
-				</SettingLabel>
-				<SettingDetail>Description</SettingDetail>
-				<form onSubmit={handleDescriptionSubmit} className="relative w-full">
-					<textarea
-						id="app-description"
-						placeholder="Enter app description"
-						value={appDescription}
-						onChange={(event) => setAppDescription(event.target.value)}
-						className="w-full rounded-[8px] py-[8px] px-[12px] pr-[96px] outline-none focus:outline-none border-none bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-inverse text-[14px] resize-none"
-						rows={3}
-						data-1p-ignore
-					/>
-					{isSavingDescription && (
-						<div className="absolute right-[12px] bottom-[12px]">
-							<LoaderIcon className="size-[14px] text-text-muted animate-spin" />
-						</div>
-					)}
-				</form>
-			</div>
-
 			{node.outputs.length > 0 && (
-				<div className="space-y-[4px]">
-					<SettingLabel className="py-[1.5px]">Output Parameters</SettingLabel>
-					<div className="px-[4px] py-0 w-full bg-transparent text-[14px] mt-[8px]">
+				<div className="space-y-0">
+					<SettingLabel className="mb-0">Input Parameter</SettingLabel>
+					<div className="px-[4px] py-0 w-full bg-transparent text-[14px] mt-[4px]">
 						<ul className="w-full flex flex-col gap-[12px]">
 							{node.outputs.map((output) => {
 								const parameterIdResult = AppParameterId.schema.safeParse(
@@ -143,23 +145,19 @@ export function AppEntryConfiguredView({
 
 								return (
 									<li key={output.id}>
-										<div className="flex flex-col gap-[4px]">
+										<div className="flex items-center justify-between">
 											<div className="flex items-center gap-[8px]">
-												<span className="text-[14px] font-medium">
-													{output.label}
-												</span>
+												<span className="text-[14px]">{output.label}</span>
 												{parameter?.required && (
-													<span className="text-[12px] text-muted-foreground">
-														(Required)
+													<span className="bg-red-900/20 text-red-900 text-[12px] font-medium px-[6px] py-[1px] rounded-full">
+														required
 													</span>
 												)}
 											</div>
 											{parameter && (
-												<div className="flex items-center gap-[8px] pl-[4px]">
-													<span className="text-[12px] text-muted-foreground">
-														Type: {parameter.type}
-													</span>
-												</div>
+												<span className="text-[12px] text-text-muted">
+													{parameter.type}
+												</span>
 											)}
 										</div>
 									</li>

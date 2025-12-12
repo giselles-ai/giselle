@@ -375,12 +375,7 @@ export function NodeComponent({
 				!v.isAppEntry && !v.isEnd && "bg-transparent",
 				!selected &&
 					!highlighted &&
-					!isAppEntryAnyOutputConnected &&
-					"shadow-[4px_4px_8px_4px_rgba(0,0,0,0.5)]",
-				!selected &&
-					!highlighted &&
-					isAppEntryAnyOutputConnected &&
-					"shadow-[0_0_16px_4px_rgba(255,255,255,0.3),4px_4px_8px_4px_rgba(0,0,0,0.5)]",
+					"shadow-[4px_4px_8px_4px_rgba(0,_0,_0,_0.5)]",
 				selected && v.isText && "shadow-text-node-1",
 				selected && v.isFile && "shadow-file-node-1",
 				selected && v.isWebPage && "shadow-webPage-node-1",
@@ -395,10 +390,10 @@ export function NodeComponent({
 				selected && v.isAction && "shadow-action-node-1",
 				selected && v.isEnd && "shadow-end-node-1",
 				selected && v.isQuery && "shadow-query-node-1",
-				selected && "shadow-[0px_0px_20px_1px_rgba(0,0,0,0.4)]",
+				selected && "shadow-[0px_0px_20px_1px_rgba(0,_0,_0,_0.4)]",
 				selected &&
 					(v.isTrigger || v.isAppEntry) &&
-					"shadow-[0px_0px_20px_1px_hsla(220,15%,50%,0.4)]",
+					"shadow-[0px_0px_20px_1px_hsla(220,_15%,_50%,_0.4)]",
 				highlighted && v.isText && "shadow-text-node-1",
 				highlighted && v.isFile && "shadow-file-node-1",
 				highlighted && v.isWebPage && "shadow-webPage-node-1",
@@ -413,10 +408,10 @@ export function NodeComponent({
 				highlighted && v.isAction && "shadow-action-node-1",
 				highlighted && v.isEnd && "shadow-end-node-1",
 				highlighted && v.isQuery && "shadow-query-node-1",
-				highlighted && "shadow-[0px_0px_20px_1px_rgba(0,0,0,0.4)]",
+				highlighted && "shadow-[0px_0px_20px_1px_rgba(0,_0,_0,_0.4)]",
 				highlighted &&
 					(v.isTrigger || v.isAppEntry) &&
-					"shadow-[0px_0px_20px_1px_hsla(220,15%,50%,0.4)]",
+					"shadow-[0px_0px_20px_1px_hsla(220,_15%,_50%,_0.4)]",
 				preview && "opacity-50",
 				!preview && !isAppEntryPill && "min-h-[110px]",
 				requiresSetup && "opacity-80",
@@ -468,6 +463,15 @@ export function NodeComponent({
 					</motion.div>
 				)}
 			</AnimatePresence>
+			{v.isAppEntry && selected && (
+				<div
+					className={clsx(
+						"absolute inset-0 z-[-2] pointer-events-none",
+						isAppEntryPill ? "rounded-full" : "rounded-[16px]",
+						"shadow-[0_0_22px_4px_hsla(220,_15%,_50%,_0.7)]",
+					)}
+				/>
+			)}
 			<div
 				className={clsx(
 					"absolute z-[-1] inset-0",
@@ -590,8 +594,6 @@ export function NodeComponent({
 					<div
 						className={clsx(
 							"w-[32px] h-[32px] flex items-center justify-center padding-[8px] rounded-full bg-inverse shrink-0",
-							isAppEntryAnyOutputConnected &&
-								"shadow-[0_0_8px_2px_rgba(255,255,255,0.4)]",
 						)}
 					>
 						<NodeIcon
