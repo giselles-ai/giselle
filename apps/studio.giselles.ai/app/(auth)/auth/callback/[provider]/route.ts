@@ -101,7 +101,8 @@ function checkError(searchParams: URLSearchParams) {
 }
 
 function handleRedirect(path: string, queryString?: string) {
-	const redirectPath = queryString ? `${path}?${queryString}` : path;
+	const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+	const redirectPath = queryString ? `${normalizedPath}?${queryString}` : normalizedPath;
 	return NextResponse.redirect(`${getSiteOrigin()}${redirectPath}`);
 }
 
