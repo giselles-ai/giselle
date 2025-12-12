@@ -353,7 +353,7 @@ export function generationPath(generationId: GenerationId) {
 export async function getGeneration(params: {
 	storage: GiselleStorage;
 	generationId: GenerationId;
-}): Promise<Generation | undefined> {
+}): Promise<Generation> {
 	const generation = await params.storage.getJson({
 		path: generationPath(params.generationId),
 		schema: Generation,
