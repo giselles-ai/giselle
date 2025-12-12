@@ -161,6 +161,91 @@ interface StepsSectionProps {
 	steps: UIStep[];
 }
 
+function StepItemHeader({
+	item,
+	as,
+	containerClassName,
+	textClassName,
+}: {
+	item: UIStepItem;
+	as?: "div" | "button";
+	containerClassName?: string;
+	textClassName?: string;
+}) {
+	const labelClassName = clsx(
+		"text-[13px] text-text-muted/70 transition-colors",
+		textClassName,
+	);
+
+	const Component = as ?? "div";
+
+	return (
+		<Component
+			{...(Component === "button" ? { type: "button" as const } : null)}
+			className={clsx(
+				"flex-1 flex items-center gap-3 text-left",
+				containerClassName,
+			)}
+		>
+			<StepItemStatusIcon status={item.status} operationNode={item.node} />
+			<span className={labelClassName}>{item.title}</span>
+			{item.subLabel ? (
+				<span className={labelClassName}>{item.subLabel}</span>
+			) : null}
+		</Component>
+	);
+}
+
+function StepItemRow({ item }: { item: UIStepItem }) {
+	if (!item.finished) {
+		return <StepItemHeader item={item} />;
+	}
+
+	return (
+		<Accordion.Root type="single" collapsible>
+			<Accordion.Item value={item.id}>
+				<Accordion.Header>
+					<Accordion.Trigger asChild>
+						<StepItemHeader
+							as="button"
+							item={item}
+							containerClassName="group cursor-pointer"
+							textClassName="group-hover:text-text-muted"
+						/>
+					</Accordion.Trigger>
+					{/* Layer 2: Run in Studio Only Chip (only for failed steps) */}
+					{/*{step.status === "failed" && <RunInStudioOnlyChip />}*/}
+
+					{/* Layer 3: Step Error State */}
+					{/*{step.status === "failed" && (
+						<StepErrorState
+							workspaceId={workspaceId}
+							stepId={step.id}
+						/>
+					)}*/}
+				</Accordion.Header>
+
+				{/* Step Content Accordion */}
+				{/*{isExpanded && hasOutput && generation && (
+					<div className="ml-4 pl-4 border-l-2 border-border">
+						<div className="py-4 [&_.markdown-renderer]:text-[13px] [&_*[class*='text-[14px]']]:text-[13px] [&_*]:text-text-muted/70 [&_*[class*='text-inverse']]:!text-text-muted/70">
+							<GenerationView generation={generation} />
+						</div>
+					</div>
+				)}*/}
+				<Accordion.Content className="overflow-hidden data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown">
+					<div className="ml-4 pl-4 border-l-2 border-border">
+						<div className="py-4 [&_.markdown-renderer]:text-[13px] [&_*[class*='text-[14px]']]:text-[13px] [&_*]:text-text-muted/70 [&_*[class*='text-inverse']]:!text-text-muted/70">
+							{/*<GenerationView generation={generation} />*/}
+							todo: generation
+						</div>
+					</div>
+				</Accordion.Content>
+			</Accordion.Item>
+		</Accordion.Root>
+	);
+}
+
 export function StepsSection({
 	title,
 	totalStepsCount,
@@ -222,55 +307,7 @@ export function StepsSection({
 								</p>
 								<div className="space-y-2">
 									{step.items.map((item) => (
-										<Accordion.Root type="single" key={item.id} collapsible>
-											<Accordion.Item value={item.id} disabled={!item.finished}>
-												<Accordion.Header>
-													<Accordion.Trigger className="group flex-1 flex items-center gap-3 text-left cursor-pointer disabled:cursor-default">
-														<div className="flex items-center gap-3 text-left">
-															<StepItemStatusIcon
-																status={item.status}
-																operationNode={item.node}
-															/>
-															<span className="text-[13px] text-text-muted/70 group-hover:text-text-muted transition-colors">
-																{item.title}
-															</span>
-															{item.subLabel && (
-																<span className="text-[13px] text-text-muted/70 group-hover:text-text-muted transition-colors">
-																	{item.subLabel}
-																</span>
-															)}
-														</div>
-													</Accordion.Trigger>
-													{/* Layer 2: Run in Studio Only Chip (only for failed steps) */}
-													{/*{step.status === "failed" && <RunInStudioOnlyChip />}*/}
-
-													{/* Layer 3: Step Error State */}
-													{/*{step.status === "failed" && (
-													<StepErrorState
-														workspaceId={workspaceId}
-														stepId={step.id}
-													/>
-												)}*/}
-												</Accordion.Header>
-
-												{/* Step Content Accordion */}
-												{/*{isExpanded && hasOutput && generation && (
-												<div className="ml-4 pl-4 border-l-2 border-border">
-													<div className="py-4 [&_.markdown-renderer]:text-[13px] [&_*[class*='text-[14px]']]:text-[13px] [&_*]:text-text-muted/70 [&_*[class*='text-inverse']]:!text-text-muted/70">
-														<GenerationView generation={generation} />
-													</div>
-												</div>
-											)}*/}
-												<Accordion.Content className="overflow-hidden data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown">
-													<div className="ml-4 pl-4 border-l-2 border-border">
-														<div className="py-4 [&_.markdown-renderer]:text-[13px] [&_*[class*='text-[14px]']]:text-[13px] [&_*]:text-text-muted/70 [&_*[class*='text-inverse']]:!text-text-muted/70">
-															{/*<GenerationView generation={generation} />*/}
-															todo: generation
-														</div>
-													</div>
-												</Accordion.Content>
-											</Accordion.Item>
-										</Accordion.Root>
+										<StepItemRow key={item.id} item={item} />
 									))}
 								</div>
 							</div>
