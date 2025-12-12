@@ -37,8 +37,8 @@ import {
 	DatabaseZapIcon,
 	FileSlidersIcon,
 	FolderInputIcon,
+	PowerIcon,
 	SparklesIcon,
-	SquareArrowOutUpRightIcon,
 	ZapIcon,
 } from "lucide-react";
 import { Popover, ToggleGroup } from "radix-ui";
@@ -59,7 +59,6 @@ import {
 	SearchIcon,
 	TextFileIcon,
 	TooltipAndHotkey,
-	TriggerIcon,
 	VideoIcon,
 	WebPageFileIcon,
 } from "./components";
@@ -76,7 +75,6 @@ import {
 } from "./model-components";
 import {
 	addNodeTool,
-	selectActionTool,
 	selectFileNodeCategoryTool,
 	selectLanguageModelTool,
 	selectLanguageModelV2Tool,
@@ -87,6 +85,7 @@ import {
 } from "./state";
 
 export function Toolbar() {
+	const actionValuePrefix = "action:";
 	const { setSelectedTool, selectedTool } = useToolbar();
 	const {
 		hoveredModel: languageModelMouseHovered,
@@ -247,9 +246,6 @@ export function Toolbar() {
 								case "selectTrigger":
 									setSelectedTool(selectTriggerTool());
 									break;
-								case "selectAction":
-									setSelectedTool(selectActionTool());
-									break;
 								case "selectRetrievalCategory":
 									setSelectedTool(selectRetrievalCategoryTool());
 									break;
@@ -265,8 +261,8 @@ export function Toolbar() {
 						data-tool
 						className="relative"
 					>
-						<Tooltip text={<TooltipAndHotkey text="Trigger" hotkey="t" />}>
-							<ZapIcon data-icon />
+						<Tooltip text={<TooltipAndHotkey text="Start / End" hotkey="t" />}>
+							<PowerIcon data-icon />
 						</Tooltip>
 						{selectedTool?.action === "selectTrigger" && (
 							<Popover.Root open={true}>
@@ -293,7 +289,10 @@ export function Toolbar() {
 											blurClass="backdrop-blur-md"
 											zIndexClass="z-0"
 										/>
-										<div className="relative flex flex-col gap-[8px]">
+										<div className="relative flex flex-col gap-0">
+											<p className="text-[#505D7B] text-[12px] font-medium leading-[170%] mb-[4px] px-[8px]">
+												Start
+											</p>
 											<ToggleGroup.Root
 												type="single"
 												className={clsx(
@@ -332,15 +331,15 @@ export function Toolbar() {
 																	disabled={true}
 																	className="cursor-not-allowed opacity-50 pointer-events-none"
 																>
-																	<TriggerIcon className="size-[20px] shrink-0" />
-																	<p className="text-[14px]">App Request</p>
+																	<ZapIcon className="size-[20px] shrink-0" />
+																	<p className="text-[14px]">App Entry</p>
 																</ToggleGroup.Item>
 															</span>
 														</Tooltip>
 													) : (
 														<ToggleGroup.Item value="appEntry" data-tool>
-															<TriggerIcon className="size-[20px] shrink-0" />
-															<p className="text-[14px]">App Request</p>
+															<ZapIcon className="size-[20px] shrink-0" />
+															<p className="text-[14px]">App Entry</p>
 														</ToggleGroup.Item>
 													))}
 												{triggerRegistry
@@ -358,10 +357,52 @@ export function Toolbar() {
 																<GitHubIcon className="size-[20px] shrink-0" />
 															)}
 															<p className="text-[14px]">
-																{triggerNodeDefaultName(triggerEntry.provider)}
+																{triggerEntry.provider === "github"
+																	? "GitHub Entry"
+																	: triggerNodeDefaultName(
+																			triggerEntry.provider,
+																		)}
 															</p>
 														</ToggleGroup.Item>
 													))}
+											</ToggleGroup.Root>
+											<p className="text-[#505D7B] text-[12px] font-medium leading-[170%] mt-[8px] mb-[4px] px-[8px]">
+												End
+											</p>
+											<ToggleGroup.Root
+												type="single"
+												className={clsx(
+													"flex flex-col gap-[8px]",
+													"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
+													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-surface-hover",
+													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
+												)}
+												onValueChange={(value) => {
+													if (!value.startsWith(actionValuePrefix)) {
+														return;
+													}
+													const provider = value.slice(
+														actionValuePrefix.length,
+													);
+													if (isActionProvider(provider)) {
+														setSelectedTool(
+															addNodeTool(createActionNode(provider)),
+														);
+													}
+												}}
+											>
+												{actionRegistry.map((actionEntry) => (
+													<ToggleGroup.Item
+														key={`${actionValuePrefix}${actionEntry.provider}`}
+														value={`${actionValuePrefix}${actionEntry.provider}`}
+														data-tool
+													>
+														{actionEntry.provider === "github" && (
+															<GitHubIcon className="size-[20px] shrink-0" />
+														)}
+														<p className="text-[14px]">{actionEntry.label}</p>
+													</ToggleGroup.Item>
+												))}
 											</ToggleGroup.Root>
 										</div>
 									</Popover.Content>
@@ -1014,82 +1055,6 @@ export function Toolbar() {
 													<WebPageFileIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">Webpage</p>
 												</ToggleGroup.Item>
-											</ToggleGroup.Root>
-										</div>
-									</Popover.Content>
-								</Popover.Portal>
-							</Popover.Root>
-						)}
-					</ToggleGroup.Item>
-
-					<ToggleGroup.Item value="selectAction" data-tool className="relative">
-						<Tooltip text={<TooltipAndHotkey text="Dispatch" hotkey="d" />}>
-							<SquareArrowOutUpRightIcon data-icon />
-						</Tooltip>
-						{selectedTool?.action === "selectAction" && (
-							<Popover.Root open={true}>
-								<Popover.Anchor />
-								<Popover.Portal>
-									<Popover.Content
-										className={clsx(
-											"relative rounded-[8px] px-[8px] py-[8px]",
-											"text-inverse overflow-hidden",
-										)}
-										sideOffset={42}
-									>
-										<div
-											className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none"
-											style={{
-												backgroundColor:
-													"color-mix(in srgb, var(--color-background, #00020b) 60%, transparent)",
-											}}
-										/>
-										<GlassSurfaceLayers
-											radiusClass="rounded-[8px]"
-											borderStyle="solid"
-											withBaseFill={false}
-											blurClass="backdrop-blur-lg"
-											zIndexClass="z-0"
-										/>
-										<div className="relative flex flex-col gap-[8px]">
-											<ToggleGroup.Root
-												type="single"
-												className={clsx(
-													"flex flex-col gap-[8px]",
-													"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
-													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-surface-hover",
-													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
-												)}
-												onValueChange={(value) => {
-													if (isActionProvider(value)) {
-														setSelectedTool(
-															addNodeTool(createActionNode(value)),
-														);
-													}
-												}}
-											>
-												{actionRegistry.map((actionRegistry) => (
-													<ToggleGroup.Item
-														key={actionRegistry.provider}
-														value={actionRegistry.provider}
-														data-tool
-													>
-														{actionRegistry.provider === "github" && (
-															<GitHubIcon className="size-[20px] shrink-0" />
-														)}
-														<p className="text-[14px]">
-															{actionRegistry.label}
-														</p>
-													</ToggleGroup.Item>
-												))}
-												{/*<div data-tool className="opacity-50">
-													<RocketIcon className="size-[20px] shrink-0" />
-													<p className="text-[14px]">Stage (Coming soon)</p>
-												</div>*/}
-												{/*<div data-tool className="opacity-50">
-													<RocketIcon className="size-[20px] shrink-0" />
-													<p className="text-[14px]">Widget (Coming soon)</p>
-												</div>*/}
 											</ToggleGroup.Root>
 										</div>
 									</Popover.Content>
