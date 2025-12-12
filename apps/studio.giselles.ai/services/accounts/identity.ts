@@ -49,7 +49,7 @@ export async function connectIdentity(provider: OAuthProvider, next: string) {
 		name?: string;
 		status?: number;
 	} | null = null;
-	const redirectTo = await getAuthCallbackUrl({ next, provider });
+	const redirectTo = getAuthCallbackUrl({ next, provider });
 	try {
 		({ data, error } = await supabase.auth.linkIdentity({
 			provider,
@@ -84,7 +84,7 @@ export async function reconnectIdentity(provider: OAuthProvider, next: string) {
 		name?: string;
 		status?: number;
 	} | null = null;
-	const redirectTo2 = await getAuthCallbackUrl({ next, provider });
+	const redirectTo2 = getAuthCallbackUrl({ next, provider });
 	try {
 		({ data, error } = await supabase.auth.signInWithOAuth({
 			provider,
