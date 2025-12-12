@@ -1,4 +1,3 @@
-import { Button } from "@giselle-internal/ui/button";
 import { useToasts } from "@giselle-internal/ui/toast";
 import type { App, AppEntryNode } from "@giselles-ai/protocol";
 import { AppParameterId } from "@giselles-ai/protocol";
@@ -121,18 +120,11 @@ export function AppEntryConfiguredView({
 						rows={3}
 						data-1p-ignore
 					/>
-					<Button
-						type="submit"
-						variant="solid"
-						disabled={isSavingDescription}
-						leftIcon={
-							isSavingDescription && (
-								<LoaderIcon className="size-[14px] animate-spin" />
-							)
-						}
-					>
-						Save
-					</Button>
+					{isSavingDescription && (
+						<div className="absolute right-[12px] bottom-[12px]">
+							<LoaderIcon className="size-[14px] text-text-muted animate-spin" />
+						</div>
+					)}
 				</form>
 			</div>
 

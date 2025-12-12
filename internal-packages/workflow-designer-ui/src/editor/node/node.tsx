@@ -373,7 +373,14 @@ export function NodeComponent({
 				v.isAppEntry && "bg-trigger-node-1",
 				v.isEnd && "bg-end-node-1",
 				!v.isAppEntry && !v.isEnd && "bg-transparent",
-				!selected && !highlighted && "shadow-[4px_4px_8px_4px_rgba(0,0,0,0.5)]",
+				!selected &&
+					!highlighted &&
+					!isAppEntryAnyOutputConnected &&
+					"shadow-[4px_4px_8px_4px_rgba(0,0,0,0.5)]",
+				!selected &&
+					!highlighted &&
+					isAppEntryAnyOutputConnected &&
+					"shadow-[0_0_16px_4px_rgba(255,255,255,0.3),4px_4px_8px_4px_rgba(0,0,0,0.5)]",
 				selected && v.isText && "shadow-text-node-1",
 				selected && v.isFile && "shadow-file-node-1",
 				selected && v.isWebPage && "shadow-webPage-node-1",
@@ -562,6 +569,8 @@ export function NodeComponent({
 								"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !right-[-0.5px] !top-1/2",
 								isAppEntryAnyOutputConnected ? "!bg-trigger-node-1" : "!bg-bg",
 								"!border-trigger-node-1",
+								isAppEntryAnyOutputConnected &&
+									"[box-shadow:0_0_0_1.5px_rgba(0,0,0,0.8)]",
 							)}
 						/>
 					)}
@@ -581,6 +590,8 @@ export function NodeComponent({
 					<div
 						className={clsx(
 							"w-[32px] h-[32px] flex items-center justify-center padding-[8px] rounded-full bg-inverse shrink-0",
+							isAppEntryAnyOutputConnected &&
+								"shadow-[0_0_8px_2px_rgba(255,255,255,0.4)]",
 						)}
 					>
 						<NodeIcon
