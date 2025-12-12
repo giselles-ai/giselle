@@ -16,38 +16,23 @@ import {
 	TopPSlider,
 } from "./shared-model-controls";
 
-type ReasoningEffortConfig = {
-	options: readonly string[];
-	defaultValue: string;
-};
-
 /**
- * Returns the available reasoning effort options and default value for the given model.
+ * Returns the available reasoning effort options for the given OpenAI model.
  *
- * GPT-5.2 defaults:
- * - Reasoning depth: "none" (for lower latency)
- * - Output verbosity: "medium"
+ * GPT-5.2 and GPT-5.1 variants support: none/low/medium/high/xhigh
+ * Older models (gpt-5, gpt-5-mini, gpt-5-nano) support: minimal/low/medium/high
  *
  * @see https://platform.openai.com/docs/guides/latest-model#gpt-5-2-parameter-compatibility
  */
-function getReasoningEffortConfig(modelId: string): ReasoningEffortConfig {
-	// GPT-5.2 and GPT-5.1 variants support none/low/medium/high/xhigh
-	// GPT-5.2 defaults to "none" for lower latency
+function getReasoningEffortOptions(modelId: string): readonly string[] {
 	if (
 		modelId === "gpt-5.2" ||
 		modelId === "gpt-5.1-thinking" ||
 		modelId === "gpt-5.1-codex"
 	) {
-		return {
-			options: ["none", "low", "medium", "high", "xhigh"] as const,
-			defaultValue: "none",
-		};
+		return ["none", "low", "medium", "high", "xhigh"] as const;
 	}
-	// Older models (gpt-5, gpt-5-mini, gpt-5-nano) support minimal/low/medium/high
-	return {
-		options: ["minimal", "low", "medium", "high"] as const,
-		defaultValue: "medium",
-	};
+	return ["minimal", "low", "medium", "high"] as const;
 }
 
 export function OpenAIModelPanel({
@@ -102,12 +87,12 @@ export function OpenAIModelPanel({
 									}),
 								);
 							}}
-							options={getReasoningEffortConfig(
-								openaiLanguageModel.id,
-							).options.map((v) => ({
-								value: v,
-								label: v,
-							}))}
+							options={getReasoningEffortOptions(openaiLanguageModel.id).map(
+								(v) => ({
+									value: v,
+									label: v,
+								}),
+							)}
 						/>
 					</SettingRow>
 

@@ -7,6 +7,25 @@ import {
 
 type Provider = "openai" | "anthropic" | "google";
 
+/**
+ * Returns the default reasoningEffort for the given OpenAI model.
+ *
+ * GPT-5.2 and GPT-5.1 variants default to "none" for lower latency.
+ * Older models (gpt-5, gpt-5-mini, gpt-5-nano) default to "medium".
+ *
+ * @see https://platform.openai.com/docs/guides/latest-model#gpt-5-2-parameter-compatibility
+ */
+function getDefaultReasoningEffort(modelId: string): string {
+	if (
+		modelId === "gpt-5.2" ||
+		modelId === "gpt-5.1-thinking" ||
+		modelId === "gpt-5.1-codex"
+	) {
+		return "none";
+	}
+	return "medium";
+}
+
 export function createDefaultModelData(
 	provider: Provider,
 ): TextGenerationLanguageModelData {
@@ -58,6 +77,12 @@ export function updateModelId(
 			return OpenAILanguageModelData.parse({
 				...currentModel,
 				id: newModelId,
+				configurations: {
+					...("configurations" in currentModel
+						? currentModel.configurations
+						: {}),
+					reasoningEffort: getDefaultReasoningEffort(newModelId),
+				},
 			});
 		case "anthropic":
 			return AnthropicLanguageModelData.parse({
