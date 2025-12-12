@@ -159,6 +159,14 @@ function V2NodeCanvas() {
 		if (didInitialFitViewRef.current) {
 			return;
 		}
+		// Respect the last saved viewport. Only auto-fit when the viewport is still the default.
+		const isDefaultViewport =
+			Math.abs(data.viewport.x) < 1 &&
+			Math.abs(data.viewport.y) < 1 &&
+			Math.abs(data.viewport.zoom - 1) < 0.001;
+		if (!isDefaultViewport) {
+			return;
+		}
 		if (nodes.length === 0) {
 			return;
 		}
@@ -169,7 +177,13 @@ function V2NodeCanvas() {
 				duration: 400,
 			});
 		});
-	}, [nodes.length, reactFlowInstance]);
+	}, [
+		data.viewport.x,
+		data.viewport.y,
+		data.viewport.zoom,
+		nodes.length,
+		reactFlowInstance,
+	]);
 
 	const handleConnect = useCallback(
 		(connection: Connection) => {
@@ -390,7 +404,7 @@ function V2NodeCanvas() {
 			zoomOnScroll={false}
 			zoomOnPinch={true}
 			tabIndex={0}
-			onMoveEnd={(_, viewport) => setUiViewport(viewport)}
+			onMoveEnd={(_, viewport) => setUiViewport(viewport, { save: true })}
 			onNodesChange={handleNodesChange}
 			onNodeClick={handleNodeClick}
 			onPaneClick={handlePanelClick}
