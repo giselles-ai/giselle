@@ -14,6 +14,7 @@ import {
 	createAppEntryNode,
 	createContentGenerationNode,
 	createDocumentVectorStoreNode,
+	createEndNode,
 	createFileNode,
 	createGitHubVectorStoreNode,
 	createQueryNode,
@@ -379,6 +380,10 @@ export function Toolbar() {
 													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
 												)}
 												onValueChange={(value) => {
+													if (value === "stageEnd") {
+														setSelectedTool(addNodeTool(createEndNode()));
+														return;
+													}
 													if (!value.startsWith(actionValuePrefix)) {
 														return;
 													}
@@ -395,9 +400,7 @@ export function Toolbar() {
 												<ToggleGroup.Item
 													value="stageEnd"
 													data-tool
-													aria-disabled={true}
-													disabled={true}
-													className="cursor-not-allowed opacity-50 pointer-events-none"
+													className="relative"
 												>
 													<FlagIcon className="size-[20px] shrink-0" />
 													<p className="text-[14px]">Stage End</p>
