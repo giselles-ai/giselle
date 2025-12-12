@@ -1,16 +1,14 @@
-"use client";
-
 import { Select } from "@giselle-internal/ui/select";
-import type { Task } from "@giselles-ai/protocol";
+import type { Task, TaskId } from "@giselles-ai/protocol";
 import { Paperclip } from "lucide-react";
-import { use } from "react";
+import { giselle } from "@/app/giselle";
 
-export function InputAreaHeaderControls({
-	taskPromise,
-}: {
-	taskPromise: Promise<Task>;
-}) {
-	const task = use(taskPromise);
+export async function getInputAreaHeaderControlsData(taskId: TaskId) {
+	const task = await giselle.getTask({ taskId });
+	return { task };
+}
+
+export function InputAreaHeaderControls({ task }: { task: Task }) {
 	const appLabel = task.name ?? "Selected app";
 
 	return (
@@ -27,7 +25,6 @@ export function InputAreaHeaderControls({
 					options={[{ value: task.id, label: appLabel }]}
 					placeholder={appLabel}
 					value={task.id}
-					onValueChange={() => {}}
 					widthClassName="w-full"
 					disabled
 					side="top"

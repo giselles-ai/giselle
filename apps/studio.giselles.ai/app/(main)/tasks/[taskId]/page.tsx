@@ -1,11 +1,17 @@
 import { Suspense } from "react";
-import { InputAreaHeaderControls } from "./ui/input-area-header-controls";
+import {
+	getInputAreaHeaderControlsData,
+	InputAreaHeaderControls,
+} from "./ui/input-area-header-controls";
 import { InputAreaPlaceholder } from "./ui/input-area-placeholder";
-import { StepsSection } from "./ui/steps-section";
 import "./mobile-scroll.css";
 import { TaskId } from "@giselles-ai/protocol";
 import { TaskHeader } from "@/components/task/task-header";
 import { TaskLayout } from "@/components/task/task-layout";
+import {
+	getStepsSectionData,
+	StepsSection,
+} from "./ui/experimental/steps-section";
 import { getTaskHeaderData } from "./ui/task-header";
 import { TaskOverlayReset } from "./ui/task-overlay-reset";
 
@@ -20,7 +26,12 @@ export default async function ({
 		throw new Error(`Invalid task ID: ${taskIdParam}`);
 	}
 	const taskId = result.data;
-	const taskHeaderData = await getTaskHeaderData({ taskId });
+	const [taskHeaderData, stepsSectionData, inputAreaHeaderControlsData] =
+		await Promise.all([
+			getTaskHeaderData({ taskId }),
+			getStepsSectionData(taskId),
+			getInputAreaHeaderControlsData(taskId),
+		]);
 
 	return (
 		<TaskLayout>
@@ -29,9 +40,7 @@ export default async function ({
 			<TaskHeader {...taskHeaderData} />
 			<div className="flex-1 overflow-y-auto overflow-x-hidden pb-8">
 				{/* Steps Section */}
-				<Suspense fallback={<div>Loading steps...</div>}>
-					<StepsSection taskId={taskId} />
-				</Suspense>
+				<StepsSection {...stepsSectionData} />
 			</div>
 
 			{/* Main Content Area - Request new tasks section (sticky inside main container) */}
@@ -45,9 +54,7 @@ export default async function ({
 					<h2 className="text-text-muted text-[13px] font-semibold">
 						Request new tasks in a new session
 					</h2>
-					<Suspense fallback={null}>
-						<InputAreaHeaderControls taskPromise={taskPromise} />
-					</Suspense>
+					<InputAreaHeaderControls {...inputAreaHeaderControlsData} />
 				</div>
 				{/* TODO: Input area will be added here - placeholder for future functionality */}
 				<InputAreaPlaceholder />
