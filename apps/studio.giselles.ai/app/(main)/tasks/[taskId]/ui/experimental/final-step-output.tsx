@@ -1,5 +1,8 @@
+"use client";
+
 import { Tabs } from "radix-ui";
 import { GenerationView } from "../../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-view";
+import { OutputActions } from "../output-actions";
 import type { UITask } from "./task-data";
 
 export function FinalStepOutput({
@@ -44,9 +47,15 @@ export function FinalStepOutput({
 						<Tabs.Content
 							key={output.generation.id}
 							value={output.generation.id}
-							className="mt-3 overflow-hidden rounded-xl bg-blue-muted/5 px-4 py-3 [&_.markdown-renderer]:text-[13px] [&_*[class*='text-[14px]']]:text-[13px] [&_*]:text-text-muted/70 [&_*[class*='text-inverse']]:!text-text-muted/70"
+							className="mt-3 overflow-hidden rounded-xl bg-blue-muted/5 px-4 py-3"
 						>
-							<GenerationView generation={output.generation} />
+							<div className="flex items-center justify-between mb-2 w-full">
+								<div className="flex-1" />
+								<OutputActions generation={output.generation} />
+							</div>
+							<div className="[&_.markdown-renderer]:text-[13px] [&_*[class*='text-[14px]']]:text-[13px] [&_*]:text-text-muted/70 [&_*[class*='text-inverse']]:!text-text-muted/70">
+								<GenerationView generation={output.generation} />
+							</div>
 						</Tabs.Content>
 					))}
 				</Tabs.Root>
