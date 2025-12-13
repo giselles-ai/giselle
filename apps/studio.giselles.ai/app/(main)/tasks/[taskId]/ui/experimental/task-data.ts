@@ -27,7 +27,7 @@ type UIStepItemBase = {
 	finished: boolean;
 };
 
-type UIStepItem =
+export type UIStepItem =
 	| (UIStepItemBase & {
 			status: "completed";
 			generation: Generation;
