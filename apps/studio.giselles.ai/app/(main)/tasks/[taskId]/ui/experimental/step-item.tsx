@@ -93,11 +93,7 @@ export function StepItemOutput({ item }: { item: UIStepItem }) {
 				<div className="ml-4 pl-4 border-l-2 border-border mt-2 mb-2">
 					<div className="rounded-lg border border-border bg-surface/30 px-4 py-3">
 						<p className="text-[13px] text-text-muted leading-relaxed">
-							This step failed during the last run.
-							<br />
 							<span className="break-words">{item.error}</span>
-							<br />
-							Individual step execution is not available on this page.
 							<br />
 							To review or debug this step, open it in Studio.
 						</p>
