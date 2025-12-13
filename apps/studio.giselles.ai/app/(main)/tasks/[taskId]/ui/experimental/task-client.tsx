@@ -180,6 +180,23 @@ function TaskContainer() {
 			/>
 			<div className="flex-1 overflow-y-auto overflow-x-hidden pb-8">
 				<StepsSection {...data.stepsSection} />
+
+				<div className="mt-4">
+					<div className="flex items-center justify-between text-text-muted text-[13px] font-semibold mb-2 w-full">
+						<span className="block">Output from last completed step</span>
+					</div>
+					<p className="text-[13px] text-text-muted/70 italic">
+						<span
+							className="bg-[length:200%_100%] bg-clip-text bg-gradient-to-r from-text-muted/70 via-text-muted/35 to-text-muted/70 text-transparent animate-shimmer"
+							style={{
+								animationDuration: "1s",
+								animationTimingFunction: "linear",
+							}}
+						>
+							Please wait, executing...
+						</span>
+					</p>
+				</div>
 			</div>
 		</>
 	);
