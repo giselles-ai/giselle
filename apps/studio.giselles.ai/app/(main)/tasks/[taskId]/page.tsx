@@ -5,11 +5,9 @@ import {
 import { InputAreaPlaceholder } from "./ui/input-area-placeholder";
 import "./mobile-scroll.css";
 import { TaskId } from "@giselles-ai/protocol";
-import { TaskHeader } from "@/components/task/task-header";
 import { TaskLayout } from "@/components/task/task-layout";
-import { StepsSectionClient } from "./ui/experimental/steps-section-client";
-import { getStepsSectionData } from "./ui/experimental/steps-section-data";
-import { getTaskHeaderData } from "./ui/task-header";
+import { TaskClient } from "./ui/experimental/task-client";
+import { getTaskData } from "./ui/experimental/task-data";
 import { TaskOverlayReset } from "./ui/task-overlay-reset";
 
 export default async function ({
@@ -23,31 +21,21 @@ export default async function ({
 		throw new Error(`Invalid task ID: ${taskIdParam}`);
 	}
 	const taskId = result.data;
-	const [taskHeaderData, stepsSectionData, inputAreaHeaderControlsData] =
-		await Promise.all([
-			getTaskHeaderData({ taskId }),
-			getStepsSectionData(taskId),
-			getInputAreaHeaderControlsData(taskId),
-		]);
+	const [taskData, inputAreaHeaderControlsData] = await Promise.all([
+		getTaskData(taskId),
+		getInputAreaHeaderControlsData(taskId),
+	]);
 
 	async function refreshAction() {
 		"use server";
 
-		return await getStepsSectionData(taskId);
+		return await getTaskData(taskId);
 	}
 
 	return (
 		<TaskLayout>
 			<TaskOverlayReset />
-			{/* Top Section */}
-			<TaskHeader {...taskHeaderData} />
-			<div className="flex-1 overflow-y-auto overflow-x-hidden pb-8">
-				{/* Steps Section */}
-				<StepsSectionClient
-					initial={stepsSectionData}
-					refreshAction={refreshAction}
-				/>
-			</div>
+			<TaskClient initial={taskData} refreshAction={refreshAction} />
 
 			{/* Main Content Area - Request new tasks section (sticky inside main container) */}
 			<div
