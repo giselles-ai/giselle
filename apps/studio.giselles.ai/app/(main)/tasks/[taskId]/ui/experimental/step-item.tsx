@@ -11,6 +11,7 @@ function StepItemHeader({
 	as,
 	containerClassName,
 	textClassName,
+	...props
 }: {
 	item: UIStepItem;
 	as?: "div" | "button";
@@ -31,6 +32,7 @@ function StepItemHeader({
 				"flex-1 flex items-center gap-3 text-left",
 				containerClassName,
 			)}
+			{...props}
 		>
 			<StepItemStatusIcon status={item.status} operationNode={item.node} />
 			<span className={labelClassName}>{item.title}</span>
@@ -45,7 +47,6 @@ export function StepItem({ item }: { item: UIStepItem }) {
 	if (!item.finished) {
 		return <StepItemHeader item={item} />;
 	}
-
 	return (
 		<Accordion.Root type="single" collapsible>
 			<Accordion.Item value={item.id}>
