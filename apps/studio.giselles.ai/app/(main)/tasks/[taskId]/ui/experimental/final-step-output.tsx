@@ -7,6 +7,8 @@ export function FinalStepOutput({
 }: {
 	finalStep: UITask["finalStep"];
 }) {
+	const defaultTabValue = finalStep.outputs.at(0)?.generation.id;
+
 	return (
 		<div className="mt-8">
 			<div className="flex items-center justify-between text-text-muted text-[13px] font-semibold mb-2 w-full">
@@ -25,12 +27,13 @@ export function FinalStepOutput({
 					</span>
 				</p>
 			) : (
-				<Tabs.Root>
-					<Tabs.List>
+				<Tabs.Root defaultValue={defaultTabValue}>
+					<Tabs.List className="inline-flex items-center gap-1 rounded-lg border border-border bg-white/5 p-1">
 						{finalStep.outputs.map((output) => (
 							<Tabs.Trigger
 								key={output.generation.id}
 								value={output.generation.id}
+								className="rounded-md px-2.5 py-1.5 text-[13px] font-medium text-text-muted/70 transition-colors hover:text-text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(192,73%,84%)]/30 data-[state=active]:bg-white/10 data-[state=active]:text-text-muted"
 							>
 								{output.title}
 							</Tabs.Trigger>
@@ -41,6 +44,7 @@ export function FinalStepOutput({
 						<Tabs.Content
 							key={output.generation.id}
 							value={output.generation.id}
+							className="mt-3 overflow-hidden rounded-lg border border-border bg-surface/30 px-4 py-3 [&_.markdown-renderer]:text-[13px] [&_*[class*='text-[14px]']]:text-[13px] [&_*]:text-text-muted/70 [&_*[class*='text-inverse']]:!text-text-muted/70"
 						>
 							<GenerationView generation={output.generation} />
 						</Tabs.Content>
