@@ -72,6 +72,14 @@ export interface UITask {
 		completedStepsCount: number;
 		steps: UIStep[];
 	};
+	finalStep: {
+		totalStepItemsCount: number;
+		finishedStepItemsCount: number;
+		outputs: {
+			title: string;
+			generation: Generation;
+		}[];
+	};
 }
 
 async function getAppByTaskId(taskId: TaskId) {
@@ -254,6 +262,25 @@ export async function getTaskData(taskId: TaskId): Promise<UITask> {
 			.filter((itemOrNull) => itemOrNull !== null),
 	}));
 
+	const lastUiStep = steps.at(-1);
+	const totalStepItemsCount = lastUiStep?.items.length ?? 0;
+	const finishedStepItemsCount =
+		lastUiStep?.items.filter((item) => item.finished).length ?? 0;
+
+	const outputs =
+		lastUiStep?.items
+			.map((item) => {
+				const generation =
+					item.status === "completed"
+						? item.generation
+						: generationsByStepId.get(item.id);
+				if (generation === undefined) {
+					return null;
+				}
+				return { title: item.title, generation };
+			})
+			.filter((outputOrNull) => outputOrNull !== null) ?? [];
+
 	const [workspace, app, input] = await Promise.all([
 		giselle.getWorkspace(task.workspaceId),
 		getAppByTaskId(taskId),
@@ -271,6 +298,11 @@ export async function getTaskData(taskId: TaskId): Promise<UITask> {
 			totalStepsCount,
 			completedStepsCount,
 			steps,
+		},
+		finalStep: {
+			totalStepItemsCount,
+			finishedStepItemsCount,
+			outputs,
 		},
 	};
 }

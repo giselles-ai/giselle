@@ -18,7 +18,7 @@ export function StepsSection({
 				<Accordion.Header>
 					<Accordion.Trigger
 						type="button"
-						className="group flex items-center gap-2 text-text-muted text-[13px] font-semibold mb-4 py-2 w-full cursor-pointer hover:text-text-muted transition-colors"
+						className="group flex items-center gap-2 text-text-muted text-[13px] font-semibold py-2 w-full cursor-pointer hover:text-text-muted transition-colors"
 					>
 						<div className="flex items-center gap-2">
 							<p className="block">{title}</p>
