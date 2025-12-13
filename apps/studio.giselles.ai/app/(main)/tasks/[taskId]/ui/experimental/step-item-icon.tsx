@@ -6,7 +6,7 @@ import {
 	RefreshCwIcon,
 	XIcon,
 } from "lucide-react";
-import type { UIStep } from "./steps-section-data";
+import type { UIStep } from "./task-data";
 
 const iconClassName =
 	"text-text-muted/70 group-hover:text-text-muted size-[16px] flex-shrink-0 transition-colors";

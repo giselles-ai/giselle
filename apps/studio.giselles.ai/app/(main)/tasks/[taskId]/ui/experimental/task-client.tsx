@@ -30,7 +30,7 @@ function isTerminalTaskStatus(status: UITask["status"]) {
 	);
 }
 
-export function TaskProvider({
+function TaskProvider({
 	initial,
 	children,
 	refreshAction,
@@ -144,7 +144,7 @@ export function TaskProvider({
 	);
 }
 
-export function useTask() {
+function useTask() {
 	const ctx = useContext(TaskContext);
 	if (!ctx) {
 		throw new Error("useTask must be used within TaskProvider");
@@ -179,7 +179,7 @@ function TaskContainer() {
 				input={data.input}
 			/>
 			<div className="flex-1 overflow-y-auto overflow-x-hidden pb-8">
-				<StepsSection {...data.stepsSection} status={data.status} />
+				<StepsSection {...data.stepsSection} />
 			</div>
 		</>
 	);

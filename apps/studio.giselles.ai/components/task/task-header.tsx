@@ -68,7 +68,7 @@ function TaskInputItem({ item }: { item: ParameterItem }) {
 	}
 }
 
-export interface TaskHeaderProps {
+interface TaskHeaderProps {
 	status: Task["status"];
 	title: string;
 	description: string;

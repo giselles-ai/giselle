@@ -2,14 +2,14 @@ import clsx from "clsx/lite";
 import { ChevronDownIcon } from "lucide-react";
 import { Accordion } from "radix-ui";
 import { StepItem } from "./step-item";
-import type { StepsSectionData } from "./steps-section-data";
+import type { UITask } from "./task-data";
 
 export function StepsSection({
 	title,
 	totalStepsCount,
 	completedStepsCount,
 	steps,
-}: StepsSectionData) {
+}: UITask["stepsSection"]) {
 	const progressRatio =
 		totalStepsCount > 0 ? completedStepsCount / totalStepsCount : 0;
 	return (

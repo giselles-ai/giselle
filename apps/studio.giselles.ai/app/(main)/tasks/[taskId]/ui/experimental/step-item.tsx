@@ -69,7 +69,7 @@ export function StepItem({ item }: { item: UIStepItem }) {
 	);
 }
 
-export function StepItemOutput({ item }: { item: UIStepItem }) {
+function StepItemOutput({ item }: { item: UIStepItem }) {
 	const stepId = item.id;
 	switch (item.status) {
 		case "created":
