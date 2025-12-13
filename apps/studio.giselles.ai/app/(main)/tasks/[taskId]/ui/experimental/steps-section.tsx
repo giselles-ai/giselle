@@ -45,7 +45,7 @@ export function StepsSection({
 					</Accordion.Trigger>
 				</Accordion.Header>
 				<Accordion.Content className="overflow-hidden data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown">
-					<div className="mb-8 border-l border-border pl-3 space-y-4">
+					<div className="mt-4 mb-8 border-l border-border pl-3 space-y-4">
 						{steps.map((step) => (
 							<div
 								key={step.id}
