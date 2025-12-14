@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { TaskHeader } from "@/components/task/task-header";
 import { FinalStepOutput } from "./final-step-output";
+import { PsuedoAgenticText } from "./psuedo-agentic-text";
 import { StepsSection } from "./steps-section";
 import type { UITask } from "./task-data";
 
@@ -131,6 +132,7 @@ export function TaskClient({
 					{stepsLabel}, and they will run in order.
 				</p>
 				<StepsSection {...data.stepsSection} />
+				<PsuedoAgenticText />
 				<FinalStepOutput finalStep={data.finalStep} />
 			</div>
 		</>
