@@ -67,7 +67,7 @@ export interface UIStep {
 
 export type PseudoAgenticTextToken =
 	| { type: "text"; value: string }
-	| { type: "stepItemName"; value: string };
+	| { type: "stepItemName"; value: string; contentType?: string };
 
 export type PseudoAgenticLogLine = {
 	key: string;
@@ -107,28 +107,50 @@ function textToken(value: string): PseudoAgenticTextToken {
 	return { type: "text", value };
 }
 
-function stepItemNameToken(value: string): PseudoAgenticTextToken {
-	return { type: "stepItemName", value };
+function stepItemNameToken({
+	value,
+	contentType,
+}: {
+	value: string;
+	contentType?: string;
+}): PseudoAgenticTextToken {
+	return { type: "stepItemName", value, contentType };
+}
+
+function toKebabCase(value: string) {
+	return value
+		.replaceAll(/([a-z0-9])([A-Z])/g, "$1-$2")
+		.replaceAll(/_/g, "-")
+		.toLowerCase();
+}
+
+function getStepItemContentType(item: UIStepItem) {
+	return toKebabCase(item.node.content.type);
 }
 
 function buildStepItemNameListTokens(
 	items: UIStepItem[],
 ): PseudoAgenticTextToken[] {
-	const names = items.map(getStepItemDisplayName);
 	const tokens: PseudoAgenticTextToken[] = [];
 
-	for (let index = 0; index < names.length; index++) {
-		const name = names[index];
-		if (name === undefined) {
+	for (let index = 0; index < items.length; index++) {
+		const item = items[index];
+		if (item === undefined) {
 			continue;
 		}
+		const name = getStepItemDisplayName(item);
 
 		if (index > 0) {
-			const isLast = index === names.length - 1;
-			const separator = names.length === 2 ? " and " : isLast ? ", and " : ", ";
+			const isLast = index === items.length - 1;
+			const separator = items.length === 2 ? " and " : isLast ? ", and " : ", ";
 			tokens.push(textToken(separator));
 		}
-		tokens.push(stepItemNameToken(name));
+		tokens.push(
+			stepItemNameToken({
+				value: name,
+				contentType: getStepItemContentType(item),
+			}),
+		);
 	}
 
 	return tokens;
@@ -161,7 +183,7 @@ function buildPseudoAgenticTextLines({
 				value:
 					"Agent runtime initialized. Loading task context and execution plan for ",
 			},
-			{ type: "stepItemName", value: taskTitle },
+			stepItemNameToken({ value: taskTitle }),
 			{ type: "text", value: "." },
 		],
 	});
@@ -230,8 +252,11 @@ function buildPseudoAgenticTextLines({
 				lines.push({
 					key: `step-${step.id}-item-${item.id}-completed`,
 					tokens: [
-						{ type: "text", value: `[Step ${stepNumber}] Completed: ` },
-						{ type: "stepItemName", value: getStepItemDisplayName(item) },
+						{ type: "text", value: "Completed: " },
+						stepItemNameToken({
+							value: getStepItemDisplayName(item),
+							contentType: getStepItemContentType(item),
+						}),
 					],
 				});
 				continue;
@@ -241,7 +266,10 @@ function buildPseudoAgenticTextLines({
 					key: `step-${step.id}-item-${item.id}-failed`,
 					tokens: [
 						{ type: "text", value: `[Step ${stepNumber}] Failed: ` },
-						{ type: "stepItemName", value: getStepItemDisplayName(item) },
+						stepItemNameToken({
+							value: getStepItemDisplayName(item),
+							contentType: getStepItemContentType(item),
+						}),
 						{ type: "text", value: " — " },
 						{ type: "text", value: item.error },
 					],
@@ -263,7 +291,10 @@ function buildPseudoAgenticTextLines({
 					key: `step-${step.id}-item-${item.id}-cancelled`,
 					tokens: [
 						{ type: "text", value: `[Step ${stepNumber}] Cancelled: ` },
-						{ type: "stepItemName", value: getStepItemDisplayName(item) },
+						stepItemNameToken({
+							value: getStepItemDisplayName(item),
+							contentType: getStepItemContentType(item),
+						}),
 					],
 				});
 				lines.push({
