@@ -142,7 +142,7 @@ export function StepsSection({
 									collapsible
 									className="space-y-2"
 								>
-									<Accordion.Item value={step.id} className="space-y-2">
+									<Accordion.Item value={step.id}>
 										<Accordion.Header>
 											<Accordion.Trigger className="group flex items-center gap-3 w-full text-left cursor-pointer">
 												<div className="flex items-center gap-2 min-w-0">
@@ -170,7 +170,7 @@ export function StepsSection({
 											</Accordion.Trigger>
 										</Accordion.Header>
 										<Accordion.Content className="overflow-hidden data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown">
-											<div className="pl-4 space-y-1.5">
+											<div className="pl-4 space-y-1.5 mt-2">
 												{step.items.map((item) => (
 													<StepItem key={item.id} item={item} />
 												))}
