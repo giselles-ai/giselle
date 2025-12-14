@@ -26,8 +26,6 @@ export function TaskClient({
 	const refreshActionRef = useRef(refreshAction);
 	const totalStepsCount = data.stepsSection.totalStepsCount;
 	const stepsLabel = totalStepsCount === 1 ? "step" : "steps";
-	const taskOverview =
-		data.description.trim().length > 0 ? ` Overview: ${data.description}` : "";
 
 	useEffect(() => {
 		refreshActionRef.current = refreshAction;
