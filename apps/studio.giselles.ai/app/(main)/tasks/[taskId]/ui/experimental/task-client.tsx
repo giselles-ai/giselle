@@ -128,8 +128,8 @@ export function TaskClient({
 			/>
 			<div className="flex-1 overflow-y-auto overflow-x-hidden pb-8">
 				<p className="text-[13px] text-text-muted/70">
-					Task created.{taskOverview} This task has {totalStepsCount}{" "}
-					{stepsLabel}, and they will run in order.
+					Task created. This task has {totalStepsCount} {stepsLabel}, and they
+					will run in order.
 				</p>
 				<StepsSection {...data.stepsSection} />
 				<PsuedoAgenticText task={data} revealMode="dissolve" />

@@ -41,9 +41,6 @@ function StepItemHeader({
 		>
 			<StepItemStatusIcon status={item.status} operationNode={item.node} />
 			<span className={labelClassName}>{item.title}</span>
-			{item.subLabel ? (
-				<span className={labelClassName}>{item.subLabel}</span>
-			) : null}
 		</Component>
 	);
 }

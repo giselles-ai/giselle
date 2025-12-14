@@ -218,7 +218,7 @@ function createStepItemNameToken({
 function getStepItemDisplayName(
 	item: Pick<UIStepItemBase, "title" | "subLabel">,
 ) {
-	return item.subLabel ? `${item.title} (${item.subLabel})` : item.title;
+	return item.title;
 }
 
 function buildExecutionActionListTokens(
@@ -487,9 +487,7 @@ export async function getTaskData(taskId: TaskId): Promise<UITask> {
 		status: step.status,
 		actions: step.items.map((item) => ({
 			id: item.id,
-			displayName: item.subLabel
-				? `${item.title} (${item.subLabel})`
-				: item.title,
+			displayName: item.title,
 			contentType: item.node.content.type,
 			status: item.status,
 			error: item.status === "failed" ? item.error : undefined,
