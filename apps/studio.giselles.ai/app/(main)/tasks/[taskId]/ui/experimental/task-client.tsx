@@ -132,7 +132,7 @@ export function TaskClient({
 					{stepsLabel}, and they will run in order.
 				</p>
 				<StepsSection {...data.stepsSection} />
-				<PsuedoAgenticText />
+				<PsuedoAgenticText task={data} />
 				<FinalStepOutput finalStep={data.finalStep} />
 			</div>
 		</>
