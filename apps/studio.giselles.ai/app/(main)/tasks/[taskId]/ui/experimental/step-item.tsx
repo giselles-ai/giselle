@@ -22,7 +22,7 @@ function StepItemHeader({
 	const isFailed = item.status === "failed";
 
 	const labelClassName = clsx(
-		"text-[13px] text-text-muted/70 transition-colors",
+		"text-[12px] text-text-muted/70 transition-colors leading-snug",
 		isCompleted && "text-text-muted/45",
 		isFailed && "text-red-400/90",
 		textClassName,
@@ -34,7 +34,7 @@ function StepItemHeader({
 		<Component
 			{...(Component === "button" ? { type: "button" as const } : null)}
 			className={clsx(
-				"flex-1 flex items-center gap-3 text-left py-1",
+				"flex-1 flex items-center gap-2 text-left py-0.5",
 				containerClassName,
 			)}
 			{...props}
@@ -88,21 +88,21 @@ function StepItemOutput({ item }: { item: UIStepItem }) {
 		case "completed":
 			return (
 				<div className="ml-4 pl-4 border-l-2 border-border">
-					<div className="py-4 [&_.markdown-renderer]:text-[13px] [&_*[class*='text-[14px]']]:text-[13px] [&_*]:text-text-muted/70 [&_*[class*='text-inverse']]:!text-text-muted/70">
+					<div className="py-3 [&_.markdown-renderer]:text-[13px] [&_*[class*='text-[14px]']]:text-[13px] [&_*]:text-text-muted/70 [&_*[class*='text-inverse']]:!text-text-muted/70">
 						<GenerationView generation={item.generation} />
 					</div>
 				</div>
 			);
 		case "failed":
 			return (
-				<div className="ml-4 pl-4 border-l-2 border-border mt-2 mb-2">
-					<div className="rounded-lg border border-border bg-surface/30 px-4 py-3">
+				<div className="ml-4 pl-4 border-l-2 border-border mt-1.5 mb-1.5">
+					<div className="rounded-lg border border-border bg-surface/30 px-3 py-2">
 						<p className="text-[13px] text-text-muted leading-relaxed">
 							<span className="break-words">{item.error}</span>
 							<br />
 							To review or debug this step, open it in Studio.
 						</p>
-						<div className="flex items-center gap-2 mt-3">
+						<div className="flex items-center gap-2 mt-2">
 							<Link
 								href={`/workspaces/${item.workspaceId}`}
 								target="_blank"

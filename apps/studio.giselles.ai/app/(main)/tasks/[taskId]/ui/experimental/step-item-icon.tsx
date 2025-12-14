@@ -9,7 +9,7 @@ import {
 import type { UIStep } from "./task-data";
 
 const iconClassName =
-	"text-text-muted/70 group-hover:text-text-muted size-[16px] flex-shrink-0 transition-colors";
+	"text-text-muted/70 group-hover:text-text-muted size-[14px] flex-shrink-0 transition-colors";
 
 export function StepItemStatusIcon({
 	status,
@@ -28,7 +28,7 @@ export function StepItemStatusIcon({
 			return <NodeIcon node={operationNode} className={iconClassName} />;
 		case "failed":
 			return (
-				<XIcon className="text-red-400 size-[16px] flex-shrink-0 transition-colors" />
+				<XIcon className="text-red-400 size-[14px] flex-shrink-0 transition-colors" />
 			);
 		case "cancelled":
 			return <CircleSlashIcon className={iconClassName} />;

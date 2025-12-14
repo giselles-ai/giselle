@@ -85,7 +85,7 @@ export function StepsSection({
 	return (
 		<Accordion.Root
 			type="single"
-			className="w-full mt-6"
+			className="w-full mt-4"
 			collapsible
 			defaultValue="step-list"
 		>
@@ -94,9 +94,9 @@ export function StepsSection({
 				className="rounded-xl border border-border bg-surface/30"
 			>
 				<Accordion.Header>
-					<Accordion.Trigger className="group flex items-start justify-between gap-3 text-text-muted w-full cursor-pointer hover:text-text-muted transition-colors px-4 py-3">
+					<Accordion.Trigger className="group flex items-start justify-between gap-3 text-text-muted w-full cursor-pointer hover:text-text-muted transition-colors px-3 py-2">
 						<div className="min-w-0 flex items-start gap-2">
-							<div className="relative w-5 h-5 flex items-center justify-center flex-shrink-0 mt-[1px]">
+							<div className="relative w-4 h-4 flex items-center justify-center flex-shrink-0 mt-[1px]">
 								<ListChecks className="absolute size-4 text-text-muted/70 transition-opacity duration-150 opacity-100 group-hover:opacity-0" />
 								<ChevronDownIcon className="absolute size-4 -rotate-90 text-text-muted/70 transition-[opacity,transform] duration-150 opacity-0 group-hover:opacity-100 group-data-[state=open]:rotate-0" />
 							</div>
@@ -107,7 +107,9 @@ export function StepsSection({
 										{totalStepsCount}
 									</span>
 								</div>
-								<p className="text-[12px] text-text-muted/60">{title}</p>
+								<p className="text-[12px] text-text-muted/60 leading-snug">
+									{title}
+								</p>
 							</div>
 						</div>
 						<div className="flex items-center gap-2">
@@ -133,20 +135,20 @@ export function StepsSection({
 					</Accordion.Trigger>
 				</Accordion.Header>
 				<Accordion.Content className="overflow-hidden data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown">
-					<div className="px-4 pb-4">
-						<div className="mt-2 space-y-5">
+					<div className="px-3 pb-3">
+						<div className="mt-1.5 space-y-3">
 							{steps.map((step) => (
 								<Accordion.Root
 									key={step.id}
 									type="single"
 									collapsible
-									className="space-y-2"
+									className="space-y-1.5"
 								>
 									<Accordion.Item value={step.id}>
 										<Accordion.Header>
-											<Accordion.Trigger className="group flex items-center gap-3 w-full text-left cursor-pointer">
+											<Accordion.Trigger className="group flex items-center gap-2 w-full text-left cursor-pointer">
 												<div className="flex items-center gap-2 min-w-0">
-													<div className="relative w-5 h-5 flex-shrink-0">
+													<div className="relative w-4 h-4 flex-shrink-0">
 														<div className="absolute inset-0 flex items-center justify-center transition-opacity duration-150 opacity-100 group-hover:opacity-0">
 															<StepStatusMarker status={step.status} />
 														</div>
@@ -156,7 +158,7 @@ export function StepsSection({
 													</div>
 													<p
 														className={clsx(
-															"text-[13px] font-semibold",
+															"text-[12px] font-semibold leading-snug",
 															step.status === "completed"
 																? "text-[hsl(192,73%,84%)]/70"
 																: step.status === "running"
@@ -170,14 +172,14 @@ export function StepsSection({
 													</p>
 												</div>
 												{step.collapsedProgressText ? (
-													<span className="ml-auto text-[12px] text-text-muted/60 tabular-nums transition-opacity duration-150 opacity-100 group-data-[state=open]:opacity-0 group-data-[state=open]:pointer-events-none">
+													<span className="ml-auto text-[11px] text-text-muted/60 tabular-nums transition-opacity duration-150 opacity-100 group-data-[state=open]:opacity-0 group-data-[state=open]:pointer-events-none">
 														{step.collapsedProgressText}
 													</span>
 												) : null}
 											</Accordion.Trigger>
 										</Accordion.Header>
 										<Accordion.Content className="overflow-hidden data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown">
-											<div className="pl-4 space-y-1.5 mt-2">
+											<div className="pl-3 space-y-1 mt-1.5">
 												{step.items.map((item) => (
 													<StepItem key={item.id} item={item} />
 												))}
