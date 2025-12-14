@@ -27,15 +27,14 @@ export function FinalStepOutput({
 		generation: (typeof outputs)[number]["generation"];
 	}) => {
 		return (
-			<>
-				<div className="[&_.markdown-renderer]:text-[13px] [&_*[class*='text-[14px]']]:text-[13px] [&_*]:text-text-muted/70 [&_*[class*='text-inverse']]:!text-text-muted/70">
-					<GenerationView generation={generation} renderPartTypes={["text"]} />
-				</div>
-				<div className="flex items-center justify-between mb-2 w-full">
-					<div className="flex-1" />
+			<div className="relative">
+				<div className="absolute right-0 top-0 z-10 flex items-center">
 					<OutputActions generation={generation} />
 				</div>
-			</>
+				<div className="pr-28 [&_.markdown-renderer]:text-[13px] [&_*[class*='text-[14px]']]:text-[13px] [&_*]:text-text-muted/70 [&_*[class*='text-inverse']]:!text-text-muted/70">
+					<GenerationView generation={generation} renderPartTypes={["text"]} />
+				</div>
+			</div>
 		);
 	};
 
