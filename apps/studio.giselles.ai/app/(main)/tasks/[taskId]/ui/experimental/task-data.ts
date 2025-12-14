@@ -150,6 +150,11 @@ function getCollapsedProgressText({
 		return null;
 	}
 
+	// When a Step is pending (created/queued), don't show any progress summary in collapsed UI.
+	if (status === "created" || status === "queued") {
+		return null;
+	}
+
 	const doneCount = items.filter((item) => item.status === "completed").length;
 	const failedCount = items.filter((item) => item.status === "failed").length;
 	const cancelledCount = items.filter(
