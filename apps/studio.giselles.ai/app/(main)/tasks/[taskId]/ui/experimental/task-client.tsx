@@ -1,24 +1,10 @@
 "use client";
 
-import {
-	createContext,
-	type ReactNode,
-	useContext,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
+import { useEffect, useRef, useState } from "react";
 import { TaskHeader } from "@/components/task/task-header";
 import { FinalStepOutput } from "./final-step-output";
 import { StepsSection } from "./steps-section";
 import type { UITask } from "./task-data";
-
-interface TaskContextValue {
-	data: UITask;
-	isPolling: boolean;
-}
-
-const TaskContext = createContext<TaskContextValue | null>(null);
 
 const isDebugEnabled = process.env.NODE_ENV !== "production";
 
@@ -28,17 +14,14 @@ function isTerminalTaskStatus(status: UITask["status"]) {
 	);
 }
 
-function TaskProvider({
+export function TaskClient({
 	initial,
-	children,
 	refreshAction,
 }: {
 	initial: UITask;
-	children: ReactNode;
 	refreshAction: () => Promise<UITask>;
 }) {
 	const [data, setData] = useState<UITask>(initial);
-	const [isPolling, setIsPolling] = useState(false);
 	const refreshActionRef = useRef(refreshAction);
 
 	useEffect(() => {
@@ -61,7 +44,6 @@ function TaskProvider({
 				console.debug("[task-page] tick start");
 			}
 
-			setIsPolling(true);
 			let latest: UITask | null = null;
 			try {
 				latest = await refreshActionRef.current();
@@ -83,10 +65,6 @@ function TaskProvider({
 					timer = window.setTimeout(tick, 3000);
 				}
 				return;
-			} finally {
-				if (!cancelled) {
-					setIsPolling(false);
-				}
 			}
 
 			if (!latest) {
@@ -131,41 +109,8 @@ function TaskProvider({
 			}
 			cancelled = true;
 			if (timer) window.clearTimeout(timer);
-			setIsPolling(false);
 		};
 	}, [initial.status]);
-
-	return (
-		<TaskContext.Provider value={{ data, isPolling }}>
-			{children}
-		</TaskContext.Provider>
-	);
-}
-
-function useTask() {
-	const ctx = useContext(TaskContext);
-	if (!ctx) {
-		throw new Error("useTask must be used within TaskProvider");
-	}
-	return ctx;
-}
-
-export function TaskClient({
-	initial,
-	refreshAction,
-}: {
-	initial: UITask;
-	refreshAction: () => Promise<UITask>;
-}) {
-	return (
-		<TaskProvider initial={initial} refreshAction={refreshAction}>
-			<TaskContainer />
-		</TaskProvider>
-	);
-}
-
-function TaskContainer() {
-	const { data } = useTask();
 
 	return (
 		<>
