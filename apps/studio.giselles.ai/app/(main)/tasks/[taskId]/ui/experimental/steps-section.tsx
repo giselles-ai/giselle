@@ -95,21 +95,20 @@ export function StepsSection({
 			>
 				<Accordion.Header>
 					<Accordion.Trigger className="group flex items-start justify-between gap-3 text-text-muted w-full cursor-pointer hover:text-text-muted transition-colors px-3 py-2">
-						<div className="min-w-0 flex items-start gap-2">
+						<div className="min-w-0 flex items-center gap-2">
 							<div className="relative w-4 h-4 flex items-center justify-center flex-shrink-0 mt-[1px]">
 								<ListChecks className="absolute size-4 text-text-muted/70 transition-opacity duration-150 opacity-100 group-hover:opacity-0" />
 								<ChevronDownIcon className="absolute size-4 -rotate-90 text-text-muted/70 transition-[opacity,transform] duration-150 opacity-0 group-hover:opacity-100 group-data-[state=open]:rotate-0" />
 							</div>
 							<div className="min-w-0">
-								<div className="flex items-baseline gap-2">
-									<p className="text-[13px] font-semibold">Steps</p>
-									<span className="text-[13px] text-text-muted/70 tabular-nums">
-										{totalStepsCount}
-									</span>
+								<div className="min-w-0 flex items-baseline gap-2">
+									<div className="flex items-baseline gap-2 whitespace-nowrap">
+										<p className="text-[13px] font-semibold">Steps</p>
+									</div>
+									<p className="min-w-0 truncate text-[12px] text-text-muted/60 leading-snug">
+										{title}
+									</p>
 								</div>
-								<p className="text-[12px] text-text-muted/60 leading-snug">
-									{title}
-								</p>
 							</div>
 						</div>
 						<div className="flex items-center gap-2">

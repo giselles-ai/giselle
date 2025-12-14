@@ -369,9 +369,11 @@ export async function getTaskData(taskId: TaskId): Promise<UITask> {
 				? `Preparing ${preparingStepsCount} step${
 						preparingStepsCount !== 1 ? "s" : ""
 					}`
-				: `Completed ${completedStepsCount} step${
-						completedStepsCount !== 1 ? "s" : ""
-					}`;
+				: totalStepsCount > 0 && completedStepsCount === totalStepsCount
+					? "Completed all steps"
+					: `Completed ${completedStepsCount} step${
+							completedStepsCount !== 1 ? "s" : ""
+						}`;
 
 	const steps: UIStep[] = task.sequences.map((sequence, sequenceIndex) => {
 		const items = sequence.steps

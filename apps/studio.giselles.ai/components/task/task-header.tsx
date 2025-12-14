@@ -105,27 +105,29 @@ export function TaskHeader({
 						)}
 					</div>
 					{/* Title */}
-					<div className="flex items-center gap-3 mb-1">
-						<h3 className="text-[20px] font-normal text-inverse">{title}</h3>
-						<Link
-							href={`/workspaces/${workspaceId}`}
-							className="inline-block"
-							target="_blank"
-							rel="noreferrer"
-						>
-							<div className="group [&>div]:rounded-lg [&>div>div]:rounded-md [&>div>div]:text-[hsl(192,73%,84%)] [&>div>div]:border-[hsl(192,73%,84%)] [&>div>div]:transition-colors [&>div>div]:cursor-pointer hover:[&>div>div]:bg-[hsl(192,73%,84%)] hover:[&>div>div]:text-[hsl(192,73%,20%)]">
-								<StatusBadge
-									status="warning"
-									variant="default"
-									leftIcon={
-										<FilePenLineIcon className="stroke-[hsl(192,73%,84%)] stroke-[1.5] transition-colors group-hover:stroke-[hsl(192,73%,20%)]" />
-									}
-								>
-									Edit in Studio
-								</StatusBadge>
-							</div>
-						</Link>
-					</div>
+					{(status === "completed" || status === "failed") && (
+						<div className="flex items-center gap-3 mb-1">
+							<h3 className="text-[20px] font-normal text-inverse">{title}</h3>
+							<Link
+								href={`/workspaces/${workspaceId}`}
+								className="inline-block motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-95 motion-safe:slide-in-from-left-2 motion-safe:duration-500 motion-safe:ease-out motion-reduce:animate-none"
+								target="_blank"
+								rel="noreferrer"
+							>
+								<div className="group [&>div]:rounded-lg [&>div>div]:rounded-md [&>div>div]:text-[hsl(192,73%,84%)] [&>div>div]:border-[hsl(192,73%,84%)] [&>div>div]:transition-colors [&>div>div]:cursor-pointer hover:[&>div>div]:bg-[hsl(192,73%,84%)] hover:[&>div>div]:text-[hsl(192,73%,20%)]">
+									<StatusBadge
+										status="warning"
+										variant="default"
+										leftIcon={
+											<FilePenLineIcon className="stroke-[hsl(192,73%,84%)] stroke-[1.5] transition-colors group-hover:stroke-[hsl(192,73%,20%)]" />
+										}
+									>
+										Open in Studio
+									</StatusBadge>
+								</div>
+							</Link>
+						</div>
+					)}
 					{/* App summary heading + text (2-column layout to reduce height) */}
 					{description.length > 0 && (
 						<div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:gap-3 w-full">

@@ -46,7 +46,7 @@ export function FinalStepOutput({
 						<Tabs.Trigger
 							key={output.generation.id}
 							value={output.generation.id}
-							className="rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-text-muted/70 transition-colors hover:text-text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(192,73%,84%)]/30 data-[state=active]:bg-blue-muted/10 data-[state=active]:text-text-muted"
+							className="rounded-lg border border-transparent px-2.5 py-1.5 text-[13px] font-medium text-text-muted/70 transition-colors hover:text-text-muted hover:border-border/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(192,73%,84%)]/30 data-[state=active]:bg-blue-muted/10 data-[state=active]:text-text-muted data-[state=active]:border-border"
 						>
 							{output.title}
 						</Tabs.Trigger>
@@ -57,7 +57,7 @@ export function FinalStepOutput({
 					<Tabs.Content
 						key={output.generation.id}
 						value={output.generation.id}
-						className="mt-3 overflow-hidden rounded-xl bg-blue-muted/5 px-4 py-3"
+						className="mt-3 overflow-hidden rounded-xl border border-border bg-blue-muted/5 px-4 py-3"
 					>
 						<OutputGenerationPanel generation={output.generation} />
 					</Tabs.Content>
