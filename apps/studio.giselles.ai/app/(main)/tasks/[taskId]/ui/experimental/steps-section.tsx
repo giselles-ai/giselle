@@ -156,20 +156,29 @@ export function StepsSection({
 															<ChevronDownIcon className="size-4 -rotate-90 text-text-muted/70 transition-[opacity,transform] duration-150 opacity-0 group-hover:opacity-100 group-data-[state=open]:rotate-0" />
 														</div>
 													</div>
-													<p
-														className={clsx(
-															"text-[12px] font-semibold leading-snug",
-															step.status === "completed"
-																? "text-[hsl(192,73%,84%)]/70"
-																: step.status === "running"
-																	? "text-text-muted"
-																	: step.status === "failed"
-																		? "text-red-400/90"
-																		: "text-text-muted/70",
-														)}
-													>
-														{step.title}
-													</p>
+													<div className="min-w-0 flex items-baseline gap-2">
+														<p
+															className={clsx(
+																"text-[12px] font-semibold leading-snug",
+																step.status === "completed"
+																	? "text-[hsl(192,73%,84%)]/70"
+																	: step.status === "running"
+																		? "text-text-muted"
+																		: step.status === "failed"
+																			? "text-red-400/90"
+																			: "text-text-muted/70",
+															)}
+														>
+															{step.title}
+														</p>
+														{step.items.length > 0 ? (
+															<span className="min-w-0 truncate text-[11px] text-text-muted/50 leading-snug group-data-[state=open]:hidden">
+																{step.items
+																	.map((item) => item.title)
+																	.join(", ")}
+															</span>
+														) : null}
+													</div>
 												</div>
 												{step.collapsedProgressText ? (
 													<span className="ml-auto text-[11px] text-text-muted/60 tabular-nums transition-opacity duration-150 opacity-100 group-data-[state=open]:opacity-0 group-data-[state=open]:pointer-events-none">
