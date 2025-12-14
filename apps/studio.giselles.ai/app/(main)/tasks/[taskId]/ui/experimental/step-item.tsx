@@ -23,7 +23,7 @@ function StepItemHeader({
 
 	const labelClassName = clsx(
 		"text-[13px] text-text-muted/70 transition-colors",
-		isCompleted && "line-through text-text-muted/40",
+		isCompleted && "text-text-muted/45",
 		isFailed && "text-red-400/90",
 		textClassName,
 	);

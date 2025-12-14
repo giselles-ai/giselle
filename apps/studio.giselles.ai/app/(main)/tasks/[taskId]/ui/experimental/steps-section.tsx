@@ -1,8 +1,78 @@
 import clsx from "clsx/lite";
-import { ChevronDownIcon, ListChecks } from "lucide-react";
+import {
+	ArrowRightIcon,
+	CheckIcon,
+	ChevronDownIcon,
+	ListChecks,
+} from "lucide-react";
 import { Accordion } from "radix-ui";
 import { StepItem } from "./step-item";
 import type { UITask } from "./task-data";
+
+function StepStatusMarker({
+	status,
+}: {
+	status: UITask["stepsSection"]["steps"][number]["status"];
+}) {
+	// pending: outlined ring
+	if (status === "created" || status === "queued") {
+		return (
+			<span
+				aria-hidden="true"
+				className="size-4 rounded-full border border-white/20"
+			/>
+		);
+	}
+
+	// running: filled circle + arrow icon
+	if (status === "running") {
+		return (
+			<span
+				aria-hidden="true"
+				className="size-4 rounded-full bg-[hsl(192,73%,84%)]/70 text-black/70 flex items-center justify-center"
+			>
+				<ArrowRightIcon className="size-3" />
+			</span>
+		);
+	}
+
+	// completed: outlined ring + check icon
+	if (status === "completed") {
+		return (
+			<span
+				aria-hidden="true"
+				className="size-4 rounded-full border border-[hsl(192,73%,84%)]/50 text-[hsl(192,73%,84%)]/80 flex items-center justify-center"
+			>
+				<CheckIcon className="size-3" />
+			</span>
+		);
+	}
+
+	// failed/cancelled: keep it visible but not noisy
+	if (status === "failed") {
+		return (
+			<span
+				aria-hidden="true"
+				className="size-4 rounded-full border border-red-400/50 bg-red-400/10"
+			/>
+		);
+	}
+	if (status === "cancelled") {
+		return (
+			<span
+				aria-hidden="true"
+				className="size-4 rounded-full border border-white/15 bg-white/5"
+			/>
+		);
+	}
+
+	return (
+		<span
+			aria-hidden="true"
+			className="size-4 rounded-full border border-white/15"
+		/>
+	);
+}
 
 export function StepsSection({
 	title,
@@ -13,18 +83,23 @@ export function StepsSection({
 	const progressRatio =
 		totalStepsCount > 0 ? completedStepsCount / totalStepsCount : 0;
 	return (
-		<Accordion.Root type="single" className="w-full mt-6" collapsible>
+		<Accordion.Root
+			type="single"
+			className="w-full mt-6"
+			collapsible
+			defaultValue="step-list"
+		>
 			<Accordion.Item
 				value="step-list"
 				className="rounded-xl border border-border bg-surface/30"
 			>
 				<Accordion.Header>
-					<Accordion.Trigger
-						type="button"
-						className="group flex items-start justify-between gap-3 text-text-muted w-full cursor-pointer hover:text-text-muted transition-colors px-4 py-3"
-					>
+					<Accordion.Trigger className="group flex items-start justify-between gap-3 text-text-muted w-full cursor-pointer hover:text-text-muted transition-colors px-4 py-3">
 						<div className="min-w-0 flex items-start gap-2">
-							<ListChecks className="mt-[2px] size-4 flex-shrink-0 text-text-muted/70" />
+							<div className="relative w-5 h-5 flex items-center justify-center flex-shrink-0 mt-[1px]">
+								<ListChecks className="absolute size-4 text-text-muted/70 transition-opacity duration-150 opacity-100 group-hover:opacity-0" />
+								<ChevronDownIcon className="absolute size-4 -rotate-90 text-text-muted/70 transition-[opacity,transform] duration-150 opacity-0 group-hover:opacity-100 group-data-[state=open]:rotate-0" />
+							</div>
 							<div className="min-w-0">
 								<div className="flex items-baseline gap-2">
 									<p className="text-[13px] font-semibold">Steps</p>
@@ -54,9 +129,6 @@ export function StepsSection({
 									</span>
 								</div>
 							) : null}
-							<div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
-								<ChevronDownIcon className="size-4 transition-transform group-data-[state=open]:rotate-180" />
-							</div>
 						</div>
 					</Accordion.Trigger>
 				</Accordion.Header>
@@ -64,42 +136,48 @@ export function StepsSection({
 					<div className="px-4 pb-4">
 						<div className="mt-2 space-y-5">
 							{steps.map((step) => (
-								<div key={step.id} className="space-y-2">
-									<div className="flex items-center gap-2">
-										<span
-											aria-hidden="true"
-											className={clsx(
-												"size-2 rounded-full",
-												step.status === "completed"
-													? "bg-[hsl(192,73%,84%)]/60"
-													: step.status === "running"
-														? "bg-[hsl(192,73%,84%)]/60 animate-pulse"
-														: step.status === "failed"
-															? "bg-red-400/70"
-															: "bg-white/15",
-											)}
-										/>
-										<p
-											className={clsx(
-												"text-[13px] font-semibold",
-												step.status === "completed"
-													? "text-[hsl(192,73%,84%)]/70"
-													: step.status === "running"
-														? "bg-[length:200%_100%] bg-clip-text bg-gradient-to-r from-[hsl(192,73%,84%)] via-[hsl(192,73%,84%)_50%] to-[hsl(192,73%,84%)] text-transparent animate-shimmer"
-														: step.status === "failed"
-															? "text-red-400/90"
-															: "text-text-muted/70",
-											)}
-										>
-											{step.title}
-										</p>
-									</div>
-									<div className="pl-4 space-y-1.5">
-										{step.items.map((item) => (
-											<StepItem key={item.id} item={item} />
-										))}
-									</div>
-								</div>
+								<Accordion.Root
+									key={step.id}
+									type="single"
+									collapsible
+									className="space-y-2"
+								>
+									<Accordion.Item value={step.id} className="space-y-2">
+										<Accordion.Header>
+											<Accordion.Trigger className="group flex items-center gap-3 w-full text-left cursor-pointer">
+												<div className="flex items-center gap-2 min-w-0">
+													<div className="relative w-5 h-5 flex items-center justify-center flex-shrink-0 mt-[1px]">
+														<div className="absolute transition-opacity duration-150 opacity-100 group-hover:opacity-0 mt-[1px]">
+															<StepStatusMarker status={step.status} />
+														</div>
+														<ChevronDownIcon className="absolute size-4 -rotate-90 text-text-muted/70 transition-[opacity,transform] duration-150 opacity-0 group-hover:opacity-100 group-data-[state=open]:rotate-0" />
+													</div>
+													<p
+														className={clsx(
+															"text-[13px] font-semibold",
+															step.status === "completed"
+																? "text-[hsl(192,73%,84%)]/70"
+																: step.status === "running"
+																	? "text-text-muted"
+																	: step.status === "failed"
+																		? "text-red-400/90"
+																		: "text-text-muted/70",
+														)}
+													>
+														{step.title}
+													</p>
+												</div>
+											</Accordion.Trigger>
+										</Accordion.Header>
+										<Accordion.Content className="overflow-hidden data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown">
+											<div className="pl-4 space-y-1.5">
+												{step.items.map((item) => (
+													<StepItem key={item.id} item={item} />
+												))}
+											</div>
+										</Accordion.Content>
+									</Accordion.Item>
+								</Accordion.Root>
 							))}
 						</div>
 					</div>
