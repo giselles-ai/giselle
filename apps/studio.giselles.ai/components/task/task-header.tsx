@@ -158,7 +158,7 @@ export function TaskHeader({
 							<span className="text-text-muted text-[13px] font-semibold shrink-0">
 								App summary:
 							</span>
-							<p className="text-[14px] font-normal text-inverse leading-relaxed">
+							<p className="text-[14px] font-normal text-inverse leading-relaxed line-clamp-2">
 								{description}
 							</p>
 						</div>
