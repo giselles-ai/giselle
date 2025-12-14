@@ -117,15 +117,8 @@ function stepItemNameToken({
 	return { type: "stepItemName", value, contentType };
 }
 
-function toKebabCase(value: string) {
-	return value
-		.replaceAll(/([a-z0-9])([A-Z])/g, "$1-$2")
-		.replaceAll(/_/g, "-")
-		.toLowerCase();
-}
-
 function getStepItemContentType(item: UIStepItem) {
-	return toKebabCase(item.node.content.type);
+	return item.node.content.type;
 }
 
 function buildStepItemNameListTokens(

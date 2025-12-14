@@ -1,5 +1,6 @@
 "use client";
 
+import clsx from "clsx/lite";
 import { motion } from "motion/react";
 import { useEffect, useMemo, useState } from "react";
 import type { PseudoAgenticTextToken, UITask } from "./task-data";
@@ -16,11 +17,41 @@ function getDissolveDurationMs(text: string) {
 function renderTokens(tokens: PseudoAgenticTextToken[]) {
 	return tokens.map((token, index) => {
 		if (token.type === "stepItemName") {
+			// Mirror the styling used in text editor node references:
+			// packages/text-editor/src/react/source-extension-react.tsx
+			const contentType = token.contentType;
+			const isTextGeneration = contentType === "textGeneration";
+			const isImageGeneration = contentType === "imageGeneration";
+			const isGithub = contentType === "github";
+			const isText = contentType === "text";
+			const isFile = contentType === "file";
+			const isWebPage = contentType === "webPage";
+			const isAction = contentType === "action";
+			const isTrigger = contentType === "trigger";
+			const isAppEntry = contentType === "appEntry";
+			const isQuery = contentType === "query";
 			return (
 				<span
 					key={`${token.type}-${index}-${token.value}`}
-					className="step-item-name"
-					data-content-type={token.contentType}
+					className={clsx(
+						"step-item-name",
+						"rounded-[8px] px-[4px] py-[2px] border-[1px] transition-colors",
+						"border-transparent",
+						isTextGeneration &&
+							"bg-generation-node-1/20 text-generation-node-1",
+						isImageGeneration &&
+							"bg-image-generation-node-1/20 text-image-generation-node-1",
+						isGithub && "bg-github-node-1/20 text-github-node-1",
+						isText && "bg-text-node-1/20 text-text-node-1",
+						isFile && "bg-file-node-1/20 text-file-node-1",
+						isWebPage && "bg-webPage-node-1/20 text-webPage-node-1",
+						isAction && "bg-action-node-1/20 text-action-node-1",
+						isTrigger && "bg-trigger-node-1/20 text-trigger-node-1",
+						isAppEntry && "bg-trigger-node-1/20 text-trigger-node-1",
+						isQuery && "bg-query-node-1/20 text-query-node-1",
+						"text-[12px]",
+					)}
+					data-content-type={contentType}
 				>
 					{token.value}
 				</span>
