@@ -23,6 +23,10 @@ export function TaskClient({
 }) {
 	const [data, setData] = useState<UITask>(initial);
 	const refreshActionRef = useRef(refreshAction);
+	const totalStepsCount = data.stepsSection.totalStepsCount;
+	const stepsLabel = totalStepsCount === 1 ? "step" : "steps";
+	const taskOverview =
+		data.description.trim().length > 0 ? ` Overview: ${data.description}` : "";
 
 	useEffect(() => {
 		refreshActionRef.current = refreshAction;
@@ -122,6 +126,10 @@ export function TaskClient({
 				input={data.input}
 			/>
 			<div className="flex-1 overflow-y-auto overflow-x-hidden pb-8">
+				<p className="text-[13px] text-text-muted/70">
+					Task created.{taskOverview} This task has {totalStepsCount}{" "}
+					{stepsLabel}, and they will run in order.
+				</p>
 				<StepsSection {...data.stepsSection} />
 				<FinalStepOutput finalStep={data.finalStep} />
 			</div>
