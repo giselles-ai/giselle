@@ -57,6 +57,11 @@ export interface UIStep {
 	 * (e.g., failed if any item inside is failed)
 	 */
 	status: GenerationStatus;
+	/**
+	 * A short human-friendly progress summary shown in the Step trigger
+	 * when the Step is collapsed.
+	 */
+	collapsedProgressText: string | null;
 	items: UIStepItem[];
 }
 
@@ -133,6 +138,54 @@ async function getTaskInput(taskId: TaskId) {
 	return firstInput;
 }
 
+function getCollapsedProgressText({
+	items,
+	status,
+}: {
+	items: UIStepItem[];
+	status: GenerationStatus;
+}): string | null {
+	const totalCount = items.length;
+	if (totalCount === 0) {
+		return null;
+	}
+
+	const doneCount = items.filter((item) => item.status === "completed").length;
+	const failedCount = items.filter((item) => item.status === "failed").length;
+	const cancelledCount = items.filter(
+		(item) => item.status === "cancelled",
+	).length;
+
+	const inProgressCount = totalCount - doneCount - failedCount - cancelledCount;
+	const inProgressText =
+		inProgressCount === 1
+			? "1 action in progress"
+			: `${inProgressCount} actions in progress`;
+
+	// Prefer simple, user-friendly labels and avoid "step items" terminology.
+	if (status === "completed" && doneCount === totalCount) {
+		return "Done";
+	}
+	if (status === "failed" || failedCount > 0) {
+		return doneCount > 0
+			? `Failed • ${doneCount}/${totalCount} done`
+			: "Failed";
+	}
+	if (status === "cancelled" || cancelledCount > 0) {
+		return doneCount > 0
+			? `Cancelled • ${doneCount}/${totalCount} done`
+			: "Cancelled";
+	}
+
+	if (doneCount === 0) {
+		return inProgressText;
+	}
+	if (inProgressCount > 0) {
+		return `${doneCount}/${totalCount} done • ${inProgressText}`;
+	}
+	return `${doneCount}/${totalCount} done`;
+}
+
 export async function getTaskData(taskId: TaskId): Promise<UITask> {
 	const task = await giselle.getTask({ taskId });
 
@@ -195,12 +248,8 @@ export async function getTaskData(taskId: TaskId): Promise<UITask> {
 						completedStepsCount !== 1 ? "s" : ""
 					}`;
 
-	const steps: UIStep[] = task.sequences.map((sequence, sequenceIndex) => ({
-		id: sequence.id,
-		index: sequenceIndex,
-		title: `Step ${sequenceIndex + 1}`,
-		status: sequence.status,
-		items: sequence.steps
+	const steps: UIStep[] = task.sequences.map((sequence, sequenceIndex) => {
+		const items = sequence.steps
 			.map((step) => {
 				const generation = generationsByStepId.get(step.id);
 				if (generation === undefined) {
@@ -262,8 +311,20 @@ export async function getTaskData(taskId: TaskId): Promise<UITask> {
 					}
 				}
 			})
-			.filter((itemOrNull) => itemOrNull !== null),
-	}));
+			.filter((itemOrNull) => itemOrNull !== null);
+
+		return {
+			id: sequence.id,
+			index: sequenceIndex,
+			title: `Step ${sequenceIndex + 1}`,
+			status: sequence.status,
+			collapsedProgressText: getCollapsedProgressText({
+				items,
+				status: sequence.status,
+			}),
+			items,
+		};
+	});
 
 	const lastUiStep = steps.at(-1);
 	const totalStepItemsCount = lastUiStep?.items.length ?? 0;

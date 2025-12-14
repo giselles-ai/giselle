@@ -167,6 +167,11 @@ export function StepsSection({
 														{step.title}
 													</p>
 												</div>
+												{step.collapsedProgressText ? (
+													<span className="ml-auto text-[12px] text-text-muted/60 tabular-nums transition-opacity duration-150 opacity-100 group-data-[state=open]:opacity-0 group-data-[state=open]:pointer-events-none">
+														{step.collapsedProgressText}
+													</span>
+												) : null}
 											</Accordion.Trigger>
 										</Accordion.Header>
 										<Accordion.Content className="overflow-hidden data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown">
