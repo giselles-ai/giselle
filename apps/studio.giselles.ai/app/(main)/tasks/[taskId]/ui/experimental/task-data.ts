@@ -13,6 +13,11 @@ import {
 import { giselle } from "@/app/giselle";
 import { db, tasks } from "@/db";
 import { logger } from "@/lib/logger";
+import {
+	buildPseudoAgenticTextLines,
+	type PseudoAgenticLogLine,
+	type PseudoAgenticStep,
+} from "./psuedo-agentic-text-data";
 
 type UIStepItemBase = {
 	/**
@@ -65,15 +70,6 @@ export interface UIStep {
 	items: UIStepItem[];
 }
 
-export type PseudoAgenticTextToken =
-	| { type: "text"; value: string }
-	| { type: "stepItemName"; value: string; contentType?: string };
-
-export type PseudoAgenticLogLine = {
-	key: string;
-	tokens: PseudoAgenticTextToken[];
-};
-
 export interface UITask {
 	status: Task["status"];
 	title: string;
@@ -97,257 +93,6 @@ export interface UITask {
 			generation: Generation;
 		}[];
 	};
-}
-
-function getStepItemDisplayName(item: UIStepItem) {
-	return item.subLabel ? `${item.title} (${item.subLabel})` : item.title;
-}
-
-function textToken(value: string): PseudoAgenticTextToken {
-	return { type: "text", value };
-}
-
-function stepItemNameToken({
-	value,
-	contentType,
-}: {
-	value: string;
-	contentType?: string;
-}): PseudoAgenticTextToken {
-	return { type: "stepItemName", value, contentType };
-}
-
-function getStepItemContentType(item: UIStepItem) {
-	return item.node.content.type;
-}
-
-function buildStepItemNameListTokens(
-	items: UIStepItem[],
-): PseudoAgenticTextToken[] {
-	const tokens: PseudoAgenticTextToken[] = [];
-
-	for (let index = 0; index < items.length; index++) {
-		const item = items[index];
-		if (item === undefined) {
-			continue;
-		}
-		const name = getStepItemDisplayName(item);
-
-		if (index > 0) {
-			const isLast = index === items.length - 1;
-			const separator = items.length === 2 ? " and " : isLast ? ", and " : ", ";
-			tokens.push(textToken(separator));
-		}
-		tokens.push(
-			stepItemNameToken({
-				value: name,
-				contentType: getStepItemContentType(item),
-			}),
-		);
-	}
-
-	return tokens;
-}
-
-function hasAnyStepStarted(steps: UIStep[]) {
-	return steps.some(
-		(step) => step.status !== "created" && step.status !== "queued",
-	);
-}
-
-function buildPseudoAgenticTextLines({
-	taskTitle,
-	taskStatus,
-	steps,
-	totalStepsCount,
-}: {
-	taskTitle: string;
-	taskStatus: UITask["status"];
-	steps: UIStep[];
-	totalStepsCount: number;
-}): PseudoAgenticLogLine[] {
-	const lines: PseudoAgenticLogLine[] = [];
-
-	lines.push({
-		key: "intro-boot",
-		tokens: [
-			{
-				type: "text",
-				value:
-					"Agent runtime initialized. Loading task context and execution plan for ",
-			},
-			stepItemNameToken({ value: taskTitle }),
-			{ type: "text", value: "." },
-		],
-	});
-
-	// To mimic “first token” behavior: only show the plan once execution has actually started.
-	// (i.e., any step moved beyond created/queued, or task reached a terminal status)
-	const shouldShowPlan =
-		hasAnyStepStarted(steps) ||
-		taskStatus === "completed" ||
-		taskStatus === "failed" ||
-		taskStatus === "cancelled";
-
-	if (shouldShowPlan) {
-		lines.push({
-			key: "intro-plan",
-			tokens: [
-				{ type: "text", value: "Plan: run " },
-				{ type: "text", value: String(totalStepsCount) },
-				{
-					type: "text",
-					value:
-						totalStepsCount === 1 ? " step in order. " : " steps in order. ",
-				},
-				{
-					type: "text",
-					value: "Each step may execute one or more actions in parallel.",
-				},
-			],
-		});
-	}
-
-	// Append-only feel: emit only events that have definitely happened (completed/failed/cancelled).
-	// Avoid “running/queued” lines that would later get replaced.
-	for (const [stepIndex, step] of steps.entries()) {
-		const stepNumber = step.index + 1;
-		const actionCount = step.items.length;
-		const actionsLabel = actionCount === 1 ? "action" : "actions";
-		const isStepStarted = step.status !== "created" && step.status !== "queued";
-
-		if (isStepStarted) {
-			const previousStep = steps[stepIndex - 1];
-			const shouldNarrateHandoff =
-				previousStep !== undefined && previousStep.status === "completed";
-
-			lines.push({
-				key: `step-${step.id}-start`,
-				tokens: [
-					...(shouldNarrateHandoff
-						? [
-								textToken(
-									`Step ${stepIndex} completed. Using its results, starting Step ${stepNumber}. `,
-								),
-							]
-						: [textToken(`Starting Step ${stepNumber}. `)]),
-					textToken(`This step will run ${actionCount} ${actionsLabel}`),
-					...(actionCount > 1 ? [textToken(" in parallel")] : []),
-					textToken(": "),
-					...buildStepItemNameListTokens(step.items),
-					textToken("."),
-				],
-			});
-		}
-
-		for (const item of step.items) {
-			if (item.status === "completed") {
-				lines.push({
-					key: `step-${step.id}-item-${item.id}-completed`,
-					tokens: [
-						{ type: "text", value: "Completed: " },
-						stepItemNameToken({
-							value: getStepItemDisplayName(item),
-							contentType: getStepItemContentType(item),
-						}),
-					],
-				});
-				continue;
-			}
-			if (item.status === "failed") {
-				lines.push({
-					key: `step-${step.id}-item-${item.id}-failed`,
-					tokens: [
-						{ type: "text", value: `[Step ${stepNumber}] Failed: ` },
-						stepItemNameToken({
-							value: getStepItemDisplayName(item),
-							contentType: getStepItemContentType(item),
-						}),
-						{ type: "text", value: " — " },
-						{ type: "text", value: item.error },
-					],
-				});
-				lines.push({
-					key: `step-${step.id}-failed`,
-					tokens: [
-						{
-							type: "text",
-							value: `Step ${stepNumber} failed. Stopping execution.`,
-						},
-					],
-				});
-				// Once failed, stop adding further “future” lines.
-				return lines;
-			}
-			if (item.status === "cancelled") {
-				lines.push({
-					key: `step-${step.id}-item-${item.id}-cancelled`,
-					tokens: [
-						{ type: "text", value: `[Step ${stepNumber}] Cancelled: ` },
-						stepItemNameToken({
-							value: getStepItemDisplayName(item),
-							contentType: getStepItemContentType(item),
-						}),
-					],
-				});
-				lines.push({
-					key: `step-${step.id}-cancelled`,
-					tokens: [
-						{
-							type: "text",
-							value: `Step ${stepNumber} was cancelled. Stopping execution.`,
-						},
-					],
-				});
-				return lines;
-			}
-		}
-
-		// If this step itself is not completed, do not leak later steps.
-		if (step.status !== "completed") {
-			break;
-		}
-	}
-
-	// Final step completion line (keep it explicit, and avoid redundancy for intermediate steps).
-	const lastStep = steps.at(-1);
-	if (lastStep?.status === "completed") {
-		const lastStepNumber = lastStep.index + 1;
-		lines.push({
-			key: `step-${lastStep.id}-completed`,
-			tokens: [textToken(`Step ${lastStepNumber} completed.`)],
-		});
-	}
-
-	if (taskStatus === "completed") {
-		lines.push({
-			key: "task-completed",
-			tokens: [
-				{
-					type: "text",
-					value:
-						"All steps completed. Displaying the output from the last completed step below.",
-				},
-			],
-		});
-	} else if (taskStatus === "failed") {
-		lines.push({
-			key: "task-failed",
-			tokens: [
-				{
-					type: "text",
-					value: "Execution failed. Review the failed step above for details.",
-				},
-			],
-		});
-	} else if (taskStatus === "cancelled") {
-		lines.push({
-			key: "task-cancelled",
-			tokens: [{ type: "text", value: "Execution was cancelled." }],
-		});
-	}
-
-	return lines;
 }
 
 async function getAppByTaskId(taskId: TaskId) {
@@ -621,10 +366,25 @@ export async function getTaskData(taskId: TaskId): Promise<UITask> {
 	]);
 
 	const taskTitle = `${workspace.name}:${taskId}`;
+
+	const pseudoSteps: PseudoAgenticStep[] = steps.map((step) => ({
+		id: step.id,
+		index: step.index,
+		status: step.status,
+		actions: step.items.map((item) => ({
+			id: item.id,
+			displayName: item.subLabel
+				? `${item.title} (${item.subLabel})`
+				: item.title,
+			contentType: item.node.content.type,
+			status: item.status,
+			error: item.status === "failed" ? item.error : undefined,
+		})),
+	}));
+
 	const pseudoAgenticLines = buildPseudoAgenticTextLines({
-		taskTitle,
 		taskStatus: task.status,
-		steps,
+		steps: pseudoSteps,
 		totalStepsCount,
 	});
 

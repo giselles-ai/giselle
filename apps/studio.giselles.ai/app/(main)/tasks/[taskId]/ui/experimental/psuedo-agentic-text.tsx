@@ -3,7 +3,8 @@
 import clsx from "clsx/lite";
 import { motion } from "motion/react";
 import { useEffect, useMemo, useState } from "react";
-import type { PseudoAgenticTextToken, UITask } from "./task-data";
+import type { PseudoAgenticTextToken } from "./psuedo-agentic-text-data";
+import type { UITask } from "./task-data";
 
 type RevealMode = "chunks" | "dissolve";
 
@@ -36,6 +37,8 @@ function renderTokens(tokens: PseudoAgenticTextToken[]) {
 					className={clsx(
 						"step-item-name",
 						"rounded-[8px] px-[4px] py-[2px] border-[1px] transition-colors",
+						// Prevent horizontal clipping in overflow-x-hidden containers.
+						"max-w-full break-all",
 						"border-transparent",
 						isTextGeneration &&
 							"bg-generation-node-1/20 text-generation-node-1",
@@ -89,7 +92,7 @@ export function PsuedoAgenticText({
 	}
 
 	return (
-		<div className="text-[13px] text-text-muted/70 mt-8 space-y-3 leading-relaxed">
+		<div className="text-[13px] text-text-muted/70 mt-8 space-y-3 leading-relaxed break-words">
 			{lines.map((line) => {
 				const rendered = renderedByKey.get(line.key);
 				if (!rendered || rendered.length === 0) return null;
@@ -105,7 +108,7 @@ export function PsuedoAgenticText({
 												opacity: 0,
 												x: -6,
 												filter: "blur(4px)",
-												clipPath: "inset(0 100% 0 0)",
+												scale: 0.995,
 											}
 										: false
 								}
@@ -113,7 +116,7 @@ export function PsuedoAgenticText({
 									opacity: 1,
 									x: 0,
 									filter: "blur(0px)",
-									clipPath: "inset(0 0% 0 0)",
+									scale: 1,
 								}}
 								transition={{
 									duration:
