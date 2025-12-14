@@ -5,7 +5,9 @@ import {
 import { InputAreaPlaceholder } from "./ui/input-area-placeholder";
 import "./mobile-scroll.css";
 import { TaskId } from "@giselles-ai/protocol";
+import { notFound } from "next/navigation";
 import { TaskLayout } from "@/components/task/task-layout";
+import { logger } from "@/lib/logger";
 import { TaskClient } from "./ui/experimental/task-client";
 import { getTaskData } from "./ui/experimental/task-data";
 import { TaskOverlayReset } from "./ui/task-overlay-reset";
@@ -18,7 +20,8 @@ export default async function ({
 	const { taskId: taskIdParam } = await params;
 	const result = TaskId.safeParse(taskIdParam);
 	if (!result.success) {
-		throw new Error(`Invalid task ID: ${taskIdParam}`);
+		logger.error(`Invalid task ID: ${taskIdParam}`);
+		notFound();
 	}
 	const taskId = result.data;
 	const [taskData, inputAreaHeaderControlsData] = await Promise.all([
