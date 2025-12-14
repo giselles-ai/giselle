@@ -214,7 +214,7 @@ export function buildPseudoAgenticTextLines({
 			key: "task-completed",
 			tokens: [
 				textToken("All steps completed."),
-				...(lastActions.length > 0
+				...(lastActions.length > 1
 					? [textToken(" Multiple outputs are available.")]
 					: []),
 			],
