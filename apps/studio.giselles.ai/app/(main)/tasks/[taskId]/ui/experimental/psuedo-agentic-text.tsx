@@ -1,6 +1,8 @@
 "use client";
 
 import clsx from "clsx/lite";
+import { motion } from "motion/react";
+import { useEffect, useRef } from "react";
 import type { PseudoAgenticTextToken, UITask } from "./task-data";
 
 function StepItemName({ children }: { children: string }) {
@@ -32,14 +34,33 @@ function renderTokens(tokens: PseudoAgenticTextToken[]) {
 
 export function PsuedoAgenticText({ task }: { task: UITask }) {
 	const lines = task.pseudoAgenticText.lines;
+	const seenKeysRef = useRef<Set<string>>(new Set());
+
+	useEffect(() => {
+		for (const line of lines) {
+			seenKeysRef.current.add(line.key);
+		}
+	}, [lines]);
+
 	if (lines.length === 0) {
 		return null;
 	}
 	return (
 		<div className="text-[13px] text-text-muted/70 mt-8 space-y-3 leading-relaxed">
-			{lines.map((line) => (
-				<p key={line.key}>{renderTokens(line.tokens)}</p>
-			))}
+			{lines.map((line) => {
+				const isNew = !seenKeysRef.current.has(line.key);
+				return (
+					<motion.p
+						key={line.key}
+						layout="position"
+						initial={isNew ? { opacity: 0, y: 6 } : false}
+						animate={{ opacity: 1, y: 0 }}
+						transition={isNew ? { duration: 0.18, ease: "easeOut" } : undefined}
+					>
+						{renderTokens(line.tokens)}
+					</motion.p>
+				);
+			})}
 		</div>
 	);
 }
