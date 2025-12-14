@@ -423,6 +423,7 @@ export function GenerationView({
 				<div key={`${message.id ?? "message"}-${messageIndex}`}>
 					{message.parts.map((part, partIndex) => {
 						if (
+							renderPartTypes !== undefined &&
 							!renderPartTypes?.some(
 								(renderPartType) => renderPartType === part.type,
 							)
