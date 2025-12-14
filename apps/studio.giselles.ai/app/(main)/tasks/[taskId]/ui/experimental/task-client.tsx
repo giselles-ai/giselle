@@ -24,10 +24,7 @@ const isDebugEnabled = process.env.NODE_ENV !== "production";
 
 function isTerminalTaskStatus(status: UITask["status"]) {
 	return (
-		status === "completed" ||
-		status === "failed" ||
-		status === "cancelled" ||
-		status === "created"
+		status === "completed" || status === "failed" || status === "cancelled"
 	);
 }
 
