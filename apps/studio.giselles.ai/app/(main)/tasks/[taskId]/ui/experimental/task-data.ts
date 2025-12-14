@@ -496,6 +496,7 @@ export async function getTaskData(taskId: TaskId): Promise<UITask> {
 
 	const pseudoAgenticLines = buildPseudoAgenticTextLines({
 		taskStatus: task.status,
+		workspaceId: task.workspaceId,
 		steps: pseudoSteps,
 		totalStepsCount,
 	});

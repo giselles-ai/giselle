@@ -2,6 +2,13 @@ import type { GenerationStatus, Task } from "@giselles-ai/protocol";
 
 export type PseudoAgenticTextToken =
 	| { type: "text"; value: string }
+	| {
+			type: "link";
+			value: string;
+			href: string;
+			target?: "_blank" | "_self" | "_parent" | "_top";
+			rel?: string;
+	  }
 	| { type: "stepItemName"; value: string; contentType?: string };
 
 export type PseudoAgenticLogLine = {
@@ -26,6 +33,20 @@ export type PseudoAgenticStep = {
 
 function textToken(value: string): PseudoAgenticTextToken {
 	return { type: "text", value };
+}
+
+function linkToken({
+	value,
+	href,
+	target = "_blank",
+	rel = "noreferrer",
+}: {
+	value: string;
+	href: string;
+	target?: "_blank" | "_self" | "_parent" | "_top";
+	rel?: string;
+}): PseudoAgenticTextToken {
+	return { type: "link", value, href, target, rel };
 }
 
 function stepItemNameToken({
@@ -73,10 +94,12 @@ function hasAnyStepStarted(steps: PseudoAgenticStep[]) {
 
 export function buildPseudoAgenticTextLines({
 	taskStatus,
+	workspaceId,
 	steps,
 	totalStepsCount,
 }: {
 	taskStatus: Task["status"];
+	workspaceId: Task["workspaceId"];
 	steps: PseudoAgenticStep[];
 	totalStepsCount: number;
 }): PseudoAgenticLogLine[] {
@@ -217,6 +240,12 @@ export function buildPseudoAgenticTextLines({
 				...(lastActions.length > 1
 					? [textToken(" Multiple outputs are available.")]
 					: []),
+				textToken(" You can review each output, or "),
+				linkToken({
+					value: "open the app in Studio to see how they were produced",
+					href: `/workspaces/${workspaceId}`,
+				}),
+				textToken("."),
 			],
 		});
 	} else if (taskStatus === "failed") {

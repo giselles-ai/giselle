@@ -2,6 +2,7 @@
 
 import clsx from "clsx/lite";
 import { motion } from "motion/react";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { PseudoAgenticTextToken } from "./psuedo-agentic-text-data";
 import type { UITask } from "./task-data";
@@ -64,6 +65,19 @@ function renderTokens(
 				>
 					{token.value}
 				</span>
+			);
+		}
+		if (token.type === "link") {
+			return (
+				<Link
+					key={`${token.type}-${index}-${token.value}`}
+					href={token.href}
+					target={token.target}
+					rel={token.rel}
+					className="text-link-muted hover:text-accent transition-colors font-medium no-underline hover:underline underline-offset-2"
+				>
+					{token.value}
+				</Link>
 			);
 		}
 		if (shouldShimmerTextTokens) {
