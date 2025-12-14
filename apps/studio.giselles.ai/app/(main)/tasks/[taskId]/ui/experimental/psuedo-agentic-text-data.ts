@@ -9,7 +9,7 @@ export type PseudoAgenticLogLine = {
 	tokens: PseudoAgenticTextToken[];
 };
 
-export type PseudoAgenticAction = {
+type PseudoAgenticAction = {
 	id: string;
 	displayName: string;
 	contentType: string | undefined;
