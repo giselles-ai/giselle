@@ -146,11 +146,13 @@ export function StepsSection({
 										<Accordion.Header>
 											<Accordion.Trigger className="group flex items-center gap-3 w-full text-left cursor-pointer">
 												<div className="flex items-center gap-2 min-w-0">
-													<div className="relative w-5 h-5 flex items-center justify-center flex-shrink-0 mt-[1px]">
-														<div className="absolute transition-opacity duration-150 opacity-100 group-hover:opacity-0 mt-[1px]">
+													<div className="relative w-5 h-5 flex-shrink-0">
+														<div className="absolute inset-0 flex items-center justify-center transition-opacity duration-150 opacity-100 group-hover:opacity-0">
 															<StepStatusMarker status={step.status} />
 														</div>
-														<ChevronDownIcon className="absolute size-4 -rotate-90 text-text-muted/70 transition-[opacity,transform] duration-150 opacity-0 group-hover:opacity-100 group-data-[state=open]:rotate-0" />
+														<div className="absolute inset-0 flex items-center justify-center">
+															<ChevronDownIcon className="size-4 -rotate-90 text-text-muted/70 transition-[opacity,transform] duration-150 opacity-0 group-hover:opacity-100 group-data-[state=open]:rotate-0" />
+														</div>
 													</div>
 													<p
 														className={clsx(
