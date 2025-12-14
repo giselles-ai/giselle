@@ -136,12 +136,14 @@ async function getTaskInput(taskId: TaskId) {
 export async function getTaskData(taskId: TaskId): Promise<UITask> {
 	const task = await giselle.getTask({ taskId });
 
-	const allSteps = task.sequences.flatMap((sequence) => sequence.steps);
+	// In the API, the structure is Sequence > Step.
+	// In this UI, we present it as Step (Sequence) > StepItem (Step).
+	const allStepItems = task.sequences.flatMap((sequence) => sequence.steps);
 
 	const generationsByStepId = new Map<StepId, Generation | undefined>();
 
 	await Promise.all(
-		allSteps.map(async (step) => {
+		allStepItems.map(async (step) => {
 			try {
 				const generation = await giselle.getGeneration(step.generationId);
 				generationsByStepId.set(step.id, generation);
@@ -155,12 +157,13 @@ export async function getTaskData(taskId: TaskId): Promise<UITask> {
 		}),
 	);
 
-	const totalStepsCount = allSteps.length;
-	const completedStepsCount = allSteps.filter(
-		(step) => step.status === "completed",
+	// Use UI "Step" counts (API "Sequence" count) for summary/progress.
+	const totalStepsCount = task.sequences.length;
+	const completedStepsCount = task.sequences.filter(
+		(sequence) => sequence.status === "completed",
 	).length;
-	const preparingStepsCount = allSteps.filter(
-		(step) => step.status === "queued",
+	const preparingStepsCount = task.sequences.filter(
+		(sequence) => sequence.status === "queued" || sequence.status === "created",
 	).length;
 
 	// Find the first running step's sequence number (1-based)

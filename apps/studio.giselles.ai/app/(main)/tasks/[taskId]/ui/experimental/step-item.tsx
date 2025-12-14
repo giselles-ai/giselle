@@ -18,8 +18,13 @@ function StepItemHeader({
 	containerClassName?: string;
 	textClassName?: string;
 }) {
+	const isCompleted = item.status === "completed";
+	const isFailed = item.status === "failed";
+
 	const labelClassName = clsx(
 		"text-[13px] text-text-muted/70 transition-colors",
+		isCompleted && "line-through text-text-muted/40",
+		isFailed && "text-red-400/90",
 		textClassName,
 	);
 
@@ -29,7 +34,7 @@ function StepItemHeader({
 		<Component
 			{...(Component === "button" ? { type: "button" as const } : null)}
 			className={clsx(
-				"flex-1 flex items-center gap-3 text-left",
+				"flex-1 flex items-center gap-3 text-left py-1",
 				containerClassName,
 			)}
 			{...props}
