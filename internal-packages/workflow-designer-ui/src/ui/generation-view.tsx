@@ -2,7 +2,7 @@
 
 import type { Generation } from "@giselles-ai/protocol";
 import { useGiselle } from "@giselles-ai/react";
-import type { UIMessage } from "ai";
+import type { UIDataTypes, UIMessage, UIMessagePart, UITools } from "ai";
 import { ChevronRightIcon } from "lucide-react";
 import { Accordion } from "radix-ui";
 import { Fragment, useEffect, useMemo, useState } from "react";
@@ -331,7 +331,13 @@ function Spinner() {
 	);
 }
 
-export function GenerationView({ generation }: { generation: Generation }) {
+export function GenerationView({
+	generation,
+	renderPartTypes,
+}: {
+	generation: Generation;
+	renderPartTypes?: Array<UIMessagePart<UIDataTypes, UITools>["type"]>;
+}) {
 	const client = useGiselle();
 	const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
@@ -416,6 +422,13 @@ export function GenerationView({ generation }: { generation: Generation }) {
 			{generatedMessages.map((message, messageIndex) => (
 				<div key={`${message.id ?? "message"}-${messageIndex}`}>
 					{message.parts.map((part, partIndex) => {
+						if (
+							!renderPartTypes?.some(
+								(renderPartType) => renderPartType === part.type,
+							)
+						) {
+							return null;
+						}
 						const lastPart = message.parts.length === partIndex + 1;
 						const partKey = `${message.id}-${partIndex}-${part.type}`;
 						const toolPart = part as ToolPart;

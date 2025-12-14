@@ -15,7 +15,13 @@ function getDissolveDurationMs(text: string) {
 	return Math.min(650, Math.max(260, Math.round((length / 90) * 420)));
 }
 
-function renderTokens(tokens: PseudoAgenticTextToken[]) {
+const shimmerTextClassName =
+	"bg-[length:200%_100%] bg-clip-text bg-gradient-to-r from-text-muted/70 via-text-muted/35 to-text-muted/70 text-transparent animate-shimmer";
+
+function renderTokens(
+	tokens: PseudoAgenticTextToken[],
+	{ shouldShimmerTextTokens }: { shouldShimmerTextTokens: boolean },
+) {
 	return tokens.map((token, index) => {
 		if (token.type === "stepItemName") {
 			// Mirror the styling used in text editor node references:
@@ -60,6 +66,20 @@ function renderTokens(tokens: PseudoAgenticTextToken[]) {
 				</span>
 			);
 		}
+		if (shouldShimmerTextTokens) {
+			return (
+				<span
+					key={`${token.type}-${index}-${token.value}`}
+					className={shimmerTextClassName}
+					style={{
+						animationDuration: "1s",
+						animationTimingFunction: "linear",
+					}}
+				>
+					{token.value}
+				</span>
+			);
+		}
 		return (
 			<span key={`${token.type}-${index}-${token.value}`}>{token.value}</span>
 		);
@@ -74,10 +94,14 @@ export function PsuedoAgenticText({
 	revealMode?: RevealMode;
 }) {
 	const lines = task.pseudoAgenticText.lines;
+	const currentExecutionLine = task.pseudoAgenticText.currentExecutionLine;
 	const renderedByKey = useMemo(() => {
 		const map = new Map<string, React.ReactNode[]>();
 		for (const line of lines) {
-			map.set(line.key, renderTokens(line.tokens));
+			map.set(
+				line.key,
+				renderTokens(line.tokens, { shouldShimmerTextTokens: false }),
+			);
 		}
 		return map;
 	}, [lines]);
@@ -87,7 +111,7 @@ export function PsuedoAgenticText({
 		setHasMounted(true);
 	}, []);
 
-	if (lines.length === 0) {
+	if (lines.length === 0 && currentExecutionLine === null) {
 		return null;
 	}
 
@@ -134,6 +158,15 @@ export function PsuedoAgenticText({
 					</motion.p>
 				);
 			})}
+			{currentExecutionLine !== null ? (
+				<p className="italic">
+					<span className="whitespace-pre-wrap">
+						{renderTokens(currentExecutionLine.tokens, {
+							shouldShimmerTextTokens: true,
+						})}
+					</span>
+				</p>
+			) : null}
 		</div>
 	);
 }

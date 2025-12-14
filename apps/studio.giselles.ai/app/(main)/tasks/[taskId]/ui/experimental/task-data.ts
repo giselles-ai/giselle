@@ -17,6 +17,7 @@ import {
 	buildPseudoAgenticTextLines,
 	type PseudoAgenticLogLine,
 	type PseudoAgenticStep,
+	type PseudoAgenticTextToken,
 } from "./psuedo-agentic-text-data";
 
 type UIStepItemBase = {
@@ -78,6 +79,7 @@ export interface UITask {
 	input: ParametersInput | null;
 	pseudoAgenticText: {
 		lines: PseudoAgenticLogLine[];
+		currentExecutionLine: PseudoAgenticLogLine | null;
 	};
 	stepsSection: {
 		title: string;
@@ -197,6 +199,116 @@ function getCollapsedProgressText({
 		return `${doneCount}/${totalCount} done • ${inProgressText}`;
 	}
 	return `${doneCount}/${totalCount} done`;
+}
+
+function createTextToken(value: string): PseudoAgenticTextToken {
+	return { type: "text", value };
+}
+
+function createStepItemNameToken({
+	value,
+	contentType,
+}: {
+	value: string;
+	contentType?: string;
+}): PseudoAgenticTextToken {
+	return { type: "stepItemName", value, contentType };
+}
+
+function getStepItemDisplayName(
+	item: Pick<UIStepItemBase, "title" | "subLabel">,
+) {
+	return item.subLabel ? `${item.title} (${item.subLabel})` : item.title;
+}
+
+function buildExecutionActionListTokens(
+	items: Pick<UIStepItemBase, "title" | "subLabel" | "node">[],
+): PseudoAgenticTextToken[] {
+	const tokens: PseudoAgenticTextToken[] = [];
+
+	for (let index = 0; index < items.length; index++) {
+		const item = items[index];
+		if (item === undefined) continue;
+
+		if (index > 0) {
+			const isLast = index === items.length - 1;
+			const separator = items.length === 2 ? " and " : isLast ? ", and " : ", ";
+			tokens.push(createTextToken(separator));
+		}
+
+		tokens.push(
+			createStepItemNameToken({
+				value: getStepItemDisplayName(item),
+				contentType: item.node.content.type,
+			}),
+		);
+	}
+
+	return tokens;
+}
+
+function buildCurrentExecutionLine({
+	taskStatus,
+	steps,
+}: {
+	taskStatus: Task["status"];
+	steps: UIStep[];
+}): PseudoAgenticLogLine | null {
+	if (
+		taskStatus === "completed" ||
+		taskStatus === "failed" ||
+		taskStatus === "cancelled"
+	) {
+		return null;
+	}
+
+	const runningStep = steps.find((step) =>
+		step.items.some((item) => item.status === "running"),
+	);
+	if (runningStep !== undefined) {
+		const stepNumber = runningStep.index + 1;
+		const runningItems = runningStep.items.filter(
+			(item) => item.status === "running",
+		);
+
+		return {
+			key: "current-execution-running",
+			tokens: [
+				createTextToken(`Executing Step ${stepNumber}: `),
+				...buildExecutionActionListTokens(runningItems),
+				createTextToken("."),
+			],
+		};
+	}
+
+	// If nothing is running, show the first unfinished step as “preparing”.
+	const preparingStep = steps.find((step) => step.status !== "completed");
+	if (
+		preparingStep !== undefined &&
+		(preparingStep.status === "created" || preparingStep.status === "queued")
+	) {
+		const stepNumber = preparingStep.index + 1;
+		return {
+			key: "current-execution-preparing",
+			tokens: [
+				createTextToken(`Preparing Step ${stepNumber}: `),
+				...buildExecutionActionListTokens(preparingStep.items),
+				createTextToken("."),
+			],
+		};
+	}
+
+	if (taskStatus === "inProgress") {
+		return {
+			key: "current-execution-finalizing",
+			tokens: [createTextToken("Finalizing results...")],
+		};
+	}
+
+	return {
+		key: "current-execution-waiting",
+		tokens: [createTextToken("Waiting to start...")],
+	};
 }
 
 export async function getTaskData(taskId: TaskId): Promise<UITask> {
@@ -387,6 +499,10 @@ export async function getTaskData(taskId: TaskId): Promise<UITask> {
 		steps: pseudoSteps,
 		totalStepsCount,
 	});
+	const currentExecutionLine = buildCurrentExecutionLine({
+		taskStatus: task.status,
+		steps,
+	});
 
 	return {
 		status: task.status,
@@ -394,7 +510,10 @@ export async function getTaskData(taskId: TaskId): Promise<UITask> {
 		description: app.description,
 		workspaceId: task.workspaceId,
 		input,
-		pseudoAgenticText: { lines: pseudoAgenticLines },
+		pseudoAgenticText: {
+			lines: pseudoAgenticLines,
+			currentExecutionLine,
+		},
 		stepsSection: {
 			title,
 			totalStepsCount,

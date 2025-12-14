@@ -213,14 +213,10 @@ export function buildPseudoAgenticTextLines({
 		lines.push({
 			key: "task-completed",
 			tokens: [
-				textToken("All steps completed. Displaying the output from "),
+				textToken("All steps completed."),
 				...(lastActions.length > 0
-					? [
-							textToken("the last completed step: "),
-							...buildActionNameListTokens(lastActions),
-							textToken(" below."),
-						]
-					: [textToken("the last completed step below.")]),
+					? [textToken(" Multiple outputs are available.")]
+					: []),
 			],
 		});
 	} else if (taskStatus === "failed") {
