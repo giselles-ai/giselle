@@ -6,8 +6,7 @@ import { useGiselle } from "@giselles-ai/react";
 import { LoaderIcon, PlusIcon } from "lucide-react";
 import { type FormEvent, useCallback, useEffect, useState } from "react";
 import type { KeyedMutator } from "swr";
-import { SettingDetail, SettingLabel } from "../ui/setting-label";
-import { AppIconSelect } from "./app-icon-select";
+import { SettingLabel } from "../ui/setting-label";
 
 function getAppEntryInputLabel(label: string): string {
 	const match = /^Input\((.+)\)$/.exec(label);
@@ -27,8 +26,6 @@ export function AppEntryConfiguredView({
 	const client = useGiselle();
 
 	const [appDescription, setAppDescription] = useState(app.description);
-	const [selectedIconName, setSelectedIconName] = useState(app.iconName);
-	const [isSavingIcon, setIsSavingIcon] = useState(false);
 	const [isSavingDescription, setIsSavingDescription] = useState(false);
 
 	const { info } = useToasts();
@@ -36,10 +33,6 @@ export function AppEntryConfiguredView({
 	useEffect(() => {
 		setAppDescription(app.description);
 	}, [app.description]);
-
-	useEffect(() => {
-		setSelectedIconName(app.iconName);
-	}, [app.iconName]);
 
 	const persistApp = useCallback(
 		async (updatedFields: Partial<App>) => {
@@ -55,24 +48,6 @@ export function AppEntryConfiguredView({
 		[app, client, mutateApp, info],
 	);
 
-	const handleIconChange = useCallback(
-		(value: string) => {
-			setSelectedIconName(value);
-			setIsSavingIcon(true);
-			void (async () => {
-				try {
-					await persistApp({ iconName: value });
-				} catch (error) {
-					console.error("Failed to update app icon", error);
-					setSelectedIconName(app.iconName);
-				} finally {
-					setIsSavingIcon(false);
-				}
-			})();
-		},
-		[app.iconName, persistApp],
-	);
-
 	const handleDescriptionSubmit = useCallback(
 		async (event: FormEvent<HTMLFormElement>) => {
 			event.preventDefault();
@@ -83,7 +58,6 @@ export function AppEntryConfiguredView({
 			try {
 				await persistApp({
 					description: appDescription,
-					iconName: selectedIconName,
 				});
 			} catch (error) {
 				console.error("Failed to update app description", error);
@@ -91,33 +65,15 @@ export function AppEntryConfiguredView({
 				setIsSavingDescription(false);
 			}
 		},
-		[app.description, appDescription, persistApp, selectedIconName],
+		[app.description, appDescription, persistApp],
 	);
 
 	return (
 		<div className="flex flex-col gap-[16px] p-0 px-1 overflow-y-auto">
 			<div className="flex flex-col gap-[8px]">
-				<SettingLabel className="py-[1.5px]">App Settings</SettingLabel>
-
-				<div className="flex items-center justify-between gap-[12px]">
-					<SettingDetail size="md" className="text-text-muted shrink-0">
-						Icon
-					</SettingDetail>
-					<div className="flex items-center justify-end gap-[8px] min-w-0">
-						<AppIconSelect
-							value={selectedIconName}
-							onValueChange={handleIconChange}
-						/>
-						{isSavingIcon && (
-							<LoaderIcon className="size-[16px] text-text-muted animate-spin" />
-						)}
-					</div>
-				</div>
+				<SettingLabel className="py-[1.5px]">App Description</SettingLabel>
 
 				<div className="flex flex-col gap-[8px]">
-					<SettingDetail size="md" className="text-text-muted">
-						Description
-					</SettingDetail>
 					<form onSubmit={handleDescriptionSubmit} className="relative w-full">
 						<textarea
 							id="app-description"
