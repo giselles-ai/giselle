@@ -1,7 +1,6 @@
 "use client";
 
 import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
-import { actionRegistry, isActionProvider } from "@giselles-ai/action-registry";
 import {
 	Capability,
 	hasCapability,
@@ -21,7 +20,6 @@ import {
 	createTextNode,
 	createTriggerNode,
 	createWebPageNode,
-	triggerNodeDefaultName,
 } from "@giselles-ai/node-registry";
 import { FileCategory } from "@giselles-ai/protocol";
 import {
@@ -29,10 +27,6 @@ import {
 	useUsageLimits,
 	useWorkflowDesigner,
 } from "@giselles-ai/react";
-import {
-	isTriggerProvider,
-	triggerRegistry,
-} from "@giselles-ai/trigger-registry";
 import clsx from "clsx/lite";
 import {
 	DatabaseZapIcon,
@@ -59,6 +53,7 @@ import {
 	PictureIcon,
 	PromptIcon,
 	SearchIcon,
+	SourceLinkIcon,
 	TextFileIcon,
 	TooltipAndHotkey,
 	VideoIcon,
@@ -77,7 +72,9 @@ import {
 } from "./model-components";
 import {
 	addNodeTool,
+	selectActionTool,
 	selectFileNodeCategoryTool,
+	selectGithubTriggerTool,
 	selectLanguageModelTool,
 	selectLanguageModelV2Tool,
 	selectRetrievalCategoryTool,
@@ -87,7 +84,6 @@ import {
 } from "./state";
 
 export function Toolbar() {
-	const actionValuePrefix = "action:";
 	const { setSelectedTool, selectedTool } = useToolbar();
 	const {
 		hoveredModel: languageModelMouseHovered,
@@ -248,6 +244,12 @@ export function Toolbar() {
 								case "selectTrigger":
 									setSelectedTool(selectTriggerTool());
 									break;
+								case "selectGithubTrigger":
+									setSelectedTool(selectGithubTriggerTool());
+									break;
+								case "selectAction":
+									setSelectedTool(selectActionTool());
+									break;
 								case "selectRetrievalCategory":
 									setSelectedTool(selectRetrievalCategoryTool());
 									break;
@@ -304,12 +306,6 @@ export function Toolbar() {
 													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
 												)}
 												onValueChange={(value) => {
-													if (isTriggerProvider(value)) {
-														setSelectedTool(
-															addNodeTool(createTriggerNode(value)),
-														);
-														return;
-													}
 													if (value === "appEntry") {
 														if (hasAppRequestNode) {
 															return;
@@ -344,29 +340,6 @@ export function Toolbar() {
 															<p className="text-[14px]">Stage Request</p>
 														</ToggleGroup.Item>
 													))}
-												{triggerRegistry
-													.filter(
-														(triggerEntry) =>
-															triggerEntry.provider === "github",
-													)
-													.map((triggerEntry) => (
-														<ToggleGroup.Item
-															key={triggerEntry.provider}
-															value={triggerEntry.provider}
-															data-tool
-														>
-															{triggerEntry.provider === "github" && (
-																<GitHubIcon className="size-[20px] shrink-0" />
-															)}
-															<p className="text-[14px]">
-																{triggerEntry.provider === "github"
-																	? "GitHub Entry"
-																	: triggerNodeDefaultName(
-																			triggerEntry.provider,
-																		)}
-															</p>
-														</ToggleGroup.Item>
-													))}
 											</ToggleGroup.Root>
 											<p className="text-[#505D7B] text-[12px] font-medium leading-[170%] mt-[8px] mb-[4px] px-[8px]">
 												Stage Response
@@ -384,17 +357,6 @@ export function Toolbar() {
 														setSelectedTool(addNodeTool(createEndNode()));
 														return;
 													}
-													if (!value.startsWith(actionValuePrefix)) {
-														return;
-													}
-													const provider = value.slice(
-														actionValuePrefix.length,
-													);
-													if (isActionProvider(provider)) {
-														setSelectedTool(
-															addNodeTool(createActionNode(provider)),
-														);
-													}
 												}}
 											>
 												<ToggleGroup.Item
@@ -405,18 +367,123 @@ export function Toolbar() {
 													<FlagIcon className="size-[20px] shrink-0" />
 													<p className="text-[14px]">Stage Response</p>
 												</ToggleGroup.Item>
-												{actionRegistry.map((actionEntry) => (
-													<ToggleGroup.Item
-														key={`${actionValuePrefix}${actionEntry.provider}`}
-														value={`${actionValuePrefix}${actionEntry.provider}`}
-														data-tool
-													>
-														{actionEntry.provider === "github" && (
-															<GitHubIcon className="size-[20px] shrink-0" />
-														)}
-														<p className="text-[14px]">{actionEntry.label}</p>
-													</ToggleGroup.Item>
-												))}
+											</ToggleGroup.Root>
+										</div>
+									</Popover.Content>
+								</Popover.Portal>
+							</Popover.Root>
+						)}
+					</ToggleGroup.Item>
+
+					<ToggleGroup.Item
+						value="selectGithubTrigger"
+						data-tool
+						className="relative"
+					>
+						<Tooltip text={<TooltipAndHotkey text="Trigger" hotkey="t" />}>
+							<ZapIcon data-icon />
+						</Tooltip>
+						{selectedTool?.action === "selectGithubTrigger" && (
+							<Popover.Root open={true}>
+								<Popover.Anchor />
+								<Popover.Portal>
+									<Popover.Content
+										className={clsx(
+											"relative rounded-[8px] px-[8px] py-[8px] min-w-[200px]",
+											"text-inverse overflow-hidden",
+										)}
+										sideOffset={42}
+									>
+										<div
+											className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none"
+											style={{
+												backgroundColor:
+													"color-mix(in srgb, var(--color-background, #00020b) 50%, transparent)",
+											}}
+										/>
+										<GlassSurfaceLayers
+											radiusClass="rounded-[8px]"
+											borderStyle="solid"
+											withBaseFill={false}
+											blurClass="backdrop-blur-md"
+											zIndexClass="z-0"
+										/>
+										<div className="relative flex flex-col gap-0">
+											<ToggleGroup.Root
+												type="single"
+												className={clsx(
+													"flex flex-col gap-[8px]",
+													"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
+													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-surface-hover",
+													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
+												)}
+												onValueChange={() => {
+													setSelectedTool(
+														addNodeTool(createTriggerNode("github")),
+													);
+												}}
+											>
+												<ToggleGroup.Item value="github" data-tool>
+													<GitHubIcon className="size-[20px] shrink-0" />
+													<p className="text-[14px]">GitHub Trigger</p>
+												</ToggleGroup.Item>
+											</ToggleGroup.Root>
+										</div>
+									</Popover.Content>
+								</Popover.Portal>
+							</Popover.Root>
+						)}
+					</ToggleGroup.Item>
+
+					<ToggleGroup.Item value="selectAction" data-tool className="relative">
+						<Tooltip text={<TooltipAndHotkey text="Action" hotkey="a" />}>
+							<SourceLinkIcon data-icon />
+						</Tooltip>
+						{selectedTool?.action === "selectAction" && (
+							<Popover.Root open={true}>
+								<Popover.Anchor />
+								<Popover.Portal>
+									<Popover.Content
+										className={clsx(
+											"relative rounded-[8px] px-[8px] py-[8px] min-w-[200px]",
+											"text-inverse overflow-hidden",
+										)}
+										sideOffset={42}
+									>
+										<div
+											className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none"
+											style={{
+												backgroundColor:
+													"color-mix(in srgb, var(--color-background, #00020b) 50%, transparent)",
+											}}
+										/>
+										<GlassSurfaceLayers
+											radiusClass="rounded-[8px]"
+											borderStyle="solid"
+											withBaseFill={false}
+											blurClass="backdrop-blur-md"
+											zIndexClass="z-0"
+										/>
+										<div className="relative flex flex-col gap-0">
+											<ToggleGroup.Root
+												type="single"
+												className={clsx(
+													"flex flex-col gap-[8px]",
+													"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
+													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-surface-hover",
+													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
+												)}
+												onValueChange={() => {
+													// The current action registry only supports GitHub provider for now.
+													setSelectedTool(
+														addNodeTool(createActionNode("github")),
+													);
+												}}
+											>
+												<ToggleGroup.Item value="github" data-tool>
+													<GitHubIcon className="size-[20px] shrink-0" />
+													<p className="text-[14px]">GitHub Action</p>
+												</ToggleGroup.Item>
 											</ToggleGroup.Root>
 										</div>
 									</Popover.Content>

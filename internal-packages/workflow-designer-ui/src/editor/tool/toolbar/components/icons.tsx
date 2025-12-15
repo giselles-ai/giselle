@@ -12,6 +12,7 @@ export {
 	PictureIcon,
 	PromptIcon,
 	SearchIcon,
+	SourceLinkIcon,
 	TextFileIcon,
 	VideoIcon,
 	WebPageFileIcon,
