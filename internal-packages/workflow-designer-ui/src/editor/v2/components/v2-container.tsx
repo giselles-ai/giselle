@@ -1,5 +1,6 @@
 "use client";
 
+import { createEndNode } from "@giselles-ai/node-registry";
 import {
 	InputId,
 	isActionNode,
@@ -29,7 +30,7 @@ import {
 	workspaceActions,
 } from "@giselles-ai/react";
 import clsx from "clsx/lite";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useShallow } from "zustand/shallow";
 import { Background } from "../../../ui/background";
@@ -53,6 +54,9 @@ interface V2ContainerProps extends V2LayoutState {
 }
 
 function V2NodeCanvas() {
+	const DEFAULT_NODE_WIDTH = 260;
+	const AUTO_PLACE_GAP_X = 120;
+
 	const data = useWorkflowDesignerStore(
 		useShallow((s) => ({
 			nodes: s.workspace.nodes,
@@ -354,6 +358,51 @@ function V2NodeCanvas() {
 					: undefined,
 		});
 	}, []);
+
+	// Ensure an End (Stage Response) node exists and is placed to the right when Stage Request exists.
+	// This runs only when End is missing (or has no UI position), so it won't fight manual layouts.
+	useEffect(() => {
+		const appEntryNode = data.nodes.find((n) => n.content.type === "appEntry");
+		if (!appEntryNode) return;
+
+		const endNode = data.nodes.find((n) => n.content.type === "end");
+		const endNodeHasUi = endNode
+			? data.nodeState[endNode.id]?.position !== undefined
+			: false;
+		if (endNode && endNodeHasUi) return;
+
+		const appEntryUi = data.nodeState[appEntryNode.id];
+		const fallbackY =
+			appEntryUi?.position.y ??
+			data.nodes
+				.map((n) => data.nodeState[n.id]?.position.y)
+				.find((y): y is number => typeof y === "number") ??
+			0;
+
+		const rightmostEdgeX = data.nodes
+			.filter((n) => n.id !== endNode?.id)
+			.map((n) => data.nodeState[n.id])
+			.filter(
+				(
+					s,
+				): s is {
+					position: { x: number; y: number };
+					measured?: { width?: number };
+				} => s !== undefined,
+			)
+			.reduce((max, s) => {
+				const width = s.measured?.width ?? DEFAULT_NODE_WIDTH;
+				return Math.max(max, s.position.x + width);
+			}, 0);
+
+		const position = { x: rightmostEdgeX + AUTO_PLACE_GAP_X, y: fallbackY };
+
+		if (!endNode) {
+			addNode(createEndNode(), { position });
+			return;
+		}
+		setUiNodeState(endNode.id, { position });
+	}, [data.nodes, data.nodeState, addNode, setUiNodeState]);
 
 	return (
 		<ReactFlow

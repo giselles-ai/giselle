@@ -24,6 +24,9 @@ import { isSupportedConnection } from "../utils";
 const DEFAULT_CONNECTION_CLONE_STRATEGY: ConnectionCloneStrategy =
 	"inputs-only";
 
+const DEFAULT_NODE_WIDTH = 260;
+const AUTO_PLACE_GAP_X = 120;
+
 export interface WorkspaceSliceOptions {
 	onAddNode?: (node: NodeLike) => void;
 	onUpdateNode?: (node: NodeLike) => void;
@@ -86,29 +89,161 @@ export const createWorkspaceSlice: StateCreator<WorkspaceSlice> = (
 ) => ({
 	workspace: null,
 	_skipNextSave: false,
-	initWorkspace: (workspace, options = {}) =>
+	initWorkspace: (workspace, options = {}) => {
+		const appEntryNode = workspace.nodes.find(
+			(n) => n.content.type === "appEntry",
+		);
+		if (!appEntryNode) {
+			set({
+				workspace,
+				addNodeCallback: options.onAddNode,
+				updateNodeCallback: options.onUpdateNode,
+				deleteNodeCallback: options.onDeleteNode,
+			});
+			return;
+		}
+
+		const existingEndNode = workspace.nodes.find(
+			(n) => n.content.type === "end",
+		);
+		const endNode = existingEndNode ?? nodeFactories.create("end");
+		const isNewEndNode = existingEndNode === undefined;
+
+		const appEntryUi = workspace.ui.nodeState[appEntryNode.id];
+		const fallbackY =
+			appEntryUi?.position.y ??
+			workspace.nodes
+				.map((n) => workspace.ui.nodeState[n.id]?.position.y)
+				.find((y): y is number => typeof y === "number") ??
+			0;
+
+		// Place End at the far right of the existing graph.
+		// Exclude the End node itself from the calculation so it deterministically moves to the right edge.
+		const rightmostEdgeX = workspace.nodes
+			.filter((n) => n.id !== endNode.id)
+			.map((n) => workspace.ui.nodeState[n.id])
+			.filter((s): s is NodeUIState => s !== undefined)
+			.reduce((max, s) => {
+				const width = s.measured?.width ?? DEFAULT_NODE_WIDTH;
+				return Math.max(max, s.position.x + width);
+			}, 0);
+
+		const endUi: NodeUIState = {
+			position: {
+				x: rightmostEdgeX + AUTO_PLACE_GAP_X,
+				y: fallbackY,
+			},
+			selected: false,
+		};
+
+		const nextWorkspace: Workspace = {
+			...workspace,
+			nodes: isNewEndNode ? [...workspace.nodes, endNode] : workspace.nodes,
+			ui: {
+				...workspace.ui,
+				nodeState: {
+					...workspace.ui.nodeState,
+					[endNode.id]: {
+						...(workspace.ui.nodeState[endNode.id] ?? {}),
+						...endUi,
+					},
+				},
+			},
+		};
+
 		set({
-			workspace,
+			workspace: nextWorkspace,
 			addNodeCallback: options.onAddNode,
 			updateNodeCallback: options.onUpdateNode,
 			deleteNodeCallback: options.onDeleteNode,
-		}),
+		});
+	},
 	addNode: (node, ui) => {
+		const workspace = get().workspace;
+		const shouldHandleStartEndPairing =
+			workspace !== null &&
+			ui !== undefined &&
+			node.content.type === "appEntry";
+
+		const existingEndNode = shouldHandleStartEndPairing
+			? workspace.nodes.find((n) => n.content.type === "end")
+			: undefined;
+
+		const endNode =
+			shouldHandleStartEndPairing && existingEndNode === undefined
+				? nodeFactories.create("end")
+				: undefined;
+
+		const endUi = (() => {
+			if (
+				!shouldHandleStartEndPairing ||
+				workspace === null ||
+				ui === undefined
+			) {
+				return undefined;
+			}
+
+			// Place End to the right of the current node graph.
+			// Exclude the existing End node from the rightmost edge calculation so we can
+			// deterministically place it at the far right.
+			const rightmostEdgeX = [
+				...workspace.nodes
+					.filter((n) => n.id !== existingEndNode?.id)
+					.map((n) => workspace.ui.nodeState[n.id])
+					.filter((s): s is NodeUIState => s !== undefined),
+				ui,
+			].reduce((max, s) => {
+				const width = s.measured?.width ?? DEFAULT_NODE_WIDTH;
+				return Math.max(max, s.position.x + width);
+			}, 0);
+
+			return {
+				position: {
+					x: rightmostEdgeX + AUTO_PLACE_GAP_X,
+					y: ui.position.y,
+				},
+				selected: false,
+			} satisfies NodeUIState;
+		})();
+
 		set((state) => {
 			if (!state.workspace) return {};
 			const newUi = { ...state.workspace.ui };
 			if (ui) {
 				newUi.nodeState = { ...newUi.nodeState, [node.id]: ui };
 			}
+
+			if (endUi && existingEndNode) {
+				const prevEndUi = newUi.nodeState[existingEndNode.id];
+				newUi.nodeState = {
+					...newUi.nodeState,
+					[existingEndNode.id]: {
+						...(prevEndUi ?? {}),
+						...endUi,
+					} satisfies NodeUIState,
+				};
+			}
+
+			if (endNode && endUi) {
+				newUi.nodeState = {
+					...newUi.nodeState,
+					[endNode.id]: endUi,
+				};
+			}
 			return {
 				workspace: {
 					...state.workspace,
-					nodes: [...state.workspace.nodes, node],
+					nodes: endNode
+						? [...state.workspace.nodes, node, endNode]
+						: [...state.workspace.nodes, node],
 					ui: newUi,
 				},
 			};
 		});
 		get().addNodeCallback?.(node);
+		if (endNode) {
+			get().addNodeCallback?.(endNode);
+		}
 	},
 	updateNode: (nodeId, data) => {
 		set((state) => {
