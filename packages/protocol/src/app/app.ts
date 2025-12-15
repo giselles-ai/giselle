@@ -23,7 +23,37 @@ export const AppParameter = z.object({
 });
 export type AppParameter = z.infer<typeof AppParameter>;
 
-export const App = z.object({
+export const DisconnectedApp = z.object({
+	id: AppId.schema,
+	version: z.literal("v1"),
+	state: z.literal("disconnected"),
+	description: z.string(),
+	parameters: z.array(AppParameter),
+	entryNodeId: NodeId.schema,
+	workspaceId: WorkspaceId.schema,
+});
+export type DisconnectedApp = z.infer<typeof DisconnectedApp>;
+
+export const ConnectedApp = z.object({
+	id: AppId.schema,
+	version: z.literal("v1"),
+	state: z.literal("connected"),
+	description: z.string(),
+	parameters: z.array(AppParameter),
+	entryNodeId: NodeId.schema,
+	endNodeId: NodeId.schema,
+	workspaceId: WorkspaceId.schema,
+});
+export type ConnectedApp = z.infer<typeof ConnectedApp>;
+
+export const App = z.discriminatedUnion("state", [
+	DisconnectedApp,
+	ConnectedApp,
+]);
+export type App = z.infer<typeof App>;
+
+/** @deprecated use App */
+export const DeprecatedApp = z.object({
 	id: AppId.schema,
 	/**
 	 * @deprecated The relationship between app and workspace is now 1:1,
@@ -36,4 +66,4 @@ export const App = z.object({
 	entryNodeId: NodeId.schema,
 	workspaceId: WorkspaceId.schema,
 });
-export type App = z.infer<typeof App>;
+export type DeprecatedApp = z.infer<typeof DeprecatedApp>;

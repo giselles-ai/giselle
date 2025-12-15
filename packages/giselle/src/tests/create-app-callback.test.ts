@@ -15,9 +15,9 @@ test("callback.appCreate is executed when app is created if app does not exist i
 	});
 	const testApp: App = {
 		id: AppId.generate(),
-		name: "test app",
+		version: "v1",
 		description: "test app description",
-		iconName: "cable",
+		state: "disconnected",
 		parameters: [],
 		entryNodeId: NodeId.generate(),
 		workspaceId: WorkspaceId.generate(),

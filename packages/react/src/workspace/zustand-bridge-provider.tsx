@@ -28,11 +28,6 @@ export interface WorkspaceCallbackOptions {
 	onDeleteNode?: (node: NodeLike) => void;
 }
 
-function ensureNonEmpty(value: string | undefined, fallback: string) {
-	const trimmed = value?.trim() ?? "";
-	return trimmed.length > 0 ? trimmed : fallback;
-}
-
 function useWorkspaceAutoSave({
 	client,
 	saveWorkflowDelay,
@@ -136,19 +131,16 @@ export function ZustandBridgeProvider({
 
 			const appId = AppId.generate();
 			const draftApp = node.content.draftApp;
-			const fallbackNodeName = ensureNonEmpty(
-				(node as { name?: string }).name,
-				"App Entry",
-			);
 			const appLike: App = {
 				id: appId,
-				name: ensureNonEmpty(draftApp.name, fallbackNodeName),
+				version: "v1",
+				state: "disconnected",
 				description: draftApp.description ?? "",
-				iconName: ensureNonEmpty(draftApp.iconName, "workflow"),
 				parameters: draftApp.parameters,
 				entryNodeId: node.id,
 				workspaceId: workspace.id,
 			};
+			console.log(appLike);
 			const parseResult = App.safeParse(appLike);
 			if (!parseResult.success) {
 				console.error(
@@ -177,7 +169,6 @@ export function ZustandBridgeProvider({
 			}
 
 			nextState.updateNodeData(existingNode as AppEntryNode, {
-				name: parseResult.data.name,
 				content: {
 					type: "appEntry",
 					status: "configured",
