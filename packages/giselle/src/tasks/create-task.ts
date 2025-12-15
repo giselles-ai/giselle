@@ -6,6 +6,7 @@ import {
 	GenerationId,
 	GenerationOrigin,
 	isAppEntryNode,
+	isEndNode,
 	isOperationNode,
 	isTriggerNode,
 	Node,
@@ -116,10 +117,16 @@ export async function createTask(
 		const steps: Step[] = [];
 		for (const nodeId of level) {
 			const node = nodes.find((node) => node.id === nodeId);
+			// Exclusion conditions: Skip nodes that are:
+			// - undefined (not found)
+			// - not operation nodes
+			// - app entry nodes (starting points)
+			// - end nodes (termination points)
 			if (
 				node === undefined ||
 				!isOperationNode(node) ||
-				isAppEntryNode(node)
+				isAppEntryNode(node) ||
+				isEndNode(node)
 			) {
 				continue;
 			}
