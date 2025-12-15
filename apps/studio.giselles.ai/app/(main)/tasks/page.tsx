@@ -1,147 +1,164 @@
-import { revalidatePath } from "next/cache";
-import { notFound } from "next/navigation";
+import {
+	GenerationOrigin,
+	type ParametersInput,
+	type Task,
+	type TaskId,
+} from "@giselles-ai/protocol";
+import { createSearchParamsCache, parseAsInteger } from "nuqs/server";
 import { giselle } from "@/app/giselle";
-import { type acts as actsSchema, db } from "@/db";
-import { stageFlag } from "@/flags";
-import { fetchCurrentUser } from "@/services/accounts";
-import { fetchUserTeams } from "@/services/teams";
-import { FilterableActsList } from "./components/filterable-acts-list";
-import type { ActWithNavigation } from "./types";
+import { db } from "@/db";
+import { logger } from "@/lib/logger";
+import { fetchCurrentTeam } from "@/services/teams/fetch-current-team";
 
-// The maximum duration of server actions on this page is extended to 800 seconds through enabled fluid compute.
-// https://vercel.com/docs/functions/runtimes#max-duration
-export const maxDuration = 800;
+interface UITaskListAppOrigin {
+	type: "app";
+	appName: string;
+}
+interface UITaskListGitHubOrigin {
+	type: "github";
+	repoName: string;
+}
+type UITaskListOrigin = UITaskListAppOrigin | UITaskListGitHubOrigin;
 
-// This feature is currently under development and data structures change destructively,
-// so parsing of legacy data frequently fails. We're using a rough try-catch to ignore
-// data that fails to parse. This should be properly handled when the feature flag is removed.
-async function enrichActWithNavigationData(
-	act: typeof actsSchema.$inferSelect,
-	teams: { dbId: number; name: string }[],
-): Promise<ActWithNavigation | null> {
-	try {
-		const tmpTask = await giselle.getTask({ taskId: act.sdkActId });
-		const team = teams.find((t) => t.dbId === act.teamDbId);
-		if (team === undefined) {
-			throw new Error("Team not found");
-		}
-		const tmpWorkspace = await giselle.getWorkspace(act.sdkWorkspaceId);
+interface UITaskListRow {
+	id: TaskId;
+	startedAt: number;
+	finishedAt: number;
+	status: Task["status"];
+	origin: UITaskListOrigin;
+	input: ParametersInput | null;
+}
 
-		const findStepByStatus = (status: string) => {
-			for (const sequence of tmpTask.sequences) {
-				for (const step of sequence.steps) {
-					if (step.status === status) {
-						return step;
-					}
-				}
-			}
-			return null;
-		};
-
-		const getFirstStep = () => {
-			if (tmpTask.sequences.length === 0) {
-				return null;
-			}
-			const firstSequence = tmpTask.sequences[0];
-			if (firstSequence.steps.length === 0) {
-				return null;
-			}
-			return firstSequence.steps[0];
-		};
-
-		const getLastStep = () => {
-			if (tmpTask.sequences.length === 0) {
-				return null;
-			}
-			const lastSequence = tmpTask.sequences[tmpTask.sequences.length - 1];
-			if (lastSequence.steps.length === 0) {
-				return null;
-			}
-			return lastSequence.steps[lastSequence.steps.length - 1];
-		};
-
-		let link = `/stage/acts/${tmpTask.id}`;
-		let targetStep = null;
-
-		switch (tmpTask.status) {
-			case "created":
-			case "inProgress":
-				targetStep = findStepByStatus("running") ?? getFirstStep();
-				break;
-			case "completed":
-				targetStep = getLastStep();
-				break;
-			case "cancelled":
-				targetStep = findStepByStatus("cancelled");
-				break;
-			case "failed":
-				targetStep = findStepByStatus("failed");
-				break;
-			default: {
-				const _exhaustiveCheck: never = tmpTask.status;
-				throw new Error(`Unhandled status: ${_exhaustiveCheck}`);
-			}
-		}
-
-		if (targetStep) {
-			link += `/${targetStep.id}`;
-		}
-
-		// Extract LLM models from workspace nodes
-		const llmModels: string[] = [];
-		if (tmpWorkspace.nodes) {
-			for (const node of tmpWorkspace.nodes) {
-				if (node.content?.type === "textGeneration" && node.content.llm) {
-					const model = node.content.llm.id;
-					if (typeof model === "string" && !llmModels.includes(model)) {
-						llmModels.push(model);
-					}
-				}
-			}
-		}
-
-		return {
-			id: tmpTask.id,
-			status: tmpTask.status,
-			createdAt: act.createdAt.toISOString(),
-			link,
-			teamName: team.name,
-			workspaceName: tmpWorkspace.name ?? "Untitled",
-			llmModels: llmModels.length > 0 ? llmModels : undefined,
-			inputValues: undefined,
-		};
-	} catch {
+/**
+ * Since the input for executing a Task is not stored in the Task itself
+ * but in the Generation, we retrieve it from the Generation of the first Step
+ * associated with the Task.
+ */
+async function getTaskInput(taskId: TaskId) {
+	const task = await giselle.getTask({ taskId });
+	const firstStep = task.sequences[0]?.steps?.[0];
+	if (firstStep === undefined) {
+		logger.warn(`Task ${taskId} has no steps`);
 		return null;
 	}
-}
-
-async function reloadPage() {
-	"use server";
-	await Promise.resolve();
-	revalidatePath("/stage/acts");
-}
-
-export default async function StageActsPage() {
-	const enableStage = await stageFlag();
-	if (!enableStage) {
-		return notFound();
+	const firstStepGeneration = await giselle.getGeneration(
+		firstStep.generationId,
+	);
+	if (firstStepGeneration === undefined) {
+		logger.warn(`Task ${taskId}, Step ${firstStep.id} has no generation`);
+		return null;
 	}
+	const inputs = firstStepGeneration?.context.inputs;
 
-	const teams = await fetchUserTeams();
-	const user = await fetchCurrentUser();
-	const dbActs = await db.query.acts.findMany({
-		where: (acts, { eq }) => eq(acts.directorDbId, user.dbId),
-		orderBy: (acts, { desc }) => [desc(acts.createdAt)],
-		limit: 50,
+	// inputs is an optional array, but in the Task use case it should be
+	// an array with length 1, so log a warning if it's different
+	if (inputs?.length !== 1) {
+		return null;
+	}
+	const firstInput = inputs[0];
+	// github-webhook-event is not expected in this Task use case
+	if (firstInput.type !== "parameters") {
+		return null;
+	}
+	return firstInput;
+}
+
+const searchParamsCache = createSearchParamsCache({
+	limit: parseAsInteger.withDefault(50),
+	offset: parseAsInteger.withDefault(0),
+});
+
+type TaskListPageProps = {
+	searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+function clampInt(value: number, { min, max }: { min: number; max: number }) {
+	return Math.min(max, Math.max(min, value));
+}
+
+export default async function TaskListPage({
+	searchParams,
+}: TaskListPageProps) {
+	const { limit: rawLimit, offset: rawOffset } =
+		await searchParamsCache.parse(searchParams);
+
+	const limit = clampInt(rawLimit, { min: 1, max: 100 });
+	const offset = Math.max(0, rawOffset);
+
+	const team = await fetchCurrentTeam();
+
+	// Fetch one extra row to determine whether there's a next page.
+	const dbTasks = await db.query.tasks.findMany({
+		columns: { id: true, appDbId: true, createdAt: true },
+		where: (tasks, { eq }) => eq(tasks.teamDbId, team.dbId),
+		orderBy: (tasks, { desc }) => [desc(tasks.createdAt)],
+		limit: limit + 1,
+		offset,
+		with: {
+			app: {
+				columns: {
+					workspaceDbId: true,
+				},
+				with: {
+					workspace: {
+						columns: {
+							name: true,
+						},
+					},
+				},
+			},
+		},
 	});
 
-	const acts = await Promise.all(
-		dbActs.map((dbAct) => enrichActWithNavigationData(dbAct, teams)),
-	).then((tmp) =>
-		tmp.filter(
-			(actOrNull): actOrNull is ActWithNavigation => actOrNull !== null,
-		),
-	);
+	const hasNextPage = dbTasks.length > limit;
+	const _dbTasks = hasNextPage ? dbTasks.slice(0, limit) : dbTasks;
 
-	return <FilterableActsList acts={acts} onReload={reloadPage} />;
+	const tasks = await Promise.all(
+		_dbTasks.map(async (dbTask) => {
+			const [task, input] = await Promise.all([
+				giselle.getTask({ taskId: dbTask.id }),
+				getTaskInput(dbTask.id),
+			]);
+			if (dbTask.app === null) {
+				return {
+					id: task.id,
+					startedAt: task.createdAt,
+					finishedAt: task.createdAt,
+					status: task.status,
+					origin: {
+						type: "github",
+						repoName: "test",
+					},
+					input,
+				} satisfies UITaskListRow;
+			}
+			return {
+				id: task.id,
+				startedAt: task.createdAt,
+				finishedAt: task.createdAt,
+				status: task.status,
+				origin: {
+					type: "app",
+					appName: dbTask.app.workspace.name ?? "Untitled App",
+				},
+				input,
+			} satisfies UITaskListRow;
+		}),
+	);
+	return (
+		<pre>
+			{JSON.stringify(
+				{
+					limit,
+					offset,
+					hasNextPage,
+					nextOffset: hasNextPage ? offset + limit : null,
+					prevOffset: offset - limit >= 0 ? offset - limit : null,
+					tasks,
+				},
+				null,
+				2,
+			)}
+		</pre>
+	);
 }
