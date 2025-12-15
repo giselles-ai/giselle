@@ -3,6 +3,8 @@
 import {
 	InputId,
 	isActionNode,
+	isAppEntryNode,
+	isEndNode,
 	type NodeId,
 	OutputId,
 } from "@giselles-ai/protocol";
@@ -50,6 +52,74 @@ import { LeftPanel } from "./left-panel";
 
 interface V2ContainerProps extends V2LayoutState {
 	onLeftPanelClose: () => void;
+}
+
+function DebugWorkspacePanel() {
+	const [isEnabled, setIsEnabled] = useState(false);
+
+	useEffect(() => {
+		if (process.env.NODE_ENV === "production") return;
+		const params = new URLSearchParams(window.location.search);
+		setIsEnabled(params.get("debugPanel") === "1");
+	}, []);
+
+	const debug = useWorkflowDesignerStore(
+		useShallow((s) => ({
+			hasStartNode: s.hasStartNode(),
+			hasEndNode: s.hasEndNode(),
+			isStartNodeConnectedToEndNode: s.isStartNodeConnectedToEndNode(),
+			nodeCount: s.workspace.nodes.length,
+			connectionCount: s.workspace.connections.length,
+			// IMPORTANT: keep snapshot stable (no new arrays/objects) to avoid
+			// "The result of getSnapshot should be cached..." warning.
+			startNodeIdsText: s.workspace.nodes
+				.filter((node) => isAppEntryNode(node))
+				.map((node) => node.id)
+				.join(", "),
+			endNodeIdsText: s.workspace.nodes
+				.filter((node) => isEndNode(node))
+				.map((node) => node.id)
+				.join(", "),
+		})),
+	);
+
+	if (!isEnabled) return null;
+
+	return (
+		<XYFlowPanel position="top-right">
+			<div className="rounded-md border border-border bg-bg/80 backdrop-blur px-3 py-2 text-xs">
+				<div className="font-semibold">Debug</div>
+				<div className="mt-1 grid grid-cols-[auto,1fr] gap-x-3 gap-y-1">
+					<div className="text-muted-foreground">hasStartNode</div>
+					<div>{String(debug.hasStartNode)}</div>
+					<div className="text-muted-foreground">hasEndNode</div>
+					<div>{String(debug.hasEndNode)}</div>
+					<div className="text-muted-foreground">connected</div>
+					<div>{String(debug.isStartNodeConnectedToEndNode)}</div>
+					<div className="text-muted-foreground">nodes</div>
+					<div>{debug.nodeCount}</div>
+					<div className="text-muted-foreground">connections</div>
+					<div>{debug.connectionCount}</div>
+				</div>
+
+				<details className="mt-2">
+					<summary className="cursor-pointer select-none text-muted-foreground">
+						IDs
+					</summary>
+					<div className="mt-1 space-y-1">
+						<div>
+							<span className="text-muted-foreground">start:</span>{" "}
+							{debug.startNodeIdsText || "-"}
+						</div>
+						<div>
+							<span className="text-muted-foreground">end:</span>{" "}
+							{debug.endNodeIdsText || "-"}
+						</div>
+					</div>
+				</details>
+			</div>
+		</XYFlowPanel>
+	);
 }
 
 function V2NodeCanvas() {
@@ -448,6 +518,7 @@ function V2NodeCanvas() {
 			onEdgesChange={handleEdgesChange}
 		>
 			<Background />
+			<DebugWorkspacePanel />
 			{selectedTool?.action === "addNode" && (
 				<FloatingNodePreview node={selectedTool.node} />
 			)}
