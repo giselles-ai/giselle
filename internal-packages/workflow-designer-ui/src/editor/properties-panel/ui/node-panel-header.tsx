@@ -1,6 +1,7 @@
 "use client";
 
 import type { NodeLike } from "@giselles-ai/protocol";
+import clsx from "clsx/lite";
 import { Trash2 as TrashIcon } from "lucide-react";
 import { IconBox } from "./icon-box";
 import { PropertiesPanelHeader } from "./properties-panel";
@@ -25,12 +26,20 @@ export function NodePanelHeader({
 			action={
 				<div className="flex items-center gap-[6px] ml-[8px]">
 					{docsUrl && (
-						<IconBox
+						<a
 							aria-label="Open documentation"
 							title="Open documentation"
-							onClick={() =>
-								window.open(docsUrl, "_blank", "noopener,noreferrer")
-							}
+							href={docsUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							className={clsx(
+								"relative inline-flex items-center justify-center",
+								"rounded-[6px] size-[24px]",
+								"text-text/80",
+								"transition-colors duration-150",
+								"bg-transparent hover:bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)]",
+								"outline-none focus-visible:outline-none",
+							)}
 						>
 							<svg
 								className="size-[14px]"
@@ -57,7 +66,7 @@ export function NodePanelHeader({
 									strokeLinejoin="round"
 								/>
 							</svg>
-						</IconBox>
+						</a>
 					)}
 					{onDelete && (
 						<IconBox
