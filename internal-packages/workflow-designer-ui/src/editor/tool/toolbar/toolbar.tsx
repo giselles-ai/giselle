@@ -13,7 +13,6 @@ import {
 	createAppEntryNode,
 	createContentGenerationNode,
 	createDocumentVectorStoreNode,
-	createEndNode,
 	createFileNode,
 	createGitHubVectorStoreNode,
 	createQueryNode,
@@ -31,9 +30,9 @@ import clsx from "clsx/lite";
 import {
 	DatabaseZapIcon,
 	FileSlidersIcon,
-	FlagIcon,
+	FlameIcon,
 	FolderInputIcon,
-	PowerIcon,
+	HammerIcon,
 	SparklesIcon,
 	ZapIcon,
 } from "lucide-react";
@@ -53,7 +52,6 @@ import {
 	PictureIcon,
 	PromptIcon,
 	SearchIcon,
-	SourceLinkIcon,
 	TextFileIcon,
 	TooltipAndHotkey,
 	VideoIcon,
@@ -79,7 +77,6 @@ import {
 	selectLanguageModelV2Tool,
 	selectRetrievalCategoryTool,
 	selectSourceCategoryTool,
-	selectTriggerTool,
 	useToolbar,
 } from "./state";
 
@@ -95,14 +92,11 @@ export function Toolbar() {
 	const [searchQuery, setSearchQuery] = useState<string>("");
 	const [selectedCategory, setSelectedCategory] = useState<string>("All");
 	const { llmProviders, data: workspace } = useWorkflowDesigner();
-	const { stage, aiGatewayUnsupportedModels, generateContentNode } =
-		useFeatureFlag();
+	const { aiGatewayUnsupportedModels, generateContentNode } = useFeatureFlag();
 	const hasAppRequestNode = useMemo(
 		() => workspace.nodes.some((node) => node.content.type === "appEntry"),
 		[workspace.nodes],
 	);
-	const appRequestNodeLimitTooltip =
-		"Only one Stage Request can exist per workspace.";
 
 	const availableLanguageModels = useMemo(
 		() =>
@@ -242,7 +236,10 @@ export function Toolbar() {
 									setSelectedTool(selectSourceCategoryTool());
 									break;
 								case "selectTrigger":
-									setSelectedTool(selectTriggerTool());
+									if (hasAppRequestNode) {
+										return;
+									}
+									setSelectedTool(addNodeTool(createAppEntryNode()));
 									break;
 								case "selectGithubTrigger":
 									setSelectedTool(selectGithubTriggerTool());
@@ -266,113 +263,8 @@ export function Toolbar() {
 						className="relative"
 					>
 						<Tooltip text={<TooltipAndHotkey text="Start / End" hotkey="s" />}>
-							<PowerIcon data-icon />
+							<HammerIcon data-icon />
 						</Tooltip>
-						{selectedTool?.action === "selectTrigger" && (
-							<Popover.Root open={true}>
-								<Popover.Anchor />
-								<Popover.Portal>
-									<Popover.Content
-										className={clsx(
-											"relative rounded-[8px] px-[8px] py-[8px] min-w-[200px]",
-											"text-inverse overflow-hidden",
-										)}
-										sideOffset={42}
-									>
-										<div
-											className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none"
-											style={{
-												backgroundColor:
-													"color-mix(in srgb, var(--color-background, #00020b) 50%, transparent)",
-											}}
-										/>
-										<GlassSurfaceLayers
-											radiusClass="rounded-[8px]"
-											borderStyle="solid"
-											withBaseFill={false}
-											blurClass="backdrop-blur-md"
-											zIndexClass="z-0"
-										/>
-										<div className="relative flex flex-col gap-0">
-											<p className="text-[#505D7B] text-[12px] font-medium leading-[170%] mb-[4px] px-[8px]">
-												Start
-											</p>
-											<ToggleGroup.Root
-												type="single"
-												className={clsx(
-													"flex flex-col gap-[8px]",
-													"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
-													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-surface-hover",
-													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
-												)}
-												onValueChange={(value) => {
-													if (value === "appEntry") {
-														if (hasAppRequestNode) {
-															return;
-														}
-														setSelectedTool(addNodeTool(createAppEntryNode()));
-													}
-												}}
-											>
-												{stage &&
-													(hasAppRequestNode ? (
-														<Tooltip
-															text={appRequestNodeLimitTooltip}
-															side="right"
-															align="start"
-														>
-															<span className="block w-full">
-																<ToggleGroup.Item
-																	value="appEntry"
-																	data-tool
-																	aria-disabled={true}
-																	disabled={true}
-																	className="cursor-not-allowed opacity-50 pointer-events-none"
-																>
-																	<ZapIcon className="size-[20px] shrink-0" />
-																	<p className="text-[14px]">Stage Request</p>
-																</ToggleGroup.Item>
-															</span>
-														</Tooltip>
-													) : (
-														<ToggleGroup.Item value="appEntry" data-tool>
-															<ZapIcon className="size-[20px] shrink-0" />
-															<p className="text-[14px]">Stage Request</p>
-														</ToggleGroup.Item>
-													))}
-											</ToggleGroup.Root>
-											<p className="text-[#505D7B] text-[12px] font-medium leading-[170%] mt-[8px] mb-[4px] px-[8px]">
-												Stage Response
-											</p>
-											<ToggleGroup.Root
-												type="single"
-												className={clsx(
-													"flex flex-col gap-[8px]",
-													"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
-													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-surface-hover",
-													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
-												)}
-												onValueChange={(value) => {
-													if (value === "stageEnd") {
-														setSelectedTool(addNodeTool(createEndNode()));
-														return;
-													}
-												}}
-											>
-												<ToggleGroup.Item
-													value="stageEnd"
-													data-tool
-													className="relative"
-												>
-													<FlagIcon className="size-[20px] shrink-0" />
-													<p className="text-[14px]">Stage Response</p>
-												</ToggleGroup.Item>
-											</ToggleGroup.Root>
-										</div>
-									</Popover.Content>
-								</Popover.Portal>
-							</Popover.Root>
-						)}
 					</ToggleGroup.Item>
 
 					<ToggleGroup.Item
@@ -381,7 +273,7 @@ export function Toolbar() {
 						className="relative"
 					>
 						<Tooltip text={<TooltipAndHotkey text="Trigger" hotkey="t" />}>
-							<ZapIcon data-icon />
+							<FlameIcon data-icon />
 						</Tooltip>
 						{selectedTool?.action === "selectGithubTrigger" && (
 							<Popover.Root open={true}>
@@ -426,63 +318,6 @@ export function Toolbar() {
 												<ToggleGroup.Item value="github" data-tool>
 													<GitHubIcon className="size-[20px] shrink-0" />
 													<p className="text-[14px]">GitHub Trigger</p>
-												</ToggleGroup.Item>
-											</ToggleGroup.Root>
-										</div>
-									</Popover.Content>
-								</Popover.Portal>
-							</Popover.Root>
-						)}
-					</ToggleGroup.Item>
-
-					<ToggleGroup.Item value="selectAction" data-tool className="relative">
-						<Tooltip text={<TooltipAndHotkey text="Action" hotkey="a" />}>
-							<SourceLinkIcon data-icon />
-						</Tooltip>
-						{selectedTool?.action === "selectAction" && (
-							<Popover.Root open={true}>
-								<Popover.Anchor />
-								<Popover.Portal>
-									<Popover.Content
-										className={clsx(
-											"relative rounded-[8px] px-[8px] py-[8px] min-w-[200px]",
-											"text-inverse overflow-hidden",
-										)}
-										sideOffset={42}
-									>
-										<div
-											className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none"
-											style={{
-												backgroundColor:
-													"color-mix(in srgb, var(--color-background, #00020b) 50%, transparent)",
-											}}
-										/>
-										<GlassSurfaceLayers
-											radiusClass="rounded-[8px]"
-											borderStyle="solid"
-											withBaseFill={false}
-											blurClass="backdrop-blur-md"
-											zIndexClass="z-0"
-										/>
-										<div className="relative flex flex-col gap-0">
-											<ToggleGroup.Root
-												type="single"
-												className={clsx(
-													"flex flex-col gap-[8px]",
-													"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
-													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-surface-hover",
-													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
-												)}
-												onValueChange={() => {
-													// The current action registry only supports GitHub provider for now.
-													setSelectedTool(
-														addNodeTool(createActionNode("github")),
-													);
-												}}
-											>
-												<ToggleGroup.Item value="github" data-tool>
-													<GitHubIcon className="size-[20px] shrink-0" />
-													<p className="text-[14px]">GitHub Action</p>
 												</ToggleGroup.Item>
 											</ToggleGroup.Root>
 										</div>
@@ -1162,6 +997,63 @@ export function Toolbar() {
 												<ToggleGroup.Item value="webPage" data-tool>
 													<WebPageFileIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">Webpage</p>
+												</ToggleGroup.Item>
+											</ToggleGroup.Root>
+										</div>
+									</Popover.Content>
+								</Popover.Portal>
+							</Popover.Root>
+						)}
+					</ToggleGroup.Item>
+
+					<ToggleGroup.Item value="selectAction" data-tool className="relative">
+						<Tooltip text={<TooltipAndHotkey text="Action" hotkey="a" />}>
+							<ZapIcon data-icon />
+						</Tooltip>
+						{selectedTool?.action === "selectAction" && (
+							<Popover.Root open={true}>
+								<Popover.Anchor />
+								<Popover.Portal>
+									<Popover.Content
+										className={clsx(
+											"relative rounded-[8px] px-[8px] py-[8px] min-w-[200px]",
+											"text-inverse overflow-hidden",
+										)}
+										sideOffset={42}
+									>
+										<div
+											className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none"
+											style={{
+												backgroundColor:
+													"color-mix(in srgb, var(--color-background, #00020b) 50%, transparent)",
+											}}
+										/>
+										<GlassSurfaceLayers
+											radiusClass="rounded-[8px]"
+											borderStyle="solid"
+											withBaseFill={false}
+											blurClass="backdrop-blur-md"
+											zIndexClass="z-0"
+										/>
+										<div className="relative flex flex-col gap-0">
+											<ToggleGroup.Root
+												type="single"
+												className={clsx(
+													"flex flex-col gap-[8px]",
+													"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
+													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-surface-hover",
+													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
+												)}
+												onValueChange={() => {
+													// The current action registry only supports GitHub provider for now.
+													setSelectedTool(
+														addNodeTool(createActionNode("github")),
+													);
+												}}
+											>
+												<ToggleGroup.Item value="github" data-tool>
+													<GitHubIcon className="size-[20px] shrink-0" />
+													<p className="text-[14px]">GitHub Action</p>
 												</ToggleGroup.Item>
 											</ToggleGroup.Root>
 										</div>
