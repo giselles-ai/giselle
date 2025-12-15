@@ -976,6 +976,7 @@ export const apps = pgTable(
 	{
 		id: text("id").$type<AppId>().notNull().unique(),
 		appEntryNodeId: text("app_entry_node_id").$type<NodeId>().notNull(),
+		endNodeId: text("end_node_id").$type<NodeId | null>(),
 		dbId: serial("db_id").primaryKey(),
 		teamDbId: integer("team_db_id")
 			.notNull()

@@ -1,6 +1,6 @@
 import type { RunningGeneration, Trigger } from "@giselles-ai/protocol";
 import type { EmbeddingMetrics } from "@giselles-ai/rag";
-import type { OnAppCreate, OnAppDelete } from "../apps";
+import type { OnAppConnectionChange, OnAppCreate, OnAppDelete } from "../apps";
 import type {
 	GenerationMetadata,
 	OnGenerationComplete,
@@ -24,6 +24,7 @@ export type EmbeddingCompleteCallbackFunction = (
 export type GiselleCallbacks = {
 	appCreate?: OnAppCreate;
 	appDelete?: OnAppDelete;
+	appConnectionChange?: OnAppConnectionChange;
 	flowTriggerUpdate?: (flowTrigger: Trigger) => Promise<void>;
 	embeddingComplete?: EmbeddingCompleteCallbackFunction;
 	generationComplete?: OnGenerationComplete;
