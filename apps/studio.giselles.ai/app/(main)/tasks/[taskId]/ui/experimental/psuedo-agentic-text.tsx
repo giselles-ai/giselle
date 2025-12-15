@@ -17,7 +17,7 @@ function getDissolveDurationMs(text: string) {
 }
 
 const shimmerTextClassName =
-	"bg-[length:200%_100%] bg-clip-text bg-gradient-to-r from-text-muted/70 via-text-muted/35 to-text-muted/70 text-transparent animate-shimmer";
+	"bg-[length:200%_100%] bg-clip-text bg-gradient-to-r from-text-muted/55 via-text-muted/22 to-text-muted/55 text-transparent animate-shimmer";
 
 function renderTokens(
 	tokens: PseudoAgenticTextToken[],
@@ -43,7 +43,7 @@ function renderTokens(
 					key={`${token.type}-${index}-${token.value}`}
 					className={clsx(
 						"step-item-name",
-						"rounded-[8px] px-[4px] py-[2px] border-[1px] transition-colors",
+						"rounded-[8px] px-[4px] py-px border-[1px] transition-colors",
 						// Prevent horizontal clipping in overflow-x-hidden containers.
 						"max-w-full break-all",
 						"border-transparent",
@@ -59,7 +59,7 @@ function renderTokens(
 						isTrigger && "bg-trigger-node-1/20 text-trigger-node-1",
 						isAppEntry && "bg-trigger-node-1/20 text-trigger-node-1",
 						isQuery && "bg-query-node-1/20 text-query-node-1",
-						"text-[12px]",
+						"text-[11px]",
 					)}
 					data-content-type={contentType}
 				>
@@ -130,7 +130,7 @@ export function PsuedoAgenticText({
 	}
 
 	return (
-		<div className="text-[13px] text-text-muted/70 mt-8 space-y-3 leading-relaxed break-words">
+		<div className="mt-6 space-y-1 break-words text-[12px] leading-snug text-text-muted/40">
 			{lines.map((line) => {
 				const rendered = renderedByKey.get(line.key);
 				if (!rendered || rendered.length === 0) return null;
@@ -173,7 +173,7 @@ export function PsuedoAgenticText({
 				);
 			})}
 			{currentExecutionLine !== null ? (
-				<p className="italic">
+				<p className="italic text-text-muted/35 mt-4">
 					<span className="whitespace-pre-wrap">
 						{renderTokens(currentExecutionLine.tokens, {
 							shouldShimmerTextTokens: true,
