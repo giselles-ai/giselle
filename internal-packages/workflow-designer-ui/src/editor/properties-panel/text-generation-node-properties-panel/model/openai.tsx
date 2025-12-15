@@ -16,6 +16,25 @@ import {
 	TopPSlider,
 } from "./shared-model-controls";
 
+/**
+ * Returns the available reasoning effort options for the given OpenAI model.
+ *
+ * GPT-5.2 and GPT-5.1 variants support: none/low/medium/high/xhigh
+ * Older models (gpt-5, gpt-5-mini, gpt-5-nano) support: minimal/low/medium/high
+ *
+ * @see https://platform.openai.com/docs/guides/latest-model#gpt-5-2-parameter-compatibility
+ */
+function getReasoningEffortOptions(modelId: string): readonly string[] {
+	if (
+		modelId === "gpt-5.2" ||
+		modelId === "gpt-5.1-thinking" ||
+		modelId === "gpt-5.1-codex"
+	) {
+		return ["none", "low", "medium", "high", "xhigh"] as const;
+	}
+	return ["minimal", "low", "medium", "high"] as const;
+}
+
 export function OpenAIModelPanel({
 	openaiLanguageModel,
 	onModelChange,
@@ -68,10 +87,12 @@ export function OpenAIModelPanel({
 									}),
 								);
 							}}
-							options={["minimal", "low", "medium", "high"].map((v) => ({
-								value: v,
-								label: v,
-							}))}
+							options={getReasoningEffortOptions(openaiLanguageModel.id).map(
+								(v) => ({
+									value: v,
+									label: v,
+								}),
+							)}
 						/>
 					</SettingRow>
 
