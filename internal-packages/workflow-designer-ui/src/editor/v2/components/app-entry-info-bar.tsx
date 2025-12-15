@@ -6,7 +6,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useShallow } from "zustand/shallow";
 
 export function AppEntryInfoBar() {
-	const [isEntryConfigured, setIsEntryConfigured] = useState(false);
+	const [isRequestAcknowledged, setIsRequestAcknowledged] = useState(false);
+	const [isResponseAcknowledged, setIsResponseAcknowledged] = useState(false);
 
 	const { hasAppEntry, hasEnd } = useWorkflowDesignerStore(
 		useShallow((s) => {
@@ -19,21 +20,50 @@ export function AppEntryInfoBar() {
 	);
 
 	useEffect(() => {
-		if (hasAppEntry) {
-			setIsEntryConfigured(false);
+		if (!hasAppEntry) {
+			setIsRequestAcknowledged(false);
 		}
 	}, [hasAppEntry]);
 
+	useEffect(() => {
+		if (!hasEnd) {
+			setIsResponseAcknowledged(false);
+		}
+	}, [hasEnd]);
+
 	const handleClick = useCallback(() => {
-		setIsEntryConfigured(true);
-	}, []);
+		if (!hasAppEntry && hasEnd) {
+			// "Add Stage Request."
+			return;
+		}
+		if (hasAppEntry && !hasEnd) {
+			// "Set up Stage Request." -> "Add Stage Response."
+			setIsRequestAcknowledged(true);
+			return;
+		}
+		if (hasAppEntry && hasEnd) {
+			// "Set up Stage Response." -> hide
+			setIsResponseAcknowledged(true);
+		}
+	}, [hasAppEntry, hasEnd]);
 
 	const message = useMemo(() => {
-		if (!hasAppEntry) return null;
-		if (!isEntryConfigured) return "Set up Stage Request.";
-		if (!hasEnd) return "Add Stage Response.";
+		// Stage Response only
+		if (!hasAppEntry) {
+			if (hasEnd) return "Add Stage Request.";
+			return null;
+		}
+
+		// Stage Request exists, Stage Response missing
+		if (!hasEnd) {
+			if (!isRequestAcknowledged) return "Set up Stage Request.";
+			return "Add Stage Response.";
+		}
+
+		// Both exist: prompt to configure Stage Response until user acknowledges
+		if (!isResponseAcknowledged) return "Set up Stage Response.";
 		return null;
-	}, [hasAppEntry, isEntryConfigured, hasEnd]);
+	}, [hasAppEntry, hasEnd, isRequestAcknowledged, isResponseAcknowledged]);
 
 	if (!message) return null;
 
