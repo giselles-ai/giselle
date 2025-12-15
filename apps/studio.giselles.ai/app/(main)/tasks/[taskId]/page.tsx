@@ -1,14 +1,15 @@
-import { notFound } from "next/navigation";
-import { Suspense } from "react";
-import { InputAreaHeaderControls } from "./ui/input-area-header-controls";
+import {
+	getInputAreaHeaderControlsData,
+	InputAreaHeaderControls,
+} from "./ui/input-area-header-controls";
 import { InputAreaPlaceholder } from "./ui/input-area-placeholder";
-import { StepsSection } from "./ui/steps-section";
 import "./mobile-scroll.css";
 import { TaskId } from "@giselles-ai/protocol";
-import { giselle } from "@/app/giselle";
-import { TaskHeader } from "@/components/task/task-header";
+import { notFound } from "next/navigation";
 import { TaskLayout } from "@/components/task/task-layout";
-import { getTaskHeaderData } from "./ui/task-header";
+import { logger } from "@/lib/logger";
+import { TaskClient } from "./ui/experimental/task-client";
+import { getTaskData } from "./ui/experimental/task-data";
 import { TaskOverlayReset } from "./ui/task-overlay-reset";
 
 export default async function ({
@@ -17,28 +18,27 @@ export default async function ({
 	params: Promise<{ taskId: string }>;
 }) {
 	const { taskId: taskIdParam } = await params;
-
-	const taskHeaderData = await getTaskHeaderData({ params });
-
 	const result = TaskId.safeParse(taskIdParam);
 	if (!result.success) {
+		logger.error(`Invalid task ID: ${taskIdParam}`);
 		notFound();
 	}
 	const taskId = result.data;
-	// Fetch task once and reuse for both sections
-	const taskPromise = giselle.getTask({ taskId });
+	const [taskData, inputAreaHeaderControlsData] = await Promise.all([
+		getTaskData(taskId),
+		getInputAreaHeaderControlsData(taskId),
+	]);
+
+	async function refreshAction() {
+		"use server";
+
+		return await getTaskData(taskId);
+	}
 
 	return (
 		<TaskLayout>
 			<TaskOverlayReset />
-			{/* Top Section */}
-			<TaskHeader {...taskHeaderData} />
-			<div className="flex-1 overflow-y-auto overflow-x-hidden pb-8">
-				{/* Steps Section */}
-				<Suspense fallback={<div>Loading steps...</div>}>
-					<StepsSection taskPromise={taskPromise} taskId={taskId} />
-				</Suspense>
-			</div>
+			<TaskClient initial={taskData} refreshAction={refreshAction} />
 
 			{/* Main Content Area - Request new tasks section (sticky inside main container) */}
 			<div
@@ -51,9 +51,7 @@ export default async function ({
 					<h2 className="text-text-muted text-[13px] font-semibold">
 						Request new tasks in a new session
 					</h2>
-					<Suspense fallback={null}>
-						<InputAreaHeaderControls taskPromise={taskPromise} />
-					</Suspense>
+					<InputAreaHeaderControls {...inputAreaHeaderControlsData} />
 				</div>
 				{/* TODO: Input area will be added here - placeholder for future functionality */}
 				<InputAreaPlaceholder />

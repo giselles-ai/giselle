@@ -8,6 +8,7 @@ import { WorkspaceId } from "../workspace";
 import { TaskId } from "./task-id";
 
 export const SequenceId = createIdGenerator("sqn");
+export type SequenceId = z.infer<typeof SequenceId.schema>;
 
 export const StepId = createIdGenerator("stp");
 export type StepId = z.infer<typeof StepId.schema>;

@@ -22,6 +22,13 @@ const config: KnipConfig = {
 				"scripts/**",
 				"trigger.config.ts",
 				"trigger/investigate-private-key-job.ts",
+				// TaskUI is being migrated, remove this and clean up once migration is complete
+				"app/(main)/tasks/[taskId]/actions.ts",
+				"app/(main)/tasks/[taskId]/lib/utils.ts",
+				"app/(main)/tasks/[taskId]/ui/run-in-studio-only-chip.tsx",
+				"app/(main)/tasks/[taskId]/ui/step-error-state.tsx",
+				"app/(main)/tasks/[taskId]/ui/steps-section.tsx",
+				"app/(main)/tasks/[taskId]/ui/task-header.tsx",
 			],
 			// Ignore deps that are resolved dynamically in next.config or used only at build/runtime
 			ignoreDependencies: [
