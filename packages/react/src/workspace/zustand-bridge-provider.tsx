@@ -137,6 +137,14 @@ function findReachableEndNodeId(workspace: Workspace, startNodeId: NodeId) {
 	}
 }
 
+function omitEndNodeId(app: App): Omit<App, "endNodeId"> {
+	if (app.state === "connected") {
+		const { endNodeId: _unused, ...rest } = app;
+		return rest;
+	}
+	return app;
+}
+
 function useAppConnectionStateSync({
 	client,
 }: {
@@ -197,24 +205,12 @@ function useAppConnectionStateSync({
 							workspaceId: workspace.id,
 							endNodeId,
 						} satisfies Partial<App>)
-					: (() => {
-							if (res.app.state === "connected") {
-								// Ensure disconnected state does not accidentally keep endNodeId.
-								const { endNodeId: _unused, ...rest } = res.app;
-								return {
-									...rest,
-									state: "disconnected",
-									entryNodeId: appEntryNode.id,
-									workspaceId: workspace.id,
-								} satisfies Partial<App>;
-							}
-							return {
-								...res.app,
-								state: "disconnected",
-								entryNodeId: appEntryNode.id,
-								workspaceId: workspace.id,
-							} satisfies Partial<App>;
-						})();
+					: ({
+							...omitEndNodeId(res.app),
+							state: "disconnected",
+							entryNodeId: appEntryNode.id,
+							workspaceId: workspace.id,
+						} satisfies Partial<App>);
 
 			const parseResult = App.safeParse(appLike);
 			if (!parseResult.success) {
