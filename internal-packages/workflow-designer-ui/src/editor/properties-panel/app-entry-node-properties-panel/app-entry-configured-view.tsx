@@ -7,7 +7,6 @@ import { LoaderIcon } from "lucide-react";
 import { type FormEvent, useCallback, useEffect, useState } from "react";
 import type { KeyedMutator } from "swr";
 import { SettingDetail, SettingLabel } from "../ui/setting-label";
-import { AppIconSelect } from "./app-icon-select";
 
 export function AppEntryConfiguredView({
 	node,
@@ -21,8 +20,6 @@ export function AppEntryConfiguredView({
 	const client = useGiselle();
 
 	const [appDescription, setAppDescription] = useState(app.description);
-	const [selectedIconName, setSelectedIconName] = useState(app.iconName);
-	const [isSavingIcon, setIsSavingIcon] = useState(false);
 	const [isSavingDescription, setIsSavingDescription] = useState(false);
 
 	const { info } = useToasts();
@@ -31,12 +28,8 @@ export function AppEntryConfiguredView({
 		setAppDescription(app.description);
 	}, [app.description]);
 
-	useEffect(() => {
-		setSelectedIconName(app.iconName);
-	}, [app.iconName]);
-
 	const persistApp = useCallback(
-		async (updatedFields: Partial<App>) => {
+		async (updatedFields: Pick<App, "description">) => {
 			await client.saveApp({
 				app: {
 					...app,
@@ -49,24 +42,6 @@ export function AppEntryConfiguredView({
 		[app, client, mutateApp, info],
 	);
 
-	const handleIconChange = useCallback(
-		(value: string) => {
-			setSelectedIconName(value);
-			setIsSavingIcon(true);
-			void (async () => {
-				try {
-					await persistApp({ iconName: value });
-				} catch (error) {
-					console.error("Failed to update app icon", error);
-					setSelectedIconName(app.iconName);
-				} finally {
-					setIsSavingIcon(false);
-				}
-			})();
-		},
-		[app.iconName, persistApp],
-	);
-
 	const handleDescriptionSubmit = useCallback(
 		async (event: FormEvent<HTMLFormElement>) => {
 			event.preventDefault();
@@ -77,7 +52,6 @@ export function AppEntryConfiguredView({
 			try {
 				await persistApp({
 					description: appDescription,
-					iconName: selectedIconName,
 				});
 			} catch (error) {
 				console.error("Failed to update app description", error);
@@ -85,27 +59,11 @@ export function AppEntryConfiguredView({
 				setIsSavingDescription(false);
 			}
 		},
-		[app.description, appDescription, persistApp, selectedIconName],
+		[app.description, appDescription, persistApp],
 	);
 
 	return (
 		<div className="flex flex-col gap-[16px] p-0 px-1 overflow-y-auto">
-			<div className="flex flex-col gap-[8px]">
-				<SettingLabel className="py-[1.5px]">App Icon</SettingLabel>
-				<SettingDetail size="md" className="text-text-muted">
-					Choose the icon shown for this app across the workspace.
-				</SettingDetail>
-				<div className="w-full flex items-center gap-[8px]">
-					<AppIconSelect
-						value={selectedIconName}
-						onValueChange={handleIconChange}
-					/>
-					{isSavingIcon && (
-						<LoaderIcon className="size-[16px] text-text-muted animate-spin" />
-					)}
-				</div>
-			</div>
-
 			<div className="flex flex-col gap-[8px]">
 				<SettingLabel className="py-[1.5px]" htmlFor="app-description">
 					App Description
