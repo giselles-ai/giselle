@@ -4,6 +4,7 @@ import { createEndNode } from "@giselles-ai/node-registry";
 import {
 	InputId,
 	isActionNode,
+	isTriggerNode,
 	type NodeId,
 	OutputId,
 } from "@giselles-ai/protocol";
@@ -453,27 +454,21 @@ export function V2Container({ leftPanel, onLeftPanelClose }: V2ContainerProps) {
 	);
 
 	const isPropertiesPanelOpen = selectedNodes.length === 1;
-	const isTextGenerationPanel =
-		isPropertiesPanelOpen &&
-		`${selectedNodes[0]?.content.type}` === "textGeneration";
-	const isFilePanel =
-		isPropertiesPanelOpen && `${selectedNodes[0]?.content.type}` === "file";
-	const isTextPanel =
-		isPropertiesPanelOpen && `${selectedNodes[0]?.content.type}` === "text";
-	const isVectorStorePanel =
-		isPropertiesPanelOpen &&
-		`${selectedNodes[0]?.content.type}` === "vectorStore";
-	const isWebPagePanel =
-		isPropertiesPanelOpen && `${selectedNodes[0]?.content.type}` === "webPage";
+	const selectedNode = isPropertiesPanelOpen ? selectedNodes[0] : undefined;
+	const selectedContentType = selectedNode?.content.type;
+
+	const isTextGenerationPanel = selectedContentType === "textGeneration";
 	const isManualTriggerPanel =
-		isPropertiesPanelOpen &&
-		`${selectedNodes[0]?.content.type}` === "trigger" &&
-		`${(selectedNodes[0] as unknown as { content?: { provider?: string } })?.content?.provider}` ===
-			"manual";
-	const isAppEntryPanel =
-		isPropertiesPanelOpen && `${selectedNodes[0]?.content.type}` === "appEntry";
-	const isEndPanel =
-		isPropertiesPanelOpen && `${selectedNodes[0]?.content.type}` === "end";
+		selectedNode !== undefined && isTriggerNode(selectedNode, "manual");
+
+	const autoHeight =
+		selectedContentType === "file" ||
+		selectedContentType === "text" ||
+		selectedContentType === "vectorStore" ||
+		selectedContentType === "webPage" ||
+		selectedContentType === "appEntry" ||
+		selectedContentType === "end" ||
+		isManualTriggerPanel;
 
 	const mainRef = useRef<HTMLDivElement>(null);
 
@@ -521,15 +516,7 @@ export function V2Container({ leftPanel, onLeftPanelClose }: V2ContainerProps) {
 						title="Properties Panel"
 						defaultWidth={isTextGenerationPanel ? 400 : undefined}
 						minWidth={isTextGenerationPanel ? 400 : undefined}
-						autoHeight={
-							isFilePanel ||
-							isTextPanel ||
-							isVectorStorePanel ||
-							isWebPagePanel ||
-							isManualTriggerPanel ||
-							isAppEntryPanel ||
-							isEndPanel
-						}
+						autoHeight={autoHeight}
 					>
 						<PropertiesPanel />
 					</FloatingPropertiesPanel>

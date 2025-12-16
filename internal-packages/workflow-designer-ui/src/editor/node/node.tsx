@@ -464,7 +464,7 @@ export function NodeComponent({
 			className={clsx(
 				"group relative rounded-[16px]",
 				nodeLayoutClass,
-				// Stage Request / Stage Response changes shape between selected/unselected, so avoid animating layout/border-radius.
+				// Stage Request / Stage Response are rendered as pill nodes, so avoid animating layout/border-radius.
 				stageShapeClass,
 				stageBackgroundClass,
 				!v.isAppEntry && !v.isEnd && "bg-transparent",
