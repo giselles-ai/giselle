@@ -9,19 +9,25 @@ export function AppEntryInfoBar() {
 	const [isRequestAcknowledged, setIsRequestAcknowledged] = useState(false);
 	const [isResponseAcknowledged, setIsResponseAcknowledged] = useState(false);
 
-	const { hasAppEntry, hasEnd } = useWorkflowDesignerStore(
-		useShallow((s) => {
-			const nodes = s.workspace.nodes;
-			return {
-				hasAppEntry: nodes.some((n) => n.content.type === "appEntry"),
-				hasEnd: nodes.some((n) => n.content.type === "end"),
-			};
-		}),
-	);
+	const { hasAppEntry, hasEnd, isAppEntryConfigured } =
+		useWorkflowDesignerStore(
+			useShallow((s) => {
+				const nodes = s.workspace.nodes;
+				const appEntryNode = nodes.find((n) => n.content.type === "appEntry");
+				return {
+					hasAppEntry: nodes.some((n) => n.content.type === "appEntry"),
+					hasEnd: nodes.some((n) => n.content.type === "end"),
+					isAppEntryConfigured:
+						appEntryNode?.content.type === "appEntry" &&
+						appEntryNode.content.status === "configured",
+				};
+			}),
+		);
 
 	useEffect(() => {
 		if (!hasAppEntry) {
 			setIsRequestAcknowledged(false);
+			setIsResponseAcknowledged(false);
 		}
 	}, [hasAppEntry]);
 
@@ -31,39 +37,46 @@ export function AppEntryInfoBar() {
 		}
 	}, [hasEnd]);
 
-	const handleClick = useCallback(() => {
-		if (!hasAppEntry && hasEnd) {
-			// "Add Stage Request."
-			return;
-		}
-		if (hasAppEntry && !hasEnd) {
-			// "Set up Stage Request." -> "Add Stage Response."
+	// Once Stage Request is configured, advance automatically.
+	useEffect(() => {
+		if (isAppEntryConfigured) {
 			setIsRequestAcknowledged(true);
-			return;
 		}
-		if (hasAppEntry && hasEnd) {
-			// "Set up Stage Response." -> hide
-			setIsResponseAcknowledged(true);
-		}
-	}, [hasAppEntry, hasEnd]);
+	}, [isAppEntryConfigured]);
 
-	const message = useMemo(() => {
-		// Stage Response only
+	const messageType = useMemo(() => {
+		// Stage Response exists without Stage Request (edge case)
 		if (!hasAppEntry) {
-			if (hasEnd) return "Add Stage Request.";
+			if (hasEnd) return "addStageRequest" as const;
 			return null;
 		}
 
-		// Stage Request exists, Stage Response missing
-		if (!hasEnd) {
-			if (!isRequestAcknowledged) return "Set up Stage Request.";
-			return "Add Stage Response.";
-		}
+		// Step 1: user placed Stage Request → prompt to configure
+		if (!isRequestAcknowledged) return "setUpStageRequest" as const;
 
-		// Both exist: prompt to configure Stage Response until user acknowledges
-		if (!isResponseAcknowledged) return "Set up Stage Response.";
+		// Step 2: after acknowledging Stage Request → prompt Stage Response
+		if (!isResponseAcknowledged) return "setUpStageResponse" as const;
+
+		// Step 3: hide
 		return null;
 	}, [hasAppEntry, hasEnd, isRequestAcknowledged, isResponseAcknowledged]);
+
+	const handleClick = useCallback(() => {
+		if (messageType === "setUpStageRequest") {
+			setIsRequestAcknowledged(true);
+			return;
+		}
+		if (messageType === "setUpStageResponse") {
+			setIsResponseAcknowledged(true);
+		}
+	}, [messageType]);
+
+	const message = useMemo(() => {
+		if (messageType === "addStageRequest") return "Add Stage Request.";
+		if (messageType === "setUpStageRequest") return "Set up Stage Request.";
+		if (messageType === "setUpStageResponse") return "Set up Stage Response.";
+		return null;
+	}, [messageType]);
 
 	if (!message) return null;
 

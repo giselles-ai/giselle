@@ -262,7 +262,7 @@ export function Toolbar() {
 						data-tool
 						className="relative"
 					>
-						<Tooltip text={<TooltipAndHotkey text="Start / End" hotkey="s" />}>
+						<Tooltip text={<TooltipAndHotkey text="Set Up App" hotkey="s" />}>
 							<HammerIcon data-icon />
 						</Tooltip>
 					</ToggleGroup.Item>
