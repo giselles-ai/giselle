@@ -2,6 +2,7 @@ import { defaultName } from "@giselles-ai/node-registry";
 import {
 	type InputId,
 	isActionNode,
+	isAppEntryNode,
 	isImageGenerationNode,
 	isTextGenerationNode,
 	isTriggerNode,
@@ -93,6 +94,9 @@ function getCompletionLabel(node: NodeLike): string {
 
 // Helper function to check if a node requires setup
 function nodeRequiresSetup(node: NodeLike): boolean {
+	if (isAppEntryNode(node)) {
+		return node.content.status !== "configured";
+	}
 	if (isTriggerNode(node, "github")) {
 		return node.content.state.status !== "configured";
 	}
@@ -329,10 +333,9 @@ export function NodeComponent({
 	);
 
 	// App Entry: shape change only.
-	// - not selected: pill
-	// - selected: same square card as other nodes
-	const isAppEntryPill = v.isAppEntry && !selected && !preview;
-	const isEndPill = v.isEnd && !selected && !preview;
+	// - always pill (even in preview/selected)
+	const isAppEntryPill = v.isAppEntry;
+	const isEndPill = v.isEnd;
 	const isStagePill = isAppEntryPill || isEndPill;
 	const nodeRadiusClass = isStagePill ? "rounded-full" : "rounded-[16px]";
 	const stagePillLayoutClass =
@@ -344,7 +347,12 @@ export function NodeComponent({
 		v.isAppEntry || v.isEnd
 			? "backdrop-blur-[4px]"
 			: "transition-all backdrop-blur-[4px]";
-	const stageBackgroundClass = (v.isAppEntry || v.isEnd) && "bg-trigger-node-1";
+	// For unconfigured (dashed) state, keep the container background transparent
+	// and rely on the dashed border layer's gradient fill to match other nodes.
+	const stageBackgroundClass =
+		(v.isAppEntry || v.isEnd) && !requiresSetup
+			? "bg-trigger-node-1"
+			: undefined;
 
 	const borderGradientStyle = useMemo(() => {
 		if (requiresSetup) return undefined;
@@ -577,7 +585,9 @@ export function NodeComponent({
 					!borderGradientStyle && "bg-gradient-to-br",
 					!borderGradientStyle &&
 						(v.isAppEntry || v.isEnd) &&
-						"from-inverse/80 via-inverse/30 to-inverse/60",
+						(requiresSetup
+							? "from-trigger-node-1/30 via-trigger-node-1/50 to-trigger-node-1"
+							: "from-inverse/80 via-inverse/30 to-inverse/60"),
 					!borderGradientStyle &&
 						!v.isAppEntry &&
 						!v.isEnd &&
