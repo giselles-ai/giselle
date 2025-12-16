@@ -16,6 +16,7 @@ export interface ViewSlice {
 	isLoading: boolean;
 	llmProviders: LanguageModelProvider[];
 	copiedNode: NodeLike | null;
+	// CopiedNode or rather setClipboard
 	setCopiedNode: (node: NodeLike | null) => void;
 	setIsLoading: (loading: boolean) => void;
 	setLLMProviders: (providers: LanguageModelProvider[]) => void;
