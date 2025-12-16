@@ -3,10 +3,10 @@ import * as z from "zod/v4";
 import { AppId } from "../app";
 import { GenerationStatus } from "../generation";
 import { GenerationId } from "../generation/generation-id";
+import { NodeId } from "../node";
 import { TriggerId } from "../trigger";
 import { WorkspaceId } from "../workspace";
 import { TaskId } from "./task-id";
-import { NodeId } from "../node";
 
 export const SequenceId = createIdGenerator("sqn");
 export type SequenceId = z.infer<typeof SequenceId.schema>;
