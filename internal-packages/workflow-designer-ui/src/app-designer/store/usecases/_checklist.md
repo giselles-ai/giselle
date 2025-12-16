@@ -28,11 +28,11 @@
 - [ ] Shortcut scope / focus
   - [x] `useSetCurrentShortcutScope()`（canvas / properties-panel）
 - [ ] Secrets 管理
-  - [ ] `useAddSecret()`
-  - [ ] `useDeleteSecretAndCleanupNodes()`（secret参照してる tools を掃除してから削除）
+  - [x] `useAddSecret()`
+  - [x] `useDeleteSecretAndCleanupNodes()`（secret参照してる tools を掃除してから削除）
 - [ ] WebPage ノード
-  - [ ] `useAddWebPages()`（fetching→fetched/failed の更新含む）
-  - [ ] `useRemoveWebPage()`（必要なら removeFile も）
+  - [x] `useAddWebPages()`（fetching→fetched/failed の更新含む）
+  - [x] `useRemoveWebPage()`（必要なら removeFile も）
 - [ ] LLM providers（UIが参照する“外部ロード済み情報”）
   - [ ] `useLoadLlmProviders()`（ロードして state に保持）
 - [ ] 実行系（Run / Generation runner）は置き換えず“glueのみ”（optional）
