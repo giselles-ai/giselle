@@ -1,6 +1,5 @@
 import { getImageGenerationModelProvider } from "@giselles-ai/language-model";
 import {
-	type AppEntryNode,
 	isActionNode,
 	isContentGenerationNode,
 	isFileNode,
@@ -10,7 +9,7 @@ import {
 	isVectorStoreNode,
 	type NodeLike,
 } from "@giselles-ai/protocol";
-import { DatabaseZapIcon, FlagIcon, ZapIcon } from "lucide-react";
+import { DatabaseZapIcon, FlagIcon, PlayIcon, ZapIcon } from "lucide-react";
 import type { SVGProps } from "react";
 import { AnthropicIcon } from "../anthropic";
 import { Flux1Icon } from "../flux1";
@@ -26,7 +25,6 @@ import { RecraftIcon } from "../recraft";
 import { StableDiffusionIcon } from "../stable-diffusion";
 import { TextFileIcon } from "../text-file";
 import { WebPageFileIcon } from "../web-page-file";
-import { AppEntryNodeIcon } from "./app-entry-node-icon";
 import { DocumentVectorStoreIcon } from "./document-vector-store-icon";
 
 // Node-specific GitHub icon with dark fill for visibility on light backgrounds
@@ -198,13 +196,7 @@ export function NodeIcon({
 				case "query":
 					return <DatabaseZapIcon {...props} data-content-type-icon />;
 				case "appEntry":
-					return (
-						<AppEntryNodeIcon
-							node={node as AppEntryNode}
-							{...props}
-							data-content-type-icon
-						/>
-					);
+					return <PlayIcon {...props} data-content-type-icon />;
 				case "end":
 					return <FlagIcon {...props} data-content-type-icon />;
 				default: {
