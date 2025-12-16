@@ -46,12 +46,6 @@ export const ConnectedApp = z.object({
 });
 export type ConnectedApp = z.infer<typeof ConnectedApp>;
 
-const AppSchema = z.discriminatedUnion("state", [
-	DisconnectedApp,
-	ConnectedApp,
-]);
-type AppSchema = z.infer<typeof AppSchema>;
-
 function coerceDeprecatedAppToApp(input: DeprecatedApp): DisconnectedApp {
 	return {
 		id: input.id,
@@ -64,19 +58,16 @@ function coerceDeprecatedAppToApp(input: DeprecatedApp): DisconnectedApp {
 	};
 }
 
-export const App: z.ZodType<AppSchema> = z.preprocess((input) => {
-	const appParseResult = AppSchema.safeParse(input);
-	if (appParseResult.success) {
+export const App = z.preprocess(
+	(input) => {
+		const deprecatedParseResult = DeprecatedApp.safeParse(input);
+		if (deprecatedParseResult.success) {
+			return coerceDeprecatedAppToApp(deprecatedParseResult.data);
+		}
 		return input;
-	}
-
-	const deprecatedParseResult = DeprecatedApp.safeParse(input);
-	if (deprecatedParseResult.success) {
-		return coerceDeprecatedAppToApp(deprecatedParseResult.data);
-	}
-
-	return input;
-}, AppSchema);
+	},
+	z.discriminatedUnion("state", [DisconnectedApp, ConnectedApp]),
+);
 export type App = z.infer<typeof App>;
 
 /** @deprecated use App */
