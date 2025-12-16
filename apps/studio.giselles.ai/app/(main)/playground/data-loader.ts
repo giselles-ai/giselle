@@ -1,4 +1,3 @@
-import { isIconName } from "@giselle-internal/ui/utils";
 import { isTextGenerationNode, isVectorStoreNode } from "@giselles-ai/protocol";
 import { giselle } from "@/app/giselle";
 import { apps as appsDefinition, db } from "@/db";
@@ -195,9 +194,6 @@ async function getAppsBySampleFlag(
 			id: data.giselleApp.id,
 			name: data.workspace.name ?? "No name app",
 			description: data.giselleApp.description,
-			iconName: isIconName(data.giselleApp.iconName)
-				? data.giselleApp.iconName
-				: "sparkles",
 			entryNodeId: data.giselleApp.entryNodeId,
 			parameters: data.giselleApp.parameters,
 			workspaceId: data.workspace.id,

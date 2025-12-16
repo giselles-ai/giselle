@@ -5,6 +5,8 @@ import {
 	type FileData,
 	type FileNode,
 	isAppEntryNode,
+	isEndNode,
+	type NodeId,
 	type NodeLike,
 	type Workspace,
 } from "@giselles-ai/protocol";
@@ -26,11 +28,6 @@ export interface WorkspaceCallbackOptions {
 	onAddNode?: (node: NodeLike) => void;
 	onUpdateNode?: (node: NodeLike) => void;
 	onDeleteNode?: (node: NodeLike) => void;
-}
-
-function ensureNonEmpty(value: string | undefined, fallback: string) {
-	const trimmed = value?.trim() ?? "";
-	return trimmed.length > 0 ? trimmed : fallback;
 }
 
 function useWorkspaceAutoSave({
@@ -103,6 +100,164 @@ function useWorkspaceAutoSave({
 	return { saveImmediately };
 }
 
+function findReachableEndNodeId(workspace: Workspace, startNodeId: NodeId) {
+	const endNodeIdSet = new Set<NodeId>(
+		workspace.nodes.filter((node) => isEndNode(node)).map((node) => node.id),
+	);
+	if (endNodeIdSet.size === 0) return;
+
+	const adjacencyList = new Map<NodeId, Set<NodeId>>();
+	for (const connection of workspace.connections) {
+		const fromNodeId = connection.outputNode.id;
+		const toNodeId = connection.inputNode.id;
+		const destinations = adjacencyList.get(fromNodeId) ?? new Set<NodeId>();
+		destinations.add(toNodeId);
+		adjacencyList.set(fromNodeId, destinations);
+	}
+
+	const visited = new Set<NodeId>([startNodeId]);
+	const queue: NodeId[] = [startNodeId];
+
+	while (queue.length > 0) {
+		const currentNodeId = queue.shift();
+		if (!currentNodeId) continue;
+
+		if (endNodeIdSet.has(currentNodeId)) {
+			return currentNodeId;
+		}
+
+		const nextNodeIds = adjacencyList.get(currentNodeId);
+		if (!nextNodeIds) continue;
+
+		for (const nextNodeId of nextNodeIds) {
+			if (visited.has(nextNodeId)) continue;
+			visited.add(nextNodeId);
+			queue.push(nextNodeId);
+		}
+	}
+}
+
+function omitEndNodeId(app: App): Omit<App, "endNodeId"> {
+	if (app.state === "connected") {
+		const { endNodeId: _unused, ...rest } = app;
+		return rest;
+	}
+	return app;
+}
+
+function useAppConnectionStateSync({
+	client,
+}: {
+	client: ReturnType<typeof useGiselle>;
+}) {
+	const lastSyncedRef = useRef<{
+		appId: AppId;
+		workspaceId: Workspace["id"];
+		entryNodeId: NodeId;
+		state: App["state"];
+		endNodeId?: NodeId;
+	} | null>(null);
+
+	const isScheduledRef = useRef(false);
+
+	const syncNow = useCallback(async () => {
+		const workspace = appStore.getState().workspace;
+		if (!workspace) {
+			lastSyncedRef.current = null;
+			return;
+		}
+
+		const appEntryNode = workspace.nodes.find(
+			(node): node is AppEntryNode =>
+				isAppEntryNode(node) && node.content.status === "configured",
+		);
+		if (!appEntryNode || appEntryNode.content.status !== "configured") {
+			lastSyncedRef.current = null;
+			return;
+		}
+
+		const endNodeId = findReachableEndNodeId(workspace, appEntryNode.id);
+		const desiredState: App["state"] = endNodeId ? "connected" : "disconnected";
+
+		const last = lastSyncedRef.current;
+		if (
+			last &&
+			last.appId === appEntryNode.content.appId &&
+			last.workspaceId === workspace.id &&
+			last.entryNodeId === appEntryNode.id &&
+			last.state === desiredState &&
+			last.endNodeId === endNodeId
+		) {
+			return;
+		}
+
+		try {
+			const res = await client.getApp({
+				appId: appEntryNode.content.appId,
+			});
+
+			const appLike =
+				desiredState === "connected"
+					? ({
+							...res.app,
+							state: "connected",
+							entryNodeId: appEntryNode.id,
+							workspaceId: workspace.id,
+							endNodeId,
+						} satisfies Partial<App>)
+					: ({
+							...omitEndNodeId(res.app),
+							state: "disconnected",
+							entryNodeId: appEntryNode.id,
+							workspaceId: workspace.id,
+						} satisfies Partial<App>);
+
+			const parseResult = App.safeParse(appLike);
+			if (!parseResult.success) {
+				console.error(
+					"Failed to derive connected/disconnected app state:",
+					parseResult.error,
+				);
+				return;
+			}
+
+			await client.saveApp({ app: parseResult.data });
+			lastSyncedRef.current = {
+				appId: parseResult.data.id,
+				workspaceId: parseResult.data.workspaceId,
+				entryNodeId: parseResult.data.entryNodeId,
+				state: parseResult.data.state,
+				endNodeId:
+					parseResult.data.state === "connected"
+						? parseResult.data.endNodeId
+						: undefined,
+			};
+		} catch (error) {
+			console.error("Failed to sync app connection state:", error);
+		}
+	}, [client]);
+
+	const scheduleSync = useCallback(() => {
+		if (isScheduledRef.current) return;
+		isScheduledRef.current = true;
+		queueMicrotask(() => {
+			isScheduledRef.current = false;
+			void syncNow();
+		});
+	}, [syncNow]);
+
+	useEffect(() => {
+		// Ensure initial state is synced once after mount/init.
+		scheduleSync();
+	}, [scheduleSync]);
+
+	return {
+		onAddConnection: scheduleSync,
+		onDeleteConnection: scheduleSync,
+		onInitWorkspace: scheduleSync,
+	};
+}
+
 export function ZustandBridgeProvider({
 	children,
 	data,
@@ -136,19 +291,18 @@ export function ZustandBridgeProvider({
 
 			const appId = AppId.generate();
 			const draftApp = node.content.draftApp;
-			const fallbackNodeName = ensureNonEmpty(
-				(node as { name?: string }).name,
-				"App Entry",
-			);
 			const appLike: App = {
 				id: appId,
-				name: ensureNonEmpty(draftApp.name, fallbackNodeName),
+				version: "v1",
+				state: "disconnected",
 				description: draftApp.description ?? "",
-				iconName: ensureNonEmpty(draftApp.iconName, "workflow"),
 				parameters: draftApp.parameters,
 				entryNodeId: node.id,
 				workspaceId: workspace.id,
 			};
+			if (process.env.NODE_ENV === "development") {
+				console.log(appLike);
+			}
 			const parseResult = App.safeParse(appLike);
 			if (!parseResult.success) {
 				console.error(
@@ -177,7 +331,6 @@ export function ZustandBridgeProvider({
 			}
 
 			nextState.updateNodeData(existingNode as AppEntryNode, {
-				name: parseResult.data.name,
 				content: {
 					type: "appEntry",
 					status: "configured",
@@ -201,14 +354,28 @@ export function ZustandBridgeProvider({
 		saveWorkflowDelay,
 	});
 
+	const { onAddConnection, onDeleteConnection, onInitWorkspace } =
+		useAppConnectionStateSync({ client });
+
 	// Initialize or update workspace in the global store when data changes
 	useEffect(() => {
 		appStore.getState().initWorkspace(data, {
 			onAddNode: handleNodeAdded,
 			onUpdateNode,
 			onDeleteNode,
+			onAddConnection,
+			onDeleteConnection,
 		});
-	}, [data, handleNodeAdded, onUpdateNode, onDeleteNode]);
+		onInitWorkspace();
+	}, [
+		data,
+		handleNodeAdded,
+		onUpdateNode,
+		onDeleteNode,
+		onAddConnection,
+		onDeleteConnection,
+		onInitWorkspace,
+	]);
 
 	// Load LLM providers
 	useEffect(() => {

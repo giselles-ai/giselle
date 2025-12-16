@@ -28,6 +28,8 @@ export interface WorkspaceSliceOptions {
 	onAddNode?: (node: NodeLike) => void;
 	onUpdateNode?: (node: NodeLike) => void;
 	onDeleteNode?: (node: NodeLike) => void;
+	onAddConnection?: (connection: Connection) => void;
+	onDeleteConnection?: (connection: Connection) => void;
 }
 export interface WorkspaceSlice {
 	workspace: Workspace | null;
@@ -42,6 +44,8 @@ export interface WorkspaceSlice {
 	updateNodeCallback?: (node: NodeLike) => void;
 	deleteNode: (nodeId: NodeId | string) => void;
 	deleteNodeCallback?: (node: NodeLike) => void;
+	addConnectionCallback?: (connection: Connection) => void;
+	deleteConnectionCallback?: (connection: Connection) => void;
 	addConnection: (args: {
 		outputNode: NodeLike;
 		outputId: OutputId;
@@ -92,6 +96,8 @@ export const createWorkspaceSlice: StateCreator<WorkspaceSlice> = (
 			addNodeCallback: options.onAddNode,
 			updateNodeCallback: options.onUpdateNode,
 			deleteNodeCallback: options.onDeleteNode,
+			addConnectionCallback: options.onAddConnection,
+			deleteConnectionCallback: options.onDeleteConnection,
 		}),
 	addNode: (node, ui) => {
 		set((state) => {
@@ -128,12 +134,16 @@ export const createWorkspaceSlice: StateCreator<WorkspaceSlice> = (
 		}
 	},
 	deleteNode: (nodeIdToDelete) => {
+		const nodeId = NodeId.parse(nodeIdToDelete);
 		const nodeToDelete = get().workspace?.nodes.find(
-			(node) => node.id === nodeIdToDelete,
+			(node) => node.id === nodeId,
 		);
+		const connectionsToDelete =
+			get().workspace?.connections.filter(
+				(c) => c.inputNode.id === nodeId || c.outputNode.id === nodeId,
+			) ?? [];
 		set((state) => {
 			if (!state.workspace) return {};
-			const nodeId = NodeId.parse(nodeIdToDelete);
 			const ui = {
 				...state.workspace.ui,
 				nodeState: { ...state.workspace.ui.nodeState },
@@ -175,40 +185,44 @@ export const createWorkspaceSlice: StateCreator<WorkspaceSlice> = (
 		if (nodeToDelete) {
 			get().deleteNodeCallback?.(nodeToDelete);
 		}
+		for (const connection of connectionsToDelete) {
+			get().deleteConnectionCallback?.(connection);
+		}
 	},
-	addConnection: ({ outputNode, outputId, inputNode, inputId }) =>
+	addConnection: ({ outputNode, outputId, inputNode, inputId }) => {
+		const newConnection = {
+			id: ConnectionId.generate(),
+			outputNode: {
+				id: outputNode.id,
+				type: outputNode.type,
+				content: { type: outputNode.content.type },
+			},
+			outputId,
+			inputNode: {
+				id: inputNode.id,
+				type: inputNode.type,
+				content: { type: inputNode.content.type },
+			},
+			inputId,
+		} as Connection;
+
 		set((state) => {
 			if (!state.workspace) return {};
 			return {
 				workspace: {
 					...state.workspace,
-					connections: [
-						...state.workspace.connections,
-						{
-							id: ConnectionId.generate(),
-							outputNode: {
-								id: outputNode.id,
-								type: outputNode.type,
-								content: { type: outputNode.content.type },
-							},
-							outputId,
-							inputNode: {
-								id: inputNode.id,
-								type: inputNode.type,
-								content: { type: inputNode.content.type },
-							},
-							inputId,
-						} as Connection,
-					],
+					connections: [...state.workspace.connections, newConnection],
 				},
 			};
-		}),
-	deleteConnection: (connectionId) =>
+		});
+		get().addConnectionCallback?.(newConnection);
+	},
+	deleteConnection: (connectionId) => {
+		const targetConnection = get().workspace?.connections.find(
+			(c) => c.id === connectionId,
+		);
 		set((state) => {
 			if (!state.workspace) return {};
-			const targetConnection = state.workspace.connections.find(
-				(c) => c.id === connectionId,
-			);
 			if (targetConnection === undefined) {
 				return state;
 			}
@@ -246,7 +260,11 @@ export const createWorkspaceSlice: StateCreator<WorkspaceSlice> = (
 					nodes: nextNodes,
 				},
 			};
-		}),
+		});
+		if (targetConnection) {
+			get().deleteConnectionCallback?.(targetConnection);
+		}
+	},
 	copyNode: (sourceNode, options) => {
 		const { workspace } = get();
 		if (!workspace) return;

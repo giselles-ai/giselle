@@ -202,12 +202,43 @@ export const giselle = NextGiselle({
 			await db.insert(apps).values({
 				id: app.id,
 				appEntryNodeId: app.entryNodeId,
+				endNodeId: app.state === "connected" ? app.endNodeId : null,
 				teamDbId: currentTeam.dbId,
 				workspaceDbId: workspace.dbId,
 			});
 		},
 		appDelete: async ({ appId }) => {
 			await db.delete(apps).where(eq(apps.id, appId));
+		},
+		appConnectionChange: async (args) => {
+			switch (args.event) {
+				case "connected": {
+					const app = args.payload.app;
+					await db
+						.update(apps)
+						.set({
+							appEntryNodeId: app.entryNodeId,
+							endNodeId: app.endNodeId,
+						})
+						.where(eq(apps.id, app.id));
+					break;
+				}
+				case "disconnected": {
+					const app = args.payload.app;
+					await db
+						.update(apps)
+						.set({
+							appEntryNodeId: app.entryNodeId,
+							endNodeId: null,
+						})
+						.where(eq(apps.id, app.id));
+					break;
+				}
+				default: {
+					const _exhaustiveCheck: never = args;
+					throw new Error(`Unhandled event: ${_exhaustiveCheck}`);
+				}
+			}
 		},
 		generationComplete: async (args) => {
 			const requestId = getRequestId();

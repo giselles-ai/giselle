@@ -2,7 +2,6 @@
 
 import { AppIcon } from "@giselle-internal/ui/app-icon";
 import { Select, type SelectOption } from "@giselle-internal/ui/select";
-import { isIconName } from "@giselle-internal/ui/utils";
 import { useToast } from "@giselles-ai/contexts/toast";
 import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
 import {
@@ -17,8 +16,14 @@ import {
 	type UploadedFileData,
 } from "@giselles-ai/protocol";
 import { APICallError, useGiselle } from "@giselles-ai/react";
-import { ArrowUpIcon, Paperclip, Search, Sparkles, X } from "lucide-react";
-import { DynamicIcon, type IconName } from "lucide-react/dynamic";
+import {
+	ArrowUpIcon,
+	Paperclip,
+	PlayIcon,
+	Search,
+	Sparkles,
+	X,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import {
@@ -83,9 +88,7 @@ function AppListCard({
 	title,
 	description,
 	badgeType,
-	iconName,
 	providers,
-	icon,
 	creatorName,
 	isSelected = false,
 	onClick,
@@ -94,7 +97,6 @@ function AppListCard({
 	const visibleProviders = providers?.slice(0, 3) ?? [];
 	const remainingProvidersCount =
 		(providers?.length ?? 0) - visibleProviders.length;
-	const fallbackInitial = title.trim().charAt(0).toUpperCase() || "A";
 
 	return (
 		<button
@@ -131,18 +133,7 @@ function AppListCard({
 			) : null}
 			<div className="flex items-center gap-3">
 				<div className="w-10 h-10 rounded-full bg-[rgba(21,25,33,0.7)] flex items-center justify-center shrink-0">
-					{icon ? (
-						icon
-					) : iconName && isIconName(iconName) ? (
-						<DynamicIcon
-							name={iconName as IconName}
-							className="h-5 w-5 text-text-muted"
-						/>
-					) : (
-						<span className="text-text-muted text-sm font-semibold">
-							{fallbackInitial}
-						</span>
-					)}
+					<PlayIcon className="h-5 w-5 text-text-muted" />
 				</div>
 				<div className="flex items-center gap-2 min-w-0">
 					<span className="font-medium text-[14px] truncate text-[color:var(--color-text-nav-active)]">
@@ -210,7 +201,6 @@ function AppCard({
 			title={app.name}
 			description={app.description}
 			badgeType={badgeType}
-			iconName={app.iconName}
 			providers={app.llmProviders}
 			creatorName={creatorName}
 			isSelected={isSelected}
@@ -348,7 +338,7 @@ function ChatInputArea({
 			({
 				value: app.id,
 				label: app.name,
-				icon: <DynamicIcon name={app.iconName} className="h-4 w-4" />,
+				icon: <PlayIcon className="h-4 w-4" />,
 			}) satisfies SelectOption,
 	);
 	const firstAppOptionValue = appOptions[0]?.value;

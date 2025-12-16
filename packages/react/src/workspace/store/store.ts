@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { type AppStoreSlice, createAppStoreSlice } from "./app-store";
 import { createFileSlice, type FileSlice } from "./file-slice";
 import {
 	createPropertiesPanelSlice,
@@ -11,11 +12,13 @@ import { createWorkspaceSlice, type WorkspaceSlice } from "./workspace-slice";
 export type AppStore = WorkspaceSlice &
 	ViewSlice &
 	FileSlice &
-	PropertiesPanelSlice;
+	PropertiesPanelSlice &
+	AppStoreSlice;
 
 export const appStore = create<AppStore>()((...a) => ({
 	...createWorkspaceSlice(...a),
 	...createViewSlice(...a),
 	...createFileSlice(...a),
 	...createPropertiesPanelSlice(...a),
+	...createAppStoreSlice(...a),
 }));
