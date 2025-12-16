@@ -63,7 +63,7 @@ async function cancelV2Subscription(subscriptionId: string): Promise<void> {
 }
 
 export type CancelSubscriptionResult =
-	| { success: true }
+	| { success: true; willCancelAt: string | null }
 	| { success: false; error: string };
 
 /**
@@ -117,14 +117,26 @@ export async function cancelSubscription(): Promise<CancelSubscriptionResult> {
 
 		await cancelV2Subscription(team.activeSubscriptionId);
 
+		// Retrieve the subscription to get the scheduled cancellation date
+		const subscription =
+			await stripe.v2.billing.pricingPlanSubscriptions.retrieve(
+				team.activeSubscriptionId,
+			);
+		const willCancelAt =
+			subscription.servicing_status_transitions?.will_cancel_at ?? null;
+
 		logger.info(
-			{ subscriptionId: team.activeSubscriptionId, teamDbId: team.dbId },
+			{
+				subscriptionId: team.activeSubscriptionId,
+				teamDbId: team.dbId,
+				willCancelAt,
+			},
 			"[cancel-subscription] Subscription cancelled successfully",
 		);
 
 		revalidatePath("/settings/team");
 
-		return { success: true };
+		return { success: true, willCancelAt };
 	} catch (error) {
 		logger.error(
 			{ error },

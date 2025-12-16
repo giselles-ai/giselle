@@ -11,6 +11,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@giselle-internal/ui/dialog";
+import { formatTimestamp } from "@giselles-ai/lib/utils";
 import { X } from "lucide-react";
 import { useState, useTransition } from "react";
 import {
@@ -31,6 +32,7 @@ export function CancelSubscriptionButton({
 	const [isPending, startTransition] = useTransition();
 	const [error, setError] = useState<string | null>(null);
 	const [isSuccess, setIsSuccess] = useState(false);
+	const [willCancelAt, setWillCancelAt] = useState<string | null>(null);
 
 	// Only show for v2 subscriptions
 	if (!subscriptionId.startsWith("bpps_")) {
@@ -43,6 +45,7 @@ export function CancelSubscriptionButton({
 			const result: CancelSubscriptionResult = await cancelSubscription();
 			if (result.success) {
 				setIsSuccess(true);
+				setWillCancelAt(result.willCancelAt);
 				// Delay reload to allow webhook processing
 				setTimeout(() => {
 					window.location.reload();
@@ -89,8 +92,9 @@ export function CancelSubscriptionButton({
 								Subscription Cancelled
 							</DialogTitle>
 							<DialogDescription className="font-geist mt-2 text-[14px] text-white-50">
-								Your subscription has been cancelled and will end at the end of
-								your current billing period. The page will refresh shortly.
+								{willCancelAt
+									? `Your subscription has been cancelled and will end on ${formatTimestamp.toLongDate(new Date(willCancelAt).getTime())}. The page will refresh shortly.`
+									: "Your subscription has been cancelled and will end at the end of your current billing period. The page will refresh shortly."}
 							</DialogDescription>
 						</DialogHeader>
 						<DialogBody />
