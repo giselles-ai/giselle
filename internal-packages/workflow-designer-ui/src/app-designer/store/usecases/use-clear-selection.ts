@@ -1,22 +1,28 @@
 import { useCallback } from "react";
 import { useAppDesignerStore, useWorkspaceActions } from "../hooks";
+import { useSetSelectedConnectionIds } from "./use-set-selected-connection-ids";
 
 export function useClearSelection() {
 	const { nodeIds, selectedConnectionIds } = useAppDesignerStore((s) => ({
 		nodeIds: s.nodes.map((n) => n.id),
 		selectedConnectionIds: s.ui.selectedConnectionIds ?? [],
 	}));
-	const { setUiNodeState, deselectConnection } = useWorkspaceActions((s) => ({
+	const { setUiNodeState } = useWorkspaceActions((s) => ({
 		setUiNodeState: s.setUiNodeState,
-		deselectConnection: s.deselectConnection,
 	}));
+	const setSelectedConnectionIds = useSetSelectedConnectionIds();
 
 	return useCallback(() => {
 		for (const id of nodeIds) {
 			setUiNodeState(id, { selected: false });
 		}
-		for (const connectionId of selectedConnectionIds) {
-			deselectConnection(connectionId);
+		if (selectedConnectionIds.length > 0) {
+			setSelectedConnectionIds([]);
 		}
-	}, [deselectConnection, nodeIds, selectedConnectionIds, setUiNodeState]);
+	}, [
+		nodeIds,
+		selectedConnectionIds.length,
+		setSelectedConnectionIds,
+		setUiNodeState,
+	]);
 }

@@ -1,12 +1,13 @@
 import type { NodeChange, OnNodesChange } from "@xyflow/react";
 import { useCallback } from "react";
 import { useWorkspaceActions } from "../hooks";
+import { useDeleteNode } from "./use-delete-node";
 
 export function useApplyNodesChange(): OnNodesChange {
-	const { setUiNodeState, deleteNode } = useWorkspaceActions((s) => ({
+	const { setUiNodeState } = useWorkspaceActions((s) => ({
 		setUiNodeState: s.setUiNodeState,
-		deleteNode: s.deleteNode,
 	}));
+	const deleteNode = useDeleteNode();
 
 	return useCallback<OnNodesChange>(
 		(changes: NodeChange[]) => {

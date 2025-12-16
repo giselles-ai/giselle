@@ -10,6 +10,34 @@
   - [x] `useUploadFile()`（client: `useGiselle()`, workspaceId: `useAppDesignerStore((s)=>s.id)`）
   - [x] `useRemoveFile()`（同上）
   - [x] `useCopyFiles()`（同上）
+  - [x] `useUpdateFileStatus()`（低レベルAPI合成で optimistic update）
+- [ ] Workspace名変更
+  - [x] `useUpdateWorkspaceName()`（`updateName`/`updateWorkspaceName` 相当）
+- [ ] Clipboard（Copy/Paste/Duplicate）
+  - [x] `useCopyNode()`（Copy/Paste/Duplicate の実体）
+  - [x] `useCopyNodeToClipboard()`
+  - [x] `usePasteNodeFromClipboard()`
+  - [x] `useDuplicateNode()`
+- [ ] Workspaceコア操作（低レベルAPI合成）
+  - [x] `useAddConnection()`（ConnectionId生成→record追加）
+  - [x] `useDeleteConnection()`（connection削除 + inputs掃除 + selection掃除）
+  - [x] `useDeleteNode()`（node削除 + 関連connection削除 + inputs/ui掃除）
+- [ ] Node更新（低レベルAPI合成）
+  - [x] `useUpdateNodeData()`（node→updateNode(id, patch)）
+  - [x] `useUpdateNodeDataContent()`（content merge→updateNode）
+- [ ] Shortcut scope / focus
+  - [x] `useSetCurrentShortcutScope()`（canvas / properties-panel）
+- [ ] Secrets 管理
+  - [ ] `useAddSecret()`
+  - [ ] `useDeleteSecretAndCleanupNodes()`（secret参照してる tools を掃除してから削除）
+- [ ] WebPage ノード
+  - [ ] `useAddWebPages()`（fetching→fetched/failed の更新含む）
+  - [ ] `useRemoveWebPage()`（必要なら removeFile も）
+- [ ] LLM providers（UIが参照する“外部ロード済み情報”）
+  - [ ] `useLoadLlmProviders()`（ロードして state に保持）
+- [ ] 実行系（Run / Generation runner）は置き換えず“glueのみ”（optional）
+  - [ ] `useWorkspaceOrigin()`（`{ type: "studio", workspaceId }` を返す薄いヘルパ）
+  - [ ] `useRunValidation()`（prompt空/ハイライト解除などUI都合だけ）
 - [ ] アプリ固有のユースケース（必要なら）
   - [ ] AppEntry node auto-configure（`zustand-bridge-provider` の `autoConfigureAppEntryNode` 相当）
   - [ ] App connected/disconnected sync（reachable end node判定→保存）

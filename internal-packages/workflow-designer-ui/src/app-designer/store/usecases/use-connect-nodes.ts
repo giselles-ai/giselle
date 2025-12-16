@@ -10,14 +10,14 @@ import {
 } from "@giselles-ai/react";
 import type { Connection } from "@xyflow/react";
 import { useCallback } from "react";
-import { useAppDesignerStore, useWorkspaceActions } from "../hooks";
+import { useAppDesignerStore } from "../hooks";
+import { useAddConnection } from "./use-add-connection";
+import { useUpdateNodeData } from "./use-update-node-data";
 
 export function useConnectNodes() {
 	const nodes = useAppDesignerStore((s) => s.nodes);
-	const { addConnection, updateNodeData } = useWorkspaceActions((s) => ({
-		addConnection: s.addConnection,
-		updateNodeData: s.updateNodeData,
-	}));
+	const updateNodeData = useUpdateNodeData();
+	const addConnection = useAddConnection();
 
 	return useCallback(
 		(connection: Connection) => {
@@ -58,8 +58,9 @@ export function useConnectNodes() {
 				inputNode,
 				inputId,
 				updateNodeData,
-				addConnection: ({ outputNode, outputId, inputNode, inputId }) =>
-					addConnection({ outputNode, outputId, inputNode, inputId }),
+				addConnection: ({ outputNode, outputId, inputNode, inputId }) => {
+					addConnection({ outputNode, outputId, inputNode, inputId });
+				},
 			});
 		},
 		[addConnection, nodes, updateNodeData],

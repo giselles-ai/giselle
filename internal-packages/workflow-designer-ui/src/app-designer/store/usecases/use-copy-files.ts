@@ -10,15 +10,14 @@ import {
 import { useCallback } from "react";
 import { useAppDesignerStoreApi } from "../app-designer-provider";
 import { useGiselle } from "../giselle-client-provider";
-import { useAppDesignerStore, useWorkspaceActions } from "../hooks";
+import { useAppDesignerStore } from "../hooks";
+import { useUpdateFileStatus } from "./use-update-file-status";
 
 export function useCopyFiles() {
 	const client = useGiselle();
 	const workspaceId = useAppDesignerStore((s) => s.id);
 	const store = useAppDesignerStoreApi();
-	const { updateFileStatus } = useWorkspaceActions((s) => ({
-		updateFileStatus: s.updateFileStatus,
-	}));
+	const updateFileStatus = useUpdateFileStatus();
 
 	return useCallback(
 		async (node: FileNode) => {

@@ -1,14 +1,13 @@
 import type { EdgeChange, OnEdgesChange } from "@xyflow/react";
 import { useCallback } from "react";
-import { useWorkspaceActions } from "../hooks";
+import { useDeleteConnection } from "./use-delete-connection";
+import { useDeselectConnection } from "./use-deselect-connection";
+import { useSelectConnection } from "./use-select-connection";
 
 export function useApplyEdgesChange(): OnEdgesChange {
-	const { selectConnection, deselectConnection, deleteConnection } =
-		useWorkspaceActions((s) => ({
-			selectConnection: s.selectConnection,
-			deselectConnection: s.deselectConnection,
-			deleteConnection: s.deleteConnection,
-		}));
+	const selectConnection = useSelectConnection();
+	const deselectConnection = useDeselectConnection();
+	const deleteConnection = useDeleteConnection();
 
 	return useCallback<OnEdgesChange>(
 		(changes: EdgeChange[]) => {

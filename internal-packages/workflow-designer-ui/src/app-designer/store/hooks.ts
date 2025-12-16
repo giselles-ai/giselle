@@ -1,6 +1,7 @@
 import { useStore } from "zustand/react";
 import { useAppDesignerStoreApi } from "./app-designer-provider";
 import type { AppDesignerStoreState } from "./app-designer-store";
+import type { UiSlice } from "./slices/ui-slice";
 import type { WorkspaceActions } from "./slices/workspace-slice";
 
 export function useAppDesignerStore<T>(
@@ -16,17 +17,33 @@ export function useWorkspaceActions<T>(
 	return useAppDesignerStore((s) =>
 		selector({
 			addNode: s.addNode,
+			upsertUiNodeState: s.upsertUiNodeState,
 			updateNode: s.updateNode,
-			deleteNode: s.deleteNode,
 			addConnection: s.addConnection,
-			deleteConnection: s.deleteConnection,
+			removeConnection: s.removeConnection,
+			removeNode: s.removeNode,
 			setUiNodeState: s.setUiNodeState,
 			setUiViewport: s.setUiViewport,
-			selectConnection: s.selectConnection,
-			deselectConnection: s.deselectConnection,
-			updateNodeData: s.updateNodeData,
-			updateNodeDataContent: s.updateNodeDataContent,
-			updateFileStatus: s.updateFileStatus,
+			setCurrentShortcutScope: s.setCurrentShortcutScope,
+			setSelectedConnectionIds: s.setSelectedConnectionIds,
+			updateWorkspaceName: s.updateWorkspaceName,
+		}),
+	);
+}
+
+export function useUiActions<T>(
+	selector: (
+		actions: Pick<
+			UiSlice,
+			"setClipboardNode" | "setIsLoading" | "setLLMProviders"
+		>,
+	) => T,
+): T {
+	return useAppDesignerStore((s) =>
+		selector({
+			setClipboardNode: s.setClipboardNode,
+			setIsLoading: s.setIsLoading,
+			setLLMProviders: s.setLLMProviders,
 		}),
 	);
 }
