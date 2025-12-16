@@ -24,10 +24,10 @@ jobs:
         env:
           TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_PRODUCTION_ACCESS_TOKEN }}
         working-directory: apps/studio.giselles.ai
-        run: pnpm dlx trigger.dev@4.1.0 deploy
+        run: pnpm dlx trigger.dev@4.3.0 deploy
       - name: Deploy to staging
         if: github.event_name == 'workflow_dispatch'
         env:
           TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_STAGING_ACCESS_TOKEN }}
         working-directory: apps/studio.giselles.ai
-        run: pnpm dlx trigger.dev@4.1.0 deploy --env staging
+        run: pnpm dlx trigger.dev@4.3.0 deploy --env staging
