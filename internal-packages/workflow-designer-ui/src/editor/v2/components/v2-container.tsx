@@ -470,6 +470,10 @@ export function V2Container({ leftPanel, onLeftPanelClose }: V2ContainerProps) {
 		`${selectedNodes[0]?.content.type}` === "trigger" &&
 		`${(selectedNodes[0] as unknown as { content?: { provider?: string } })?.content?.provider}` ===
 			"manual";
+	const isAppEntryPanel =
+		isPropertiesPanelOpen && `${selectedNodes[0]?.content.type}` === "appEntry";
+	const isEndPanel =
+		isPropertiesPanelOpen && `${selectedNodes[0]?.content.type}` === "end";
 
 	const mainRef = useRef<HTMLDivElement>(null);
 
@@ -522,7 +526,9 @@ export function V2Container({ leftPanel, onLeftPanelClose }: V2ContainerProps) {
 							isTextPanel ||
 							isVectorStorePanel ||
 							isWebPagePanel ||
-							isManualTriggerPanel
+							isManualTriggerPanel ||
+							isAppEntryPanel ||
+							isEndPanel
 						}
 					>
 						<PropertiesPanel />
