@@ -300,7 +300,9 @@ export function ZustandBridgeProvider({
 				entryNodeId: node.id,
 				workspaceId: workspace.id,
 			};
-			console.log(appLike);
+			if (process.env.NODE_ENV === "development") {
+				console.log(appLike);
+			}
 			const parseResult = App.safeParse(appLike);
 			if (!parseResult.success) {
 				console.error(
