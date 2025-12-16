@@ -1,6 +1,5 @@
 import { getImageGenerationModelProvider } from "@giselles-ai/language-model";
 import {
-	type AppEntryNode,
 	isActionNode,
 	isContentGenerationNode,
 	isFileNode,
