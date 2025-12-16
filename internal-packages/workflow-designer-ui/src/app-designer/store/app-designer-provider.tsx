@@ -28,7 +28,7 @@ type AppDesignerProviderProps = React.PropsWithChildren<{
 // }
 
 // function defaultSaveBestEffort(payload: Workspace) {
-// 	// beforeunload 時は async がほぼ期待できないので Beacon を優先
+// 	// Prefer Beacon since async is rarely reliable during beforeunload
 // 	const url = "/api/app-designer/save";
 // 	const body = JSON.stringify(payload);
 
@@ -70,15 +70,17 @@ export function AppDesignerProvider({
 	const pathname = usePathname();
 	const pathnameRef = useRef(pathname);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies(pathname): comment on below
+	// biome-ignore lint/correctness/useExhaustiveDependencies(persistence.flush): comment on below
 	useEffect(() => {
-		// pathname が変わる直前に flush したいので、cleanup を使う
+		// Use cleanup to flush just before pathname changes
 		return () => {
-			// ただし初回マウント時 cleanup は走らないので、ref で判定
-			// Provider が unmount するケースでもここに入る
+			// Note: cleanup doesn't run on initial mount, so we use ref to check
+			// This also runs when Provider unmounts
 			void persistence.flush("routeChange");
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [pathname]); // pathname が変わるたびに「前の effect cleanup」が走る
+	}, [pathname]); // Previous effect cleanup runs every time pathname changes
 
 	useEffect(() => {
 		pathnameRef.current = pathname;
@@ -89,10 +91,10 @@ export function AppDesignerProvider({
 		const onBeforeUnload = (e: BeforeUnloadEvent) => {
 			if (!persistence.isDirty()) return;
 
-			// ① best-effort 保存を必ず試す
+			// 1. Always attempt best-effort save
 			persistence.flushBestEffort("beforeUnload");
 
-			// ② ユーザー確認（ブラウザ依存）
+			// 2. User confirmation (browser-dependent)
 			e.preventDefault();
 			e.returnValue = "";
 		};

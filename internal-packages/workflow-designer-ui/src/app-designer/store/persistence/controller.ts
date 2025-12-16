@@ -21,11 +21,12 @@ export type AppDesignerPersistence = {
 	flushBestEffort: (reason?: FlushReason) => void;
 };
 
-const selectPersistedWorkspace = (
-	s: AppDesignerStoreState,
-): PersistedWorkspace => ({
+const selectPersistedWorkspace = (s: AppDesignerStoreState): Workspace => ({
+	id: s.id,
 	nodes: s.nodes,
 	connections: s.connections,
+	schemaVersion: s.schemaVersion,
+	ui: s.ui,
 });
 
 function hasWorkspaceChanged(
@@ -43,9 +44,9 @@ export function createAppDesignerPersistenceController(args: {
 	save: (payload: Workspace) => Promise<void>;
 
 	/**
-	 * beforeunload 用の best-effort 保存。
-	 * 実装できるなら sendBeacon/keepalive を使ってください。
-	 * できないなら undefined でもOK（その場合は confirm のみに寄せる）
+	 * Best-effort save for beforeunload.
+	 * Use sendBeacon/keepalive if possible.
+	 * undefined is OK if not implementable (in that case, rely on confirm only)
 	 */
 	saveBestEffort?: (payload: Workspace) => void;
 }): AppDesignerPersistence {
@@ -63,7 +64,7 @@ export function createAppDesignerPersistenceController(args: {
 
 	const setDirty = (v: boolean) => {
 		dirty = v;
-		// もし store 側に isDirty 等を持たせているならここで反映してもOK
+		// If the store has isDirty or similar, it's OK to reflect it here
 		// store.getState()._setDirty?.(v);
 	};
 
@@ -72,7 +73,7 @@ export function createAppDesignerPersistenceController(args: {
 
 		if (!dirty) return;
 
-		// 保存中にさらに変更が来た場合、終わったらもう一回保存する（取りこぼし防止）
+		// If further changes come in during save, save again after completion (to prevent data loss)
 		if (inFlight) {
 			queued = true;
 			return inFlight;
@@ -88,16 +89,16 @@ export function createAppDesignerPersistenceController(args: {
 				inFlight = null;
 				if (queued) {
 					queued = false;
-					// 直近変更分を即保存（debounce しない）
+					// Save recent changes immediately (without debounce)
 					await doSave("saveNow");
 				}
 			}
 		})();
 
-		return inFlight;
+		return await inFlight;
 	};
 
-	// workspace data が変わったら常に dirty + debounce
+	// Always mark dirty + debounce when workspace data changes
 	const unsubscribe = store.subscribe((state, prev) => {
 		if (!hasWorkspaceChanged(state, prev)) return;
 		setDirty(true);
@@ -116,7 +117,7 @@ export function createAppDesignerPersistenceController(args: {
 			const payload = selectPersistedWorkspace(store.getState());
 			saveBestEffort(payload);
 		} catch {
-			// best-effort なので握りつぶす
+			// Swallow error since this is best-effort
 		}
 	};
 
