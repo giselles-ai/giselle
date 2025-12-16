@@ -6,6 +6,7 @@ import { GenerationId } from "../generation/generation-id";
 import { TriggerId } from "../trigger";
 import { WorkspaceId } from "../workspace";
 import { TaskId } from "./task-id";
+import { NodeId } from "../node";
 
 export const SequenceId = createIdGenerator("sqn");
 export type SequenceId = z.infer<typeof SequenceId.schema>;
@@ -93,6 +94,7 @@ export const Task = z.object({
 	updatedAt: z.number(),
 	annotations: z.array(ActAnnotationObject).default([]),
 	sequences: z.array(Sequence),
+	nodeIdsConnectedToEnd: z.array(NodeId.schema).optional(),
 });
 export type Task = z.infer<typeof Task>;
 
