@@ -1,5 +1,5 @@
 import { Background } from "@giselle-internal/workflow-designer-ui";
-import { WorkspaceId } from "@giselles-ai/protocol";
+import { type Workspace, WorkspaceId } from "@giselles-ai/protocol";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -95,6 +95,11 @@ export default async function ({
 						.update(workspaces)
 						.set({ name })
 						.where(eq(workspaces.id, workspaceId));
+				}}
+				workspaceSaveAction={async (workspace: Workspace) => {
+					"use server";
+
+					await giselle.updateWorkspace(workspace);
 				}}
 			/>
 		</Suspense>

@@ -1,4 +1,5 @@
 export * from "./app";
+export * from "./app-designer";
 export * from "./editor";
 export * from "./icons";
 export { NodeIcon } from "./icons/node";
