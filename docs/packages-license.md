@@ -4561,7 +4561,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@trigger.dev/core"></a>
-### @trigger.dev/core v4.1.0
+### @trigger.dev/core v4.3.0
 #### 
 
 ##### Paths
@@ -4572,7 +4572,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@trigger.dev/sdk"></a>
-### @trigger.dev/sdk v4.1.0
+### @trigger.dev/sdk v4.3.0
 #### 
 
 ##### Paths
