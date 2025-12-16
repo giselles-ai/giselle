@@ -267,8 +267,7 @@ export async function getTaskData(taskId: TaskId): Promise<UITask> {
 	const finishedStepItemsCount =
 		lastUiStep?.items.filter((item) => item.finished).length ?? 0;
 
-	// Keep the ideal behavior (all final step outputs) for later.
-	const allFinalStepOutputs =
+	const outputs =
 		lastUiStep?.items
 			.map((item) => {
 				const generation =
@@ -281,25 +280,6 @@ export async function getTaskData(taskId: TaskId): Promise<UITask> {
 				return { title: item.title, generation };
 			})
 			.filter((outputOrNull) => outputOrNull !== null) ?? [];
-
-	// TEMP: Match designer behavior — show only the first completed generation.
-	// (We still keep `allFinalStepOutputs` above because it is the ideal behavior.)
-	const firstCompletedFinalStepOutput = allFinalStepOutputs
-		.filter(
-			(
-				output,
-			): output is {
-				title: string;
-				generation: Extract<Generation, { status: "completed" }>;
-			} => output.generation.status === "completed",
-		)
-		.slice()
-		.sort((a, b) => a.generation.completedAt - b.generation.completedAt)
-		.at(0);
-
-	const outputs = firstCompletedFinalStepOutput
-		? [firstCompletedFinalStepOutput]
-		: [];
 
 	const [workspace, app, input] = await Promise.all([
 		giselle.getWorkspace(task.workspaceId),
