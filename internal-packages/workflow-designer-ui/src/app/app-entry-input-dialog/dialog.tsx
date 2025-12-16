@@ -27,11 +27,11 @@ export function AppEntryInputDialog({
 	node: AppEntryNode;
 }) {
 	const client = useGiselle();
-	const { isLoading, data: app } = useSWR(
+	const { isLoading, data } = useSWR(
 		node.content.status === "configured"
 			? { namespace: "getApp", appId: node.content.appId }
 			: null,
-		({ appId }) => client.getApp({ appId }).then((res) => res.app),
+		({ appId }) => client.getApp({ appId }),
 	);
 
 	const [validationErrors, setValidationErrors] = useState<
@@ -43,7 +43,7 @@ export function AppEntryInputDialog({
 		async (e) => {
 			e.preventDefault();
 
-			if (app === undefined) {
+			if (data?.app === undefined) {
 				return;
 			}
 
@@ -51,7 +51,7 @@ export function AppEntryInputDialog({
 			const errors: Record<string, string> = {};
 			const values: Record<string, string | number | UploadedFileData[]> = {};
 
-			for (const parameter of app.parameters) {
+			for (const parameter of data.app.parameters) {
 				switch (parameter.type) {
 					case "text":
 					case "multiline-text": {
@@ -125,7 +125,7 @@ export function AppEntryInputDialog({
 							});
 
 							await client.uploadFile({
-								workspaceId: app.workspaceId,
+								workspaceId: data.app.workspaceId,
 								file,
 								fileId: uploadingFileData.id,
 								fileName: file.name,
@@ -192,14 +192,14 @@ export function AppEntryInputDialog({
 				setIsSubmitting(false);
 			}
 		},
-		[app, onClose, onSubmit, client],
+		[data, onClose, onSubmit, client],
 	);
 
 	if (isLoading) {
 		return "loading";
 	}
 
-	if (app === undefined) {
+	if (data?.app === undefined) {
 		return null;
 	}
 
@@ -228,7 +228,7 @@ export function AppEntryInputDialog({
 					</p>
 
 					<div className="flex flex-col gap-[8px]">
-						{app.parameters.map((parameter) => {
+						{data.app.parameters.map((parameter) => {
 							return (
 								<fieldset key={parameter.id} className={clsx("grid gap-2")}>
 									<label

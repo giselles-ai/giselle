@@ -15,7 +15,7 @@ export function AppEntryNodePropertiesPanel({ node }: { node: AppEntryNode }) {
 	const [scrollMode] = useState<"limited" | "full">("full");
 
 	const giselle = useGiselle();
-	const { data, isLoading, mutate } = useSWR<{ app: App }>(
+	const { data, isLoading, mutate } = useSWR(
 		node.content.status !== "configured"
 			? null
 			: { namespace: "getApp", appId: node.content.appId },

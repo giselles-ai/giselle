@@ -89,6 +89,17 @@ export async function createTask(
 		),
 	);
 
+	const endNodeIdSet = new Set(
+		workspace.nodes.filter((node) => isEndNode(node)).map((node) => node.id),
+	);
+	const nodeIdsConnectedToEnd = Array.from(
+		new Set(
+			connections
+				.filter((connection) => endNodeIdSet.has(connection.inputNode.id))
+				.map((connection) => connection.outputNode.id),
+		),
+	);
+
 	// Handle single operation node execution when no connections are found
 	if (nodes.length === 0 && args.nodeId !== undefined) {
 		const singleNode = workspace.nodes.find((node) => node.id === args.nodeId);
@@ -250,6 +261,7 @@ export async function createTask(
 		workspaceId: workspace.id,
 		status: "created",
 		name: starterNode ? defaultName(starterNode) : "group-nodes",
+		nodeIdsConnectedToEnd,
 		steps: {
 			queued: generations.length,
 			inProgress: 0,
