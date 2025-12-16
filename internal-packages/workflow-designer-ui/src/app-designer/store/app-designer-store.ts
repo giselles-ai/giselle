@@ -1,3 +1,4 @@
+import type { LanguageModelProvider } from "@giselles-ai/language-model";
 import type { Workspace } from "@giselles-ai/protocol";
 import { createStore, type StoreApi } from "zustand";
 import { type AppSlice, createAppSlice } from "./slices/app-slice";
@@ -11,12 +12,17 @@ export type AppDesignerStoreState = WorkspaceSlice & AppSlice & UiSlice;
 
 export type AppDesignerStoreApi = StoreApi<AppDesignerStoreState>;
 
-export function createAppDesignerStore(args: { initialWorkspace: Workspace }) {
-	const { initialWorkspace } = args;
+export function createAppDesignerStore(args: {
+	initialWorkspace: Workspace;
+	llmProviders?: LanguageModelProvider[];
+}) {
+	const { initialWorkspace, llmProviders } = args;
 
 	return createStore<AppDesignerStoreState>()((...a) => ({
 		...createWorkspaceSlice(initialWorkspace)(...a),
-		...createUiSlice(...a),
+		...createUiSlice({
+			llmProviders: llmProviders ?? [],
+		})(...a),
 		...createAppSlice(...a),
 	}));
 }

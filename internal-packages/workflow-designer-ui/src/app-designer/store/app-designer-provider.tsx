@@ -1,3 +1,4 @@
+import type { LanguageModelProvider } from "@giselles-ai/language-model";
 import type { Workspace } from "@giselles-ai/protocol";
 import type { GiselleClient } from "@giselles-ai/react";
 import { usePathname } from "next/navigation";
@@ -15,6 +16,7 @@ export const AppDesignerStoreContext =
 type AppDesignerProviderProps = React.PropsWithChildren<{
 	initialWorkspace: Workspace;
 	giselleClient: GiselleClient;
+	llmProviders: LanguageModelProvider[];
 	debounceMs?: number;
 	save: (payload: Workspace) => Promise<void>;
 	saveBestEffort?: (payload: Workspace) => void;
@@ -54,12 +56,13 @@ export function AppDesignerProvider({
 	children,
 	initialWorkspace,
 	giselleClient,
+	llmProviders,
 	save,
 	saveBestEffort,
 	debounceMs = 1500,
 }: AppDesignerProviderProps) {
 	const [storeApi] = useState(() =>
-		createAppDesignerStore({ initialWorkspace }),
+		createAppDesignerStore({ initialWorkspace, llmProviders }),
 	);
 	const [persistence] = useState(() =>
 		createAppDesignerPersistenceController({
@@ -109,6 +112,7 @@ export function AppDesignerProvider({
 
 	// Provider unmount cleanup
 	useEffect(() => () => persistence.dispose(), [persistence]);
+
 	return (
 		<AppDesignerStoreContext.Provider value={storeApi}>
 			<GiselleClientProvider value={giselleClient}>

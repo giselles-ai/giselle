@@ -18,6 +18,6 @@
   - [x] `GiselleClientProvider`（usecaseから `useGiselle()` で参照）
 - [ ] `ui-slice`（Workspace外の一時UI state）
   - [x] `clipboardNode` / `setClipboardNode`（Copy/Paste/Duplicate 用）
-  - [x] `llmProviders` / `setLlmProviders` / `isLoading`（Toolbar等が参照）
+  - [x] `llmProviders`（Toolbar等が参照）
 
 

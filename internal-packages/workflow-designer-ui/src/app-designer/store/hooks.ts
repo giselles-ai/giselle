@@ -32,18 +32,11 @@ export function useWorkspaceActions<T>(
 }
 
 export function useUiActions<T>(
-	selector: (
-		actions: Pick<
-			UiSlice,
-			"setClipboardNode" | "setIsLoading" | "setLLMProviders"
-		>,
-	) => T,
+	selector: (actions: Pick<UiSlice, "setClipboardNode">) => T,
 ): T {
 	return useAppDesignerStore((s) =>
 		selector({
 			setClipboardNode: s.setClipboardNode,
-			setIsLoading: s.setIsLoading,
-			setLLMProviders: s.setLLMProviders,
 		}),
 	);
 }

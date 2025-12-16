@@ -34,7 +34,7 @@
   - [x] `useAddWebPages()`（fetching→fetched/failed の更新含む）
   - [x] `useRemoveWebPage()`（必要なら removeFile も）
 - [ ] LLM providers（UIが参照する“外部ロード済み情報”）
-  - [ ] `useLoadLlmProviders()`（ロードして state に保持）
+  - [x] `AppDesignerProvider` から `llmProviders` を注入して `ui-slice` に保持
 - [ ] 実行系（Run / Generation runner）は置き換えず“glueのみ”（optional）
   - [ ] `useWorkspaceOrigin()`（`{ type: "studio", workspaceId }` を返す薄いヘルパ）
   - [ ] `useRunValidation()`（prompt空/ハイライト解除などUI都合だけ）

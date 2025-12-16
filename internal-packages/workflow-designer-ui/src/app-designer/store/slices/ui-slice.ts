@@ -6,19 +6,17 @@ import type { WorkspaceSlice } from "./workspace-slice";
 type UiSliceCreator = StateCreator<WorkspaceSlice & UiSlice, [], [], UiSlice>;
 
 export interface UiSlice {
-	isLoading: boolean;
 	llmProviders: LanguageModelProvider[];
 	clipboardNode: NodeLike | null;
 	setClipboardNode: (node: NodeLike | null) => void;
-	setIsLoading: (loading: boolean) => void;
-	setLLMProviders: (providers: LanguageModelProvider[]) => void;
 }
 
-export const createUiSlice: UiSliceCreator = (set) => ({
-	isLoading: true,
-	llmProviders: [],
-	clipboardNode: null,
-	setClipboardNode: (node) => set({ clipboardNode: node }),
-	setIsLoading: (loading) => set({ isLoading: loading }),
-	setLLMProviders: (providers) => set({ llmProviders: providers }),
-});
+export function createUiSlice(
+	initial?: Partial<Pick<UiSlice, "llmProviders">>,
+): UiSliceCreator {
+	return (set) => ({
+		llmProviders: initial?.llmProviders ?? [],
+		clipboardNode: null,
+		setClipboardNode: (node) => set({ clipboardNode: node }),
+	});
+}
