@@ -34,7 +34,10 @@ function hasWorkspaceChanged(
 	b: AppDesignerStoreState,
 ): boolean {
 	return (
-		a.nodes !== b.nodes || a.connections !== b.connections || a.ui !== b.ui
+		a._skipNextSave !== b._skipNextSave ||
+		a.nodes !== b.nodes ||
+		a.connections !== b.connections ||
+		a.ui !== b.ui
 	);
 }
 
@@ -100,6 +103,13 @@ export function createAppDesignerPersistenceController(args: {
 
 	// Always mark dirty + debounce when workspace data changes
 	const unsubscribe = store.subscribe((state, prev) => {
+		if (state._skipNextSave) {
+			// Reset and ignore this change
+			store.setState({
+				_skipNextSave: false,
+			} as Partial<AppDesignerStoreState>);
+			return;
+		}
 		if (!hasWorkspaceChanged(state, prev)) return;
 		setDirty(true);
 

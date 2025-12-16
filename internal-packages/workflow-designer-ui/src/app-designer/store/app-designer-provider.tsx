@@ -1,10 +1,12 @@
 import type { Workspace } from "@giselles-ai/protocol";
+import type { GiselleClient } from "@giselles-ai/react";
 import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import {
 	type AppDesignerStoreApi,
 	createAppDesignerStore,
 } from "./app-designer-store";
+import { GiselleClientProvider } from "./giselle-client-provider";
 import { createAppDesignerPersistenceController } from "./persistence/controller";
 
 export const AppDesignerStoreContext =
@@ -12,9 +14,10 @@ export const AppDesignerStoreContext =
 
 type AppDesignerProviderProps = React.PropsWithChildren<{
 	initialWorkspace: Workspace;
+	giselleClient: GiselleClient;
 	debounceMs?: number;
 	save: (payload: Workspace) => Promise<void>;
-	saveBestEffort: (payload: Workspace) => void;
+	saveBestEffort?: (payload: Workspace) => void;
 }>;
 
 // function defaultSave(payload: Workspace) {
@@ -50,6 +53,7 @@ type AppDesignerProviderProps = React.PropsWithChildren<{
 export function AppDesignerProvider({
 	children,
 	initialWorkspace,
+	giselleClient,
 	save,
 	saveBestEffort,
 	debounceMs = 1500,
@@ -107,7 +111,9 @@ export function AppDesignerProvider({
 	useEffect(() => () => persistence.dispose(), [persistence]);
 	return (
 		<AppDesignerStoreContext.Provider value={storeApi}>
-			{children}
+			<GiselleClientProvider value={giselleClient}>
+				{children}
+			</GiselleClientProvider>
 		</AppDesignerStoreContext.Provider>
 	);
 }

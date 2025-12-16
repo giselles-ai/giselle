@@ -16,10 +16,17 @@ export function useWorkspaceActions<T>(
 	return useAppDesignerStore((s) =>
 		selector({
 			addNode: s.addNode,
+			updateNode: s.updateNode,
+			deleteNode: s.deleteNode,
 			addConnection: s.addConnection,
-			removeNode: s.removeNode,
-			removeConnection: s.removeConnection,
-			upsertNodeUiState: s.upsertNodeUiState,
+			deleteConnection: s.deleteConnection,
+			setUiNodeState: s.setUiNodeState,
+			setUiViewport: s.setUiViewport,
+			selectConnection: s.selectConnection,
+			deselectConnection: s.deselectConnection,
+			updateNodeData: s.updateNodeData,
+			updateNodeDataContent: s.updateNodeDataContent,
+			updateFileStatus: s.updateFileStatus,
 		}),
 	);
 }
