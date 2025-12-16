@@ -135,6 +135,11 @@ async function getTaskInput(taskId: TaskId) {
 
 export async function getTaskData(taskId: TaskId): Promise<UITask> {
 	const task = await giselle.getTask({ taskId });
+	if (task.nodeIdsConnectedToEnd === undefined) {
+		// This page expects a "new" task shape that includes nodeIdsConnectedToEnd.
+		// If it's missing, fail fast to surface data inconsistencies early.
+		throw new Error(`Task ${taskId} is missing nodeIdsConnectedToEnd`);
+	}
 
 	const allSteps = task.sequences.flatMap((sequence) => sequence.steps);
 
@@ -262,24 +267,28 @@ export async function getTaskData(taskId: TaskId): Promise<UITask> {
 			.filter((itemOrNull) => itemOrNull !== null),
 	}));
 
-	const lastUiStep = steps.at(-1);
-	const totalStepItemsCount = lastUiStep?.items.length ?? 0;
-	const finishedStepItemsCount =
-		lastUiStep?.items.filter((item) => item.finished).length ?? 0;
+	const allUiStepItems = steps.flatMap((step) => step.items);
+	const finalStepItems = task.nodeIdsConnectedToEnd
+		.map((nodeId) => allUiStepItems.find((item) => item.node.id === nodeId))
+		.filter((itemOrUndefined) => itemOrUndefined !== undefined);
 
-	const outputs =
-		lastUiStep?.items
-			.map((item) => {
-				const generation =
-					item.status === "completed"
-						? item.generation
-						: generationsByStepId.get(item.id);
-				if (generation === undefined) {
-					return null;
-				}
-				return { title: item.title, generation };
-			})
-			.filter((outputOrNull) => outputOrNull !== null) ?? [];
+	const totalStepItemsCount = finalStepItems.length;
+	const finishedStepItemsCount = finalStepItems.filter(
+		(item) => item.finished,
+	).length;
+
+	const outputs = finalStepItems
+		.map((item) => {
+			const generation =
+				item.status === "completed"
+					? item.generation
+					: generationsByStepId.get(item.id);
+			if (generation === undefined) {
+				return null;
+			}
+			return { title: item.title, generation };
+		})
+		.filter((outputOrNull) => outputOrNull !== null);
 
 	const [workspace, app, input] = await Promise.all([
 		giselle.getWorkspace(task.workspaceId),
