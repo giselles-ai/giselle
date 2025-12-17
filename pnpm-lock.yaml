@@ -91,8 +91,8 @@ catalogs:
       specifier: 2.11.5
       version: 2.11.5
     '@trigger.dev/sdk':
-      specifier: 4.1.0
-      version: 4.1.0
+      specifier: 4.3.0
+      version: 4.3.0
     '@types/fast-levenshtein':
       specifier: 0.0.4
       version: 0.0.4
@@ -482,7 +482,7 @@ importers:
         version: 2.50.5(bufferutil@4.0.9)(utf-8-validate@6.0.5)
       '@trigger.dev/sdk':
         specifier: 'catalog:'
-        version: 4.1.0(ai@5.0.101(zod@4.1.12))(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@6.0.5)(zod@4.1.12)
+        version: 4.3.0(ai@5.0.101(zod@4.1.12))(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@6.0.5)(zod@4.1.12)
       '@vercel/edge-config':
         specifier: 'catalog:'
         version: 1.4.0(@opentelemetry/api@1.9.0)
@@ -5148,12 +5148,12 @@ packages:
       '@tiptap/core': ^2.7.0
       '@tiptap/pm': ^2.7.0
 
-  '@trigger.dev/core@4.1.0':
-    resolution: {integrity: sha512-CS2wMGw1ZR5moHUe0xIOqy9LUGm0wBo4FWEzptSZvyoLvfoP3bnFyR24bzNHqFgb6UGGDxURyeZGuQsKT04TNg==}
+  '@trigger.dev/core@4.3.0':
+    resolution: {integrity: sha512-mOavnsfCEgEES67Lnfbq9vMV+A2JAtCAoMVxNI7umpSXbbKOmsxdcKRG46/0rclqHKp9X5hk2aF3TlFhvgl/EQ==}
     engines: {node: '>=18.20.0'}
 
-  '@trigger.dev/sdk@4.1.0':
-    resolution: {integrity: sha512-+HJb/1TpBpfFwMYdPveGJ6876xSuLyjnXKjOT+8VeZuHWptlIbc/2vVK/Dj9QBIWB5InFU0k+6JlvCrEomfuLg==}
+  '@trigger.dev/sdk@4.3.0':
+    resolution: {integrity: sha512-54wyCtXaumNfv1ou8PMGs7gb5+wNz94RjwznTWLoBAMhMmPsiqSTa6qxwjjWbpxAb/FWvasUnfbHxOmio2xdMg==}
     engines: {node: '>=18.20.0'}
     peerDependencies:
       ai: ^4.2.0 || ^5.0.0
@@ -10446,7 +10446,7 @@ snapshots:
   '@opentelemetry/core@2.0.1(@opentelemetry/api@1.9.0)':
     dependencies:
       '@opentelemetry/api': 1.9.0
-      '@opentelemetry/semantic-conventions': 1.36.0
+      '@opentelemetry/semantic-conventions': 1.38.0
 
   '@opentelemetry/core@2.2.0(@opentelemetry/api@1.9.0)':
     dependencies:
@@ -10697,7 +10697,7 @@ snapshots:
     dependencies:
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/core': 2.0.1(@opentelemetry/api@1.9.0)
-      '@opentelemetry/semantic-conventions': 1.36.0
+      '@opentelemetry/semantic-conventions': 1.38.0
 
   '@opentelemetry/resources@2.2.0(@opentelemetry/api@1.9.0)':
     dependencies:
@@ -10723,7 +10723,7 @@ snapshots:
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/core': 2.0.1(@opentelemetry/api@1.9.0)
       '@opentelemetry/resources': 2.0.1(@opentelemetry/api@1.9.0)
-      '@opentelemetry/semantic-conventions': 1.36.0
+      '@opentelemetry/semantic-conventions': 1.38.0
 
   '@opentelemetry/sdk-trace-base@2.2.0(@opentelemetry/api@1.9.0)':
     dependencies:
@@ -12691,7 +12691,7 @@ snapshots:
       '@tiptap/core': 2.11.5(@tiptap/pm@2.11.5)
       '@tiptap/pm': 2.11.5
 
-  '@trigger.dev/core@4.1.0(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@6.0.5)':
+  '@trigger.dev/core@4.3.0(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@6.0.5)':
     dependencies:
       '@bugsnag/cuid': 3.2.1
       '@electric-sql/client': 1.0.10
@@ -12732,11 +12732,11 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@trigger.dev/sdk@4.1.0(ai@5.0.101(zod@4.1.12))(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@6.0.5)(zod@4.1.12)':
+  '@trigger.dev/sdk@4.3.0(ai@5.0.101(zod@4.1.12))(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@6.0.5)(zod@4.1.12)':
     dependencies:
       '@opentelemetry/api': 1.9.0
       '@opentelemetry/semantic-conventions': 1.36.0
-      '@trigger.dev/core': 4.1.0(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@6.0.5)
+      '@trigger.dev/core': 4.3.0(bufferutil@4.0.9)(typescript@5.7.3)(utf-8-validate@6.0.5)
       chalk: 5.6.2
       cronstrue: 2.59.0
       debug: 4.4.1
