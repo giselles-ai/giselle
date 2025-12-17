@@ -1,74 +1,37 @@
 import { defaultName } from "@giselles-ai/node-registry";
+import type {
+	InputId,
+	NodeId,
+	NodeLike,
+	OutputId,
+} from "@giselles-ai/protocol";
 import {
-	type InputId,
-	isActionNode,
 	isImageGenerationNode,
 	isTextGenerationNode,
 	isTriggerNode,
 	isVectorStoreNode,
-	type NodeId,
-	type NodeLike,
-	type OutputId,
 } from "@giselles-ai/protocol";
-import {
-	Handle,
-	type NodeProps,
-	type NodeTypes,
-	Position,
-} from "@xyflow/react";
+import type { NodeProps } from "@xyflow/react";
+import { Handle, Position } from "@xyflow/react";
 import clsx from "clsx/lite";
 import { CheckIcon, SquareIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useMemo, useRef, useTransition } from "react";
-import { useShallow } from "zustand/shallow";
 import { useAppDesignerStore, useUpdateNodeData } from "../../app-designer";
 import { NodeIcon } from "../../icons/node";
 import { EditableText } from "../../ui/editable-text";
 import { Tooltip } from "../../ui/tooltip";
+import { getCompletionLabel, nodeRequiresSetup } from "./node-utils";
 import { DocumentNodeInfo, GitHubNodeInfo } from "./ui";
 import { GitHubTriggerStatusBadge } from "./ui/github-trigger/status-badge";
 import { useCurrentNodeGeneration } from "./use-current-node-generation";
 
-// Helper function to get completion label from node LLM provider
-function getCompletionLabel(node: NodeLike): string {
-	if (isTextGenerationNode(node) || isImageGenerationNode(node)) {
-		return node.content.llm.provider;
-	}
-	return "Completed";
-}
-
-// Helper function to check if a node requires setup
-function nodeRequiresSetup(node: NodeLike): boolean {
-	if (isTriggerNode(node, "github")) {
-		return node.content.state.status !== "configured";
-	}
-	if (isActionNode(node, "github")) {
-		return node.content.command.state.status !== "configured";
-	}
-	if (isVectorStoreNode(node)) {
-		switch (node.content.source.provider) {
-			case "github":
-			case "document":
-				return node.content.source.state.status !== "configured";
-			default:
-				return false;
-		}
-	}
-	return false;
-}
-
-export const nodeTypes: NodeTypes = {
-	giselle: CustomXyFlowNode,
-};
-
-function CustomXyFlowNode({ id, selected }: NodeProps) {
-	const { node, connections, highlighted } = useAppDesignerStore(
-		useShallow((s) => ({
-			node: s.nodes.find((node) => node.id === id),
-			connections: s.connections,
-			highlighted: s.ui.nodeState[id as NodeId]?.highlighted,
-		})),
-	);
+export function CardXyFlowNode({ id, selected }: NodeProps) {
+	const { node, connections, highlighted } = useAppDesignerStore((s) => ({
+		node: s.nodes.find((node) => node.id === id),
+		connections: s.connections ?? [],
+		highlighted: s.ui.nodeState[id as NodeId]?.highlighted,
+	}));
 
 	const connectedInputIds = useMemo(
 		() =>
@@ -85,18 +48,17 @@ function CustomXyFlowNode({ id, selected }: NodeProps) {
 		[connections, id],
 	);
 
-	// Early return if workspace is not yet initialized
 	if (!node) {
 		return null;
 	}
 
 	return (
 		<NodeComponent
-			node={node}
+			node={node as NodeLike}
 			selected={selected}
 			highlighted={highlighted}
-			connectedInputIds={connectedInputIds}
-			connectedOutputIds={connectedOutputIds}
+			connectedInputIds={connectedInputIds as InputId[]}
+			connectedOutputIds={connectedOutputIds as OutputId[]}
 		/>
 	);
 }
@@ -117,8 +79,6 @@ function useVariant(node: NodeLike) {
 		const isTrigger = node.content.type === "trigger";
 		const isAction = node.content.type === "action";
 		const isQuery = node.content.type === "query";
-		const isAppEntry = node.content.type === "appEntry";
-		const isEnd = node.content.type === "end";
 
 		const isVectorStoreGithub =
 			isVectorStore &&
@@ -131,13 +91,7 @@ function useVariant(node: NodeLike) {
 		const isGithubTrigger = isTriggerNode(node, "github");
 
 		const isFillIcon =
-			isText ||
-			isFile ||
-			isWebPage ||
-			isGithub ||
-			isVectorStore ||
-			isAction ||
-			isEnd;
+			isText || isFile || isWebPage || isGithub || isVectorStore || isAction;
 		const isStrokeIcon =
 			isTextGeneration || isImageGeneration || isTrigger || isQuery;
 
@@ -148,8 +102,7 @@ function useVariant(node: NodeLike) {
 			isGithub ||
 			isVectorStoreGithub ||
 			isTrigger ||
-			isAction ||
-			isEnd;
+			isAction;
 
 		return {
 			isText,
@@ -163,8 +116,6 @@ function useVariant(node: NodeLike) {
 			isTrigger,
 			isAction,
 			isQuery,
-			isAppEntry,
-			isEnd,
 			isVectorStoreGithub,
 			isVectorStoreDocument,
 			isGithubTrigger,
@@ -210,7 +161,7 @@ export function NodeComponent({
 				async () =>
 					new Promise((resolve) => {
 						setTimeout(() => {
-							resolve();
+							resolve(undefined);
 						}, 2000);
 					}),
 			);
@@ -242,8 +193,6 @@ export function NodeComponent({
 		isTrigger: boolean;
 		isAction: boolean;
 		isQuery: boolean;
-		isAppEntry: boolean;
-		isEnd: boolean;
 		isVectorStoreGithub: boolean;
 		isVectorStoreDocument: boolean;
 		isGithubTrigger: boolean;
@@ -267,15 +216,18 @@ export function NodeComponent({
 				variant.isVectorStoreDocument
 			)
 				return "var(--color-github-node-1)";
-			if (variant.isTrigger || variant.isAppEntry)
-				return "var(--color-trigger-node-1)";
+			if (variant.isTrigger) return "var(--color-trigger-node-1)";
 			if (variant.isAction) return "var(--color-action-node-1)";
 			if (variant.isQuery) return "var(--color-query-node-1)";
-			if (variant.isEnd) return "var(--color-end-node-1)";
 			return undefined;
 		},
 		[],
 	);
+
+	const nodeRadiusClass = "rounded-[16px]";
+	const nodeLayoutClass = "flex flex-col py-[16px] gap-[16px] min-w-[180px]";
+	const stageShapeClass = "transition-all backdrop-blur-[4px]";
+	const stageBackgroundClass = undefined;
 
 	const borderGradientStyle = useMemo(() => {
 		if (requiresSetup) return undefined;
@@ -309,9 +261,15 @@ export function NodeComponent({
 				isVectorStoreNode(node) ? node.content.source.provider : undefined
 			}
 			className={clsx(
-				"group relative flex flex-col rounded-[16px] py-[16px] gap-[16px] min-w-[180px]",
-				"bg-transparent transition-all backdrop-blur-[4px]",
-				!selected && !highlighted && "shadow-[4px_4px_8px_4px_rgba(0,0,0,0.5)]",
+				"group relative rounded-[16px]",
+				nodeLayoutClass,
+				// Stage Request / Stage Response are rendered as pill nodes, so avoid animating layout/border-radius.
+				stageShapeClass,
+				stageBackgroundClass,
+				"bg-transparent",
+				!selected &&
+					!highlighted &&
+					"shadow-[4px_4px_8px_4px_rgba(0,_0,_0,_0.5)]",
 				selected && v.isText && "shadow-text-node-1",
 				selected && v.isFile && "shadow-file-node-1",
 				selected && v.isWebPage && "shadow-webPage-node-1",
@@ -322,14 +280,12 @@ export function NodeComponent({
 				selected && v.isVectorStoreGithub && "shadow-github-node-1",
 				selected && v.isVectorStoreDocument && "shadow-github-node-1",
 				selected && v.isTrigger && "shadow-trigger-node-1",
-				selected && v.isAppEntry && "shadow-trigger-node-1",
 				selected && v.isAction && "shadow-action-node-1",
-				selected && v.isEnd && "shadow-end-node-1",
 				selected && v.isQuery && "shadow-query-node-1",
-				selected && "shadow-[0px_0px_20px_1px_rgba(0,0,0,0.4)]",
+				selected && "shadow-[0px_0px_20px_1px_rgba(0,_0,_0,_0.4)]",
 				selected &&
-					(v.isTrigger || v.isAppEntry) &&
-					"shadow-[0px_0px_20px_1px_hsla(220,15%,50%,0.4)]",
+					v.isTrigger &&
+					"shadow-[0px_0px_20px_1px_hsla(220,_15%,_50%,_0.4)]",
 				highlighted && v.isText && "shadow-text-node-1",
 				highlighted && v.isFile && "shadow-file-node-1",
 				highlighted && v.isWebPage && "shadow-webPage-node-1",
@@ -340,14 +296,12 @@ export function NodeComponent({
 				highlighted && v.isVectorStoreGithub && "shadow-github-node-1",
 				highlighted && v.isVectorStoreDocument && "shadow-github-node-1",
 				highlighted && v.isTrigger && "shadow-trigger-node-1",
-				highlighted && v.isAppEntry && "shadow-trigger-node-1",
 				highlighted && v.isAction && "shadow-action-node-1",
-				highlighted && v.isEnd && "shadow-end-node-1",
 				highlighted && v.isQuery && "shadow-query-node-1",
-				highlighted && "shadow-[0px_0px_20px_1px_rgba(0,0,0,0.4)]",
+				highlighted && "shadow-[0px_0px_20px_1px_rgba(0,_0,_0,_0.4)]",
 				highlighted &&
-					(v.isTrigger || v.isAppEntry) &&
-					"shadow-[0px_0px_20px_1px_hsla(220,15%,50%,0.4)]",
+					v.isTrigger &&
+					"shadow-[0px_0px_20px_1px_hsla(220,_15%,_50%,_0.4)]",
 				preview && "opacity-50",
 				!preview && "min-h-[110px]",
 				requiresSetup && "opacity-80",
@@ -400,12 +354,13 @@ export function NodeComponent({
 				)}
 			</AnimatePresence>
 			<div
-				className={clsx("absolute z-[-1] rounded-[16px] inset-0")}
+				className={clsx("absolute z-[-1] inset-0", nodeRadiusClass)}
 				style={backgroundGradientStyle}
 			/>
 			<div
 				className={clsx(
-					"absolute z-0 rounded-[16px] inset-0 border-[1.5px] mask-fill",
+					"absolute z-0 inset-0 border-[1.5px] mask-fill",
+					nodeRadiusClass,
 					requiresSetup
 						? "border-black/60 border-dashed [border-width:2px]"
 						: "border-transparent",
@@ -441,21 +396,14 @@ export function NodeComponent({
 						v.isTrigger &&
 						"from-trigger-node-1/30 via-trigger-node-1/50 to-trigger-node-1",
 					!borderGradientStyle &&
-						v.isAppEntry &&
-						"from-trigger-node-1/30 via-trigger-node-1/50 to-trigger-node-1",
-					!borderGradientStyle &&
 						v.isAction &&
 						"from-action-node-1/30 via-action-node-1/50 to-action-node-1",
-					!borderGradientStyle &&
-						v.isEnd &&
-						"from-end-node-1/30 via-end-node-1/50 to-end-node-1",
 					!borderGradientStyle &&
 						v.isQuery &&
 						"from-query-node-1/30 via-query-node-1/50 to-query-node-1",
 				)}
 				style={borderGradientStyle}
 			/>
-
 			{isTriggerNode(node, "github") &&
 				node.content.state.status === "configured" && (
 					<div className="absolute top-[-20px] left-0 z-10">
@@ -468,7 +416,8 @@ export function NodeComponent({
 				<div className="flex items-center gap-[8px]">
 					<div
 						className={clsx(
-							"w-[32px] h-[32px] flex items-center justify-center rounded-[8px] padding-[8px]",
+							"w-[32px] h-[32px] flex items-center justify-center padding-[8px]",
+							"rounded-[8px]",
 							v.isText && "bg-text-node-1",
 							v.isFile && "bg-file-node-1",
 							v.isWebPage && "bg-webPage-node-1",
@@ -479,9 +428,7 @@ export function NodeComponent({
 							v.isVectorStoreGithub && "bg-github-node-1",
 							v.isVectorStoreDocument && "bg-github-node-1",
 							v.isTrigger && "bg-trigger-node-1",
-							v.isAppEntry && "bg-trigger-node-1",
 							v.isAction && "bg-action-node-1",
-							v.isEnd && "bg-end-node-1",
 							v.isQuery && "bg-query-node-1",
 						)}
 					>
@@ -502,9 +449,7 @@ export function NodeComponent({
 								v.isVectorStoreDocument && "stroke-current fill-none",
 								v.isTrigger && !v.isGithubTrigger && "stroke-current fill-none",
 								v.isGithubTrigger && "fill-current",
-								v.isAppEntry && "stroke-current fill-none",
 								v.isAction && "fill-current",
-								v.isEnd && "fill-current",
 								v.isQuery && "stroke-current fill-none",
 								v.isGithub && "fill-current",
 								v.isText && "text-background",
@@ -517,16 +462,14 @@ export function NodeComponent({
 								v.isVectorStoreDocument && "text-background",
 								v.isTrigger && !v.isGithubTrigger && "text-inverse",
 								v.isGithubTrigger && "text-background",
-								v.isAppEntry && "text-inverse",
 								v.isAction && "text-inverse",
-								v.isEnd && "text-inverse",
 								v.isQuery && "text-background",
 							)}
 						/>
 					</div>
 					<div>
 						<div className="flex items-center gap-[2px] pl-[4px] text-[10px] font-mono [&>*:not(:last-child)]:after:content-['/'] [&>*:not(:last-child)]:after:ml-[2px] [&>*:not(:last-child)]:after:text-text/60">
-							{metadataTexts.map((item, _index) => (
+							{metadataTexts.map((item) => (
 								<div key={item.label} className="text-[10px] text-inverse">
 									{selected ? (
 										<Tooltip text={item.tooltip} variant="dark">
@@ -612,8 +555,6 @@ function InputOutput({
 										"!border-action-node-1 group-data-[state=connected]:!bg-action-node-1",
 									v.isQuery &&
 										"!border-query-node-1 group-data-[state=connected]:!bg-query-node-1",
-									v.isEnd &&
-										"!border-end-node-1 group-data-[state=connected]:!bg-end-node-1",
 								)}
 							/>
 							<div
@@ -661,14 +602,10 @@ function InputOutput({
 								"!border-webPage-node-1 group-data-[state=connected]:!bg-webPage-node-1 group-data-[state=connected]:!border-webPage-node-1",
 							v.isTrigger &&
 								"!border-trigger-node-1 group-data-[state=connected]:!bg-trigger-node-1 group-data-[state=connected]:!border-trigger-node-1",
-							v.isAppEntry &&
-								"!border-trigger-node-1 group-data-[state=connected]:!bg-trigger-node-1 group-data-[state=connected]:!border-trigger-node-1",
 							v.isAction &&
 								"!border-action-node-1 group-data-[state=connected]:!bg-action-node-1 group-data-[state=connected]:!border-action-node-1",
 							v.isQuery &&
 								"!border-query-node-1 group-data-[state=connected]:!bg-query-node-1 group-data-[state=connected]:!border-query-node-1",
-							v.isEnd &&
-								"!border-end-node-1 group-data-[state=connected]:!bg-end-node-1 group-data-[state=connected]:!border-end-node-1",
 						)}
 					/>
 					<div

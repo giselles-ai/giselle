@@ -42,7 +42,7 @@ import { GradientDef } from "../../connector/component";
 import { ContextMenu } from "../../context-menu";
 import type { ContextMenuProps } from "../../context-menu/types";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
-import { nodeTypes } from "../../node";
+import { CardXyFlowNode, PillXyFlowNode } from "../../node";
 import { PropertiesPanel } from "../../properties-panel";
 import { RunHistoryTable } from "../../run-history/run-history-table";
 import { SecretTable } from "../../secret/secret-table";
@@ -157,6 +157,13 @@ function V2NodeCanvas() {
 	const updateNodeInternals = useUpdateNodeInternals();
 	const { handleKeyDown } = useKeyboardShortcuts();
 	const nodesInitialized = useNodesInitialized();
+	const nodeTypes = useMemo(
+		() => ({
+			card: CardXyFlowNode,
+			pill: PillXyFlowNode,
+		}),
+		[],
+	);
 
 	const cacheNodesRef = useRef<Map<NodeId, RFNode>>(new Map());
 	const reactFlowNodes = useMemo(() => {
@@ -165,11 +172,16 @@ function V2NodeCanvas() {
 			.map((node) => {
 				const nodeUiState = nodeState[node.id];
 				const prev = cacheNodesRef.current.get(node.id);
+				const xyNodeType =
+					node.content.type === "appEntry" || node.content.type === "end"
+						? "pill"
+						: "card";
 				if (nodeUiState === undefined) {
 					return null;
 				}
 				if (
 					prev !== undefined &&
+					prev.type === xyNodeType &&
 					prev.selected === nodeUiState.selected &&
 					prev.position.x === nodeUiState.position.x &&
 					prev.position.y === nodeUiState.position.y &&
@@ -181,7 +193,7 @@ function V2NodeCanvas() {
 				}
 				const nextNode: RFNode = {
 					id: node.id,
-					type: "giselle",
+					type: xyNodeType,
 					position: nodeUiState.position,
 					selected: nodeUiState.selected,
 					measured: nodeUiState.measured,
