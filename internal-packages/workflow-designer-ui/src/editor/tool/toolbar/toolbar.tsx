@@ -24,11 +24,7 @@ import {
 	triggerNodeDefaultName,
 } from "@giselles-ai/node-registry";
 import { FileCategory } from "@giselles-ai/protocol";
-import {
-	useFeatureFlag,
-	useUsageLimits,
-	useWorkflowDesigner,
-} from "@giselles-ai/react";
+import { useFeatureFlag, useUsageLimits } from "@giselles-ai/react";
 import {
 	isTriggerProvider,
 	triggerRegistry,
@@ -45,6 +41,7 @@ import {
 } from "lucide-react";
 import { Popover, ToggleGroup } from "radix-ui";
 import { useEffect, useMemo, useState } from "react";
+import { useAppDesignerStore } from "../../../app-designer/store/hooks";
 import { DocumentVectorStoreIcon } from "../../../icons/node/document-vector-store-icon";
 import { Tooltip } from "../../../ui/tooltip";
 import { isToolAction } from "../types";
@@ -99,16 +96,19 @@ export function Toolbar() {
 	} = useHoverState();
 	const [searchQuery, setSearchQuery] = useState<string>("");
 	const [selectedCategory, setSelectedCategory] = useState<string>("All");
-	const { llmProviders, data: workspace } = useWorkflowDesigner();
+	const { llmProviders, nodes } = useAppDesignerStore((s) => ({
+		llmProviders: s.llmProviders,
+		nodes: s.nodes,
+	}));
 	const { stage, aiGatewayUnsupportedModels, generateContentNode } =
 		useFeatureFlag();
 	const hasAppRequestNode = useMemo(
-		() => workspace.nodes.some((node) => node.content.type === "appEntry"),
-		[workspace.nodes],
+		() => nodes.some((node) => node.content.type === "appEntry"),
+		[nodes],
 	);
 	const hasEndNode = useMemo(
-		() => workspace.nodes.some((node) => node.content.type === "end"),
-		[workspace.nodes],
+		() => nodes.some((node) => node.content.type === "end"),
+		[nodes],
 	);
 	const appRequestNodeLimitTooltip =
 		"Only one App Request Node can exist per workspace.";

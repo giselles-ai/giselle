@@ -11,7 +11,7 @@ import { useUpdateNodeDataContent } from "./use-update-node-data-content";
 
 export function useRemoveWebPage() {
 	const client = useGiselle();
-	const workspaceId = useAppDesignerStore((s) => s.id);
+	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
 	const store = useAppDesignerStoreApi();
 	const updateNodeDataContent = useUpdateNodeDataContent();
 

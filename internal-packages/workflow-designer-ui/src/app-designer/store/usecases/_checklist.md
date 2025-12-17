@@ -7,7 +7,7 @@
   - [x] `useClearSelection()`（pane click: 全選択解除）
   - [x] `useSetViewport()`（`onMoveEnd` 相当）
 - [ ] File I/O（`GiselleClientProvider` + `useGiselle()` で参照）
-  - [x] `useUploadFile()`（client: `useGiselle()`, workspaceId: `useAppDesignerStore((s)=>s.id)`）
+  - [x] `useUploadFile()`（client: `useGiselle()`, workspaceId: `useAppDesignerStore((s)=>s.workspaceId)`）
   - [x] `useRemoveFile()`（同上）
   - [x] `useCopyFiles()`（同上）
   - [x] `useUpdateFileStatus()`（低レベルAPI合成で optimistic update）

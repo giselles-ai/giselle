@@ -29,8 +29,9 @@ export interface WorkspaceActions {
 	updateWorkspaceName: (name: string | undefined) => void;
 }
 
-export type WorkspaceSlice = Workspace &
-	WorkspaceActions & {
+export type WorkspaceSlice = Omit<Workspace, "id"> & {
+	workspaceId: Workspace["id"];
+} & WorkspaceActions & {
 		/**
 		 * When true, persistence should ignore the next store update and reset this flag.
 		 * Useful for UI-only state changes you don't want to persist.
@@ -49,7 +50,7 @@ export function createWorkspaceSlice(
 	initial: Workspace,
 ): WorkspaceSliceCreator {
 	return (set, _get) => ({
-		id: initial.id,
+		workspaceId: initial.id,
 		name: initial.name,
 		schemaVersion: initial.schemaVersion,
 		nodes: initial.nodes,

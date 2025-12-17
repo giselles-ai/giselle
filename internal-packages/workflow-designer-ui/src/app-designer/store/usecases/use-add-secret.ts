@@ -4,7 +4,7 @@ import { useAppDesignerStore } from "../hooks";
 
 export function useAddSecret() {
 	const client = useGiselle();
-	const workspaceId = useAppDesignerStore((s) => s.id);
+	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
 
 	return useCallback(
 		async (args: { label: string; value: string }) => {

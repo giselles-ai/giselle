@@ -15,7 +15,7 @@
 ## Canonical API mapping (old -> new)
 
 - **workspace data**
-  - `useWorkflowDesigner().data` -> `useAppDesignerStore((s) => s)` (or scoped selectors: `s.nodes`, `s.connections`, `s.ui.nodeState`, `s.ui.viewport`, `s.id`, `s.name`)
+  - `useWorkflowDesigner().data` -> `useAppDesignerStore((s) => s)` (or scoped selectors: `s.nodes`, `s.connections`, `s.ui.nodeState`, `s.ui.viewport`, `s.workspaceId`, `s.name`)
 - **workspace name**
   - `updateName(name)` -> `useUpdateWorkspaceName()`
 - **node CRUD**
@@ -88,7 +88,7 @@
 ### Run button (highlight UI only)
 
 - [ ] `src/editor/v2/components/run-button.tsx`
-  - [ ] `data` -> `useAppDesignerStore((s) => ({ id: s.id, nodes: s.nodes, connections: s.connections }))`
+  - [ ] `data` -> `useAppDesignerStore((s) => ({ workspaceId: s.workspaceId, nodes: s.nodes, connections: s.connections }))`
   - [ ] `setUiNodeState` -> `useWorkspaceActions((a) => a.setUiNodeState)`
 
 ### Toolbar (LLM providers)
@@ -128,7 +128,7 @@
 - [ ] `src/editor/properties-panel/image-generation-node-properties-panel/index.tsx`
   - [ ] `updateNodeData` -> `useUpdateNodeData()`
   - [ ] `deleteNode` -> `useDeleteNode()`
-  - [ ] `data.id` (origin/workspaceId) -> `useAppDesignerStore((s) => s.id)`
+  - [ ] `data.id` (origin/workspaceId) -> `useAppDesignerStore((s) => s.workspaceId)`
   - [ ] `data.connections` -> `useAppDesignerStore((s) => s.connections)`
 
 ### Text generation (connections cleanup)
@@ -146,7 +146,7 @@
   - [ ] Replace manual `client.addSecret/deleteSecret + node cleanup` with:
     - [ ] `useAddSecret()`
     - [ ] `useDeleteSecretAndCleanupNodes()`
-  - [ ] `workspace.id` -> `useAppDesignerStore((s) => s.id)`
+  - [ ] `workspace.id` -> `useAppDesignerStore((s) => s.workspaceId)`
 
 ### WebPage node
 
@@ -154,6 +154,6 @@
   - [ ] Replace inline add/remove logic with:
     - [ ] `useAddWebPages()`
     - [ ] `useRemoveWebPage()`
-  - [ ] `workspaceId` -> `useAppDesignerStore((s) => s.id)`
+  - [ ] `workspaceId` -> `useAppDesignerStore((s) => s.workspaceId)`
 
 

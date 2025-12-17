@@ -22,7 +22,7 @@ function normalizeHttpsUrl(raw: string): string | null {
 
 export function useAddWebPages() {
 	const client = useGiselle();
-	const workspaceId = useAppDesignerStore((s) => s.id);
+	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
 	const store = useAppDesignerStoreApi();
 	const updateNodeDataContent = useUpdateNodeDataContent();
 

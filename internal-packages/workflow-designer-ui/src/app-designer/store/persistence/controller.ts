@@ -22,7 +22,7 @@ export type AppDesignerPersistence = {
 };
 
 const selectPersistedWorkspace = (s: AppDesignerStoreState): Workspace => ({
-	id: s.id,
+	id: s.workspaceId,
 	name: s.name,
 	nodes: s.nodes,
 	connections: s.connections,
