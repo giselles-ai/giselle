@@ -81,12 +81,18 @@ export function useAddWebPages() {
 							addedWebPage,
 						],
 					});
-				} catch {
+				} catch (error) {
+					const errorMessage =
+						error instanceof Error
+							? error.message
+							: error === null || error === undefined
+								? "Failed to fetch webpage."
+								: String(error);
 					const failedWebPage: WebPage = {
 						id: newWebPage.id,
 						status: "failed",
 						url: newWebPage.url,
-						errorMessage: newWebPage.url,
+						errorMessage,
 					};
 					const node = store.getState().nodes.find((n) => n.id === args.nodeId);
 					if (!isWebPageNode(node)) {
