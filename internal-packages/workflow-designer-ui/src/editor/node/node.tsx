@@ -322,11 +322,11 @@ export function NodeComponent({
 				variant.isVectorStoreDocument
 			)
 				return "var(--color-github-node-1)";
-			if (variant.isTrigger || variant.isAppEntry)
-				return "var(--color-trigger-node-1)";
+			if (variant.isTrigger) return "var(--color-trigger-node-1)";
+			if (variant.isAppEntry || variant.isEnd)
+				return "var(--color-stage-node-1)";
 			if (variant.isAction) return "var(--color-action-node-1)";
 			if (variant.isQuery) return "var(--color-query-node-1)";
-			if (variant.isEnd) return "var(--color-trigger-node-1)";
 			return undefined;
 		},
 		[],
@@ -350,9 +350,7 @@ export function NodeComponent({
 	// For unconfigured (dashed) state, keep the container background transparent
 	// and rely on the dashed border layer's gradient fill to match other nodes.
 	const stageBackgroundClass =
-		(v.isAppEntry || v.isEnd) && !requiresSetup
-			? "bg-trigger-node-1"
-			: undefined;
+		(v.isAppEntry || v.isEnd) && !requiresSetup ? "bg-stage-node-1" : undefined;
 
 	const borderGradientStyle = useMemo(() => {
 		if (requiresSetup) return undefined;
@@ -395,8 +393,8 @@ export function NodeComponent({
 					position={Position.Right}
 					className={clsx(
 						"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !right-[-0.5px] !top-1/2",
-						isAppEntryAnyOutputConnected ? "!bg-trigger-node-1" : "!bg-bg",
-						"!border-trigger-node-1",
+						isAppEntryAnyOutputConnected ? "!bg-stage-node-1" : "!bg-bg",
+						"!border-stage-node-1",
 						isAppEntryAnyOutputConnected &&
 							"[box-shadow:0_0_0_1.5px_rgba(0,0,0,0.8)]",
 					)}
@@ -427,8 +425,8 @@ export function NodeComponent({
 					position={Position.Left}
 					className={clsx(
 						"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !left-[-0.5px] !top-1/2",
-						isEndAnyInputConnected ? "!bg-trigger-node-1" : "!bg-bg",
-						"!border-trigger-node-1",
+						isEndAnyInputConnected ? "!bg-stage-node-1" : "!bg-bg",
+						"!border-stage-node-1",
 						isEndAnyInputConnected &&
 							"[box-shadow:0_0_0_1.5px_rgba(0,0,0,0.8)]",
 					)}
@@ -481,9 +479,9 @@ export function NodeComponent({
 				selected && v.isVectorStoreGithub && "shadow-github-node-1",
 				selected && v.isVectorStoreDocument && "shadow-github-node-1",
 				selected && v.isTrigger && "shadow-trigger-node-1",
-				selected && v.isAppEntry && "shadow-trigger-node-1",
+				selected && v.isAppEntry && "shadow-stage-node-1",
 				selected && v.isAction && "shadow-action-node-1",
-				selected && v.isEnd && "shadow-trigger-node-1",
+				selected && v.isEnd && "shadow-stage-node-1",
 				selected && v.isQuery && "shadow-query-node-1",
 				selected && "shadow-[0px_0px_20px_1px_rgba(0,_0,_0,_0.4)]",
 				selected &&
@@ -499,9 +497,9 @@ export function NodeComponent({
 				highlighted && v.isVectorStoreGithub && "shadow-github-node-1",
 				highlighted && v.isVectorStoreDocument && "shadow-github-node-1",
 				highlighted && v.isTrigger && "shadow-trigger-node-1",
-				highlighted && v.isAppEntry && "shadow-trigger-node-1",
+				highlighted && v.isAppEntry && "shadow-stage-node-1",
 				highlighted && v.isAction && "shadow-action-node-1",
-				highlighted && v.isEnd && "shadow-trigger-node-1",
+				highlighted && v.isEnd && "shadow-stage-node-1",
 				highlighted && v.isQuery && "shadow-query-node-1",
 				highlighted && "shadow-[0px_0px_20px_1px_rgba(0,_0,_0,_0.4)]",
 				highlighted &&
@@ -563,7 +561,7 @@ export function NodeComponent({
 					className={clsx(
 						"absolute inset-0 z-[-2] pointer-events-none",
 						nodeRadiusClass,
-						"shadow-[0_0_22px_4px_hsla(220,_15%,_50%,_0.7)]",
+						"shadow-[0_0_22px_4px_color-mix(in_srgb,var(--color-stage-node-1)_70%,transparent)]",
 					)}
 				/>
 			)}
@@ -586,7 +584,7 @@ export function NodeComponent({
 					!borderGradientStyle &&
 						(v.isAppEntry || v.isEnd) &&
 						(requiresSetup
-							? "from-trigger-node-1/30 via-trigger-node-1/50 to-trigger-node-1"
+							? "from-stage-node-1/30 via-stage-node-1/50 to-stage-node-1"
 							: "from-inverse/80 via-inverse/30 to-inverse/60"),
 					!borderGradientStyle &&
 						!v.isAppEntry &&

@@ -70,6 +70,7 @@ function getNodeIconBackground(node: NodeLike): string {
 			case "imageGeneration":
 				return "bg-image-generation-node-1";
 			case "appEntry":
+				return "bg-stage-node-1";
 			case "trigger":
 				return "bg-trigger-node-1";
 			case "action":
@@ -77,7 +78,7 @@ function getNodeIconBackground(node: NodeLike): string {
 			case "query":
 				return "bg-query-node-1";
 			case "end":
-				return "bg-trigger-node-1";
+				return "bg-stage-node-1";
 			default: {
 				const _exhaustiveCheck: never = node.content.type;
 				throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
