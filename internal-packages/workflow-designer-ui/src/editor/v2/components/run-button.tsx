@@ -25,19 +25,19 @@ import {
 	isTextGenerationNode,
 	isTriggerNode,
 } from "@giselles-ai/protocol";
-import {
-	useNodeGroups,
-	useTaskSystem,
-	useWorkflowDesigner,
-	useWorkflowDesignerStore,
-} from "@giselles-ai/react";
+import { useTaskSystem } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { PlayIcon, UngroupIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { AppEntryInputDialog } from "../../../app/app-entry-input-dialog";
+import {
+	useAppDesignerStore,
+	useWorkspaceActions,
+} from "../../../app-designer";
 import { NodeIcon } from "../../../icons/node";
 import { isPromptEmpty } from "../../lib/validate-prompt";
 import { TriggerInputDialog } from "./trigger-input-dialog";
+import { useNodeGroups } from "./use-node-groups";
 
 type RunItem = {
 	nodeIds: NodeId[];
@@ -114,13 +114,17 @@ function RunOptionItem({
 }
 
 function useRunAct() {
-	const { data, setUiNodeState } = useWorkflowDesigner();
-	const { createAndStartTask } = useTaskSystem(data.id);
+	const { nodes, workspaceId } = useAppDesignerStore((s) => ({
+		nodes: s.nodes,
+		workspaceId: s.workspaceId,
+	}));
+	const setUiNodeState = useWorkspaceActions((a) => a.setUiNodeState);
+	const { createAndStartTask } = useTaskSystem(workspaceId);
 	const { toast, error } = useToasts();
 
 	return async (item: RunItem) => {
 		for (const nodeId of item.nodeIds) {
-			const node = data.nodes.find((n) => n.id === nodeId);
+			const node = nodes.find((n) => n.id === nodeId);
 			if (node && (isTextGenerationNode(node) || isImageGenerationNode(node))) {
 				if (isPromptEmpty(node.content.prompt)) {
 					error("Please fill in the prompt to run.");
@@ -245,7 +249,8 @@ function MultipleRunsDropdown({
 	nodeGroupRuns: NodeGroupRunItem[];
 	onCreateAndStartTaskSubmit: SubmitCreateAndStartTask;
 }) {
-	const { data, setUiNodeState } = useWorkflowDesigner();
+	const nodes = useAppDesignerStore((s) => s.nodes);
+	const setUiNodeState = useWorkspaceActions((a) => a.setUiNodeState);
 	const runAct = useRunAct();
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const [openDialogNodeId, setOpenDialogNodeId] = useState<string | null>(null);
@@ -311,13 +316,13 @@ function MultipleRunsDropdown({
 
 	const highlightNodes = useCallback(
 		(runItem: RunItem, isHovered: boolean) => {
-			for (const node of data.nodes) {
+			for (const node of nodes) {
 				if (runItem.nodeIds.includes(node.id)) {
 					setUiNodeState(node.id, { highlighted: isHovered });
 				}
 			}
 		},
-		[data.nodes, setUiNodeState],
+		[nodes, setUiNodeState],
 	);
 
 	return (
@@ -423,7 +428,7 @@ function MultipleRunsDropdown({
 
 export function RunButton() {
 	const nodeGroups = useNodeGroups();
-	const workspaceId = useWorkflowDesignerStore((s) => s.workspace.id);
+	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
 	const { createAndStartTask } = useTaskSystem(workspaceId);
 
 	const { starterRuns, nodeGroupRuns } = useMemo(() => {

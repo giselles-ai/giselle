@@ -1,13 +1,17 @@
 "use client";
 
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
-import { useFeatureFlag, useWorkflowDesigner } from "@giselles-ai/react";
+import { useFeatureFlag } from "@giselles-ai/react";
 import Avatar from "boring-avatars";
 import clsx from "clsx/lite";
 import { ChevronDownIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRef } from "react";
+import {
+	useAppDesignerStore,
+	useUpdateWorkspaceName,
+} from "../../../app-designer";
 import { GiselleIcon } from "../../../icons";
 import { EditableText, type EditableTextRef } from "../../properties-panel/ui";
 import { RunButton } from "./run-button";
@@ -21,13 +25,17 @@ export function V2Header({
 	teamAvatarUrl?: string | null;
 	onNameChange?: (name: string) => Promise<void>;
 }) {
-	const { data, updateName } = useWorkflowDesigner();
+	const { workspaceId, name } = useAppDesignerStore((s) => ({
+		workspaceId: s.workspaceId,
+		name: s.name,
+	}));
+	const updateWorkspaceName = useUpdateWorkspaceName();
 	const editableTextRef = useRef<EditableTextRef>(null);
 	const { layoutV3 } = useFeatureFlag();
 
 	const handleUpdateName = async (value?: string) => {
 		if (!value) return;
-		updateName(value);
+		updateWorkspaceName(value);
 		await onNameChange?.(value);
 	};
 
@@ -107,11 +115,11 @@ export function V2Header({
 					{/* app name editable */}
 					<div className="max-w-[300px]">
 						<EditableText
-							key={data.id}
+							key={workspaceId}
 							ref={editableTextRef}
 							fallbackValue="Untitled"
 							onChange={handleUpdateName}
-							value={data.name}
+							value={name}
 							className="text-[#6B8FF0] font-medium"
 						/>
 					</div>

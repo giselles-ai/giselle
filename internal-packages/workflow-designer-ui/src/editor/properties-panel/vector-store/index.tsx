@@ -1,5 +1,5 @@
 import type { VectorStoreNode } from "@giselles-ai/protocol";
-import { useWorkflowDesigner } from "@giselles-ai/react";
+import { useDeleteNode, useUpdateNodeData } from "../../../app-designer";
 import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
 import { NodePanelHeader } from "../ui/node-panel-header";
 import { DocumentVectorStoreNodePropertiesPanel } from "./document";
@@ -10,7 +10,8 @@ export function VectorStoreNodePropertiesPanel({
 }: {
 	node: VectorStoreNode;
 }) {
-	const { updateNodeData, deleteNode } = useWorkflowDesigner();
+	const updateNodeData = useUpdateNodeData();
+	const deleteNode = useDeleteNode();
 
 	return (
 		<PropertiesPanelRoot>

@@ -1,6 +1,5 @@
 import { Button } from "@giselle-internal/ui/button";
 import type { TriggerId, TriggerNode } from "@giselles-ai/protocol";
-import { useWorkflowDesigner } from "@giselles-ai/react";
 import {
 	type GitHubEventId,
 	githubEvents,
@@ -8,6 +7,7 @@ import {
 import clsx from "clsx/lite";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useUpdateNodeData } from "../../../../../app-designer";
 import ClipboardButton from "../../../../../ui/clipboard-button";
 import { useGitHubTrigger } from "../../../../lib/use-github-trigger";
 import {
@@ -76,7 +76,7 @@ export function GitHubTriggerConfiguredView({
 	node: TriggerNode;
 	onStartReconfigure: (mode: GitHubTriggerReconfigureMode) => void;
 }) {
-	const { updateNodeData } = useWorkflowDesigner();
+	const updateNodeData = useUpdateNodeData();
 	const {
 		isLoading,
 		data,

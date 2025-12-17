@@ -5,20 +5,19 @@ import type {
 	NodeLike,
 	OutputId,
 } from "@giselles-ai/protocol";
-import {
-	createConnectionWithInput,
-	type UIConnection,
-	useWorkflowDesigner,
-	useWorkflowDesignerStore,
-} from "@giselles-ai/react";
+import { isSupportedConnection, type UIConnection } from "@giselles-ai/react";
 import { useCallback, useMemo } from "react";
 import { useShallow } from "zustand/shallow";
+import {
+	useAddConnectionAndAddInput,
+	useAppDesignerStore,
+} from "../../../../app-designer";
 
 export function useNodeContext(node: ContentGenerationNode) {
-	const { nodes, connections: allConnections } = useWorkflowDesignerStore(
+	const { nodes, connections: allConnections } = useAppDesignerStore(
 		useShallow((s) => ({
-			connections: s.workspace.connections,
-			nodes: s.workspace.nodes,
+			connections: s.connections,
+			nodes: s.nodes,
 		})),
 	);
 
@@ -72,8 +71,7 @@ export function useNodeContext(node: ContentGenerationNode) {
 		[connections],
 	);
 
-	const { data, addConnection, isSupportedConnection, updateNodeData } =
-		useWorkflowDesigner();
+	const addConnectionAndAddInput = useAddConnectionAndAddInput();
 
 	// Get available nodes that can be connected as context
 	const availableContextNodes = useMemo(() => {
@@ -119,7 +117,7 @@ export function useNodeContext(node: ContentGenerationNode) {
 			label: string;
 		}> = [];
 
-		for (const currentNode of data.nodes) {
+		for (const currentNode of nodes) {
 			if (currentNode.id === node.id) {
 				continue;
 			}
@@ -132,7 +130,7 @@ export function useNodeContext(node: ContentGenerationNode) {
 
 			for (const output of currentNode.outputs) {
 				// Skip if this output is already connected
-				const isAlreadyConnected = data.connections.some(
+				const isAlreadyConnected = allConnections.some(
 					(conn) =>
 						(conn.outputNode.id === currentNode.id &&
 							conn.outputId === output.id) ||
@@ -263,24 +261,22 @@ export function useNodeContext(node: ContentGenerationNode) {
 			});
 		}
 		return groups;
-	}, [data.nodes, node, isSupportedConnection, data.connections]);
+	}, [allConnections, node, nodes]);
 
 	const handleContextSelect = useCallback(
 		(_e: unknown, item: { value: string; label: string }) => {
 			const [nodeId, outputId] = item.value.split(":");
-			const outputNode = data.nodes.find((n) => n.id === nodeId);
+			const outputNode = nodes.find((n) => n.id === nodeId);
 			if (!outputNode || !outputId) {
 				return;
 			}
-			createConnectionWithInput({
+			addConnectionAndAddInput({
 				outputNode,
 				outputId: outputId as OutputId,
 				inputNode: node,
-				updateNodeData,
-				addConnection,
 			});
 		},
-		[node, addConnection, updateNodeData, data.nodes],
+		[addConnectionAndAddInput, node, nodes],
 	);
 
 	return {

@@ -772,6 +772,9 @@ importers:
       '@giselles-ai/utils':
         specifier: workspace:*
         version: link:../../packages/utils
+      '@giselles-ai/workspace-utils':
+        specifier: workspace:*
+        version: link:../../packages/workspace-utils
       '@xyflow/react':
         specifier: 'catalog:'
         version: 12.9.0(@types/react@19.2.7)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
@@ -1345,15 +1348,9 @@ importers:
       '@giselles-ai/language-model':
         specifier: workspace:^
         version: link:../language-model
-      '@giselles-ai/node-registry':
-        specifier: workspace:*
-        version: link:../node-registry
       '@giselles-ai/stream':
         specifier: workspace:*
         version: link:../stream
-      '@giselles-ai/workspace-utils':
-        specifier: workspace:*
-        version: link:../workspace-utils
       ai:
         specifier: 'catalog:'
         version: 5.0.101(zod@4.1.12)

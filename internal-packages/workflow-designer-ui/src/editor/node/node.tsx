@@ -10,7 +10,6 @@ import {
 	type NodeLike,
 	type OutputId,
 } from "@giselles-ai/protocol";
-import { useWorkflowDesignerStore } from "@giselles-ai/react";
 import {
 	Handle,
 	type NodeProps,
@@ -22,56 +21,13 @@ import { CheckIcon, SquareIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useMemo, useRef, useTransition } from "react";
 import { useShallow } from "zustand/shallow";
+import { useAppDesignerStore, useUpdateNodeData } from "../../app-designer";
 import { NodeIcon } from "../../icons/node";
 import { EditableText } from "../../ui/editable-text";
-import { NodeHandleDot } from "../../ui/node/node-handle-dot";
-import { NodeInputLabel } from "../../ui/node/node-input-label";
 import { Tooltip } from "../../ui/tooltip";
 import { DocumentNodeInfo, GitHubNodeInfo } from "./ui";
 import { GitHubTriggerStatusBadge } from "./ui/github-trigger/status-badge";
 import { useCurrentNodeGeneration } from "./use-current-node-generation";
-
-type NodeHandleContentType = Parameters<typeof NodeHandleDot>[0]["contentType"];
-
-function getInputHandleContentType(node: NodeLike): NodeHandleContentType {
-	// Allow upcoming content types without forcing every caller to loosen their typing.
-	const contentType = node.content.type as
-		| NodeHandleContentType
-		| "vectorStore";
-	switch (contentType) {
-		case "textGeneration":
-		case "contentGeneration":
-		case "imageGeneration":
-		case "github":
-		case "text":
-		case "file":
-		case "webPage":
-		case "webSearch":
-		case "audioGeneration":
-		case "videoGeneration":
-		case "trigger":
-		case "action":
-		case "query":
-			return contentType;
-		case "vectorStore": {
-			if (!isVectorStoreNode(node)) {
-				return "text";
-			}
-			const provider = node.content.source.provider as
-				| typeof node.content.source.provider
-				| "githubPullRequest";
-			if (provider === "github") {
-				return "vectorStoreGithub";
-			}
-			if (provider === "githubPullRequest") {
-				return "vectorStoreGithubPullRequest";
-			}
-			return "text";
-		}
-		default:
-			return "text";
-	}
-}
 
 // Helper function to get completion label from node LLM provider
 function getCompletionLabel(node: NodeLike): string {
@@ -106,11 +62,11 @@ export const nodeTypes: NodeTypes = {
 };
 
 function CustomXyFlowNode({ id, selected }: NodeProps) {
-	const { node, connections, highlighted } = useWorkflowDesignerStore(
+	const { node, connections, highlighted } = useAppDesignerStore(
 		useShallow((s) => ({
-			node: s.workspace.nodes.find((node) => node.id === id),
-			connections: s.workspace.connections,
-			highlighted: s.workspace.ui.nodeState[id as NodeId]?.highlighted,
+			node: s.nodes.find((node) => node.id === id),
+			connections: s.connections,
+			highlighted: s.ui.nodeState[id as NodeId]?.highlighted,
 		})),
 	);
 
@@ -145,60 +101,11 @@ function CustomXyFlowNode({ id, selected }: NodeProps) {
 	);
 }
 
-export function NodeComponent({
-	node,
-	selected,
-	highlighted,
-	connectedInputIds,
-	connectedOutputIds,
-	preview = false,
-}: {
-	node: NodeLike;
-	selected?: boolean;
-	preview?: boolean;
-	highlighted?: boolean;
-	connectedInputIds?: InputId[];
-	connectedOutputIds?: OutputId[];
-}) {
-	const updateNodeData = useWorkflowDesignerStore((state) => state.updateNode);
-	const { currentGeneration, stopCurrentGeneration } = useCurrentNodeGeneration(
-		node.id,
-	);
-
-	const prevGenerationStatusRef = useRef(currentGeneration?.status);
-	const [showCompleteLabel, startTransition] = useTransition();
-	useEffect(() => {
-		if (currentGeneration === undefined) {
-			return;
-		}
-		if (
-			prevGenerationStatusRef.current === "running" &&
-			currentGeneration.status === "completed"
-		) {
-			startTransition(
-				async () =>
-					new Promise((resolve) => {
-						setTimeout(() => {
-							resolve();
-						}, 2000);
-					}),
-			);
-		}
-		prevGenerationStatusRef.current = currentGeneration.status;
-	}, [currentGeneration]);
-	const metadataTexts = useMemo(() => {
-		const tmp: { label: string; tooltip: string }[] = [];
-		if (isTextGenerationNode(node) || isImageGenerationNode(node)) {
-			tmp.push({ label: node.content.llm.provider, tooltip: "LLM Provider" });
-		}
-		tmp.push({ label: node.id.substring(3, 11), tooltip: "Node ID" });
-		return tmp;
-	}, [node]);
-
-	/**
-	 * Abbreviating variant as v.
-	 */
-	const v = useMemo(() => {
+/**
+ * Abbreviating variant as v.
+ */
+function useVariant(node: NodeLike) {
+	return useMemo(() => {
 		const isText = node.content.type === "text";
 		const isFile = node.content.type === "file";
 		const isWebPage = node.content.type === "webPage";
@@ -267,9 +174,61 @@ export function NodeComponent({
 			isLightIconText,
 		};
 	}, [node]);
+}
+
+export function NodeComponent({
+	node,
+	selected,
+	highlighted,
+	connectedInputIds,
+	connectedOutputIds,
+	preview = false,
+}: {
+	node: NodeLike;
+	selected?: boolean;
+	preview?: boolean;
+	highlighted?: boolean;
+	connectedInputIds?: InputId[];
+	connectedOutputIds?: OutputId[];
+}) {
+	const updateNodeData = useUpdateNodeData();
+	const { currentGeneration, stopCurrentGeneration } = useCurrentNodeGeneration(
+		node.id,
+	);
+
+	const prevGenerationStatusRef = useRef(currentGeneration?.status);
+	const [showCompleteLabel, startTransition] = useTransition();
+	useEffect(() => {
+		if (currentGeneration === undefined) {
+			return;
+		}
+		if (
+			prevGenerationStatusRef.current === "running" &&
+			currentGeneration.status === "completed"
+		) {
+			startTransition(
+				async () =>
+					new Promise((resolve) => {
+						setTimeout(() => {
+							resolve();
+						}, 2000);
+					}),
+			);
+		}
+		prevGenerationStatusRef.current = currentGeneration.status;
+	}, [currentGeneration]);
+	const metadataTexts = useMemo(() => {
+		const tmp: { label: string; tooltip: string }[] = [];
+		if (isTextGenerationNode(node) || isImageGenerationNode(node)) {
+			tmp.push({ label: node.content.llm.provider, tooltip: "LLM Provider" });
+		}
+		tmp.push({ label: node.id.substring(3, 11), tooltip: "Node ID" });
+		return tmp;
+	}, [node]);
+
+	const v = useVariant(node);
 
 	const requiresSetup = nodeRequiresSetup(node);
-	const inputHandleContentType = getInputHandleContentType(node);
 
 	type VariantType = {
 		isText: boolean;
@@ -587,10 +546,10 @@ export function NodeComponent({
 									return;
 								}
 								if (value.trim().length === 0) {
-									updateNodeData(node.id, { name: undefined });
+									updateNodeData(node, { name: undefined });
 									return;
 								}
-								updateNodeData(node.id, { name: value });
+								updateNodeData(node, { name: value });
 							}}
 							onClickToEditMode={(e) => {
 								if (!selected) {
@@ -606,169 +565,124 @@ export function NodeComponent({
 			<DocumentNodeInfo node={node} />
 			<GitHubNodeInfo node={node} />
 			{!preview && (
-				<div className="flex justify-between">
-					<div className="grid">
-						{node.content.type !== "action" &&
-							node.inputs?.map((input) => {
-								const isInConnected =
-									connectedInputIds?.some(
-										(connectedInputId) => connectedInputId === input.id,
-									) ?? false;
-								return (
-									<div
-										className="relative flex items-center h-[28px]"
-										key={input.id}
-									>
-										<NodeHandleDot
-											position={Position.Left}
-											isConnected={isInConnected}
-											isConnectable={false}
-											contentType={inputHandleContentType}
-											id={input.id}
-										/>
-										<NodeInputLabel
-											label={input.label}
-											isConnected={isInConnected}
-											isRequired={Boolean(
-												(input as { isRequired?: boolean }).isRequired,
-											)}
-										/>
-									</div>
-								);
-							})}
-						{node.content.type === "action" &&
-							node.inputs.map((input) => (
-								<div
-									className="relative flex items-center h-[28px] group"
-									key={input.id}
-									data-state={
-										connectedInputIds?.some(
-											(connectedInputId) => connectedInputId === input.id,
-										)
-											? "connected"
-											: "disconnected"
-									}
-									data-required={input.isRequired ? "true" : "false"}
-								>
-									<NodeHandleDot
-										position={Position.Left}
-										isConnected={
-											connectedInputIds?.some(
-												(connectedInputId) => connectedInputId === input.id,
-											) ?? false
-										}
-										isConnectable={
-											!connectedInputIds?.some(
-												(connectedInputId) => connectedInputId === input.id,
-											)
-										}
-										contentType="action"
-										id={input.id}
-									/>
-									<NodeInputLabel
-										label={input.label}
-										isConnected={
-											connectedInputIds?.some(
-												(connectedInputId) => connectedInputId === input.id,
-											) ?? false
-										}
-										isRequired={input.isRequired}
-									/>
-								</div>
-							))}
-						{node.type === "operation" &&
-							node.content.type !== "trigger" &&
-							node.content.type !== "appEntry" &&
-							node.content.type !== "action" && (
-								<div
-									className="relative flex items-center h-[28px]"
-									key="blank"
-								>
-									<Handle
-										type="target"
-										position={Position.Left}
-										id="blank-handle"
-										className={clsx(
-											"!absolute !w-[11px] !h-[11px] !rounded-full !-left-[4.5px] !translate-x-[50%] !border-[1.5px] !bg-bg",
-											v.isTextGeneration && "!border-generation-node-1",
-											v.isContentGeneration && "!border-generation-node-1",
-											v.isImageGeneration && "!border-image-generation-node-1",
-											v.isQuery && "!border-query-node-1",
-											v.isEnd && "!border-end-node-1",
-										)}
-									/>
-									<div className="absolute left-[-12px] text-[12px] text-text-muted whitespace-nowrap -translate-x-[100%]">
-										Input
-									</div>
-								</div>
-							)}
-					</div>
+				<InputOutput
+					node={node}
+					connectedInputIds={connectedInputIds}
+					connectedOutputIds={connectedOutputIds}
+				/>
+			)}
+		</div>
+	);
+}
 
-					<div className="grid">
-						{node.outputs?.map((output) => (
+function InputOutput({
+	node,
+	connectedInputIds = [],
+	connectedOutputIds = [],
+}: {
+	node: NodeLike;
+	connectedInputIds?: InputId[];
+	connectedOutputIds?: OutputId[];
+}) {
+	const v = useVariant(node);
+	const isInputConnected = connectedInputIds?.length > 0;
+	const isOutputConnected = connectedOutputIds?.length > 0;
+	return (
+		<div className="flex justify-between">
+			<div className="grid">
+				{node.type === "operation" &&
+					node.content.type !== "trigger" &&
+					node.content.type !== "appEntry" && (
+						<div
+							className="group relative flex items-center h-[28px]"
+							data-state={isInputConnected ? "connected" : "disconnected"}
+						>
+							<Handle
+								type="target"
+								position={Position.Left}
+								className={clsx(
+									"!absolute !w-[11px] !h-[11px] !rounded-full !-left-[4.5px] !translate-x-[50%] !border-[1.5px] !bg-background",
+									v.isTextGeneration &&
+										"!border-generation-node-1 group-data-[state=connected]:!bg-generation-node-1",
+									v.isContentGeneration &&
+										"!border-generation-node-1 group-data-[state=connected]:!bg-generation-node-1",
+									v.isImageGeneration &&
+										"!border-image-generation-node-1 group-data-[state=connected]:!bg-image-generation-node-1",
+									v.isAction &&
+										"!border-action-node-1 group-data-[state=connected]:!bg-action-node-1",
+									v.isQuery &&
+										"!border-query-node-1 group-data-[state=connected]:!bg-query-node-1",
+									v.isEnd &&
+										"!border-end-node-1 group-data-[state=connected]:!bg-end-node-1",
+								)}
+							/>
 							<div
-								className="relative group flex items-center h-[28px]"
-								key={output.id}
-								data-state={
-									connectedOutputIds?.some(
-										(connectedOutputId) => connectedOutputId === output.id,
-									)
-										? "connected"
-										: "disconnected"
-								}
+								className={clsx(
+									"text-[12px]",
+									isInputConnected
+										? "px-[16px] text-inverse"
+										: "absolute -left-[12px] whitespace-nowrap -translate-x-[100%] text-text-muted",
+								)}
 							>
-								<Handle
-									id={output.id}
-									type="source"
-									position={Position.Right}
-									className={clsx(
-										"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !right-[-0.5px]",
-										"group-data-[state=disconnected]:!bg-bg",
-										v.isTextGeneration &&
-											"!border-generation-node-1 group-data-[state=connected]:!bg-generation-node-1",
-										v.isContentGeneration &&
-											"!border-generation-node-1 group-data-[state=connected]:!bg-generation-node-1",
-										v.isImageGeneration &&
-											"!border-image-generation-node-1 group-data-[state=connected]:!bg-image-generation-node-1",
-										v.isGithub &&
-											"!border-github-node-1 group-data-[state=connected]:!bg-github-node-1",
-										v.isVectorStoreGithub &&
-											"!border-github-node-1 group-data-[state=connected]:!bg-github-node-1",
-										v.isVectorStoreDocument &&
-											"!border-github-node-1 group-data-[state=connected]:!bg-github-node-1",
-										v.isText &&
-											"!border-text-node-1 group-data-[state=connected]:!bg-text-node-1 group-data-[state=connected]:!border-text-node-1",
-										v.isFile &&
-											"!border-file-node-1 group-data-[state=connected]:!bg-file-node-1 group-data-[state=connected]:!border-file-node-1",
-										v.isWebPage &&
-											"!border-webPage-node-1 group-data-[state=connected]:!bg-webPage-node-1 group-data-[state=connected]:!border-webPage-node-1",
-										v.isTrigger &&
-											"!border-trigger-node-1 group-data-[state=connected]:!bg-trigger-node-1 group-data-[state=connected]:!border-trigger-node-1",
-										v.isAppEntry &&
-											"!border-trigger-node-1 group-data-[state=connected]:!bg-trigger-node-1 group-data-[state=connected]:!border-trigger-node-1",
-										v.isAction &&
-											"!border-action-node-1 group-data-[state=connected]:!bg-action-node-1 group-data-[state=connected]:!border-action-node-1",
-										v.isQuery &&
-											"!border-query-node-1 group-data-[state=connected]:!bg-query-node-1 group-data-[state=connected]:!border-query-node-1",
-										v.isEnd &&
-											"!border-end-node-1 group-data-[state=connected]:!bg-end-node-1 group-data-[state=connected]:!border-end-node-1",
-									)}
-								/>
-								<div
-									className={clsx(
-										"text-[12px]",
-										"group-data-[state=connected]:px-[16px]",
-										"group-data-[state=disconnected]:absolute group-data-[state=disconnected]:-right-[12px] group-data-[state=disconnected]:whitespace-nowrap group-data-[state=disconnected]:translate-x-[100%]",
-										"group-data-[state=connected]:text-inverse group-data-[state=disconnected]:text-text-muted",
-									)}
-								>
-									{output.label}
-								</div>
+								Input
 							</div>
-						))}
+						</div>
+					)}
+			</div>
+
+			<div className="grid">
+				<div
+					className="relative group flex items-center h-[28px]"
+					data-state={isOutputConnected ? "connected" : "disconnected"}
+				>
+					<Handle
+						type="source"
+						position={Position.Right}
+						className={clsx(
+							"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !right-[-0.5px]",
+							"group-data-[state=disconnected]:!bg-background",
+							v.isTextGeneration &&
+								"!border-generation-node-1 group-data-[state=connected]:!bg-generation-node-1",
+							v.isContentGeneration &&
+								"!border-generation-node-1 group-data-[state=connected]:!bg-generation-node-1",
+							v.isImageGeneration &&
+								"!border-image-generation-node-1 group-data-[state=connected]:!bg-image-generation-node-1",
+							v.isGithub &&
+								"!border-github-node-1 group-data-[state=connected]:!bg-github-node-1",
+							v.isVectorStoreGithub &&
+								"!border-github-node-1 group-data-[state=connected]:!bg-github-node-1",
+							v.isVectorStoreDocument &&
+								"!border-github-node-1 group-data-[state=connected]:!bg-github-node-1",
+							v.isText &&
+								"!border-text-node-1 group-data-[state=connected]:!bg-text-node-1 group-data-[state=connected]:!border-text-node-1",
+							v.isFile &&
+								"!border-file-node-1 group-data-[state=connected]:!bg-file-node-1 group-data-[state=connected]:!border-file-node-1",
+							v.isWebPage &&
+								"!border-webPage-node-1 group-data-[state=connected]:!bg-webPage-node-1 group-data-[state=connected]:!border-webPage-node-1",
+							v.isTrigger &&
+								"!border-trigger-node-1 group-data-[state=connected]:!bg-trigger-node-1 group-data-[state=connected]:!border-trigger-node-1",
+							v.isAppEntry &&
+								"!border-trigger-node-1 group-data-[state=connected]:!bg-trigger-node-1 group-data-[state=connected]:!border-trigger-node-1",
+							v.isAction &&
+								"!border-action-node-1 group-data-[state=connected]:!bg-action-node-1 group-data-[state=connected]:!border-action-node-1",
+							v.isQuery &&
+								"!border-query-node-1 group-data-[state=connected]:!bg-query-node-1 group-data-[state=connected]:!border-query-node-1",
+							v.isEnd &&
+								"!border-end-node-1 group-data-[state=connected]:!bg-end-node-1 group-data-[state=connected]:!border-end-node-1",
+						)}
+					/>
+					<div
+						className={clsx(
+							"text-[12px]",
+							isOutputConnected
+								? "px-[16px] text-inverse"
+								: "absolute -right-[12px] whitespace-nowrap translate-x-[100%] text-text-muted",
+						)}
+					>
+						Output
 					</div>
 				</div>
-			)}
+			</div>
 		</div>
 	);
 }

@@ -1,10 +1,11 @@
 import { useToasts } from "@giselle-internal/ui/toast";
 import type { FileData, FileNode } from "@giselles-ai/protocol";
-import { useWorkflowDesigner } from "@giselles-ai/react";
 import { useCallback } from "react";
+import { useRemoveFile, useUploadFile } from "../../../app-designer";
 
 export function useFileNode(node: FileNode) {
-	const { uploadFile, removeFile: _removeFile } = useWorkflowDesigner();
+	const uploadFile = useUploadFile();
+	const removeFileInternal = useRemoveFile();
 	const { error } = useToasts();
 	const addFiles = useCallback(
 		async (files: File[]) => {
@@ -18,8 +19,8 @@ export function useFileNode(node: FileNode) {
 	);
 
 	const removeFile = useCallback(
-		async (file: FileData) => await _removeFile(file),
-		[_removeFile],
+		async (file: FileData) => await removeFileInternal(file),
+		[removeFileInternal],
 	);
 
 	return {

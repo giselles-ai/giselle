@@ -1,37 +1,37 @@
 import {
+	type Connection,
 	isAppEntryNode,
 	isEndNode,
 	type NodeId,
-	type Workspace,
+	type NodeLike,
 } from "@giselles-ai/protocol";
 import type { StateCreator } from "zustand";
-import type { AppStore } from "./store";
+import type { AppDesignerStoreState } from "../app-designer-store";
 
-function hasStartNode(workspace: Workspace | null) {
-	if (!workspace) return false;
-	return workspace.nodes.some((node) => isAppEntryNode(node));
+function hasStartNode(nodes: NodeLike[]) {
+	return nodes.some((node) => isAppEntryNode(node));
 }
 
-function hasEndNode(workspace: Workspace | null) {
-	if (!workspace) return false;
-	return workspace.nodes.some((node) => isEndNode(node));
+function hasEndNode(nodes: NodeLike[]) {
+	return nodes.some((node) => isEndNode(node));
 }
 
-function isStartNodeConnectedToEndNode(workspace: Workspace | null) {
-	if (!workspace) return false;
-
-	const startNodeIds: NodeId[] = workspace.nodes
+function isStartNodeConnectedToEndNode(
+	nodes: NodeLike[],
+	connections: Connection[],
+) {
+	const startNodeIds: NodeId[] = nodes
 		.filter((node) => isAppEntryNode(node))
 		.map((node) => node.id);
 	if (startNodeIds.length === 0) return false;
 
 	const endNodeIdSet = new Set<NodeId>(
-		workspace.nodes.filter((node) => isEndNode(node)).map((node) => node.id),
+		nodes.filter((node) => isEndNode(node)).map((node) => node.id),
 	);
 	if (endNodeIdSet.size === 0) return false;
 
 	const adjacencyList = new Map<NodeId, Set<NodeId>>();
-	for (const connection of workspace.connections) {
+	for (const connection of connections) {
 		const fromNodeId = connection.outputNode.id;
 		const toNodeId = connection.inputNode.id;
 		const destinations = adjacencyList.get(fromNodeId) ?? new Set<NodeId>();
@@ -64,20 +64,20 @@ function isStartNodeConnectedToEndNode(workspace: Workspace | null) {
 	return false;
 }
 
-export type AppStoreSlice = {
+export type AppSlice = {
 	hasStartNode: () => boolean;
 	hasEndNode: () => boolean;
 	isStartNodeConnectedToEndNode: () => boolean;
 };
 
-export const createAppStoreSlice: StateCreator<
-	AppStore,
+export const createAppSlice: StateCreator<
+	AppDesignerStoreState,
 	[],
 	[],
-	AppStoreSlice
+	AppSlice
 > = (_set, get) => ({
-	hasStartNode: () => hasStartNode(get().workspace),
-	hasEndNode: () => hasEndNode(get().workspace),
+	hasStartNode: () => hasStartNode(get().nodes),
+	hasEndNode: () => hasEndNode(get().nodes),
 	isStartNodeConnectedToEndNode: () =>
-		isStartNodeConnectedToEndNode(get().workspace),
+		isStartNodeConnectedToEndNode(get().nodes, get().connections),
 });

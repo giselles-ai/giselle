@@ -4,7 +4,6 @@ import { EmptyState } from "@giselle-internal/ui/empty-state";
 import { Input } from "@giselle-internal/ui/input";
 import { Select } from "@giselle-internal/ui/select";
 import type { ContentGenerationNode } from "@giselles-ai/protocol";
-import { useWorkflowDesigner } from "@giselles-ai/react";
 import {
 	CheckIcon,
 	MoveUpRightIcon,
@@ -15,6 +14,7 @@ import {
 } from "lucide-react";
 import { Checkbox } from "radix-ui";
 import { useCallback, useState } from "react";
+import { useUpdateNodeDataContent } from "../../../../../../app-designer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
 import {
 	ToolConfigurationDialog,
@@ -427,7 +427,7 @@ function GitHubToolConfigurationDialogInternal({
 	secrets: { id: string; label: string }[] | undefined;
 	currentSecretId: string | undefined;
 }) {
-	const { updateNodeDataContent } = useWorkflowDesigner();
+	const updateNodeDataContent = useUpdateNodeDataContent();
 	const githubToolConfiguration = node.content.tools.find(
 		(tool) => tool.name === "github-api",
 	)?.configuration;

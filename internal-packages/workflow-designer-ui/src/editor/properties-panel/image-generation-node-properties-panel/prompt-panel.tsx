@@ -14,9 +14,14 @@ import {
 	isSupportedConnection,
 	useFeatureFlag,
 	useUsageLimits,
-	useWorkflowDesigner,
 } from "@giselles-ai/react";
 import { useCallback, useMemo } from "react";
+import {
+	useAppDesignerStore,
+	useRemoveConnectionAndInput,
+	useUpdateNodeData,
+	useUpdateNodeDataContent,
+} from "../../../app-designer";
 import { ModelPicker } from "../../../ui/model-picker";
 import { ProTag } from "../../tool/toolbar/components/pro-tag";
 import { PromptEditor } from "../ui/prompt-editor";
@@ -26,8 +31,13 @@ import { FalModelPanel, OpenAIImageModelPanel } from "./models";
 import { useConnectedSources } from "./sources";
 
 export function PromptPanel({ node }: { node: ImageGenerationNode }) {
-	const { data, updateNodeDataContent, updateNodeData, deleteConnection } =
-		useWorkflowDesigner();
+	const { nodes, connections: allConnections } = useAppDesignerStore((s) => ({
+		nodes: s.nodes,
+		connections: s.connections,
+	}));
+	const updateNodeDataContent = useUpdateNodeDataContent();
+	const updateNodeData = useUpdateNodeData();
+	const removeConnectionAndInput = useRemoveConnectionAndInput();
 	const usageLimits = useUsageLimits();
 	const userTier = usageLimits?.featureTier ?? Tier.enum.free;
 	const { error } = useToasts();
@@ -81,7 +91,7 @@ export function PromptPanel({ node }: { node: ImageGenerationNode }) {
 
 	const disconnectInvalidConnections = useCallback(
 		(model: ImageGenerationLanguageModelData) => {
-			const connections = data.connections.filter(
+			const connections = allConnections.filter(
 				(c) => c.inputNode.id === node.id,
 			);
 			if (connections.length === 0) return;
@@ -90,16 +100,14 @@ export function PromptPanel({ node }: { node: ImageGenerationNode }) {
 				content: { ...node.content, llm: model },
 			};
 			for (const connection of connections) {
-				const outputNode = data.nodes.find(
-					(n) => n.id === connection.outputNode.id,
-				);
+				const outputNode = nodes.find((n) => n.id === connection.outputNode.id);
 				if (!outputNode) continue;
 				if (!isSupportedConnection(outputNode, newInputNode).canConnect) {
-					deleteConnection(connection.id);
+					removeConnectionAndInput(connection.id);
 				}
 			}
 		},
-		[data.connections, data.nodes, node, deleteConnection],
+		[allConnections, removeConnectionAndInput, node, nodes],
 	);
 
 	const header = (

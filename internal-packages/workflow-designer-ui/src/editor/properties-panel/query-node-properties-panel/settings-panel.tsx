@@ -3,11 +3,11 @@ import {
 	DEFAULT_SIMILARITY_THRESHOLD,
 	type QueryNode,
 } from "@giselles-ai/protocol";
-import { useWorkflowDesigner } from "@giselles-ai/react";
+import { useUpdateNodeDataContent } from "../../../app-designer";
 import { Slider } from "../../../ui/slider";
 
 export function SettingsPanel({ node }: { node: QueryNode }) {
-	const { updateNodeDataContent } = useWorkflowDesigner();
+	const updateNodeDataContent = useUpdateNodeDataContent();
 
 	return (
 		<div className="grid grid-cols-1 gap-[8px]">
@@ -21,7 +21,6 @@ export function SettingsPanel({ node }: { node: QueryNode }) {
 				formatValue={(value) => Math.round(value).toString()}
 				onChange={(value) => {
 					updateNodeDataContent(node, {
-						...node.content,
 						maxResults: Math.round(value),
 					});
 				}}
@@ -35,7 +34,6 @@ export function SettingsPanel({ node }: { node: QueryNode }) {
 				step={0.01}
 				onChange={(value) => {
 					updateNodeDataContent(node, {
-						...node.content,
 						similarityThreshold: value,
 					});
 				}}

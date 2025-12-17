@@ -11,9 +11,12 @@ import {
 	isVectorStoreNode,
 	isWebPageNode,
 } from "@giselles-ai/protocol";
-import { useWorkflowDesignerStore } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { useShallow } from "zustand/shallow";
+import {
+	useAppDesignerStore,
+	useSetCurrentShortcutScope,
+} from "../../app-designer";
 import { ActionNodePropertiesPanel } from "./action-node-properties-panel";
 import { AppEntryNodePropertiesPanel } from "./app-entry-node-properties-panel";
 import { FileNodePropertiesPanel } from "./file-node-properties-panel";
@@ -27,16 +30,12 @@ import { VectorStoreNodePropertiesPanel } from "./vector-store";
 import { WebPageNodePropertiesPanel } from "./web-page-node-properties-panel";
 
 export function PropertiesPanel() {
-	const selectedNodes = useWorkflowDesignerStore(
+	const selectedNodes = useAppDesignerStore(
 		useShallow((s) =>
-			s.workspace.nodes.filter(
-				(node) => s.workspace.ui.nodeState[node.id]?.selected,
-			),
+			s.nodes.filter((node) => s.ui.nodeState[node.id]?.selected),
 		),
 	);
-	const setCurrentShortcutScope = useWorkflowDesignerStore(
-		(s) => s.setCurrentShortcutScope,
-	);
+	const setCurrentShortcutScope = useSetCurrentShortcutScope();
 	return (
 		<section
 			className={clsx("h-full text-inverse outline-none")}

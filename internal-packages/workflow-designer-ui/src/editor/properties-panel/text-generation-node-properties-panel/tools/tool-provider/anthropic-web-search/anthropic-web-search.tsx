@@ -1,9 +1,9 @@
 import { Button } from "@giselle-internal/ui/button";
 import { Toggle } from "@giselle-internal/ui/toggle";
 import type { TextGenerationNode } from "@giselles-ai/protocol";
-import { useWorkflowDesigner } from "@giselles-ai/react";
 import { Settings2Icon, XIcon } from "lucide-react";
 import { useCallback, useState } from "react";
+import { useUpdateNodeDataContent } from "../../../../../../app-designer";
 import { Slider } from "../../../../../../ui/slider";
 
 import { ToolConfigurationDialog } from "../../ui/tool-configuration-dialog";
@@ -36,7 +36,7 @@ export function AnthropicWebSearchToolConfigurationDialog({
 	open?: boolean;
 	onOpenChange?: (open: boolean) => void;
 }) {
-	const { updateNodeDataContent } = useWorkflowDesigner();
+	const updateNodeDataContent = useUpdateNodeDataContent();
 	const [internalOpen, setInternalOpen] = useState(false);
 
 	const open = externalOpen ?? internalOpen;

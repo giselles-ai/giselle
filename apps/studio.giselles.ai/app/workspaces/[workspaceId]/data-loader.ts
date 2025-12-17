@@ -100,6 +100,8 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 			.map((store) => ({ ...store, isOfficial: true })),
 	];
 
+	const llmProviders = giselle.getLanguageModelProviders();
+
 	return {
 		currentUser,
 		agent,
@@ -125,6 +127,7 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 			generateContentNode,
 			privatePreviewTools,
 		},
+		llmProviders,
 	};
 }
 

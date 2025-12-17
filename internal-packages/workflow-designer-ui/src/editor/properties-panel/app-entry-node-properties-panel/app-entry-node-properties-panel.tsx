@@ -1,8 +1,9 @@
 import type { App, AppEntryNode } from "@giselles-ai/protocol";
-import { useGiselle, useWorkflowDesigner } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { useState } from "react";
 import useSWR from "swr";
+import { useDeleteNode, useUpdateNodeData } from "../../../app-designer";
+import { useGiselle } from "../../../app-designer/store/giselle-client-provider";
 import {
 	NodePanelHeader,
 	PropertiesPanelContent,
@@ -11,7 +12,8 @@ import {
 import { AppEntryConfiguredView } from "./app-entry-configured-view";
 
 export function AppEntryNodePropertiesPanel({ node }: { node: AppEntryNode }) {
-	const { updateNodeData, deleteNode } = useWorkflowDesigner();
+	const updateNodeData = useUpdateNodeData();
+	const deleteNode = useDeleteNode();
 	const [scrollMode] = useState<"limited" | "full">("full");
 
 	const giselle = useGiselle();
