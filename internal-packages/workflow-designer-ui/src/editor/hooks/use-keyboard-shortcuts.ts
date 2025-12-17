@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef } from "react";
 import { useNodeManipulation } from "../node";
 import {
 	moveTool,
-	selectActionTool,
+	selectIntegrationTool,
 	selectLanguageModelTool,
 	selectRetrievalCategoryTool,
 	selectSourceCategoryTool,
@@ -89,7 +89,7 @@ export function useKeyboardShortcuts(
 	useToolAction("i", selectSourceCategoryTool);
 	useToolAction("g", selectLanguageModelTool);
 	useToolAction("r", selectRetrievalCategoryTool);
-	useToolAction("d", selectActionTool);
+	useToolAction("d", selectIntegrationTool);
 	useToolAction("Escape", moveTool);
 
 	// Generate shortcut for properties panel

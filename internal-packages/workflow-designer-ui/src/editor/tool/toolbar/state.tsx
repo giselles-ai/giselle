@@ -9,6 +9,7 @@ import type {
 	SelectEnviromentActionTool,
 	SelectFileNodeCategoryTool,
 	SelectGitHubTriggerTool,
+	SelectIntegrationTool,
 	SelectLanguageModelTool,
 	SelectLanguageModelV2Tool,
 	SelectRetrievalCategoryTool,
@@ -119,6 +120,13 @@ export function selectGithubTriggerTool() {
 		action: "selectGithubTrigger",
 		category: "edit",
 	} satisfies SelectGitHubTriggerTool;
+}
+
+export function selectIntegrationTool() {
+	return {
+		action: "selectIntegration",
+		category: "edit",
+	} satisfies SelectIntegrationTool;
 }
 
 export function selectActionTool() {

@@ -37,6 +37,10 @@ export interface SelectGitHubTriggerTool extends ToolBase {
 	category: "edit";
 	action: "selectGithubTrigger";
 }
+export interface SelectIntegrationTool extends ToolBase {
+	category: "edit";
+	action: "selectIntegration";
+}
 export interface SelectEnviromentActionTool extends ToolBase {
 	category: "edit";
 	action: "selectAction";
@@ -57,6 +61,7 @@ export type Tool =
 	| SelectSourceCategoryTool
 	| SelectTriggerTool
 	| SelectGitHubTriggerTool
+	| SelectIntegrationTool
 	| SelectEnviromentActionTool
 	| SelectRetrievalCategoryTool
 	| SelectLanguageModelV2Tool;
@@ -73,6 +78,7 @@ export function isToolAction(args: unknown): args is ToolAction {
 			args === "selectSourceCategory" ||
 			args === "selectTrigger" ||
 			args === "selectGithubTrigger" ||
+			args === "selectIntegration" ||
 			args === "selectAction" ||
 			args === "selectRetrievalCategory" ||
 			args === "selectLanguageModelV2"
