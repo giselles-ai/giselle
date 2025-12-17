@@ -1,4 +1,5 @@
 export * from "./use-add-connection";
+export * from "./use-add-connection-and-add-input";
 export * from "./use-add-node";
 export * from "./use-add-secret";
 export * from "./use-add-web-pages";

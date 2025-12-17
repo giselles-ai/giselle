@@ -25,16 +25,13 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useToasts } from "@giselle-internal/ui/toast";
-import {
-	createConnectionWithInput,
-	isSupportedConnection,
-} from "@giselles-ai/react";
+import { isSupportedConnection } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useShallow } from "zustand/shallow";
 import {
-	useAddConnection,
+	useAddConnectionAndAddInput,
 	useAddNode,
 	useAppDesignerStore,
 	useClearSelection,
@@ -44,7 +41,6 @@ import {
 	useSelectConnection,
 	useSelectSingleNode,
 	useSetCurrentShortcutScope,
-	useUpdateNodeData,
 	useWorkspaceActions,
 } from "../../../app-designer";
 import { Background } from "../../../ui/background";
@@ -148,8 +144,7 @@ function V2NodeCanvas() {
 		setUiNodeState: a.setUiNodeState,
 		setUiViewport: a.setUiViewport,
 	}));
-	const addConnection = useAddConnection();
-	const updateNodeData = useUpdateNodeData();
+	const addConnectionAndAddInput = useAddConnectionAndAddInput();
 	const deleteNode = useDeleteNode();
 	const deleteConnection = useDeleteConnection();
 	const selectConnection = useSelectConnection();
@@ -335,13 +330,11 @@ function V2NodeCanvas() {
 					throw new Error("Invalid input id");
 				}
 
-				createConnectionWithInput({
+				addConnectionAndAddInput({
 					outputNode,
 					outputId,
 					inputNode,
 					inputId,
-					updateNodeData,
-					addConnection,
 				});
 			} catch (error: unknown) {
 				toast.error(
@@ -349,7 +342,7 @@ function V2NodeCanvas() {
 				);
 			}
 		},
-		[addConnection, data.nodes, toast, updateNodeData],
+		[addConnectionAndAddInput, data.nodes, toast],
 	);
 
 	const isValidConnection: IsValidConnection = useCallback(

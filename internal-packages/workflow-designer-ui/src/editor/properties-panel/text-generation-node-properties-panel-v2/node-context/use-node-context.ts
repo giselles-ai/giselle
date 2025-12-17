@@ -5,17 +5,12 @@ import type {
 	NodeLike,
 	OutputId,
 } from "@giselles-ai/protocol";
-import {
-	createConnectionWithInput,
-	isSupportedConnection,
-	type UIConnection,
-} from "@giselles-ai/react";
+import { isSupportedConnection, type UIConnection } from "@giselles-ai/react";
 import { useCallback, useMemo } from "react";
 import { useShallow } from "zustand/shallow";
 import {
-	useAddConnection,
+	useAddConnectionAndAddInput,
 	useAppDesignerStore,
-	useUpdateNodeData,
 } from "../../../../app-designer";
 
 export function useNodeContext(node: ContentGenerationNode) {
@@ -76,8 +71,7 @@ export function useNodeContext(node: ContentGenerationNode) {
 		[connections],
 	);
 
-	const addConnection = useAddConnection();
-	const updateNodeData = useUpdateNodeData();
+	const addConnectionAndAddInput = useAddConnectionAndAddInput();
 
 	// Get available nodes that can be connected as context
 	const availableContextNodes = useMemo(() => {
@@ -276,19 +270,13 @@ export function useNodeContext(node: ContentGenerationNode) {
 			if (!outputNode || !outputId) {
 				return;
 			}
-			createConnectionWithInput({
+			addConnectionAndAddInput({
 				outputNode,
 				outputId: outputId as OutputId,
 				inputNode: node,
-				updateNodeData: (targetNode, patch) => {
-					updateNodeData(targetNode, patch);
-				},
-				addConnection: ({ outputNode, outputId, inputNode, inputId }) => {
-					addConnection({ outputNode, outputId, inputNode, inputId });
-				},
 			});
 		},
-		[addConnection, node, nodes, updateNodeData],
+		[addConnectionAndAddInput, node, nodes],
 	);
 
 	return {

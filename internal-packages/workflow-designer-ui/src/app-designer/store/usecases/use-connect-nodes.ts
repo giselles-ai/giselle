@@ -4,20 +4,15 @@ import {
 	type NodeId,
 	OutputId,
 } from "@giselles-ai/protocol";
-import {
-	createConnectionWithInput,
-	isSupportedConnection,
-} from "@giselles-ai/react";
+import { isSupportedConnection } from "@giselles-ai/react";
 import type { Connection } from "@xyflow/react";
 import { useCallback } from "react";
 import { useAppDesignerStore } from "../hooks";
-import { useAddConnection } from "./use-add-connection";
-import { useUpdateNodeData } from "./use-update-node-data";
+import { useAddConnectionAndAddInput } from "./use-add-connection-and-add-input";
 
 export function useConnectNodes() {
 	const nodes = useAppDesignerStore((s) => s.nodes);
-	const updateNodeData = useUpdateNodeData();
-	const addConnection = useAddConnection();
+	const addConnectionAndAddInput = useAddConnectionAndAddInput();
 
 	return useCallback(
 		(connection: Connection) => {
@@ -52,17 +47,13 @@ export function useConnectNodes() {
 				throw new Error("Invalid input id");
 			}
 
-			createConnectionWithInput({
+			addConnectionAndAddInput({
 				outputNode,
 				outputId,
 				inputNode,
 				inputId,
-				updateNodeData,
-				addConnection: ({ outputNode, outputId, inputNode, inputId }) => {
-					addConnection({ outputNode, outputId, inputNode, inputId });
-				},
 			});
 		},
-		[addConnection, nodes, updateNodeData],
+		[addConnectionAndAddInput, nodes],
 	);
 }
