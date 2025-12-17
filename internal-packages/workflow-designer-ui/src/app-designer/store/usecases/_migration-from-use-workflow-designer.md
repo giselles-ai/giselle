@@ -119,9 +119,9 @@
 
 ### Properties panel root (selection + focus)
 
-- [ ] `src/editor/properties-panel/index.tsx`
-  - [ ] selected node selection -> `useAppDesignerStore((s) => s.nodes.filter(...s.ui.nodeState...))`
-  - [ ] `setCurrentShortcutScope` -> `useSetCurrentShortcutScope()`
+- [x] `src/editor/properties-panel/index.tsx`
+  - [x] selected node selection -> `useAppDesignerStore((s) => s.nodes.filter(...s.ui.nodeState...))`
+  - [x] `setCurrentShortcutScope` -> `useSetCurrentShortcutScope()`
 
 ### Node property panels: common (rename/delete)
 
