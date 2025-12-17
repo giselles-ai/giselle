@@ -53,27 +53,6 @@ const DefaultActionIcon = ({
 	</svg>
 );
 
-// Arrow right icon for action buttons
-const _ArrowRightIcon = () => (
-	<svg
-		width="16"
-		height="16"
-		viewBox="0 0 16 16"
-		fill="none"
-		xmlns="http://www.w3.org/2000/svg"
-		className="text-inverse group-hover:text-inverse transition-colors"
-	>
-		<title>Arrow Right</title>
-		<path
-			d="M6 4L10 8L6 12"
-			stroke="currentColor"
-			strokeWidth="1.5"
-			strokeLinecap="round"
-			strokeLinejoin="round"
-		/>
-	</svg>
-);
-
 // Map action IDs to their corresponding icons
 const getActionIcon = (actionId: string) => {
 	const iconProps = { size: 18, className: "text-inverse" };
