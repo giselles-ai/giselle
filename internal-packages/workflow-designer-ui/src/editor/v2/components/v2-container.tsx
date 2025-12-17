@@ -312,19 +312,13 @@ function V2NodeCanvas() {
 
 	const isValidConnection: IsValidConnection = useCallback(
 		(connection) => {
-			if (
-				!connection.sourceHandle ||
-				!connection.targetHandle ||
-				connection.source === connection.target
-			) {
+			if (connection.source === connection.target) {
 				return false;
 			}
 			return !connections.some(
 				(conn) =>
 					conn.inputNode.id === connection.target &&
-					conn.outputNode.id === connection.source &&
-					(conn.inputId === connection.targetHandle ||
-						conn.outputId === connection.sourceHandle),
+					conn.outputNode.id === connection.source,
 			);
 		},
 		[connections],
