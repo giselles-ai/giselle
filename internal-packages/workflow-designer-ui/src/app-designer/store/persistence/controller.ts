@@ -1,19 +1,10 @@
-import type { Connection, NodeLike, Workspace } from "@giselles-ai/protocol";
+import type { Workspace } from "@giselles-ai/protocol";
 import type { StoreApi } from "zustand";
 import type { AppDesignerStoreState } from "../app-designer-store";
 
-export type PersistedWorkspace = {
-	nodes: NodeLike[];
-	connections: Connection[];
-};
+type FlushReason = "debounce" | "saveNow" | "routeChange" | "beforeUnload";
 
-export type FlushReason =
-	| "debounce"
-	| "saveNow"
-	| "routeChange"
-	| "beforeUnload";
-
-export type AppDesignerPersistence = {
+type AppDesignerPersistence = {
 	saveNow: () => Promise<void>;
 	flush: (reason?: FlushReason) => Promise<void>;
 	isDirty: () => boolean;

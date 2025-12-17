@@ -39,7 +39,7 @@ export type WorkspaceSlice = Omit<Workspace, "id"> & {
 		_skipNextSave: boolean;
 	};
 
-export type WorkspaceSliceCreator = StateCreator<
+type WorkspaceSliceCreator = StateCreator<
 	AppDesignerStoreState,
 	[],
 	[],
