@@ -27,7 +27,7 @@ import {
 	useAddNode,
 	useAppDesignerStore,
 	useClearSelection,
-	useConnectNode,
+	useConnectNodes,
 	useDeleteConnection,
 	useDeleteNode,
 	useDeselectConnection,
@@ -146,7 +146,7 @@ function V2NodeCanvas() {
 	const clearSelection = useClearSelection();
 	const setCurrentShortcutScope = useSetCurrentShortcutScope();
 	const { selectedTool, reset } = useToolbar();
-	const connectNode = useConnectNode();
+	const connectNodes = useConnectNodes();
 	const toast = useToasts();
 	const [menu, setMenu] = useState<Omit<ContextMenuProps, "onClose"> | null>(
 		null,
@@ -307,14 +307,14 @@ function V2NodeCanvas() {
 					throw new Error(supported.message);
 				}
 
-				connectNode(outputNode.id, inputNode.id);
+				connectNodes(outputNode.id, inputNode.id);
 			} catch (error: unknown) {
 				toast.error(
 					error instanceof Error ? error.message : "Failed to connect nodes",
 				);
 			}
 		},
-		[connectNode, data.nodes, toast],
+		[connectNodes, data.nodes, toast],
 	);
 
 	const isValidConnection: IsValidConnection = useCallback(
