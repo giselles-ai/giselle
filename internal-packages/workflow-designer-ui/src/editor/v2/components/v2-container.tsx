@@ -1,11 +1,6 @@
 "use client";
 
-import {
-	isAppEntryNode,
-	isEndNode,
-	type NodeId,
-	OutputId,
-} from "@giselles-ai/protocol";
+import { isAppEntryNode, isEndNode, type NodeId } from "@giselles-ai/protocol";
 import {
 	type Connection,
 	type Edge,
@@ -29,7 +24,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useShallow } from "zustand/shallow";
 import {
-	useAddConnectionAndAddInput,
 	useAddNode,
 	useAppDesignerStore,
 	useClearSelection,
@@ -143,7 +137,6 @@ function V2NodeCanvas() {
 		setUiNodeState: a.setUiNodeState,
 		setUiViewport: a.setUiViewport,
 	}));
-	const addConnectionAndAddInput = useAddConnectionAndAddInput();
 	const deleteNode = useDeleteNode();
 	const deleteConnection = useDeleteConnection();
 	const selectConnection = useSelectConnection();
