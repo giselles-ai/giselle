@@ -44,22 +44,32 @@ export function useDeleteNode() {
 					);
 				}
 
-				const inputsToRemove = new Map(
-					s.connections
-						.filter((c) => c.outputNode.id === nodeId)
-						.map((c) => [c.inputNode.id, c.inputId] as const),
-				);
+				const inputIdsToRemoveByNodeId = new Map<string, Set<string>>();
+				for (const c of s.connections.filter(
+					(c) => c.outputNode.id === nodeId,
+				)) {
+					const inputIdsToRemove =
+						inputIdsToRemoveByNodeId.get(c.inputNode.id) ?? new Set<string>();
+					inputIdsToRemove.add(c.inputId);
+					inputIdsToRemoveByNodeId.set(c.inputNode.id, inputIdsToRemove);
+				}
 
 				const nodes: NodeLike[] = s.nodes
 					.filter((n) => n.id !== nodeId)
 					.map((n) => {
-						const inputIdToRemove = inputsToRemove.get(n.id);
-						if (!inputIdToRemove || !isOperationNode(n) || isActionNode(n)) {
+						const inputIdsToRemove = inputIdsToRemoveByNodeId.get(n.id);
+						if (
+							inputIdsToRemove === undefined ||
+							!isOperationNode(n) ||
+							isActionNode(n)
+						) {
 							return n;
 						}
 						return {
 							...n,
-							inputs: n.inputs.filter((input) => input.id !== inputIdToRemove),
+							inputs: n.inputs.filter(
+								(input) => !inputIdsToRemove.has(input.id),
+							),
 						} as NodeLike;
 					});
 
