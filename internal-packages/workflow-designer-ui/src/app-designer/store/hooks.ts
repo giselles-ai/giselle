@@ -1,4 +1,5 @@
-import { useStore } from "zustand/react";
+import { shallow } from "zustand/shallow";
+import { useStoreWithEqualityFn } from "zustand/traditional";
 import { useAppDesignerStoreApi } from "./app-designer-provider";
 import type { AppDesignerStoreState } from "./app-designer-store";
 import type { UiSlice } from "./slices/ui-slice";
@@ -8,7 +9,7 @@ export function useAppDesignerStore<T>(
 	selector: (state: AppDesignerStoreState) => T,
 ): T {
 	const store = useAppDesignerStoreApi();
-	return useStore(store, selector);
+	return useStoreWithEqualityFn(store, selector, shallow);
 }
 
 export function useWorkspaceActions<T>(
