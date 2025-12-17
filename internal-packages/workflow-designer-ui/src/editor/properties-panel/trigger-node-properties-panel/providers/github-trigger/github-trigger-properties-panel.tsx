@@ -24,8 +24,11 @@ import {
 	useState,
 	useTransition,
 } from "react";
+import {
+	useAppDesignerStore,
+	useUpdateNodeData,
+} from "../../../../../app-designer";
 import { useGiselle } from "../../../../../app-designer/store/giselle-client-provider";
-import { useUpdateNodeData } from "../../../../../app-designer";
 import { Tooltip } from "../../../../../ui/tooltip";
 import { isPromptEmpty as isEmpty } from "../../../../lib/validate-prompt";
 import { GitHubInvalidCredential, SelectRepository } from "../../../ui";
@@ -318,6 +321,7 @@ export function Installed({
 		}
 	}, [step.state]);
 	const updateNodeData = useUpdateNodeData();
+	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
 	const selectedInstallationRepositories = useMemo(
 		() =>
 			(selectedInstallationId === null
@@ -668,7 +672,7 @@ export function Installed({
 													const result = await client.configureTrigger({
 														trigger: {
 															nodeId: node.id,
-															workspaceId: workspace?.id,
+															workspaceId,
 															enable: false,
 															configuration: {
 																provider: "github",

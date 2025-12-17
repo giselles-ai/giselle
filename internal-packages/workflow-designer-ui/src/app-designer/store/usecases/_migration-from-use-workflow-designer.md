@@ -9,6 +9,7 @@
 - [ ] Ensure editor subtree is wrapped with `AppDesignerProvider` (and it receives `initialWorkspace`, `giselleClient`, `llmProviders`)
   - [ ] Replace `useGiselle` imports from `@giselles-ai/react` with `app-designer/store/useGiselle` where needed
   - [x] Replace `useWorkflowDesignerStore` usage with `useAppDesignerStore` selectors
+  - [x] Remove `ZustandBridgeProvider` (legacy) in favor of app-designer store/usecases
 
 ---
 

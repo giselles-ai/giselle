@@ -1,9 +1,11 @@
 import { isActionNode, isOperationNode, NodeId } from "@giselles-ai/protocol";
 import { useCallback } from "react";
 import { useAppDesignerStoreApi } from "../app-designer-provider";
+import { useSyncAppConnectionStateIfNeeded } from "./use-sync-app-connection-state-if-needed";
 
 export function useDeleteConnection() {
 	const store = useAppDesignerStoreApi();
+	const syncAppConnectionStateIfNeeded = useSyncAppConnectionStateIfNeeded();
 
 	return useCallback(
 		(connectionId: string) => {
@@ -47,7 +49,8 @@ export function useDeleteConnection() {
 
 				return { ...s, connections: nextConnections, nodes: nextNodes, ui };
 			});
+			syncAppConnectionStateIfNeeded();
 		},
-		[store],
+		[store, syncAppConnectionStateIfNeeded],
 	);
 }

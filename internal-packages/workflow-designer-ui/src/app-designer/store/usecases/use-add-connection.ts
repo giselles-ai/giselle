@@ -7,11 +7,13 @@ import {
 } from "@giselles-ai/protocol";
 import { useCallback } from "react";
 import { useWorkspaceActions } from "../hooks";
+import { useSyncAppConnectionStateIfNeeded } from "./use-sync-app-connection-state-if-needed";
 
 export function useAddConnection() {
 	const { addConnection } = useWorkspaceActions((s) => ({
 		addConnection: s.addConnection,
 	}));
+	const syncAppConnectionStateIfNeeded = useSyncAppConnectionStateIfNeeded();
 
 	return useCallback(
 		(args: {
@@ -38,8 +40,9 @@ export function useAddConnection() {
 			} as Connection;
 
 			addConnection(newConnection);
+			syncAppConnectionStateIfNeeded();
 			return newConnection;
 		},
-		[addConnection],
+		[addConnection, syncAppConnectionStateIfNeeded],
 	);
 }

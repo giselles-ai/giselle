@@ -39,7 +39,7 @@
   - [ ] `useWorkspaceOrigin()`（`{ type: "studio", workspaceId }` を返す薄いヘルパ）
   - [ ] `useRunValidation()`（prompt空/ハイライト解除などUI都合だけ）
 - [ ] アプリ固有のユースケース（必要なら）
-  - [ ] AppEntry node auto-configure（`zustand-bridge-provider` の `autoConfigureAppEntryNode` 相当）
-  - [ ] App connected/disconnected sync（reachable end node判定→保存）
+  - [x] AppEntry node auto-configure（`zustand-bridge-provider` の `autoConfigureAppEntryNode` 相当）
+  - [x] App connected/disconnected sync（reachable end node判定→保存）
 
 

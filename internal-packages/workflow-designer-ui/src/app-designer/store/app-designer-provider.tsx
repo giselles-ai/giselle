@@ -5,6 +5,7 @@ import type { Workspace } from "@giselles-ai/protocol";
 import type { GiselleClient } from "@giselles-ai/react";
 import { usePathname } from "next/navigation";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { AppConnectionStateSyncProvider } from "./app-connection-state-sync-provider";
 import {
 	type AppDesignerStoreApi,
 	createAppDesignerStore,
@@ -118,7 +119,9 @@ export function AppDesignerProvider({
 	return (
 		<AppDesignerStoreContext.Provider value={storeApi}>
 			<GiselleClientProvider value={giselleClient}>
-				{children}
+				<AppConnectionStateSyncProvider>
+					{children}
+				</AppConnectionStateSyncProvider>
 			</GiselleClientProvider>
 		</AppDesignerStoreContext.Provider>
 	);

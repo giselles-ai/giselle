@@ -1,18 +1,33 @@
 import {
 	isActionNode,
+	isAppEntryNode,
 	isOperationNode,
 	NodeId,
 	type NodeLike,
 } from "@giselles-ai/protocol";
 import { useCallback } from "react";
 import { useAppDesignerStoreApi } from "../app-designer-provider";
+import { useGiselle } from "../giselle-client-provider";
+import { useSyncAppConnectionStateIfNeeded } from "./use-sync-app-connection-state-if-needed";
 
 export function useDeleteNode() {
+	const client = useGiselle();
 	const store = useAppDesignerStoreApi();
+	const syncAppConnectionStateIfNeeded = useSyncAppConnectionStateIfNeeded();
 
 	return useCallback(
 		(nodeIdToDelete: NodeId | string) => {
 			const nodeId = NodeId.parse(nodeIdToDelete);
+
+			const currentState = store.getState();
+			const targetNode = currentState.nodes.find((n) => n.id === nodeId);
+			const appIdToDelete =
+				targetNode &&
+				isAppEntryNode(targetNode) &&
+				targetNode.content.status === "configured"
+					? targetNode.content.appId
+					: null;
+
 			store.setState((s) => {
 				const connectionsToDelete = s.connections.filter(
 					(c) => c.inputNode.id === nodeId || c.outputNode.id === nodeId,
@@ -54,7 +69,20 @@ export function useDeleteNode() {
 
 				return { ...s, nodes, connections, ui };
 			});
+
+			if (appIdToDelete) {
+				void client
+					.deleteApp({ appId: appIdToDelete })
+					.catch((error) =>
+						console.error(
+							"Failed to delete App for deleted AppEntry node:",
+							error,
+						),
+					);
+			}
+
+			syncAppConnectionStateIfNeeded();
 		},
-		[store],
+		[client, store, syncAppConnectionStateIfNeeded],
 	);
 }

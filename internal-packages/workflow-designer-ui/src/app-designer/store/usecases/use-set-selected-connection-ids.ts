@@ -1,3 +1,4 @@
+import { ConnectionId } from "@giselles-ai/protocol";
 import { useCallback } from "react";
 import { useWorkspaceActions } from "../hooks";
 
@@ -8,7 +9,9 @@ export function useSetSelectedConnectionIds() {
 
 	return useCallback(
 		(connectionIds: string[]) => {
-			setSelectedConnectionIds(connectionIds);
+			setSelectedConnectionIds(
+				connectionIds.map((id) => ConnectionId.parse(id)),
+			);
 		},
 		[setSelectedConnectionIds],
 	);
