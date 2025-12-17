@@ -55,7 +55,7 @@ function useKeyAction(
 function useToolAction(key: string, toolFunction: () => Tool) {
 	const toolbar = useToolbar();
 	const currentShortcutScope = useAppDesignerStore(
-		(s) => s.ui.currentShortcutScope,
+		(s) => s.currentShortcutScope,
 	);
 	const isCanvasFocused = currentShortcutScope === "canvas";
 	const canUseToolShortcuts = isCanvasFocused && !!toolbar;
@@ -82,7 +82,7 @@ export function useKeyboardShortcuts(
 	const { onGenerate } = options;
 
 	const currentShortcutScope = useAppDesignerStore(
-		(s) => s.ui.currentShortcutScope,
+		(s) => s.currentShortcutScope,
 	);
 	const isCanvasFocused = currentShortcutScope === "canvas";
 	const isPropertiesPanelFocused = currentShortcutScope === "properties-panel";

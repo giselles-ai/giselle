@@ -22,6 +22,7 @@ export function createAppDesignerStore(args: {
 		...createWorkspaceSlice(initialWorkspace)(...a),
 		...createUiSlice({
 			llmProviders: llmProviders ?? [],
+			currentShortcutScope: initialWorkspace.ui.currentShortcutScope,
 		})(...a),
 		...createAppSlice(...a),
 	}));

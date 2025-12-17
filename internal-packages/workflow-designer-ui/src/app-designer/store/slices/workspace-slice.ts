@@ -6,7 +6,6 @@ import {
 	NodeId,
 	type NodeLike,
 	type NodeUIState,
-	type ShortcutScope,
 	type Viewport,
 	type Workspace,
 } from "@giselles-ai/protocol";
@@ -24,22 +23,12 @@ export interface WorkspaceActions {
 	setUiNodeState: (nodeId: NodeId | string, ui: Partial<NodeUIState>) => void;
 	setUiViewport: (viewport: Viewport, options?: { save?: boolean }) => void;
 	setSelectedConnectionIds: (connectionIds: ConnectionId[]) => void;
-	setCurrentShortcutScope: (
-		scope: ShortcutScope,
-		options?: { save?: boolean },
-	) => void;
 	updateWorkspaceName: (name: string | undefined) => void;
 }
 
 export type WorkspaceSlice = Omit<Workspace, "id"> & {
 	workspaceId: Workspace["id"];
-} & WorkspaceActions & {
-		/**
-		 * When true, persistence should ignore the next store update and reset this flag.
-		 * Useful for UI-only state changes you don't want to persist.
-		 */
-		_skipNextSave: boolean;
-	};
+} & WorkspaceActions;
 
 type WorkspaceSliceCreator = StateCreator<
 	AppDesignerStoreState,
@@ -58,7 +47,6 @@ export function createWorkspaceSlice(
 		nodes: initial.nodes,
 		connections: initial.connections,
 		ui: initial.ui,
-		_skipNextSave: false,
 		addNode: (node) => set((s) => ({ nodes: [...s.nodes, node] })),
 		upsertUiNodeState: (nodeId, ui) =>
 			set((s) => ({
@@ -106,15 +94,9 @@ export function createWorkspaceSlice(
 					},
 				};
 			}),
-		setUiViewport: (viewport, options) =>
+		setUiViewport: (viewport, _options) =>
 			set((s) => ({
-				_skipNextSave: !options?.save,
 				ui: { ...s.ui, viewport },
-			})),
-		setCurrentShortcutScope: (scope, options) =>
-			set((s) => ({
-				_skipNextSave: !options?.save,
-				ui: { ...s.ui, currentShortcutScope: scope },
 			})),
 		setSelectedConnectionIds: (connectionIds) =>
 			set((s) => ({

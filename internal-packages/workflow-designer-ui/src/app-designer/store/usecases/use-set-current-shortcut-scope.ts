@@ -1,14 +1,14 @@
 import type { ShortcutScope } from "@giselles-ai/protocol";
 import { useCallback } from "react";
-import { useWorkspaceActions } from "../hooks";
+import { useUiActions } from "../hooks";
 
 export function useSetCurrentShortcutScope() {
-	const { setCurrentShortcutScope } = useWorkspaceActions((s) => ({
+	const { setCurrentShortcutScope } = useUiActions((s) => ({
 		setCurrentShortcutScope: s.setCurrentShortcutScope,
 	}));
 	return useCallback(
-		(scope: ShortcutScope, options?: { save?: boolean }) => {
-			setCurrentShortcutScope(scope, options);
+		(scope: ShortcutScope) => {
+			setCurrentShortcutScope(scope);
 		},
 		[setCurrentShortcutScope],
 	);

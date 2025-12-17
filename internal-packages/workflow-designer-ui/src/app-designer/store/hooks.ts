@@ -26,7 +26,6 @@ export function useWorkspaceActions<T>(
 			removeNode: s.removeNode,
 			setUiNodeState: s.setUiNodeState,
 			setUiViewport: s.setUiViewport,
-			setCurrentShortcutScope: s.setCurrentShortcutScope,
 			setSelectedConnectionIds: s.setSelectedConnectionIds,
 			updateWorkspaceName: s.updateWorkspaceName,
 		}),
@@ -34,11 +33,14 @@ export function useWorkspaceActions<T>(
 }
 
 export function useUiActions<T>(
-	selector: (actions: Pick<UiSlice, "setClipboardNode">) => T,
+	selector: (
+		actions: Pick<UiSlice, "setClipboardNode" | "setCurrentShortcutScope">,
+	) => T,
 ): T {
 	return useAppDesignerStore((s) =>
 		selector({
 			setClipboardNode: s.setClipboardNode,
+			setCurrentShortcutScope: s.setCurrentShortcutScope,
 		}),
 	);
 }
