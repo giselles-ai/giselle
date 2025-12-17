@@ -21,17 +21,11 @@ export async function GET(request: NextRequest) {
 			type,
 			token_hash,
 		});
-		if (data.session == null) {
+		if (data.session === null || error !== null) {
 			redirectTo.pathname = "/password_reset";
 			return NextResponse.redirect(redirectTo);
 		}
 		await supabase.auth.setSession(data.session);
-		if (!error) {
-			return NextResponse.redirect(redirectTo);
-		}
+		return NextResponse.redirect(redirectTo);
 	}
-
-	// return the user to password reset page
-	redirectTo.pathname = "/password_reset";
-	return NextResponse.redirect(redirectTo);
 }
