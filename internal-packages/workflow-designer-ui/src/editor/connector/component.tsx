@@ -167,7 +167,7 @@ export function Connector({
 			<BaseEdge
 				id={id}
 				path={edgePath}
-				className={clsx("!stroke-[1.5px] bg-bg")}
+				className={clsx("!stroke-[1px] bg-bg")}
 				style={{ stroke: `url(#${gradientId})` }}
 				filter="url(#white-glow-filter)"
 			/>
@@ -175,7 +175,7 @@ export function Connector({
 				<path
 					d={edgePath}
 					stroke={`url(#${gradientId}-animation)`}
-					strokeWidth="2"
+					strokeWidth="1.5"
 					fill="none"
 					strokeLinecap="round"
 					filter="url(#white-glow-filter)"

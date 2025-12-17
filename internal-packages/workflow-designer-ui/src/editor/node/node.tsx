@@ -569,7 +569,7 @@ export function NodeComponent({
 					className={clsx(
 						"absolute inset-0 z-[-2] pointer-events-none",
 						nodeRadiusClass,
-						"shadow-[0_0_22px_4px_color-mix(in_srgb,var(--color-stage-node-1)_70%,transparent)]",
+						"shadow-[0_0_22px_4px_color-mix(in_srgb,var(--color-stage-node-1,var(--color-blue-muted))_70%,transparent)]",
 					)}
 				/>
 			)}
@@ -588,14 +588,12 @@ export function NodeComponent({
 					requiresSetup
 						? "border-black/60 border-dashed [border-width:2px]"
 						: "border-transparent",
-					!borderGradientStyle &&
-						(!(v.isAppEntry || v.isEnd) || requiresSetup) &&
-						"bg-gradient-to-br",
+					!borderGradientStyle && "bg-gradient-to-br",
 					!borderGradientStyle &&
 						(v.isAppEntry || v.isEnd) &&
 						(requiresSetup
-							? "from-[color-mix(in_srgb,var(--color-stage-node-1)_30%,transparent)] via-[color-mix(in_srgb,var(--color-stage-node-1)_50%,transparent)] to-[color:var(--color-stage-node-1)]"
-							: undefined),
+							? "from-[color-mix(in_srgb,var(--color-stage-node-1,var(--color-blue-muted))_30%,transparent)] via-[color-mix(in_srgb,var(--color-stage-node-1,var(--color-blue-muted))_50%,transparent)] to-[color:var(--color-stage-node-1,var(--color-blue-muted))]"
+							: "from-inverse/80 via-inverse/30 to-inverse/60"),
 					!borderGradientStyle &&
 						!v.isAppEntry &&
 						!v.isEnd &&
