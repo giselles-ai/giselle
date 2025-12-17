@@ -28,9 +28,9 @@ import {
 	useAppDesignerStore,
 	useClearSelection,
 	useConnectNodes,
-	useDeleteConnection,
 	useDeleteNode,
 	useDeselectConnection,
+	useDisconnectNodes,
 	useSelectConnection,
 	useSelectSingleNode,
 	useSetCurrentShortcutScope,
@@ -124,21 +124,19 @@ function DebugWorkspacePanel() {
 }
 
 function V2NodeCanvas() {
-	const data = useAppDesignerStore(
-		useShallow((s) => ({
+	const { nodes, connections, nodeState, viewport, selectedConnectionIds } =
+		useAppDesignerStore((s) => ({
 			nodes: s.nodes,
 			connections: s.connections,
 			nodeState: s.ui.nodeState,
 			viewport: s.ui.viewport,
 			selectedConnectionIds: s.ui.selectedConnectionIds ?? [],
-		})),
-	);
+		}));
 	const { setUiNodeState, setUiViewport } = useWorkspaceActions((a) => ({
 		setUiNodeState: a.setUiNodeState,
 		setUiViewport: a.setUiViewport,
 	}));
 	const deleteNode = useDeleteNode();
-	const deleteConnection = useDeleteConnection();
 	const selectConnection = useSelectConnection();
 	const deselectConnection = useDeselectConnection();
 	const addNode = useAddNode();
@@ -147,6 +145,7 @@ function V2NodeCanvas() {
 	const setCurrentShortcutScope = useSetCurrentShortcutScope();
 	const { selectedTool, reset } = useToolbar();
 	const connectNodes = useConnectNodes();
+	const disconnectNodes = useDisconnectNodes();
 	const toast = useToasts();
 	const [menu, setMenu] = useState<Omit<ContextMenuProps, "onClose"> | null>(
 		null,
@@ -160,11 +159,11 @@ function V2NodeCanvas() {
 	const nodesInitialized = useNodesInitialized();
 
 	const cacheNodesRef = useRef<Map<NodeId, RFNode>>(new Map());
-	const nodes = useMemo(() => {
+	const reactFlowNodes = useMemo(() => {
 		const next = new Map<NodeId, RFNode>();
-		const arr = data.nodes
+		const arr = nodes
 			.map((node) => {
-				const nodeUiState = data.nodeState[node.id];
+				const nodeUiState = nodeState[node.id];
 				const prev = cacheNodesRef.current.get(node.id);
 				if (nodeUiState === undefined) {
 					return null;
@@ -195,7 +194,7 @@ function V2NodeCanvas() {
 			.filter((node) => node !== null);
 		cacheNodesRef.current = next;
 		return arr;
-	}, [data.nodes, data.nodeState, updateNodeInternals]);
+	}, [nodes, nodeState, updateNodeInternals]);
 
 	useEffect(() => {
 		if (didInitialAutoFitViewRef.current) {
@@ -266,9 +265,9 @@ function V2NodeCanvas() {
 	const cacheEdgesRef = useRef<Map<string, Edge>>(new Map());
 	const edges = useMemo(() => {
 		const next = new Map<string, Edge>();
-		const arr = data.connections.map((connection) => {
+		const arr = connections.map((connection) => {
 			const prev = cacheEdgesRef.current.get(connection.id);
-			const selected = data.selectedConnectionIds.includes(connection.id);
+			const selected = selectedConnectionIds.includes(connection.id);
 			if (prev !== undefined && selected === prev.selected) {
 				return prev;
 			}
@@ -287,17 +286,13 @@ function V2NodeCanvas() {
 		});
 		cacheEdgesRef.current = next;
 		return arr;
-	}, [data.connections, data.selectedConnectionIds]);
+	}, [connections, selectedConnectionIds]);
 
 	const handleConnect = useCallback(
 		(connection: Connection) => {
 			try {
-				const outputNode = data.nodes.find(
-					(node) => node.id === connection.source,
-				);
-				const inputNode = data.nodes.find(
-					(node) => node.id === connection.target,
-				);
+				const outputNode = nodes.find((node) => node.id === connection.source);
+				const inputNode = nodes.find((node) => node.id === connection.target);
 				if (!outputNode || !inputNode) {
 					throw new Error("Node not found");
 				}
@@ -314,7 +309,7 @@ function V2NodeCanvas() {
 				);
 			}
 		},
-		[connectNodes, data.nodes, toast],
+		[connectNodes, nodes, toast],
 	);
 
 	const isValidConnection: IsValidConnection = useCallback(
@@ -326,7 +321,7 @@ function V2NodeCanvas() {
 			) {
 				return false;
 			}
-			return !data.connections.some(
+			return !connections.some(
 				(conn) =>
 					conn.inputNode.id === connection.target &&
 					conn.outputNode.id === connection.source &&
@@ -334,7 +329,7 @@ function V2NodeCanvas() {
 						conn.outputId === connection.sourceHandle),
 			);
 		},
-		[data.connections],
+		[connections],
 	);
 
 	const handleMoveEnd: OnMoveEnd = useCallback(
@@ -389,13 +384,23 @@ function V2NodeCanvas() {
 						break;
 					}
 					case "remove": {
-						deleteConnection(change.id);
+						const removeConnection = connections.find(
+							(connection) => connection.id === change.id,
+						);
+						if (removeConnection === undefined) {
+							console.warn(`Connection with id ${change.id} not found`);
+							return;
+						}
+						disconnectNodes(
+							removeConnection.outputNode.id,
+							removeConnection.inputNode.id,
+						);
 						break;
 					}
 				}
 			}
 		},
-		[deselectConnection, deleteConnection, selectConnection],
+		[deselectConnection, disconnectNodes, selectConnection, connections],
 	);
 
 	const handleNodeClick: NodeMouseHandler = useCallback(
@@ -455,11 +460,11 @@ function V2NodeCanvas() {
 			ref={reactFlowRef}
 			className="giselle-workflow-editor-v3"
 			colorMode="dark"
-			nodes={nodes}
+			nodes={reactFlowNodes}
 			edges={edges}
 			nodeTypes={nodeTypes}
 			edgeTypes={edgeTypes}
-			defaultViewport={data.viewport}
+			defaultViewport={viewport}
 			onConnect={handleConnect}
 			isValidConnection={isValidConnection}
 			panOnScroll={true}

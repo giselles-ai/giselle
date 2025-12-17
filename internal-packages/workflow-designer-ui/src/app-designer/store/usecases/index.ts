@@ -13,6 +13,7 @@ export * from "./use-delete-connection";
 export * from "./use-delete-node";
 export * from "./use-delete-secret-and-cleanup-nodes";
 export * from "./use-deselect-connection";
+export * from "./use-disconnect-nodes";
 export * from "./use-duplicate-node";
 export * from "./use-is-valid-connection";
 export * from "./use-paste-node-from-clipboard";
