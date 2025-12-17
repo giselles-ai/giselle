@@ -14,17 +14,15 @@ import {
 import type { NodeProps } from "@xyflow/react";
 import { Handle, Position } from "@xyflow/react";
 import clsx from "clsx/lite";
-import { CheckIcon, SquareIcon } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
-import { useCallback, useEffect, useMemo, useRef, useTransition } from "react";
+import { useCallback, useMemo } from "react";
 import { useAppDesignerStore, useUpdateNodeData } from "../../app-designer";
 import { NodeIcon } from "../../icons/node";
 import { EditableText } from "../../ui/editable-text";
 import { Tooltip } from "../../ui/tooltip";
-import { getCompletionLabel, nodeRequiresSetup } from "./node-utils";
+import { NodeGenerationStatusBadge } from "./node-generation-status-badge";
+import { nodeRequiresSetup, useNodeGenerationStatus } from "./node-utils";
 import { DocumentNodeInfo, GitHubNodeInfo } from "./ui";
 import { GitHubTriggerStatusBadge } from "./ui/github-trigger/status-badge";
-import { useCurrentNodeGeneration } from "./use-current-node-generation";
 
 export function CardXyFlowNode({ id, selected }: NodeProps) {
 	const { node, connections, highlighted } = useAppDesignerStore((s) => ({
@@ -143,31 +141,8 @@ export function NodeComponent({
 	connectedOutputIds?: OutputId[];
 }) {
 	const updateNodeData = useUpdateNodeData();
-	const { currentGeneration, stopCurrentGeneration } = useCurrentNodeGeneration(
-		node.id,
-	);
-
-	const prevGenerationStatusRef = useRef(currentGeneration?.status);
-	const [showCompleteLabel, startTransition] = useTransition();
-	useEffect(() => {
-		if (currentGeneration === undefined) {
-			return;
-		}
-		if (
-			prevGenerationStatusRef.current === "running" &&
-			currentGeneration.status === "completed"
-		) {
-			startTransition(
-				async () =>
-					new Promise((resolve) => {
-						setTimeout(() => {
-							resolve(undefined);
-						}, 2000);
-					}),
-			);
-		}
-		prevGenerationStatusRef.current = currentGeneration.status;
-	}, [currentGeneration]);
+	const { currentGeneration, stopCurrentGeneration, showCompleteLabel } =
+		useNodeGenerationStatus(node.id);
 	const metadataTexts = useMemo(() => {
 		const tmp: { label: string; tooltip: string }[] = [];
 		if (isTextGenerationNode(node) || isImageGenerationNode(node)) {
@@ -307,52 +282,12 @@ export function NodeComponent({
 				requiresSetup && "opacity-80",
 			)}
 		>
-			{currentGeneration?.status === "created" &&
-				node.content.type !== "trigger" && (
-					<div className="absolute top-[-28px] right-0 py-1 px-3 z-10 flex items-center justify-between rounded-t-[16px]">
-						<div className="flex items-center">
-							<p className="text-xs font-medium font-sans text-black-200">
-								Waiting...
-							</p>
-						</div>
-					</div>
-				)}
-			{(currentGeneration?.status === "queued" ||
-				currentGeneration?.status === "running") &&
-				node.content.type !== "trigger" && (
-					<div className="absolute top-[-28px] right-0 py-1 px-3 z-10 flex items-center justify-between rounded-t-[16px]">
-						<div className="flex items-center">
-							<p className="text-xs font-medium font-sans bg-[length:200%_100%] bg-clip-text bg-gradient-to-r from-[rgba(59,_130,_246,_1)] via-[rgba(255,_255,_255,_0.5)] to-[rgba(59,_130,_246,_1)] text-transparent animate-shimmer">
-								Generating...
-							</p>
-							<button
-								type="button"
-								onClick={(e) => {
-									e.stopPropagation();
-									stopCurrentGeneration();
-								}}
-								className="ml-1 p-1 rounded-full bg-blue-500 hover:bg-blue-600 transition-colors"
-							>
-								<SquareIcon className="w-2 h-2 text-white" fill="white" />
-							</button>
-						</div>
-					</div>
-				)}
-			<AnimatePresence>
-				{showCompleteLabel && node.content.type !== "trigger" && (
-					<motion.div
-						className="absolute top-[-28px] right-0 py-1 px-3 z-10 flex items-center justify-between rounded-t-[16px] text-green-900"
-						exit={{ opacity: 0 }}
-					>
-						<div className="flex items-center gap-[4px]">
-							<p className="text-[10px] font-medium font-geist text-text-muted leading-[140%]">
-								{getCompletionLabel(node)}
-							</p>
-							<CheckIcon className="w-4 h-4" />
-						</div>
-					</motion.div>
-				)}
-			</AnimatePresence>
+			<NodeGenerationStatusBadge
+				node={node}
+				currentGeneration={currentGeneration}
+				showCompleteLabel={showCompleteLabel}
+				onStopCurrentGeneration={stopCurrentGeneration}
+			/>
 			<div
 				className={clsx("absolute z-[-1] inset-0", nodeRadiusClass)}
 				style={backgroundGradientStyle}

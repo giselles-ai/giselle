@@ -1,6 +1,5 @@
 import {
 	isActionNode,
-	isAppEntryNode,
 	isImageGenerationNode,
 	isTextGenerationNode,
 	isTriggerNode,
@@ -19,9 +18,6 @@ export function getCompletionLabel(node: NodeLike): string {
 }
 
 export function nodeRequiresSetup(node: NodeLike): boolean {
-	if (isAppEntryNode(node)) {
-		return node.content.status !== "configured";
-	}
 	if (isTriggerNode(node, "github")) {
 		return node.content.state.status !== "configured";
 	}
