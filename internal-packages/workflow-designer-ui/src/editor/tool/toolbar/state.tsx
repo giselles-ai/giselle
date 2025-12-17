@@ -7,14 +7,11 @@ import type {
 	AddNodeTool,
 	MoveTool,
 	SelectContextTool,
-	SelectEnviromentActionTool,
 	SelectFileNodeCategoryTool,
 	SelectGitHubTriggerTool,
 	SelectIntegrationTool,
 	SelectLanguageModelTool,
 	SelectLanguageModelV2Tool,
-	SelectRetrievalCategoryTool,
-	SelectSourceCategoryTool,
 	SelectTriggerTool,
 	Tool,
 } from "../types";
@@ -95,20 +92,6 @@ export function addNodeTool(node: Node) {
 	} satisfies AddNodeTool;
 }
 
-export function selectRetrievalCategoryTool() {
-	return {
-		action: "selectRetrievalCategory",
-		category: "edit",
-	} satisfies SelectRetrievalCategoryTool;
-}
-
-export function selectSourceCategoryTool() {
-	return {
-		action: "selectSourceCategory",
-		category: "edit",
-	} satisfies SelectSourceCategoryTool;
-}
-
 export function selectContextTool() {
 	return {
 		action: "selectContext",
@@ -135,13 +118,6 @@ export function selectIntegrationTool() {
 		action: "selectIntegration",
 		category: "edit",
 	} satisfies SelectIntegrationTool;
-}
-
-export function selectActionTool() {
-	return {
-		action: "selectAction",
-		category: "edit",
-	} satisfies SelectEnviromentActionTool;
 }
 
 function _vectorStoreNode(provider: VectorStoreContent["source"]["provider"]) {
