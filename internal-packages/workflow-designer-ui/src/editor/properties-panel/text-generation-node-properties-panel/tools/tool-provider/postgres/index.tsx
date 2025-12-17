@@ -3,10 +3,10 @@ import { EmptyState } from "@giselle-internal/ui/empty-state";
 import { Input } from "@giselle-internal/ui/input";
 import { Select } from "@giselle-internal/ui/select";
 import type { TextGenerationNode } from "@giselles-ai/protocol";
-import { useWorkflowDesigner } from "@giselles-ai/react";
 import { CheckIcon, PlusIcon, Settings2Icon, TrashIcon } from "lucide-react";
 import { Checkbox } from "radix-ui";
 import { useCallback, useState } from "react";
+import { useUpdateNodeDataContent } from "../../../../../../app-designer/store/usecases";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
 import {
 	ToolConfigurationDialog,
@@ -256,7 +256,7 @@ function PostgresToolConfigurationDialogInternal({
 }: Pick<ToolConfigurationDialogProps, "open" | "onOpenChange"> & {
 	node: TextGenerationNode;
 }) {
-	const { updateNodeDataContent } = useWorkflowDesigner();
+	const updateNodeDataContent = useUpdateNodeDataContent();
 
 	const updateAvailableTools = useCallback<
 		React.FormEventHandler<HTMLFormElement>

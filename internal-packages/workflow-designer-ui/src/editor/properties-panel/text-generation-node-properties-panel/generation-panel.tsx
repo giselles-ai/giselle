@@ -7,9 +7,10 @@ import {
 	isTextGenerationNode,
 	type TextGenerationNode,
 } from "@giselles-ai/protocol";
-import { useNodeGenerations, useWorkflowDesigner } from "@giselles-ai/react";
+import { useNodeGenerations } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { ArrowDownIcon, ArrowUpIcon, TimerIcon } from "lucide-react";
+import { useAppDesignerStore } from "../../../app-designer/store/hooks";
 import { TextGenerationIcon } from "../../../icons";
 import ClipboardButton from "../../../ui/clipboard-button";
 import { EmptyState } from "../../../ui/empty-state";
@@ -112,10 +113,10 @@ function getGenerationModelInfo(generation: Generation): {
 }
 
 export function GenerationPanel({ node }: { node: TextGenerationNode }) {
-	const { data } = useWorkflowDesigner();
+	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
 	const { currentGeneration } = useNodeGenerations({
 		nodeId: node.id,
-		origin: { type: "studio", workspaceId: data.id },
+		origin: { type: "studio", workspaceId },
 	});
 
 	if (currentGeneration === undefined) {

@@ -3,9 +3,11 @@ import {
 	type TextGenerationNode,
 	type ToolSet,
 } from "@giselles-ai/protocol";
-import { useGiselle, useWorkflowDesigner } from "@giselles-ai/react";
 import { useCallback, useMemo, useState, useTransition } from "react";
 import z from "zod/v4";
+import { useGiselle } from "../../../../../app-designer/store/giselle-client-provider";
+import { useAppDesignerStore } from "../../../../../app-designer/store/hooks";
+import { useUpdateNodeDataContent } from "../../../../../app-designer/store/usecases";
 import { useWorkspaceSecrets } from "../../../../lib/use-workspace-secrets";
 
 export const ToolProviderSecretTypeValue = z.enum(["create", "select"]);
@@ -38,7 +40,8 @@ export function useToolProviderConnection<T extends keyof ToolSet>(config: {
 	} = config;
 	const [presentDialog, setPresentDialog] = useState(false);
 	const [tabValue, setTabValue] = useState<"create" | "select">("create");
-	const { updateNodeDataContent, data: workspace } = useWorkflowDesigner();
+	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
+	const updateNodeDataContent = useUpdateNodeDataContent();
 	const { isLoading, data, mutate } = useWorkspaceSecrets(secretTags);
 	const client = useGiselle();
 	const [isPending, startTransition] = useTransition();
@@ -111,7 +114,7 @@ export function useToolProviderConnection<T extends keyof ToolSet>(config: {
 				case "create":
 					startTransition(async () => {
 						const result = await client.addSecret({
-							workspaceId: workspace.id,
+							workspaceId,
 							label: payload.label,
 							value: payload.value,
 							tags: secretTags,
@@ -131,7 +134,7 @@ export function useToolProviderConnection<T extends keyof ToolSet>(config: {
 				}
 			}
 		},
-		[client, workspace.id, data, mutate, secretTags, updateNodeWithToolConfig],
+		[client, data, mutate, secretTags, updateNodeWithToolConfig, workspaceId],
 	);
 
 	const currentSecretId = useMemo(() => {

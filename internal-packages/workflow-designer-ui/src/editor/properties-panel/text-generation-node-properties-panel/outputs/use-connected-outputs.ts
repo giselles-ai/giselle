@@ -6,14 +6,18 @@ import {
 	type TriggerNode,
 	VariableNode,
 } from "@giselles-ai/protocol";
-import { type UIConnection, useWorkflowDesigner } from "@giselles-ai/react";
+import type { UIConnection } from "@giselles-ai/react";
 import { useMemo } from "react";
+import { useAppDesignerStore } from "../../../../app-designer/store/hooks";
 import type { ConnectedOutputWithDetails } from "./types";
 
 export function useConnectedOutputs(node: TextGenerationNode) {
-	const { data } = useWorkflowDesigner();
+	const { nodes, connections } = useAppDesignerStore((s) => ({
+		nodes: s.nodes,
+		connections: s.connections,
+	}));
 	return useMemo(() => {
-		const connectionsToThisNode = data.connections.filter(
+		const connectionsToThisNode = connections.filter(
 			(connection) => connection.inputNode.id === node.id,
 		);
 		const connectedGeneratedInputs: ConnectedOutputWithDetails<TextGenerationNode>[] =
@@ -30,7 +34,7 @@ export function useConnectedOutputs(node: TextGenerationNode) {
 		const uiConnections: UIConnection[] = [];
 
 		for (const connection of connectionsToThisNode) {
-			const outputNode = data.nodes.find(
+			const outputNode = nodes.find(
 				(node) => node.id === connection.outputNode.id,
 			);
 			if (outputNode === undefined) {
@@ -42,7 +46,7 @@ export function useConnectedOutputs(node: TextGenerationNode) {
 			if (output === undefined) {
 				continue;
 			}
-			const inputNode = data.nodes.find(
+			const inputNode = nodes.find(
 				(node) => node.id === connection.inputNode.id,
 			);
 			if (inputNode === undefined) {
@@ -143,5 +147,5 @@ export function useConnectedOutputs(node: TextGenerationNode) {
 			appEntry: connectedAppEntryInputs,
 			connections: uiConnections,
 		};
-	}, [node.id, data.connections, data.nodes]);
+	}, [connections, node.id, nodes]);
 }

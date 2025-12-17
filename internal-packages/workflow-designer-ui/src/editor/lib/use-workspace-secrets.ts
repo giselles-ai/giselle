@@ -1,12 +1,13 @@
-import { useGiselle, useWorkflowDesigner } from "@giselles-ai/react";
 import useSWR from "swr";
+import { useGiselle } from "../../app-designer/store/giselle-client-provider";
+import { useAppDesignerStore } from "../../app-designer/store/hooks";
 export function useWorkspaceSecrets(tags?: string[]) {
-	const { data } = useWorkflowDesigner();
+	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
 	const client = useGiselle();
 	return useSWR(
 		{
 			namespace: "get-workspace-secrets",
-			workspaceId: data.id,
+			workspaceId,
 			tags: tags ?? [],
 		},
 		({ workspaceId, tags }) =>

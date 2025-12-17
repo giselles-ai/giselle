@@ -7,12 +7,15 @@ import {
 	Node,
 	type NodeLike,
 } from "@giselles-ai/protocol";
-import {
-	useNodeGenerations,
-	useUsageLimits,
-	useWorkflowDesigner,
-} from "@giselles-ai/react";
+import { useNodeGenerations, useUsageLimits } from "@giselles-ai/react";
 import { useCallback } from "react";
+import { useAppDesignerStore } from "../../../app-designer/store/hooks";
+import {
+	useDeleteConnection,
+	useDeleteNode,
+	useUpdateNodeData,
+	useUpdateNodeDataContent,
+} from "../../../app-designer/store/usecases";
 import { useUsageLimitsReached } from "../../../hooks/usage-limits";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
@@ -37,17 +40,16 @@ export function TextGenerationNodePropertiesPanelV2({
 	node: ContentGenerationNode;
 }) {
 	const textGenerationNode = convertContentGenerationToTextGeneration(node);
-	const {
-		data,
-		updateNodeData,
-		updateNodeDataContent,
-		deleteNode,
-		deleteConnection,
-	} = useWorkflowDesigner();
+	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
+	const workspaceConnections = useAppDesignerStore((s) => s.connections);
+	const updateNodeData = useUpdateNodeData();
+	const updateNodeDataContent = useUpdateNodeDataContent();
+	const deleteNode = useDeleteNode();
+	const deleteConnection = useDeleteConnection();
 	const { createAndStartGenerationRunner, isGenerating, stopGenerationRunner } =
 		useNodeGenerations({
 			nodeId: node.id,
-			origin: { type: "studio", workspaceId: data.id },
+			origin: { type: "studio", workspaceId },
 		});
 	const { connections } = useNodeContext(node);
 	const usageLimitsReached = useUsageLimitsReached();
@@ -74,46 +76,31 @@ export function TextGenerationNodePropertiesPanelV2({
 		createAndStartGenerationRunner({
 			origin: {
 				type: "studio",
-				workspaceId: data.id,
+				workspaceId,
 			},
 			operationNode: node,
 			sourceNodes: connections
 				.map((connection) => connection.outputNode)
 				.filter((nodeLike) => isNode(nodeLike)),
-			connections: data.connections.filter(
+			connections: workspaceConnections.filter(
 				(connection) => connection.inputNode.id === node.id,
 			),
 		});
 	}, [
-		data.id,
-		data.connections,
 		node,
 		createAndStartGenerationRunner,
 		usageLimitsReached,
 		error,
 		connections,
+		workspaceConnections,
+		workspaceId,
 	]);
 
 	const _handleDeleteConnection = useCallback(
 		(connection: Connection) => {
 			deleteConnection(connection.id);
-
-			const connectedNode = data.nodes.find(
-				(n) => n.id === connection.inputNode.id,
-			);
-			switch (connectedNode?.content.type) {
-				case "textGeneration":
-				case "imageGeneration": {
-					updateNodeData(connectedNode, {
-						inputs: connectedNode.inputs.filter(
-							(i) => i.id !== connection.inputId,
-						),
-					});
-					break;
-				}
-			}
 		},
-		[deleteConnection, data.nodes, updateNodeData],
+		[deleteConnection],
 	);
 	const usageLimits = useUsageLimits();
 	const userTier: LanguageModelTier = usageLimits?.featureTier ?? "free";
