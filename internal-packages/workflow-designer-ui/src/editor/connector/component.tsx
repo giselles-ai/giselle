@@ -34,6 +34,7 @@ function getGradientColors(
 	outputContentType: string,
 	inputContentType: string,
 ): { startColor: string; endColor: string } {
+	const stageColor = "var(--color-stage-node-1,var(--color-blue-muted))";
 	const colorMap: Record<string, string> = {
 		textGeneration: "var(--color-primary-900)",
 		contentGeneration: "var(--color-primary-900)",
@@ -45,8 +46,8 @@ function getGradientColors(
 		action: "var(--color-action-node-1)",
 		query: "var(--color-query-node-1)",
 		vectorStore: "var(--color-vector-store-node-1)",
-		appEntry: "var(--color-stage-node-1)",
-		end: "var(--color-stage-node-1)",
+		appEntry: stageColor,
+		end: stageColor,
 	};
 
 	return {

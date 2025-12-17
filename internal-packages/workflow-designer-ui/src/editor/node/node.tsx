@@ -174,6 +174,15 @@ export function NodeComponent({
 	connectedInputIds?: InputId[];
 	connectedOutputIds?: OutputId[];
 }) {
+	const stageColorVar =
+		"var(--color-stage-node-1,var(--color-blue-muted))" as const;
+	const stageBgClass =
+		"bg-[color:var(--color-stage-node-1,var(--color-blue-muted))]" as const;
+	const stageBorderClass =
+		"!border-[color:var(--color-stage-node-1,var(--color-blue-muted))]" as const;
+	const stageHandleBgClass =
+		"!bg-[color:var(--color-stage-node-1,var(--color-blue-muted))]" as const;
+
 	const updateNodeData = useWorkflowDesignerStore((state) => state.updateNode);
 	const { currentGeneration, stopCurrentGeneration } = useCurrentNodeGeneration(
 		node.id,
@@ -323,13 +332,12 @@ export function NodeComponent({
 			)
 				return "var(--color-github-node-1)";
 			if (variant.isTrigger) return "var(--color-trigger-node-1)";
-			if (variant.isAppEntry || variant.isEnd)
-				return "var(--color-stage-node-1)";
+			if (variant.isAppEntry || variant.isEnd) return stageColorVar;
 			if (variant.isAction) return "var(--color-action-node-1)";
 			if (variant.isQuery) return "var(--color-query-node-1)";
 			return undefined;
 		},
-		[],
+		[stageColorVar],
 	);
 
 	// App Entry: shape change only.
@@ -350,7 +358,7 @@ export function NodeComponent({
 	// For unconfigured (dashed) state, keep the container background transparent
 	// and rely on the dashed border layer's gradient fill to match other nodes.
 	const stageBackgroundClass =
-		(v.isAppEntry || v.isEnd) && !requiresSetup ? "bg-stage-node-1" : undefined;
+		(v.isAppEntry || v.isEnd) && !requiresSetup ? stageBgClass : undefined;
 
 	const borderGradientStyle = useMemo(() => {
 		if (requiresSetup) return undefined;
@@ -393,8 +401,8 @@ export function NodeComponent({
 					position={Position.Right}
 					className={clsx(
 						"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !right-[-0.5px] !top-1/2",
-						isAppEntryAnyOutputConnected ? "!bg-stage-node-1" : "!bg-bg",
-						"!border-stage-node-1",
+						isAppEntryAnyOutputConnected ? stageHandleBgClass : "!bg-bg",
+						stageBorderClass,
 						isAppEntryAnyOutputConnected &&
 							"[box-shadow:0_0_0_1.5px_rgba(0,0,0,0.8)]",
 					)}
@@ -425,8 +433,8 @@ export function NodeComponent({
 					position={Position.Left}
 					className={clsx(
 						"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !left-[-0.5px] !top-1/2",
-						isEndAnyInputConnected ? "!bg-stage-node-1" : "!bg-bg",
-						"!border-stage-node-1",
+						isEndAnyInputConnected ? stageHandleBgClass : "!bg-bg",
+						stageBorderClass,
 						isEndAnyInputConnected &&
 							"[box-shadow:0_0_0_1.5px_rgba(0,0,0,0.8)]",
 					)}
@@ -580,12 +588,14 @@ export function NodeComponent({
 					requiresSetup
 						? "border-black/60 border-dashed [border-width:2px]"
 						: "border-transparent",
-					!borderGradientStyle && "bg-gradient-to-br",
+					!borderGradientStyle &&
+						(!(v.isAppEntry || v.isEnd) || requiresSetup) &&
+						"bg-gradient-to-br",
 					!borderGradientStyle &&
 						(v.isAppEntry || v.isEnd) &&
 						(requiresSetup
-							? "from-stage-node-1/30 via-stage-node-1/50 to-stage-node-1"
-							: "from-inverse/80 via-inverse/30 to-inverse/60"),
+							? "from-[color-mix(in_srgb,var(--color-stage-node-1)_30%,transparent)] via-[color-mix(in_srgb,var(--color-stage-node-1)_50%,transparent)] to-[color:var(--color-stage-node-1)]"
+							: undefined),
 					!borderGradientStyle &&
 						!v.isAppEntry &&
 						!v.isEnd &&
