@@ -8,9 +8,10 @@ import {
 	TableHeader,
 	TableRow,
 } from "@giselle-internal/ui/table";
-import { useGiselle, useWorkflowDesigner } from "@giselles-ai/react";
 import { LoaderIcon, RefreshCcwIcon } from "lucide-react";
 import useSWR from "swr";
+import { useGiselle } from "../../app-designer/store/giselle-client-provider";
+import { useAppDesignerStore } from "../../app-designer/store/hooks";
 
 function formatDateTime(timestamp: number): string {
 	const date = new Date(timestamp);
@@ -28,11 +29,11 @@ function formatDuration(ms: number): string {
 
 export function RunHistoryTable() {
 	const client = useGiselle();
-	const { data: workspace } = useWorkflowDesigner();
+	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
 	const { data, isLoading, isValidating, mutate } = useSWR(
 		{
 			namespace: "getWorkspaceActs",
-			workspaceId: workspace.id,
+			workspaceId,
 		},
 		({ workspaceId }) =>
 			client.getWorkspaceTasks({ workspaceId }).then((res) => res.tasks),

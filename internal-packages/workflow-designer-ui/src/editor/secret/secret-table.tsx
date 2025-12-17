@@ -16,12 +16,15 @@ import {
 	TableHeader,
 	TableRow,
 } from "@giselle-internal/ui/table";
-import { isTextGenerationNode, type SecretId } from "@giselles-ai/protocol";
-import { useGiselle, useWorkflowDesigner } from "@giselles-ai/react";
+import type { SecretId } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import { PlusIcon, TrashIcon } from "lucide-react";
 import { useCallback, useState, useTransition } from "react";
 import { z } from "zod/v4";
+import {
+	useAddSecret,
+	useDeleteSecretAndCleanupNodes,
+} from "../../app-designer/store/usecases";
 import { useWorkspaceSecrets } from "../lib/use-workspace-secrets";
 
 function formatDateTime(timestamp: number): string {
@@ -41,10 +44,10 @@ const SecretPayload = z.object({
 
 export function SecretTable() {
 	const [presentDialog, setPresentDialog] = useState(false);
-	const { data: workspace, updateNodeDataContent } = useWorkflowDesigner();
 	const { isLoading, data, mutate } = useWorkspaceSecrets();
 	const [isPending, startTransition] = useTransition();
-	const client = useGiselle();
+	const addSecret = useAddSecret();
+	const deleteSecretAndCleanupNodes = useDeleteSecretAndCleanupNodes();
 
 	const handleSubmit = useCallback<React.FormEventHandler<HTMLFormElement>>(
 		(e) => {
@@ -63,65 +66,22 @@ export function SecretTable() {
 			}
 			const payload = parse.data;
 			startTransition(async () => {
-				const result = await client.addSecret({
-					workspaceId: workspace.id,
-					label: payload.label,
-					value: payload.value,
-				});
+				const result = await addSecret(payload);
 				await mutate([...(data ?? []), result.secret]);
 			});
 			setPresentDialog(false);
 		},
-		[client, workspace.id, data, mutate],
+		[addSecret, data, mutate],
 	);
 
 	const handleDelete = useCallback(
 		(secretId: SecretId) => {
 			startTransition(async () => {
-				for (const node of workspace.nodes) {
-					if (!isTextGenerationNode(node)) {
-						continue;
-					}
-					const tools = node.content.tools;
-					if (!tools) {
-						continue;
-					}
-					let changed = false;
-					const newTools = { ...tools };
-					if (
-						tools.github?.auth.type === "secret" &&
-						tools.github.auth.secretId === secretId
-					) {
-						newTools.github = undefined;
-						changed = true;
-					}
-					if (tools.postgres?.secretId === secretId) {
-						newTools.postgres = undefined;
-						changed = true;
-					}
-					if (changed) {
-						updateNodeDataContent(node, {
-							...node.content,
-							tools: newTools,
-						});
-					}
-				}
-
-				await client.deleteSecret({
-					workspaceId: workspace.id,
-					secretId,
-				});
+				await deleteSecretAndCleanupNodes(secretId);
 				await mutate((data ?? []).filter((secret) => secret.id !== secretId));
 			});
 		},
-		[
-			client,
-			workspace.id,
-			data,
-			mutate,
-			workspace.nodes,
-			updateNodeDataContent,
-		],
+		[data, deleteSecretAndCleanupNodes, mutate],
 	);
 
 	if (isLoading) {
