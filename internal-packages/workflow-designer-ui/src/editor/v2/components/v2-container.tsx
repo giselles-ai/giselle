@@ -34,12 +34,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useShallow } from "zustand/shallow";
 import {
-	useAppDesignerStore,
-	useWorkspaceActions,
-} from "../../../app-designer";
-import {
 	useAddConnection,
 	useAddNode,
+	useAppDesignerStore,
 	useClearSelection,
 	useDeleteConnection,
 	useDeleteNode,
@@ -48,6 +45,7 @@ import {
 	useSelectSingleNode,
 	useSetCurrentShortcutScope,
 	useUpdateNodeData,
+	useWorkspaceActions,
 } from "../../../app-designer";
 import { Background } from "../../../ui/background";
 import { edgeTypes } from "../../connector";

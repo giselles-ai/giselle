@@ -1,6 +1,6 @@
 import useSWR from "swr";
-import { useGiselle } from "../../app-designer/store/giselle-client-provider";
 import { useAppDesignerStore } from "../../app-designer";
+import { useGiselle } from "../../app-designer/store/giselle-client-provider";
 export function useWorkspaceSecrets(tags?: string[]) {
 	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
 	const client = useGiselle();

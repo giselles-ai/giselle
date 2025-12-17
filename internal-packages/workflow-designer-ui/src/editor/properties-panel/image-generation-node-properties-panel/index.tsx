@@ -2,8 +2,8 @@ import { useToasts } from "@giselle-internal/ui/toast";
 import type { ImageGenerationNode } from "@giselles-ai/protocol";
 import { useNodeGenerations } from "@giselles-ai/react";
 import { useCallback, useRef } from "react";
-import { useAppDesignerStore } from "../../../app-designer";
 import {
+	useAppDesignerStore,
 	useDeleteNode,
 	useUpdateNodeData,
 } from "../../../app-designer";

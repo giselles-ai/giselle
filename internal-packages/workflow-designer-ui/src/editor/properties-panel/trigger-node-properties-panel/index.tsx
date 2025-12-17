@@ -1,10 +1,7 @@
 import type { TriggerNode } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import { createContext, useContext, useState } from "react";
-import {
-	useDeleteNode,
-	useUpdateNodeData,
-} from "../../../app-designer";
+import { useDeleteNode, useUpdateNodeData } from "../../../app-designer";
 import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
 import { NodePanelHeader } from "../ui/node-panel-header";
 import { GitHubTriggerPropertiesPanel } from "./providers/github-trigger/github-trigger-properties-panel";

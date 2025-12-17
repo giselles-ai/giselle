@@ -10,8 +10,8 @@ import {
 } from "@giselle-internal/ui/table";
 import { LoaderIcon, RefreshCcwIcon } from "lucide-react";
 import useSWR from "swr";
-import { useGiselle } from "../../app-designer/store/giselle-client-provider";
 import { useAppDesignerStore } from "../../app-designer";
+import { useGiselle } from "../../app-designer/store/giselle-client-provider";
 
 function formatDateTime(timestamp: number): string {
 	const date = new Date(timestamp);

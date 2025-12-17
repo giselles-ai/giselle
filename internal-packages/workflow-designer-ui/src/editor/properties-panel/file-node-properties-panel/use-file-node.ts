@@ -1,10 +1,7 @@
 import { useToasts } from "@giselle-internal/ui/toast";
 import type { FileData, FileNode } from "@giselles-ai/protocol";
 import { useCallback } from "react";
-import {
-	useRemoveFile,
-	useUploadFile,
-} from "../../../app-designer";
+import { useRemoveFile, useUploadFile } from "../../../app-designer";
 
 export function useFileNode(node: FileNode) {
 	const uploadFile = useUploadFile();

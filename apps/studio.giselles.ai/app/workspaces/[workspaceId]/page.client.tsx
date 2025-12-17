@@ -6,11 +6,7 @@ import {
 } from "@giselle-internal/workflow-designer-ui";
 import type { Integration } from "@giselles-ai/giselle";
 import type { Trigger, Workspace } from "@giselles-ai/protocol";
-import {
-	useGiselle,
-	WorkspaceProvider,
-	ZustandBridgeProvider,
-} from "@giselles-ai/react";
+import { useGiselle, WorkspaceProvider } from "@giselles-ai/react";
 import { use } from "react";
 import type { LoaderData } from "./data-loader";
 
@@ -36,7 +32,7 @@ export function Page({
 			giselleClient={client}
 			llmProviders={data.llmProviders}
 			save={workspaceSaveAction}
-			initialWorkspace={data.workspace}
+			initialWorkspace={data.data}
 		>
 			<WorkspaceProvider
 				// TODO: Make it reference the same timeout setting as in trigger.config.ts

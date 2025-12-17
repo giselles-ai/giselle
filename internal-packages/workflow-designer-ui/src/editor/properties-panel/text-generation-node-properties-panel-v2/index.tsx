@@ -9,8 +9,8 @@ import {
 } from "@giselles-ai/protocol";
 import { useNodeGenerations, useUsageLimits } from "@giselles-ai/react";
 import { useCallback } from "react";
-import { useAppDesignerStore } from "../../../app-designer";
 import {
+	useAppDesignerStore,
 	useDeleteConnection,
 	useDeleteNode,
 	useUpdateNodeData,

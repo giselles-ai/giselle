@@ -2,8 +2,8 @@ import { useToasts } from "@giselle-internal/ui/toast";
 import type { Connection, TextGenerationNode } from "@giselles-ai/protocol";
 import { useNodeGenerations } from "@giselles-ai/react";
 import { useCallback, useMemo } from "react";
-import { useAppDesignerStore } from "../../../app-designer";
 import {
+	useAppDesignerStore,
 	useDeleteConnection,
 	useDeleteNode,
 	useUpdateNodeData,

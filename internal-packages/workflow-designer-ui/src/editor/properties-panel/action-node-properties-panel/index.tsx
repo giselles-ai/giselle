@@ -3,11 +3,9 @@ import { useNodeGenerations } from "@giselles-ai/react";
 import { useCallback } from "react";
 import {
 	useAppDesignerStore,
-	useWorkspaceActions,
-} from "../../../app-designer";
-import {
 	useDeleteNode,
 	useUpdateNodeData,
+	useWorkspaceActions,
 } from "../../../app-designer";
 import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
 import { NodePanelHeader } from "../ui/node-panel-header";

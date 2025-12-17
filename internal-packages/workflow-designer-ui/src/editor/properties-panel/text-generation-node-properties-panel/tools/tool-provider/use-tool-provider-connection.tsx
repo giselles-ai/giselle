@@ -5,9 +5,11 @@ import {
 } from "@giselles-ai/protocol";
 import { useCallback, useMemo, useState, useTransition } from "react";
 import z from "zod/v4";
+import {
+	useAppDesignerStore,
+	useUpdateNodeDataContent,
+} from "../../../../../app-designer";
 import { useGiselle } from "../../../../../app-designer/store/giselle-client-provider";
-import { useAppDesignerStore } from "../../../../../app-designer";
-import { useUpdateNodeDataContent } from "../../../../../app-designer";
 import { useWorkspaceSecrets } from "../../../../lib/use-workspace-secrets";
 
 export const ToolProviderSecretTypeValue = z.enum(["create", "select"]);

@@ -16,8 +16,8 @@ import {
 	useUsageLimits,
 } from "@giselles-ai/react";
 import { useCallback, useMemo } from "react";
-import { useAppDesignerStore } from "../../../app-designer";
 import {
+	useAppDesignerStore,
 	useDeleteConnection,
 	useUpdateNodeData,
 	useUpdateNodeDataContent,

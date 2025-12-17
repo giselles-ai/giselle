@@ -16,9 +16,11 @@ import {
 	useState,
 	useTransition,
 } from "react";
+import {
+	useAppDesignerStore,
+	useUpdateNodeData,
+} from "../../../../../app-designer";
 import { useGiselle } from "../../../../../app-designer/store/giselle-client-provider";
-import { useAppDesignerStore } from "../../../../../app-designer";
-import { useUpdateNodeData } from "../../../../../app-designer";
 import { SpinnerIcon } from "../../../../../icons";
 import { SettingDetail, SettingLabel } from "../../../ui/setting-label";
 import { SettingRow } from "../../../ui/setting-row";

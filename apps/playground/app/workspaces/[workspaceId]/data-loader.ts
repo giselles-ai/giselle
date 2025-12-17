@@ -3,9 +3,10 @@ import { giselle } from "../../../giselle";
 
 export async function dataLoader(workspaceId: WorkspaceId) {
 	const data = await giselle.getWorkspace(workspaceId);
-
+	const llmProviders = giselle.getLanguageModelProviders();
 	return {
 		data,
+		llmProviders,
 	};
 }
 

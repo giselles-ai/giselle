@@ -13,8 +13,10 @@ import {
 } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import { useShallow } from "zustand/shallow";
-import { useAppDesignerStore } from "../../app-designer";
-import { useSetCurrentShortcutScope } from "../../app-designer";
+import {
+	useAppDesignerStore,
+	useSetCurrentShortcutScope,
+} from "../../app-designer";
 import { ActionNodePropertiesPanel } from "./action-node-properties-panel";
 import { AppEntryNodePropertiesPanel } from "./app-entry-node-properties-panel";
 import { FileNodePropertiesPanel } from "./file-node-properties-panel";

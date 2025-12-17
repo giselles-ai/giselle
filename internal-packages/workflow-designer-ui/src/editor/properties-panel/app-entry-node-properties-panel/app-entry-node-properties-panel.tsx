@@ -2,11 +2,8 @@ import type { App, AppEntryNode } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import { useState } from "react";
 import useSWR from "swr";
+import { useDeleteNode, useUpdateNodeData } from "../../../app-designer";
 import { useGiselle } from "../../../app-designer/store/giselle-client-provider";
-import {
-	useDeleteNode,
-	useUpdateNodeData,
-} from "../../../app-designer";
 import {
 	NodePanelHeader,
 	PropertiesPanelContent,

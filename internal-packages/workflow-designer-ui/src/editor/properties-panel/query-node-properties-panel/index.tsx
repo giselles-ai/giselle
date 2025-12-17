@@ -6,8 +6,8 @@ import {
 	jsonContentToText,
 } from "@giselles-ai/text-editor-utils";
 import { useCallback, useMemo } from "react";
-import { useAppDesignerStore } from "../../../app-designer";
 import {
+	useAppDesignerStore,
 	useDeleteNode,
 	useUpdateNodeData,
 } from "../../../app-designer";

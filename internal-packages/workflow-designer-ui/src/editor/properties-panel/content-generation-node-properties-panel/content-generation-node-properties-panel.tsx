@@ -19,8 +19,8 @@ import clsx from "clsx/lite";
 import { PlusIcon, Settings2Icon, XIcon } from "lucide-react";
 import { Tooltip as TooltipPrimitive } from "radix-ui";
 import { useCallback, useMemo, useState } from "react";
-import { useAppDesignerStore } from "../../../app-designer";
 import {
+	useAppDesignerStore,
 	useDeleteNode,
 	useUpdateNodeData,
 	useUpdateNodeDataContent,

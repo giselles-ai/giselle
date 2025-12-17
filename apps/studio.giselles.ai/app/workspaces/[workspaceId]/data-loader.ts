@@ -100,8 +100,7 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 			.map((store) => ({ ...store, isOfficial: true })),
 	];
 
-	const llmProviders = await giselle.getLanguageModelProviders();
-	const workspace = await giselle.getWorkspace(workspaceId);
+	const llmProviders = giselle.getLanguageModelProviders();
 
 	return {
 		currentUser,
@@ -129,7 +128,6 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 			privatePreviewTools,
 		},
 		llmProviders,
-		workspace,
 	};
 }
 

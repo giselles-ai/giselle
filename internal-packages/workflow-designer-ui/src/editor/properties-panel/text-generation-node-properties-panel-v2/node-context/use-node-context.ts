@@ -12,9 +12,9 @@ import {
 } from "@giselles-ai/react";
 import { useCallback, useMemo } from "react";
 import { useShallow } from "zustand/shallow";
-import { useAppDesignerStore } from "../../../../app-designer";
 import {
 	useAddConnection,
+	useAppDesignerStore,
 	useUpdateNodeData,
 } from "../../../../app-designer";
 

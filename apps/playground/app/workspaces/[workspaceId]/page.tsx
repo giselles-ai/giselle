@@ -1,7 +1,8 @@
 import { Background } from "@giselle-internal/workflow-designer-ui";
-import { WorkspaceId } from "@giselles-ai/protocol";
+import { type Workspace, WorkspaceId } from "@giselles-ai/protocol";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { giselle } from "@/giselle";
 import { dataLoader } from "./data-loader";
 import { Page } from "./page.client";
 
@@ -30,7 +31,14 @@ export default async function ({
 
 	return (
 		<Suspense fallback={<Loader />}>
-			<Page dataLoader={dataLoader(workspaceId)} />
+			<Page
+				dataLoader={dataLoader(workspaceId)}
+				workspaceSaveAction={async (workspace: Workspace) => {
+					"use server";
+
+					await giselle.updateWorkspace(workspace);
+				}}
+			/>
 		</Suspense>
 	);
 }
