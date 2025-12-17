@@ -1,12 +1,10 @@
 import type { NodeId } from "@giselles-ai/protocol";
-import {
-	useNodeGenerations,
-	useWorkflowDesignerStore,
-} from "@giselles-ai/react";
+import { useNodeGenerations } from "@giselles-ai/react";
 import { BaseEdge, type EdgeProps, getBezierPath } from "@xyflow/react";
 import clsx from "clsx/lite";
 import type { PropsWithChildren } from "react";
 import { useShallow } from "zustand/shallow";
+import { useAppDesignerStore } from "../../app-designer/store/hooks";
 
 function ConnectedNodeRunning({
 	inputNodeId,
@@ -14,9 +12,7 @@ function ConnectedNodeRunning({
 }: PropsWithChildren<{
 	inputNodeId: NodeId;
 }>) {
-	const workspaceId = useWorkflowDesignerStore(
-		useShallow((s) => s.workspace.id),
-	);
+	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
 	const { currentGeneration: inputNodeCurrentGeneration } = useNodeGenerations({
 		nodeId: inputNodeId,
 		origin: { type: "studio", workspaceId },
@@ -64,10 +60,8 @@ export function Connector({
 	targetY,
 	targetPosition,
 }: EdgeProps) {
-	const connection = useWorkflowDesignerStore(
-		useShallow((s) =>
-			s.workspace.connections.find((connection) => connection.id === id),
-		),
+	const connection = useAppDesignerStore(
+		useShallow((s) => s.connections.find((connection) => connection.id === id)),
 	);
 	if (connection === undefined) {
 		return null;

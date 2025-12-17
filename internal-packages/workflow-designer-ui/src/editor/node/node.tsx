@@ -10,7 +10,6 @@ import {
 	type NodeLike,
 	type OutputId,
 } from "@giselles-ai/protocol";
-import { useWorkflowDesignerStore } from "@giselles-ai/react";
 import {
 	Handle,
 	type NodeProps,
@@ -22,6 +21,8 @@ import { CheckIcon, SquareIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useEffect, useMemo, useRef, useTransition } from "react";
 import { useShallow } from "zustand/shallow";
+import { useAppDesignerStore } from "../../app-designer/store/hooks";
+import { useUpdateNodeData } from "../../app-designer/store/usecases";
 import { NodeIcon } from "../../icons/node";
 import { EditableText } from "../../ui/editable-text";
 import { NodeHandleDot } from "../../ui/node/node-handle-dot";
@@ -106,11 +107,11 @@ export const nodeTypes: NodeTypes = {
 };
 
 function CustomXyFlowNode({ id, selected }: NodeProps) {
-	const { node, connections, highlighted } = useWorkflowDesignerStore(
+	const { node, connections, highlighted } = useAppDesignerStore(
 		useShallow((s) => ({
-			node: s.workspace.nodes.find((node) => node.id === id),
-			connections: s.workspace.connections,
-			highlighted: s.workspace.ui.nodeState[id as NodeId]?.highlighted,
+			node: s.nodes.find((node) => node.id === id),
+			connections: s.connections,
+			highlighted: s.ui.nodeState[id as NodeId]?.highlighted,
 		})),
 	);
 
@@ -160,7 +161,7 @@ export function NodeComponent({
 	connectedInputIds?: InputId[];
 	connectedOutputIds?: OutputId[];
 }) {
-	const updateNodeData = useWorkflowDesignerStore((state) => state.updateNode);
+	const updateNodeData = useUpdateNodeData();
 	const { currentGeneration, stopCurrentGeneration } = useCurrentNodeGeneration(
 		node.id,
 	);
@@ -587,10 +588,10 @@ export function NodeComponent({
 									return;
 								}
 								if (value.trim().length === 0) {
-									updateNodeData(node.id, { name: undefined });
+									updateNodeData(node, { name: undefined });
 									return;
 								}
-								updateNodeData(node.id, { name: value });
+								updateNodeData(node, { name: value });
 							}}
 							onClickToEditMode={(e) => {
 								if (!selected) {

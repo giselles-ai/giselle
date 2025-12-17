@@ -10,7 +10,7 @@ export function useSelectConnection() {
 	const setSelectedConnectionIds = useSetSelectedConnectionIds();
 
 	return useCallback(
-		(connectionId: ConnectionId) => {
+		(connectionId: string) => {
 			if (
 				selectedConnectionIds.some(
 					(selectedConnectionId) => selectedConnectionId === connectionId,

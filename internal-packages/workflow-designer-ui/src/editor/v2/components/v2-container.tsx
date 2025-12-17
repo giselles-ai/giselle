@@ -14,6 +14,7 @@ import {
 	type IsValidConnection,
 	type NodeMouseHandler,
 	type OnEdgesChange,
+	type OnMoveEnd,
 	type OnNodesChange,
 	ReactFlow,
 	type Node as RFNode,
@@ -27,14 +28,27 @@ import { useToasts } from "@giselle-internal/ui/toast";
 import {
 	createConnectionWithInput,
 	isSupportedConnection,
-	useWorkflowDesigner,
-	useWorkflowDesignerStore,
-	workspaceActions,
 } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useShallow } from "zustand/shallow";
+import {
+	useAppDesignerStore,
+	useWorkspaceActions,
+} from "../../../app-designer/store/hooks";
+import {
+	useAddConnection,
+	useAddNode,
+	useClearSelection,
+	useDeleteConnection,
+	useDeleteNode,
+	useDeselectConnection,
+	useSelectConnection,
+	useSelectSingleNode,
+	useSetCurrentShortcutScope,
+	useUpdateNodeData,
+} from "../../../app-designer/store/usecases";
 import { Background } from "../../../ui/background";
 import { edgeTypes } from "../../connector";
 import { GradientDef } from "../../connector/component";
@@ -63,20 +77,20 @@ function DebugWorkspacePanel() {
 		setIsEnabled(params.get("debugPanel") === "1");
 	}, []);
 
-	const debug = useWorkflowDesignerStore(
+	const debug = useAppDesignerStore(
 		useShallow((s) => ({
 			hasStartNode: s.hasStartNode(),
 			hasEndNode: s.hasEndNode(),
 			isStartNodeConnectedToEndNode: s.isStartNodeConnectedToEndNode(),
-			nodeCount: s.workspace.nodes.length,
-			connectionCount: s.workspace.connections.length,
+			nodeCount: s.nodes.length,
+			connectionCount: s.connections.length,
 			// IMPORTANT: keep snapshot stable (no new arrays/objects) to avoid
 			// "The result of getSnapshot should be cached..." warning.
-			startNodeIdsText: s.workspace.nodes
+			startNodeIdsText: s.nodes
 				.filter((node) => isAppEntryNode(node))
 				.map((node) => node.id)
 				.join(", "),
-			endNodeIdsText: s.workspace.nodes
+			endNodeIdsText: s.nodes
 				.filter((node) => isEndNode(node))
 				.map((node) => node.id)
 				.join(", "),
@@ -123,30 +137,29 @@ function DebugWorkspacePanel() {
 }
 
 function V2NodeCanvas() {
-	const data = useWorkflowDesignerStore(
+	const data = useAppDesignerStore(
 		useShallow((s) => ({
-			nodes: s.workspace.nodes,
-			connections: s.workspace.connections,
-			nodeState: s.workspace.ui.nodeState,
-			viewport: s.workspace.ui.viewport,
-			selectedConnectionIds: s.workspace.ui.selectedConnectionIds,
+			nodes: s.nodes,
+			connections: s.connections,
+			nodeState: s.ui.nodeState,
+			viewport: s.ui.viewport,
+			selectedConnectionIds: s.ui.selectedConnectionIds ?? [],
 		})),
 	);
-	const nodeIds = useWorkflowDesignerStore(
-		useShallow((s) => s.workspace.nodes.map((node) => node.id)),
-	);
-	const {
-		setUiNodeState,
-		setUiViewport,
-		setCurrentShortcutScope,
-		deleteConnection,
-		updateNodeData,
-		addNode,
-		addConnection,
-		selectConnection,
-		deselectConnection,
-	} = useWorkflowDesignerStore(useShallow(workspaceActions));
-	const { deleteNode } = useWorkflowDesigner();
+	const { setUiNodeState, setUiViewport } = useWorkspaceActions((a) => ({
+		setUiNodeState: a.setUiNodeState,
+		setUiViewport: a.setUiViewport,
+	}));
+	const addConnection = useAddConnection();
+	const updateNodeData = useUpdateNodeData();
+	const deleteNode = useDeleteNode();
+	const deleteConnection = useDeleteConnection();
+	const selectConnection = useSelectConnection();
+	const deselectConnection = useDeselectConnection();
+	const addNode = useAddNode();
+	const selectSingleNode = useSelectSingleNode();
+	const clearSelection = useClearSelection();
+	const setCurrentShortcutScope = useSetCurrentShortcutScope();
 	const { selectedTool, reset } = useToolbar();
 	const toast = useToasts();
 	const [menu, setMenu] = useState<Omit<ContextMenuProps, "onClose"> | null>(
@@ -299,13 +312,19 @@ function V2NodeCanvas() {
 				const inputNode = data.nodes.find(
 					(node) => node.id === connection.target,
 				);
-				if (!outputNode || !inputNode) throw new Error("Node not found");
+				if (!outputNode || !inputNode) {
+					throw new Error("Node not found");
+				}
 
-				const isSupported = isSupportedConnection(outputNode, inputNode);
-				if (!isSupported.canConnect) throw new Error(isSupported.message);
+				const supported = isSupportedConnection(outputNode, inputNode);
+				if (!supported.canConnect) {
+					throw new Error(supported.message);
+				}
 
 				const safeOutputId = OutputId.safeParse(connection.sourceHandle);
-				if (!safeOutputId.success) throw new Error("Invalid output id");
+				if (!safeOutputId.success) {
+					throw new Error("Invalid output id");
+				}
 				const outputId = safeOutputId.data;
 
 				const inputId = isActionNode(inputNode)
@@ -335,108 +354,77 @@ function V2NodeCanvas() {
 		[addConnection, data.nodes, toast, updateNodeData],
 	);
 
-	const isValidConnection: IsValidConnection = (connection) => {
-		if (
-			!connection.sourceHandle ||
-			!connection.targetHandle ||
-			connection.source === connection.target
-		) {
-			return false;
-		}
-		return !data.connections.some(
-			(conn) =>
-				conn.inputNode.id === connection.target &&
-				conn.outputNode.id === connection.source &&
-				(conn.inputId === connection.targetHandle ||
-					conn.outputId === connection.sourceHandle),
-		);
-	};
-	const handleNodeClick: NodeMouseHandler = useCallback(
-		(_event, nodeClicked) => {
-			for (const nodeId of nodeIds) {
-				setUiNodeState(nodeId, { selected: nodeId === nodeClicked.id });
+	const isValidConnection: IsValidConnection = useCallback(
+		(connection) => {
+			if (
+				!connection.sourceHandle ||
+				!connection.targetHandle ||
+				connection.source === connection.target
+			) {
+				return false;
 			}
-			// Always maintain canvas focus when clicking nodes
-			setCurrentShortcutScope("canvas");
+			return !data.connections.some(
+				(conn) =>
+					conn.inputNode.id === connection.target &&
+					conn.outputNode.id === connection.source &&
+					(conn.inputId === connection.targetHandle ||
+						conn.outputId === connection.sourceHandle),
+			);
 		},
-		[setCurrentShortcutScope, nodeIds, setUiNodeState],
+		[data.connections],
+	);
+
+	const handleMoveEnd: OnMoveEnd = useCallback(
+		(_event, viewport) => {
+			setUiViewport(viewport, { save: true });
+		},
+		[setUiViewport],
 	);
 
 	const handleNodesChange: OnNodesChange = useCallback(
-		async (nodesChange) => {
-			await Promise.all(
-				nodesChange.map(async (nodeChange) => {
-					switch (nodeChange.type) {
-						case "position": {
-							if (nodeChange.position === undefined) {
-								break;
-							}
-							setUiNodeState(nodeChange.id, { position: nodeChange.position });
-							break;
-						}
-						case "dimensions": {
-							setUiNodeState(nodeChange.id, {
-								measured: {
-									width: nodeChange.dimensions?.width,
-									height: nodeChange.dimensions?.height,
-								},
-							});
-							break;
-						}
-						case "select": {
-							setUiNodeState(nodeChange.id, { selected: nodeChange.selected });
-							break;
-						}
-						case "remove": {
-							for (const connection of data.connections) {
-								if (connection.outputNode.id !== nodeChange.id) {
-									continue;
-								}
-								deleteConnection(connection.id);
-								const connectedNode = data.nodes.find(
-									(node) => node.id === connection.inputNode.id,
-								);
-								if (connectedNode === undefined) {
-									continue;
-								}
-								switch (connectedNode.content.type) {
-									case "textGeneration": {
-										updateNodeData(connectedNode, {
-											inputs: connectedNode.inputs.filter(
-												(input) => input.id !== connection.inputId,
-											),
-										});
-									}
-								}
-							}
-							await deleteNode(nodeChange.id);
-							break;
-						}
+		(changes) => {
+			for (const change of changes) {
+				switch (change.type) {
+					case "position": {
+						if (change.position === undefined) break;
+						setUiNodeState(change.id, { position: change.position });
+						break;
 					}
-				}),
-			);
+					case "dimensions": {
+						setUiNodeState(change.id, {
+							measured: {
+								width: change.dimensions?.width,
+								height: change.dimensions?.height,
+							},
+						});
+						break;
+					}
+					case "select": {
+						setUiNodeState(change.id, { selected: change.selected });
+						break;
+					}
+					case "remove": {
+						deleteNode(change.id);
+						break;
+					}
+				}
+			}
 		},
-		[
-			setUiNodeState,
-			data.connections,
-			data.nodes,
-			deleteConnection,
-			updateNodeData,
-			deleteNode,
-		],
+		[deleteNode, setUiNodeState],
 	);
 
 	const handleEdgesChange: OnEdgesChange = useCallback(
 		(changes) => {
 			for (const change of changes) {
 				switch (change.type) {
-					case "select":
+					case "select": {
 						if (change.selected) {
 							selectConnection(change.id);
 						} else {
 							deselectConnection(change.id);
 						}
 						break;
+					}
 					case "remove": {
 						deleteConnection(change.id);
 						break;
@@ -444,14 +432,22 @@ function V2NodeCanvas() {
 				}
 			}
 		},
-		[selectConnection, deleteConnection, deselectConnection],
+		[deselectConnection, deleteConnection, selectConnection],
 	);
+
+	const handleNodeClick: NodeMouseHandler = useCallback(
+		(_event, nodeClicked) => {
+			selectSingleNode(nodeClicked.id);
+			// Always maintain canvas focus when clicking nodes
+			setCurrentShortcutScope("canvas");
+		},
+		[selectSingleNode, setCurrentShortcutScope],
+	);
+
 	const handlePanelClick = useCallback(
 		(e: React.MouseEvent) => {
 			setMenu(null);
-			for (const node of data.nodes) {
-				setUiNodeState(node.id, { selected: false });
-			}
+			clearSelection();
 			if (selectedTool?.action === "addNode") {
 				const position = reactFlowInstance.screenToFlowPosition({
 					x: e.clientX,
@@ -462,11 +458,9 @@ function V2NodeCanvas() {
 			reset();
 			// Set canvas focus when clicking on canvas
 			setCurrentShortcutScope("canvas");
-			// setSelectedConnectionIds([]);
 		},
 		[
-			data.nodes,
-			setUiNodeState,
+			clearSelection,
 			reactFlowInstance,
 			selectedTool,
 			addNode,
@@ -509,7 +503,7 @@ function V2NodeCanvas() {
 			zoomOnScroll={false}
 			zoomOnPinch={true}
 			tabIndex={0}
-			onMoveEnd={(_, viewport) => setUiViewport(viewport)}
+			onMoveEnd={handleMoveEnd}
 			onNodesChange={handleNodesChange}
 			onNodeClick={handleNodeClick}
 			onPaneClick={handlePanelClick}
@@ -531,11 +525,9 @@ function V2NodeCanvas() {
 }
 
 export function V2Container({ leftPanel, onLeftPanelClose }: V2ContainerProps) {
-	const selectedNodes = useWorkflowDesignerStore(
+	const selectedNodes = useAppDesignerStore(
 		useShallow((s) =>
-			s.workspace.nodes.filter(
-				(node) => s.workspace.ui.nodeState[node.id]?.selected,
-			),
+			s.nodes.filter((node) => s.ui.nodeState[node.id]?.selected),
 		),
 	);
 

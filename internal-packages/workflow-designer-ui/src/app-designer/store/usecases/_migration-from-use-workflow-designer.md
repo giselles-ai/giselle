@@ -12,6 +12,12 @@
 
 ---
 
+## Handoff note
+
+See `internal-packages/workflow-designer-ui/src/app-designer/store/_handoff.md` for rationale, current status, and next steps.
+
+---
+
 ## Canonical API mapping (old -> new)
 
 - **workspace data**
