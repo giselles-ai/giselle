@@ -22,6 +22,10 @@ export function useConnectedInputs(nodeId: NodeId, inputs: Input[]) {
 		);
 
 		for (const input of inputs) {
+			// Exclude inputs where id and accessor are the same, as these are candidate inputs
+			if (input.id === input.accessor) {
+				continue;
+			}
 			const connectedConnection = connectionsToThisNode.find(
 				(connection) => connection.inputId === input.id,
 			);
