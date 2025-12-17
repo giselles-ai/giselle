@@ -177,7 +177,7 @@ export function NodeComponent({
 	const stageColorVar =
 		"var(--color-stage-node-1,var(--color-blue-muted))" as const;
 	const stageBgClass =
-		"bg-[color:var(--color-stage-node-1,var(--color-blue-muted))]" as const;
+		"bg-[color:color-mix(in_srgb,var(--color-stage-node-1,var(--color-blue-muted))_80%,transparent)]" as const;
 	const stageBorderClass =
 		"!border-[color:var(--color-stage-node-1,var(--color-blue-muted))]" as const;
 	const stageHandleBgClass =
