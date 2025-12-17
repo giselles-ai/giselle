@@ -28,4 +28,7 @@ export async function GET(request: NextRequest) {
 		await supabase.auth.setSession(data.session);
 		return NextResponse.redirect(redirectTo);
 	}
+
+	redirectTo.pathname = "/password_reset";
+	return NextResponse.redirect(redirectTo);
 }
