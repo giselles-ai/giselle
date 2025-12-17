@@ -51,6 +51,7 @@ export function createAppDesignerPersistenceController(args: {
 	let inFlight: Promise<void> | null = null;
 	let queued = false;
 	let dirty = false;
+	let hasChangesSinceSaveStarted = false;
 
 	const clearTimer = () => {
 		if (timer) clearTimeout(timer);
@@ -75,11 +76,16 @@ export function createAppDesignerPersistenceController(args: {
 		}
 
 		const payload = selectPersistedWorkspace(store.getState());
+		hasChangesSinceSaveStarted = false;
 
 		inFlight = (async () => {
 			try {
 				await save(payload);
-				setDirty(false);
+				// Only clear dirty if nothing changed while the save was in-flight.
+				// Otherwise, keep dirty=true so the queued save persists the latest snapshot.
+				if (!hasChangesSinceSaveStarted) {
+					setDirty(false);
+				}
 			} finally {
 				inFlight = null;
 				if (queued) {
@@ -97,6 +103,10 @@ export function createAppDesignerPersistenceController(args: {
 	const unsubscribe = store.subscribe((state, prev) => {
 		if (!hasWorkspaceChanged(state, prev)) return;
 		setDirty(true);
+		if (inFlight) {
+			queued = true;
+			hasChangesSinceSaveStarted = true;
+		}
 
 		clearTimer();
 		timer = setTimeout(() => {
