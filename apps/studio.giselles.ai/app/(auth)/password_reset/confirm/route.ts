@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
 		}
 	}
 
-	// return the user to an error page with some instructions
-	redirectTo.pathname = "/auth/auth-code-error";
+	// return the user to password reset page
+	redirectTo.pathname = "/password_reset";
 	return NextResponse.redirect(redirectTo);
 }
