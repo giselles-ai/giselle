@@ -1,6 +1,6 @@
 import { useKeyPress } from "@xyflow/react";
 import { useCallback, useEffect, useRef } from "react";
-import { useAppDesignerStore } from "../../app-designer/store/hooks";
+import { useAppDesignerStore } from "../../app-designer";
 import { useNodeManipulation } from "../node";
 import {
 	moveTool,

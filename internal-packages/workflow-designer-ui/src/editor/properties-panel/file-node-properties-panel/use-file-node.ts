@@ -4,7 +4,7 @@ import { useCallback } from "react";
 import {
 	useRemoveFile,
 	useUploadFile,
-} from "../../../app-designer/store/usecases";
+} from "../../../app-designer";
 
 export function useFileNode(node: FileNode) {
 	const uploadFile = useUploadFile();

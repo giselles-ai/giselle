@@ -10,7 +10,7 @@ import {
 import { useNodeGenerations } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { ArrowDownIcon, ArrowUpIcon, TimerIcon } from "lucide-react";
-import { useAppDesignerStore } from "../../../app-designer/store/hooks";
+import { useAppDesignerStore } from "../../../app-designer";
 import { TextGenerationIcon } from "../../../icons";
 import ClipboardButton from "../../../ui/clipboard-button";
 import { EmptyState } from "../../../ui/empty-state";

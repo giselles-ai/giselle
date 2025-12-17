@@ -24,7 +24,7 @@ import { z } from "zod/v4";
 import {
 	useAddSecret,
 	useDeleteSecretAndCleanupNodes,
-} from "../../app-designer/store/usecases";
+} from "../../app-designer";
 import { useWorkspaceSecrets } from "../lib/use-workspace-secrets";
 
 function formatDateTime(timestamp: number): string {

@@ -3,7 +3,7 @@ import { useNodeGenerations } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { Maximize2 } from "lucide-react";
 import { useCallback } from "react";
-import { useAppDesignerStore } from "../../../app-designer/store/hooks";
+import { useAppDesignerStore } from "../../../app-designer";
 import { GenerateImageIcon } from "../../../icons";
 import { EmptyState } from "../../../ui/empty-state";
 import { GenerationView } from "../../../ui/generation-view";

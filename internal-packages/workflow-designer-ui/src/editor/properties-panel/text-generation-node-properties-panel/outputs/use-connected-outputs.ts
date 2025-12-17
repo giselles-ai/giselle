@@ -8,7 +8,7 @@ import {
 } from "@giselles-ai/protocol";
 import type { UIConnection } from "@giselles-ai/react";
 import { useMemo } from "react";
-import { useAppDesignerStore } from "../../../../app-designer/store/hooks";
+import { useAppDesignerStore } from "../../../../app-designer";
 import type { ConnectedOutputWithDetails } from "./types";
 
 export function useConnectedOutputs(node: TextGenerationNode) {

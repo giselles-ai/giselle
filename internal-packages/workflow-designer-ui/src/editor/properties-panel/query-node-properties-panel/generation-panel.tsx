@@ -1,7 +1,7 @@
 import type { QueryNode } from "@giselles-ai/protocol";
 import { useNodeGenerations } from "@giselles-ai/react";
 import clsx from "clsx/lite";
-import { useAppDesignerStore } from "../../../app-designer/store/hooks";
+import { useAppDesignerStore } from "../../../app-designer";
 import { StackBlicksIcon } from "../../../icons";
 import { EmptyState } from "../../../ui/empty-state";
 import { QueryResultView } from "../../../ui/query-result-view";

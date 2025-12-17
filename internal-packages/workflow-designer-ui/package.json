@@ -25,6 +25,7 @@
 		"@giselles-ai/text-editor-utils": "workspace:^",
 		"@giselles-ai/trigger-registry": "workspace:*",
 		"@giselles-ai/utils": "workspace:*",
+		"@giselles-ai/workspace-utils": "workspace:*",
 		"@xyflow/react": "catalog:",
 		"boring-avatars": "1.11.1",
 		"clsx": "catalog:",

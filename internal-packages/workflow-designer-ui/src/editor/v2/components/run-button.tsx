@@ -25,7 +25,7 @@ import {
 	isTextGenerationNode,
 	isTriggerNode,
 } from "@giselles-ai/protocol";
-import { useNodeGroups, useTaskSystem } from "@giselles-ai/react";
+import { useTaskSystem } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { PlayIcon, UngroupIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
@@ -33,10 +33,11 @@ import { AppEntryInputDialog } from "../../../app/app-entry-input-dialog";
 import {
 	useAppDesignerStore,
 	useWorkspaceActions,
-} from "../../../app-designer/store/hooks";
+} from "../../../app-designer";
 import { NodeIcon } from "../../../icons/node";
 import { isPromptEmpty } from "../../lib/validate-prompt";
 import { TriggerInputDialog } from "./trigger-input-dialog";
+import { useNodeGroups } from "./use-node-groups";
 
 type RunItem = {
 	nodeIds: NodeId[];

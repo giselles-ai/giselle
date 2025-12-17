@@ -10,8 +10,8 @@ import {
 } from "@giselles-ai/trigger-registry";
 import { useCallback, useTransition } from "react";
 import { useGiselle } from "../../../../../../app-designer/store/giselle-client-provider";
-import { useAppDesignerStore } from "../../../../../../app-designer/store/hooks";
-import { useUpdateNodeData } from "../../../../../../app-designer/store/usecases";
+import { useAppDesignerStore } from "../../../../../../app-designer";
+import { useUpdateNodeData } from "../../../../../../app-designer";
 import type {
 	InputCallsignStep,
 	InputLabelsStep,

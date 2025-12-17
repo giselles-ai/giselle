@@ -9,7 +9,7 @@ import { useMemo } from "react";
 import {
 	useDeleteConnection,
 	useUpdateNodeDataContent,
-} from "../../../app-designer/store/usecases";
+} from "../../../app-designer";
 import { GitHubIcon } from "../../../icons";
 import { DocumentVectorStoreIcon } from "../../../icons/node/document-vector-store-icon";
 import { SettingDetail } from "../ui/setting-label";

@@ -3,7 +3,7 @@ import { Toggle } from "@giselle-internal/ui/toggle";
 import type { ContentGenerationNode } from "@giselles-ai/protocol";
 import { Settings2Icon, XIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import { useUpdateNodeDataContent } from "../../../../../../app-designer/store/usecases";
+import { useUpdateNodeDataContent } from "../../../../../../app-designer";
 import { upsertArray } from "../../../../../lib/upsert-array";
 import { ToolConfigurationDialog } from "../../ui/tool-configuration-dialog";
 

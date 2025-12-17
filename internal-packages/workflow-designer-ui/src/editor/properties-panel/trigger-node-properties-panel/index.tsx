@@ -4,7 +4,7 @@ import { createContext, useContext, useState } from "react";
 import {
 	useDeleteNode,
 	useUpdateNodeData,
-} from "../../../app-designer/store/usecases";
+} from "../../../app-designer";
 import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
 import { NodePanelHeader } from "../ui/node-panel-header";
 import { GitHubTriggerPropertiesPanel } from "./providers/github-trigger/github-trigger-properties-panel";

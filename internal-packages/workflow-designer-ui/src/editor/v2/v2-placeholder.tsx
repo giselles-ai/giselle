@@ -3,7 +3,7 @@
 import { useFeatureFlag } from "@giselles-ai/react";
 import { useCallback, useState } from "react";
 import { useShallow } from "zustand/shallow";
-import { useAppDesignerStore } from "../../app-designer/store/hooks";
+import { useAppDesignerStore } from "../../app-designer";
 import { ReadOnlyBanner } from "../../ui/read-only-banner";
 import { FloatingChat } from "../chat";
 import { tourSteps, WorkspaceTour } from "../workspace-tour";

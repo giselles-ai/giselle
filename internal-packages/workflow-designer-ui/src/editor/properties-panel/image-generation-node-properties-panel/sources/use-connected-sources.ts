@@ -16,7 +16,7 @@ import type {
 } from "@giselles-ai/protocol";
 import type { UIConnection } from "@giselles-ai/react";
 import { useMemo } from "react";
-import { useAppDesignerStore } from "../../../../app-designer/store/hooks";
+import { useAppDesignerStore } from "../../../../app-designer";
 
 type ConnectedSource<T extends NodeBase> = {
 	output: Output;

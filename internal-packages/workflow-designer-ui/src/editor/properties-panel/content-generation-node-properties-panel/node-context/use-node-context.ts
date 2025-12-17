@@ -12,11 +12,11 @@ import {
 } from "@giselles-ai/react";
 import { useCallback, useMemo } from "react";
 import { useShallow } from "zustand/shallow";
-import { useAppDesignerStore } from "../../../../app-designer/store/hooks";
+import { useAppDesignerStore } from "../../../../app-designer";
 import {
 	useAddConnection,
 	useUpdateNodeData,
-} from "../../../../app-designer/store/usecases";
+} from "../../../../app-designer";
 
 export function useNodeContext(node: ContentGenerationNode) {
 	const { nodes, connections: allConnections } = useAppDesignerStore(

@@ -5,7 +5,7 @@ import {
 	useDeleteNode,
 	useUpdateNodeData,
 	useUpdateNodeDataContent,
-} from "../../../app-designer/store/usecases";
+} from "../../../app-designer";
 import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
 import { NodePanelHeader } from "../ui/node-panel-header";
 

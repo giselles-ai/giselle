@@ -3,7 +3,7 @@ import {
 	DEFAULT_SIMILARITY_THRESHOLD,
 	type QueryNode,
 } from "@giselles-ai/protocol";
-import { useUpdateNodeDataContent } from "../../../app-designer/store/usecases";
+import { useUpdateNodeDataContent } from "../../../app-designer";
 import { Slider } from "../../../ui/slider";
 
 export function SettingsPanel({ node }: { node: QueryNode }) {

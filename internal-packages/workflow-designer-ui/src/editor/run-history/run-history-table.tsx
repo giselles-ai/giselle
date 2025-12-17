@@ -11,7 +11,7 @@ import {
 import { LoaderIcon, RefreshCcwIcon } from "lucide-react";
 import useSWR from "swr";
 import { useGiselle } from "../../app-designer/store/giselle-client-provider";
-import { useAppDesignerStore } from "../../app-designer/store/hooks";
+import { useAppDesignerStore } from "../../app-designer";
 
 function formatDateTime(timestamp: number): string {
 	const date = new Date(timestamp);

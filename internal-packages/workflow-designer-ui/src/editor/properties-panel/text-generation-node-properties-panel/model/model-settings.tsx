@@ -18,7 +18,7 @@ import {
 import { useUsageLimits } from "@giselles-ai/react";
 import { useCallback, useMemo } from "react";
 import { useShallow } from "zustand/shallow";
-import { useAppDesignerStore } from "../../../../app-designer/store/hooks";
+import { useAppDesignerStore } from "../../../../app-designer";
 import { ModelPicker } from "../../../../ui/model-picker";
 import { ProTag } from "../../../tool";
 import { SettingDetail, SettingLabel } from "../../ui/setting-label";

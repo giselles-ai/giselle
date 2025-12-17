@@ -18,12 +18,12 @@ import { PlusIcon, TriangleAlert, XIcon } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import useSWR from "swr";
 import { useGiselle } from "../../../../app-designer/store/giselle-client-provider";
-import { useAppDesignerStore } from "../../../../app-designer/store/hooks";
+import { useAppDesignerStore } from "../../../../app-designer";
 import {
 	useAddConnection,
 	useDeleteConnection,
 	useUpdateNodeData,
-} from "../../../../app-designer/store/usecases";
+} from "../../../../app-designer";
 // Import icons to display next to Event Type
 import {
 	DiscussionCommentCreatedIcon,

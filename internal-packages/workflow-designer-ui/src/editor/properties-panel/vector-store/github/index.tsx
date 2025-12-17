@@ -13,7 +13,7 @@ import { useVectorStore } from "@giselles-ai/react";
 import { Info } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { useUpdateNodeData } from "../../../../app-designer/store/usecases";
+import { useUpdateNodeData } from "../../../../app-designer";
 import { TriangleAlert } from "../../../../icons";
 import { useGitHubVectorStoreStatus } from "../../../lib/use-github-vector-store-status";
 import { SettingDetail, SettingLabel } from "../../ui/setting-label";

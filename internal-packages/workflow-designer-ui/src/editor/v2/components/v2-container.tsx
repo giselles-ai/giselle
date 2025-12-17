@@ -36,7 +36,7 @@ import { useShallow } from "zustand/shallow";
 import {
 	useAppDesignerStore,
 	useWorkspaceActions,
-} from "../../../app-designer/store/hooks";
+} from "../../../app-designer";
 import {
 	useAddConnection,
 	useAddNode,
@@ -48,7 +48,7 @@ import {
 	useSelectSingleNode,
 	useSetCurrentShortcutScope,
 	useUpdateNodeData,
-} from "../../../app-designer/store/usecases";
+} from "../../../app-designer";
 import { Background } from "../../../ui/background";
 import { edgeTypes } from "../../connector";
 import { GradientDef } from "../../connector/component";

@@ -1,3 +1,5 @@
+"use client";
+
 import type { GiselleClient } from "@giselles-ai/react";
 import { createContext, useContext } from "react";
 

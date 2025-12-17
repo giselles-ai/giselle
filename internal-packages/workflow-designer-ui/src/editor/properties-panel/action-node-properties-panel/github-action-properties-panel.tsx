@@ -13,7 +13,7 @@ import {
 } from "@giselles-ai/protocol";
 import { useIntegration } from "@giselles-ai/react";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import { useUpdateNodeData } from "../../../app-designer/store/usecases";
+import { useUpdateNodeData } from "../../../app-designer";
 import { GitHubIcon, SpinnerIcon } from "../../../icons";
 // Import icons from GitHub trigger components
 import {

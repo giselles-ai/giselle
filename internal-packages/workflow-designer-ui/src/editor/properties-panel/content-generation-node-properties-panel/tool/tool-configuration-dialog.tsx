@@ -18,7 +18,7 @@ import {
 	useTransition,
 } from "react";
 import { useGiselle } from "../../../../app-designer/store/giselle-client-provider";
-import { useAppDesignerStore } from "../../../../app-designer/store/hooks";
+import { useAppDesignerStore } from "../../../../app-designer";
 import { useWorkspaceSecrets } from "../../../lib/use-workspace-secrets";
 import {
 	ToolConfigurationForm,

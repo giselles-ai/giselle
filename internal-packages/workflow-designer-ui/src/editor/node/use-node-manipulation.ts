@@ -3,7 +3,7 @@ import {
 	useCopyNodeToClipboard,
 	useDuplicateNode,
 	usePasteNodeFromClipboard,
-} from "../../app-designer/store/usecases";
+} from "../../app-designer";
 
 export function useNodeManipulation() {
 	const copyNodeToClipboard = useCopyNodeToClipboard();

@@ -41,7 +41,7 @@ import {
 } from "lucide-react";
 import { Popover, ToggleGroup } from "radix-ui";
 import { useEffect, useMemo, useState } from "react";
-import { useAppDesignerStore } from "../../../app-designer/store/hooks";
+import { useAppDesignerStore } from "../../../app-designer";
 import { DocumentVectorStoreIcon } from "../../../icons/node/document-vector-store-icon";
 import { Tooltip } from "../../../ui/tooltip";
 import { isToolAction } from "../types";

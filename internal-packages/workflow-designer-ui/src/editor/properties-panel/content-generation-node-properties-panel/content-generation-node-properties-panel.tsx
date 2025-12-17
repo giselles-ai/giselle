@@ -19,12 +19,12 @@ import clsx from "clsx/lite";
 import { PlusIcon, Settings2Icon, XIcon } from "lucide-react";
 import { Tooltip as TooltipPrimitive } from "radix-ui";
 import { useCallback, useMemo, useState } from "react";
-import { useAppDesignerStore } from "../../../app-designer/store/hooks";
+import { useAppDesignerStore } from "../../../app-designer";
 import {
 	useDeleteNode,
 	useUpdateNodeData,
 	useUpdateNodeDataContent,
-} from "../../../app-designer/store/usecases";
+} from "../../../app-designer";
 import ClipboardButton from "../../../ui/clipboard-button";
 import { GenerationView } from "../../../ui/generation-view";
 import { GenerateCtaButton, NodePanelHeader, PropertiesPanelRoot } from "../ui";

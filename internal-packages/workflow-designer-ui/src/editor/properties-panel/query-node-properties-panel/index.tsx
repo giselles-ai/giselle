@@ -6,11 +6,11 @@ import {
 	jsonContentToText,
 } from "@giselles-ai/text-editor-utils";
 import { useCallback, useMemo } from "react";
-import { useAppDesignerStore } from "../../../app-designer/store/hooks";
+import { useAppDesignerStore } from "../../../app-designer";
 import {
 	useDeleteNode,
 	useUpdateNodeData,
-} from "../../../app-designer/store/usecases";
+} from "../../../app-designer";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
 import {
 	GenerateCtaButton,

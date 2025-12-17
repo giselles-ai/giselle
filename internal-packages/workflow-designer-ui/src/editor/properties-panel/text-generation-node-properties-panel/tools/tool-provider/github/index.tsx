@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { Checkbox } from "radix-ui";
 import { useCallback, useState } from "react";
-import { useUpdateNodeDataContent } from "../../../../../../app-designer/store/usecases";
+import { useUpdateNodeDataContent } from "../../../../../../app-designer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
 import {
 	ToolConfigurationDialog,

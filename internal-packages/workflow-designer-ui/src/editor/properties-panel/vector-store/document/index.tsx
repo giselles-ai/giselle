@@ -14,7 +14,7 @@ import {
 } from "@giselles-ai/react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useUpdateNodeData } from "../../../../app-designer/store/usecases";
+import { useUpdateNodeData } from "../../../../app-designer";
 import { TriangleAlert } from "../../../../icons";
 import {
 	type DocumentVectorStore,

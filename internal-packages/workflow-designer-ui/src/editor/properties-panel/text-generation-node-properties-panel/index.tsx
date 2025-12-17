@@ -2,13 +2,13 @@ import { useToasts } from "@giselle-internal/ui/toast";
 import type { Connection, TextGenerationNode } from "@giselles-ai/protocol";
 import { useNodeGenerations } from "@giselles-ai/react";
 import { useCallback, useMemo } from "react";
-import { useAppDesignerStore } from "../../../app-designer/store/hooks";
+import { useAppDesignerStore } from "../../../app-designer";
 import {
 	useDeleteConnection,
 	useDeleteNode,
 	useUpdateNodeData,
 	useUpdateNodeDataContent,
-} from "../../../app-designer/store/usecases";
+} from "../../../app-designer";
 import { useUsageLimitsReached } from "../../../hooks/usage-limits";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";

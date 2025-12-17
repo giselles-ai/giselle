@@ -6,7 +6,7 @@ import { useGiselle } from "../../../app-designer/store/giselle-client-provider"
 import {
 	useDeleteNode,
 	useUpdateNodeData,
-} from "../../../app-designer/store/usecases";
+} from "../../../app-designer";
 import {
 	NodePanelHeader,
 	PropertiesPanelContent,

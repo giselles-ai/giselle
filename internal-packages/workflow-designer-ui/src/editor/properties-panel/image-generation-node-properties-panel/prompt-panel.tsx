@@ -16,12 +16,12 @@ import {
 	useUsageLimits,
 } from "@giselles-ai/react";
 import { useCallback, useMemo } from "react";
-import { useAppDesignerStore } from "../../../app-designer/store/hooks";
+import { useAppDesignerStore } from "../../../app-designer";
 import {
 	useDeleteConnection,
 	useUpdateNodeData,
 	useUpdateNodeDataContent,
-} from "../../../app-designer/store/usecases";
+} from "../../../app-designer";
 import { ModelPicker } from "../../../ui/model-picker";
 import { ProTag } from "../../tool/toolbar/components/pro-tag";
 import { PromptEditor } from "../ui/prompt-editor";

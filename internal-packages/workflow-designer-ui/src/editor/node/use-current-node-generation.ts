@@ -5,7 +5,7 @@ import {
 } from "@giselles-ai/react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/shallow";
-import { useAppDesignerStore } from "../../app-designer/store/hooks";
+import { useAppDesignerStore } from "../../app-designer";
 
 export function useCurrentNodeGeneration(nodeId: NodeId) {
 	const workspaceId = useAppDesignerStore((s) => s.workspaceId);

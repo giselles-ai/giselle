@@ -8,8 +8,10 @@ import { ChevronDownIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRef } from "react";
-import { useAppDesignerStore } from "../../../app-designer/store/hooks";
-import { useUpdateWorkspaceName } from "../../../app-designer/store/usecases";
+import {
+	useAppDesignerStore,
+	useUpdateWorkspaceName,
+} from "../../../app-designer";
 import { GiselleIcon } from "../../../icons";
 import { EditableText, type EditableTextRef } from "../../properties-panel/ui";
 import { RunButton } from "./run-button";

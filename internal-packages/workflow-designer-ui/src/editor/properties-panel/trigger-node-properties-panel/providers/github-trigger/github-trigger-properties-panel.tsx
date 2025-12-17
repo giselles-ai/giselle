@@ -25,7 +25,7 @@ import {
 	useTransition,
 } from "react";
 import { useGiselle } from "../../../../../app-designer/store/giselle-client-provider";
-import { useUpdateNodeData } from "../../../../../app-designer/store/usecases";
+import { useUpdateNodeData } from "../../../../../app-designer";
 import { Tooltip } from "../../../../../ui/tooltip";
 import { isPromptEmpty as isEmpty } from "../../../../lib/validate-prompt";
 import { GitHubInvalidCredential, SelectRepository } from "../../../ui";

@@ -2,7 +2,7 @@ import type { FileCategory, FileNode } from "@giselles-ai/protocol";
 import {
 	useDeleteNode,
 	useUpdateNodeData,
-} from "../../../app-designer/store/usecases";
+} from "../../../app-designer";
 import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
 import { NodePanelHeader } from "../ui/node-panel-header";
 import { FilePanel } from "./file-panel";

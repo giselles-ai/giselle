@@ -7,7 +7,7 @@ import {
 import clsx from "clsx/lite";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { useUpdateNodeData } from "../../../../../app-designer/store/usecases";
+import { useUpdateNodeData } from "../../../../../app-designer";
 import ClipboardButton from "../../../../../ui/clipboard-button";
 import { useGitHubTrigger } from "../../../../lib/use-github-trigger";
 import {
