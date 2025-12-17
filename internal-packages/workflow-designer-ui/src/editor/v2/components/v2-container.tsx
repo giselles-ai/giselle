@@ -274,9 +274,7 @@ function V2NodeCanvas() {
 			const nextEdge: Edge = {
 				id: connection.id,
 				source: connection.outputNode.id,
-				sourceHandle: connection.outputId,
 				target: connection.inputNode.id,
-				targetHandle: connection.inputId,
 				type: "giselleConnector",
 				selected,
 				data: { connection },

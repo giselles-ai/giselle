@@ -1,5 +1,4 @@
 @import "../../ui/style.css";
-@import "./new-editor/components/node/handles.css";
 
 .mask-fill {
 	-webkit-mask-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
