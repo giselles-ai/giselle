@@ -1,4 +1,3 @@
-import type { ConnectionId } from "@giselles-ai/protocol";
 import { useCallback } from "react";
 import { useAppDesignerStore } from "../hooks";
 import { useSetSelectedConnectionIds } from "./use-set-selected-connection-ids";
