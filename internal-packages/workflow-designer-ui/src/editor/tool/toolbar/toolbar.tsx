@@ -28,10 +28,10 @@ import {
 } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import {
+	CableIcon,
 	DatabaseZapIcon,
 	HammerIcon,
 	Layers2Icon,
-	PlugIcon,
 	SparklesIcon,
 } from "lucide-react";
 import { Popover, ToggleGroup } from "radix-ui";
@@ -94,6 +94,11 @@ export function Toolbar() {
 		() => workspace.nodes.some((node) => node.content.type === "appEntry"),
 		[workspace.nodes],
 	);
+	const hasEndNode = useMemo(
+		() => workspace.nodes.some((node) => node.content.type === "end"),
+		[workspace.nodes],
+	);
+	const isStageFlowAlreadyPlaced = hasAppRequestNode || hasEndNode;
 
 	const availableLanguageModels = useMemo(
 		() =>
@@ -217,6 +222,7 @@ export function Toolbar() {
 						"flex items-center px-[4px] z-10 h-full gap-[12px] text-inverse",
 						"**:data-tool:hover:bg-bg-850/30 **:data-tool:p-[4px] **:data-tool:rounded-[4px]",
 						"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
+						"**:data-tool:data-[disabled]:opacity-40 **:data-tool:data-[disabled]:cursor-not-allowed **:data-tool:data-[disabled]:hover:bg-transparent",
 						"**:data-icon:w-[24px] **:data-icon:h-[24px] **:data-icon:text-inverse ",
 					)}
 					value={selectedTool?.action}
@@ -255,10 +261,9 @@ export function Toolbar() {
 						value="selectTrigger"
 						data-tool
 						className="relative"
+						disabled={isStageFlowAlreadyPlaced}
 					>
-						<Tooltip
-							text={<TooltipAndHotkey text="Set up an app" hotkey="s" />}
-						>
+						<Tooltip text={<TooltipAndHotkey text="App" hotkey="a" />}>
 							<HammerIcon data-icon />
 						</Tooltip>
 					</ToggleGroup.Item>
@@ -268,8 +273,8 @@ export function Toolbar() {
 						data-tool
 						className="relative"
 					>
-						<Tooltip text={<TooltipAndHotkey text="Connect" hotkey="d" />}>
-							<PlugIcon data-icon />
+						<Tooltip text={<TooltipAndHotkey text="Event" hotkey="e" />}>
+							<CableIcon data-icon />
 						</Tooltip>
 						{selectedTool?.action === "selectIntegration" && (
 							<Popover.Root open={true}>
@@ -299,14 +304,14 @@ export function Toolbar() {
 
 										<div className="relative flex flex-col gap-0">
 											<p className="text-[#505D7B] text-[12px] font-medium leading-[170%] mb-[4px] px-[8px]">
-												Events
+												Trigger
 											</p>
 											<ToggleGroup.Root
 												type="single"
 												className={clsx(
 													"flex flex-col gap-[8px]",
 													"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
-													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-surface-hover",
+													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-[rgba(222,233,242,0.10)]",
 													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
 												)}
 												onValueChange={() => {
@@ -315,21 +320,25 @@ export function Toolbar() {
 													);
 												}}
 											>
-												<ToggleGroup.Item value="github-trigger" data-tool>
+												<ToggleGroup.Item
+													value="github-trigger"
+													data-tool
+													className="hover:bg-[rgba(222,233,242,0.10)]"
+												>
 													<GitHubIcon className="size-[20px] shrink-0" />
 													<p className="text-[14px]">GitHub Trigger</p>
 												</ToggleGroup.Item>
 											</ToggleGroup.Root>
 
 											<p className="text-[#505D7B] text-[12px] font-medium leading-[170%] mt-[8px] mb-[4px] px-[8px]">
-												Destinations
+												Action
 											</p>
 											<ToggleGroup.Root
 												type="single"
 												className={clsx(
 													"flex flex-col gap-[8px]",
 													"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
-													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-surface-hover",
+													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-[rgba(222,233,242,0.10)]",
 													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
 												)}
 												onValueChange={() => {
@@ -338,7 +347,11 @@ export function Toolbar() {
 													);
 												}}
 											>
-												<ToggleGroup.Item value="github-action" data-tool>
+												<ToggleGroup.Item
+													value="github-action"
+													data-tool
+													className="hover:bg-[rgba(222,233,242,0.10)]"
+												>
 													<GitHubIcon className="size-[20px] shrink-0" />
 													<p className="text-[14px]">GitHub Action</p>
 												</ToggleGroup.Item>
@@ -355,7 +368,7 @@ export function Toolbar() {
 						data-tool
 						className="relative"
 					>
-						<Tooltip text={<TooltipAndHotkey text="Context" hotkey="i/r" />}>
+						<Tooltip text={<TooltipAndHotkey text="Context" hotkey="c" />}>
 							<Layers2Icon data-icon />
 						</Tooltip>
 						{selectedTool?.action === "selectContext" && (
@@ -385,14 +398,14 @@ export function Toolbar() {
 										/>
 										<div className="relative flex flex-col gap-0">
 											<p className="text-[#505D7B] text-[12px] font-medium leading-[170%] mb-[4px] px-[8px]">
-												Static Context
+												Static
 											</p>
 											<ToggleGroup.Root
 												type="single"
 												className={clsx(
 													"flex flex-col gap-[8px]",
 													"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
-													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-surface-hover",
+													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-[rgba(222,233,242,0.10)]",
 													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
 												)}
 												onValueChange={(sourceType) => {
@@ -419,19 +432,35 @@ export function Toolbar() {
 													}
 												}}
 											>
-												<ToggleGroup.Item value="text" data-tool>
+												<ToggleGroup.Item
+													value="text"
+													data-tool
+													className="hover:bg-[rgba(222,233,242,0.10)]"
+												>
 													<PromptIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">Plain Text</p>
 												</ToggleGroup.Item>
-												<ToggleGroup.Item value="pdf" data-tool>
+												<ToggleGroup.Item
+													value="pdf"
+													data-tool
+													className="hover:bg-[rgba(222,233,242,0.10)]"
+												>
 													<PdfFileIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">PDF Upload</p>
 												</ToggleGroup.Item>
-												<ToggleGroup.Item value="image" data-tool>
+												<ToggleGroup.Item
+													value="image"
+													data-tool
+													className="hover:bg-[rgba(222,233,242,0.10)]"
+												>
 													<PictureIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">Image Upload</p>
 												</ToggleGroup.Item>
-												<ToggleGroup.Item value="textFile" data-tool>
+												<ToggleGroup.Item
+													value="textFile"
+													data-tool
+													className="hover:bg-[rgba(222,233,242,0.10)]"
+												>
 													<TextFileIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">Text Upload</p>
 												</ToggleGroup.Item>
@@ -441,7 +470,7 @@ export function Toolbar() {
 												className={clsx(
 													"flex flex-col gap-[8px]",
 													"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
-													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-surface-hover",
+													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-[rgba(222,233,242,0.10)]",
 													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
 												)}
 												onValueChange={(sourceType) => {
@@ -456,25 +485,33 @@ export function Toolbar() {
 													}
 												}}
 											>
-												<ToggleGroup.Item value="documentVectorStore" data-tool>
+												<ToggleGroup.Item
+													value="documentVectorStore"
+													data-tool
+													className="hover:bg-[rgba(222,233,242,0.10)]"
+												>
 													<DocumentVectorStoreIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">Document Vector Store</p>
 												</ToggleGroup.Item>
-												<ToggleGroup.Item value="githubVectorStore" data-tool>
+												<ToggleGroup.Item
+													value="githubVectorStore"
+													data-tool
+													className="hover:bg-[rgba(222,233,242,0.10)]"
+												>
 													<GitHubIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">GitHub Vector Store</p>
 												</ToggleGroup.Item>
 											</ToggleGroup.Root>
 
 											<p className="text-[#505D7B] text-[12px] font-medium leading-[170%] mt-[8px] mb-[4px] px-[8px]">
-												Dynamic Context
+												Dynamic
 											</p>
 											<ToggleGroup.Root
 												type="single"
 												className={clsx(
 													"flex flex-col gap-[8px]",
 													"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
-													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-surface-hover",
+													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-[rgba(222,233,242,0.10)]",
 													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
 												)}
 												onValueChange={(sourceType) => {
@@ -488,11 +525,19 @@ export function Toolbar() {
 													}
 												}}
 											>
-												<ToggleGroup.Item value="query" data-tool>
+												<ToggleGroup.Item
+													value="query"
+													data-tool
+													className="hover:bg-[rgba(222,233,242,0.10)]"
+												>
 													<DatabaseZapIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">Query</p>
 												</ToggleGroup.Item>
-												<ToggleGroup.Item value="webPage" data-tool>
+												<ToggleGroup.Item
+													value="webPage"
+													data-tool
+													className="hover:bg-[rgba(222,233,242,0.10)]"
+												>
 													<WebPageFileIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">Webpage</p>
 												</ToggleGroup.Item>
@@ -510,7 +555,7 @@ export function Toolbar() {
 							data-tool
 							className="relative"
 						>
-							<Tooltip text={<TooltipAndHotkey text="Generation" hotkey="g" />}>
+							<Tooltip text={<TooltipAndHotkey text="Model" hotkey="m" />}>
 								<SparklesIcon data-icon />
 							</Tooltip>
 							{selectedTool?.action === "selectLanguageModel" && (
@@ -930,7 +975,7 @@ export function Toolbar() {
 							data-tool
 							className="relative"
 						>
-							<Tooltip text={<TooltipAndHotkey text="Generation" hotkey="p" />}>
+							<Tooltip text={<TooltipAndHotkey text="Model" hotkey="m" />}>
 								<SparklesIcon data-icon />
 							</Tooltip>
 							{selectedTool?.action === "selectLanguageModelV2" && (

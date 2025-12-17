@@ -1,13 +1,13 @@
-import { useWorkflowDesigner } from "@giselles-ai/react";
+import { useFeatureFlag, useWorkflowDesigner } from "@giselles-ai/react";
 import { useKeyPress } from "@xyflow/react";
 import { useCallback, useEffect, useRef } from "react";
 import { useNodeManipulation } from "../node";
 import {
 	moveTool,
+	selectContextTool,
 	selectIntegrationTool,
 	selectLanguageModelTool,
-	selectRetrievalCategoryTool,
-	selectSourceCategoryTool,
+	selectLanguageModelV2Tool,
 	selectTriggerTool,
 	useToolbar,
 } from "../tool/toolbar";
@@ -52,11 +52,11 @@ function useKeyAction(
 	}, [isPressed, enabled, action]);
 }
 
-function useToolAction(key: string, toolFunction: () => Tool) {
+function useToolAction(key: string, toolFunction: () => Tool, enabled = true) {
 	const toolbar = useToolbar();
 	const { data } = useWorkflowDesigner();
 	const isCanvasFocused = data.ui.currentShortcutScope === "canvas";
-	const canUseToolShortcuts = isCanvasFocused && !!toolbar;
+	const canUseToolShortcuts = isCanvasFocused && !!toolbar && enabled;
 
 	useKeyAction(
 		key,
@@ -73,6 +73,7 @@ export function useKeyboardShortcuts(
 	options: UseKeyboardShortcutsOptions = {},
 ) {
 	const { data } = useWorkflowDesigner();
+	const { generateContentNode } = useFeatureFlag();
 	const {
 		copy: handleCopy,
 		paste: handlePaste,
@@ -85,11 +86,11 @@ export function useKeyboardShortcuts(
 		data.ui.currentShortcutScope === "properties-panel";
 
 	// Tool shortcuts using the simplified hook
-	useToolAction("s", selectTriggerTool);
-	useToolAction("i", selectSourceCategoryTool);
-	useToolAction("g", selectLanguageModelTool);
-	useToolAction("r", selectRetrievalCategoryTool);
-	useToolAction("d", selectIntegrationTool);
+	useToolAction("a", selectTriggerTool);
+	useToolAction("e", selectIntegrationTool);
+	useToolAction("c", selectContextTool);
+	useToolAction("m", selectLanguageModelTool, !generateContentNode);
+	useToolAction("m", selectLanguageModelV2Tool, generateContentNode);
 	useToolAction("Escape", moveTool);
 
 	// Generate shortcut for properties panel
