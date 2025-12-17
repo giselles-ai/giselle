@@ -5,6 +5,7 @@ export * from "./use-add-secret";
 export * from "./use-add-web-pages";
 export * from "./use-auto-configure-app-entry-node";
 export * from "./use-clear-selection";
+export * from "./use-connect-node";
 export * from "./use-connect-nodes";
 export * from "./use-copy-files";
 export * from "./use-copy-node";

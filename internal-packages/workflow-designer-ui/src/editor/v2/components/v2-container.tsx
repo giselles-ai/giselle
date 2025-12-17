@@ -1,8 +1,6 @@
 "use client";
 
 import {
-	InputId,
-	isActionNode,
 	isAppEntryNode,
 	isEndNode,
 	type NodeId,
@@ -35,6 +33,7 @@ import {
 	useAddNode,
 	useAppDesignerStore,
 	useClearSelection,
+	useConnectNode,
 	useDeleteConnection,
 	useDeleteNode,
 	useDeselectConnection,
@@ -154,6 +153,7 @@ function V2NodeCanvas() {
 	const clearSelection = useClearSelection();
 	const setCurrentShortcutScope = useSetCurrentShortcutScope();
 	const { selectedTool, reset } = useToolbar();
+	const connectNode = useConnectNode();
 	const toast = useToasts();
 	const [menu, setMenu] = useState<Omit<ContextMenuProps, "onClose"> | null>(
 		null,
@@ -314,35 +314,14 @@ function V2NodeCanvas() {
 					throw new Error(supported.message);
 				}
 
-				const safeOutputId = OutputId.safeParse(connection.sourceHandle);
-				if (!safeOutputId.success) {
-					throw new Error("Invalid output id");
-				}
-				const outputId = safeOutputId.data;
-
-				const inputId = isActionNode(inputNode)
-					? InputId.safeParse(connection.targetHandle).success
-						? InputId.safeParse(connection.targetHandle).data
-						: undefined
-					: undefined;
-
-				if (isActionNode(inputNode) && inputId === undefined) {
-					throw new Error("Invalid input id");
-				}
-
-				addConnectionAndAddInput({
-					outputNode,
-					outputId,
-					inputNode,
-					inputId,
-				});
+				connectNode(outputNode.id, inputNode.id);
 			} catch (error: unknown) {
 				toast.error(
 					error instanceof Error ? error.message : "Failed to connect nodes",
 				);
 			}
 		},
-		[addConnectionAndAddInput, data.nodes, toast],
+		[connectNode, data.nodes, toast],
 	);
 
 	const isValidConnection: IsValidConnection = useCallback(

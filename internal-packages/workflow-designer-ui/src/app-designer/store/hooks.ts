@@ -20,6 +20,7 @@ export function useWorkspaceActions<T>(
 			addNode: s.addNode,
 			upsertUiNodeState: s.upsertUiNodeState,
 			updateNode: s.updateNode,
+			addNodeInput: s.addNodeInput,
 			addConnection: s.addConnection,
 			removeConnection: s.removeConnection,
 			removeNode: s.removeNode,

@@ -678,8 +678,7 @@ export function NodeComponent({
 							))}
 						{node.type === "operation" &&
 							node.content.type !== "trigger" &&
-							node.content.type !== "appEntry" &&
-							node.content.type !== "action" && (
+							node.content.type !== "appEntry" && (
 								<div
 									className="relative flex items-center h-[28px]"
 									key="blank"
@@ -693,6 +692,7 @@ export function NodeComponent({
 											v.isTextGeneration && "!border-generation-node-1",
 											v.isContentGeneration && "!border-generation-node-1",
 											v.isImageGeneration && "!border-image-generation-node-1",
+											v.isAction && "!border-action-node-1",
 											v.isQuery && "!border-query-node-1",
 											v.isEnd && "!border-end-node-1",
 										)}

@@ -1,6 +1,7 @@
 import {
 	type Connection,
 	type ConnectionId,
+	type Input,
 	type NodeBase,
 	NodeId,
 	type NodeLike,
@@ -16,6 +17,7 @@ export interface WorkspaceActions {
 	addNode: (node: NodeLike) => void;
 	upsertUiNodeState: (nodeId: NodeId | string, ui: NodeUIState) => void;
 	updateNode: (nodeId: NodeId | string, data: Partial<NodeBase>) => void;
+	addNodeInput: (nodeId: NodeId, input: Input) => void;
 	addConnection: (connection: Connection) => void;
 	removeConnection: (connectionId: string) => void;
 	removeNode: (nodeId: NodeId | string) => void;
@@ -71,7 +73,13 @@ export function createWorkspaceSlice(
 		updateNode: (nodeId, data) =>
 			set((s) => ({
 				nodes: s.nodes.map((n) =>
-					n.id === NodeId.parse(nodeId) ? ({ ...n, ...data } as NodeLike) : n,
+					n.id === nodeId ? ({ ...n, ...data } as NodeLike) : n,
+				),
+			})),
+		addNodeInput: (nodeId, input) =>
+			set((s) => ({
+				nodes: s.nodes.map((n) =>
+					n.id === nodeId ? { ...n, inputs: [...n.inputs, input] } : n,
 				),
 			})),
 		addConnection: (connection) =>
