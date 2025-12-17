@@ -1,12 +1,15 @@
 import { isVectorStoreNode, type QueryNode } from "@giselles-ai/protocol";
 import {
 	useVectorStore,
-	useWorkflowDesigner,
 	type VectorStoreContextValue,
 } from "@giselles-ai/react";
 import { TextEditor } from "@giselles-ai/text-editor/react-internal";
 import { DatabaseZapIcon, X } from "lucide-react";
 import { useMemo } from "react";
+import {
+	useDeleteConnection,
+	useUpdateNodeDataContent,
+} from "../../../app-designer/store/usecases";
 import { GitHubIcon } from "../../../icons";
 import { DocumentVectorStoreIcon } from "../../../icons/node/document-vector-store-icon";
 import { SettingDetail } from "../ui/setting-label";
@@ -142,8 +145,8 @@ function getDataSourceDisplayInfo(
 }
 
 export function QueryPanel({ node }: { node: QueryNode }) {
-	const { updateNodeDataContent, deleteConnection, updateNodeData } =
-		useWorkflowDesigner();
+	const updateNodeDataContent = useUpdateNodeDataContent();
+	const deleteConnection = useDeleteConnection();
 	const vectorStore = useVectorStore();
 	const documentStores = vectorStore?.documentStores ?? [];
 	const documentStoreMap = useMemo(() => {
@@ -236,12 +239,6 @@ export function QueryPanel({ node }: { node: QueryNode }) {
 												aria-label={`Disconnect ${name}`}
 												onClick={() => {
 													deleteConnection(dataSource.connection.id);
-													updateNodeData(node, {
-														inputs: node.inputs.filter(
-															(input) =>
-																input.id !== dataSource.connection.inputId,
-														),
-													});
 												}}
 												className="absolute top-[6px] right-[6px] size-[22px] rounded-full flex items-center justify-center text-link-muted hover:text-inverse hover:bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_20%,transparent)] transition-colors"
 												title="Remove data source"

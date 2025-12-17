@@ -1,8 +1,9 @@
 import type { ImageGenerationNode } from "@giselles-ai/protocol";
-import { useNodeGenerations, useWorkflowDesigner } from "@giselles-ai/react";
+import { useNodeGenerations } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { Maximize2 } from "lucide-react";
 import { useCallback } from "react";
+import { useAppDesignerStore } from "../../../app-designer/store/hooks";
 import { GenerateImageIcon } from "../../../icons";
 import { EmptyState } from "../../../ui/empty-state";
 import { GenerationView } from "../../../ui/generation-view";
@@ -31,10 +32,10 @@ export function GenerationPanel({
 	onExpand?: () => void;
 	isExpanded?: boolean;
 }) {
-	const { data } = useWorkflowDesigner();
+	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
 	const { currentGeneration } = useNodeGenerations({
 		nodeId: node.id,
-		origin: { type: "studio", workspaceId: data.id },
+		origin: { type: "studio", workspaceId },
 	});
 
 	const _handleGenerate = useCallback(() => {

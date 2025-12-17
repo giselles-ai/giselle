@@ -14,8 +14,9 @@ import type {
 	VariableNode,
 	WebPageNode,
 } from "@giselles-ai/protocol";
-import { type UIConnection, useWorkflowDesigner } from "@giselles-ai/react";
+import type { UIConnection } from "@giselles-ai/react";
 import { useMemo } from "react";
+import { useAppDesignerStore } from "../../../../app-designer/store/hooks";
 
 type ConnectedSource<T extends NodeBase> = {
 	output: Output;
@@ -24,9 +25,12 @@ type ConnectedSource<T extends NodeBase> = {
 };
 
 export function useConnectedSources(node: ImageGenerationNode) {
-	const { data } = useWorkflowDesigner();
+	const { nodes, connections } = useAppDesignerStore((s) => ({
+		nodes: s.nodes,
+		connections: s.connections,
+	}));
 	return useMemo(() => {
-		const connectionsToThisNode = data.connections.filter(
+		const connectionsToThisNode = connections.filter(
 			(connection) => connection.inputNode.id === node.id,
 		);
 		const connectedGeneratedTextSources: ConnectedSource<
@@ -41,7 +45,7 @@ export function useConnectedSources(node: ImageGenerationNode) {
 		const connectedAppEntrySources: ConnectedSource<AppEntryNode>[] = [];
 		const uiConnections: UIConnection[] = [];
 		for (const connection of connectionsToThisNode) {
-			const outputNode = data.nodes.find(
+			const outputNode = nodes.find(
 				(node) => node.id === connection.outputNode.id,
 			);
 			if (outputNode === undefined) {
@@ -184,5 +188,5 @@ export function useConnectedSources(node: ImageGenerationNode) {
 			action: connectedActionSources,
 			connections: uiConnections,
 		};
-	}, [node, data.connections, data.nodes]);
+	}, [connections, node, nodes]);
 }

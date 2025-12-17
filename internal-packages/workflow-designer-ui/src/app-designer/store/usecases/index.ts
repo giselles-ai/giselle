@@ -2,8 +2,6 @@ export * from "./use-add-connection";
 export * from "./use-add-node";
 export * from "./use-add-secret";
 export * from "./use-add-web-pages";
-export * from "./use-apply-edges-change";
-export * from "./use-apply-nodes-change";
 export * from "./use-clear-selection";
 export * from "./use-connect-nodes";
 export * from "./use-copy-files";

@@ -8,14 +8,18 @@ import type {
 	VariableNode,
 	VectorStoreNode,
 } from "@giselles-ai/protocol";
-import { type UIConnection, useWorkflowDesigner } from "@giselles-ai/react";
+import type { UIConnection } from "@giselles-ai/react";
 import { useMemo } from "react";
+import { useAppDesignerStore } from "../../../../app-designer/store/hooks";
 import type { ConnectedSource, DatastoreNode } from "./types";
 
 export function useConnectedSources(node: QueryNode) {
-	const { data } = useWorkflowDesigner();
+	const { nodes, connections } = useAppDesignerStore((s) => ({
+		nodes: s.nodes,
+		connections: s.connections,
+	}));
 	return useMemo(() => {
-		const connectionsToThisNode = data.connections.filter(
+		const connectionsToThisNode = connections.filter(
 			(connection) => connection.inputNode.id === node.id,
 		);
 
@@ -31,7 +35,7 @@ export function useConnectedSources(node: QueryNode) {
 
 		const uiConnections: UIConnection[] = [];
 		for (const connection of connectionsToThisNode) {
-			const outputNode = data.nodes.find(
+			const outputNode = nodes.find(
 				(node) => node.id === connection.outputNode.id,
 			);
 			if (outputNode === undefined) {
@@ -155,5 +159,5 @@ export function useConnectedSources(node: QueryNode) {
 			trigger: connectedTriggerSources,
 			connections: uiConnections,
 		};
-	}, [node, data.connections, data.nodes]);
+	}, [connections, node, nodes]);
 }
