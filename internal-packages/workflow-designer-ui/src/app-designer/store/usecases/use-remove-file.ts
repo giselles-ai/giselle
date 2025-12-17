@@ -32,9 +32,7 @@ export function useRemoveFile() {
 
 			// If the parent node is still present in state, reflect the deletion
 			if (parentNode) {
-				const currentFiles = parentNode.content.files;
-				updateFileStatus(
-					parentNode.id,
+				updateFileStatus(parentNode.id, (currentFiles) =>
 					currentFiles.filter((f) => f.id !== file.id),
 				);
 			}
