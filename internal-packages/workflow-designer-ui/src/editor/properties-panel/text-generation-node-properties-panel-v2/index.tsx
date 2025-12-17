@@ -11,8 +11,8 @@ import { useNodeGenerations, useUsageLimits } from "@giselles-ai/react";
 import { useCallback } from "react";
 import {
 	useAppDesignerStore,
-	useDeleteConnection,
 	useDeleteNode,
+	useRemoveConnectionAndInput,
 	useUpdateNodeData,
 	useUpdateNodeDataContent,
 } from "../../../app-designer";
@@ -45,7 +45,7 @@ export function TextGenerationNodePropertiesPanelV2({
 	const updateNodeData = useUpdateNodeData();
 	const updateNodeDataContent = useUpdateNodeDataContent();
 	const deleteNode = useDeleteNode();
-	const deleteConnection = useDeleteConnection();
+	const removeConnectionAndInput = useRemoveConnectionAndInput();
 	const { createAndStartGenerationRunner, isGenerating, stopGenerationRunner } =
 		useNodeGenerations({
 			nodeId: node.id,
@@ -98,9 +98,9 @@ export function TextGenerationNodePropertiesPanelV2({
 
 	const _handleDeleteConnection = useCallback(
 		(connection: Connection) => {
-			deleteConnection(connection.id);
+			removeConnectionAndInput(connection.id);
 		},
-		[deleteConnection],
+		[removeConnectionAndInput],
 	);
 	const usageLimits = useUsageLimits();
 	const userTier: LanguageModelTier = usageLimits?.featureTier ?? "free";

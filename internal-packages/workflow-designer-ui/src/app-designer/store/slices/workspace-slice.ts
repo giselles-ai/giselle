@@ -18,8 +18,8 @@ export interface WorkspaceActions {
 	updateNode: (nodeId: NodeId | string, data: Partial<NodeBase>) => void;
 	addNodeInput: (nodeId: NodeId, input: Input) => void;
 	addConnection: (connection: Connection) => void;
-	removeConnection: (connectionId: string) => void;
-	removeNode: (nodeId: NodeId | string) => void;
+	removeConnectionById: (connectionId: string) => void;
+	removeNodeById: (nodeId: NodeId | string) => void;
 	setUiNodeState: (nodeId: NodeId | string, ui: Partial<NodeUIState>) => void;
 	setUiViewport: (viewport: Viewport, options?: { save?: boolean }) => void;
 	setSelectedConnectionIds: (connectionIds: ConnectionId[]) => void;
@@ -72,11 +72,11 @@ export function createWorkspaceSlice(
 			})),
 		addConnection: (connection) =>
 			set((s) => ({ connections: [...s.connections, connection] })),
-		removeConnection: (connectionId) =>
+		removeConnectionById: (connectionId) =>
 			set((s) => ({
 				connections: s.connections.filter((c) => c.id !== connectionId),
 			})),
-		removeNode: (nodeIdToDelete) =>
+		removeNodeById: (nodeIdToDelete) =>
 			set((s) => ({
 				nodes: s.nodes.filter((n) => n.id !== NodeId.parse(nodeIdToDelete)),
 			})),

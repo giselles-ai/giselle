@@ -18,7 +18,7 @@ import {
 import { useCallback, useMemo } from "react";
 import {
 	useAppDesignerStore,
-	useDeleteConnection,
+	useRemoveConnectionAndInput,
 	useUpdateNodeData,
 	useUpdateNodeDataContent,
 } from "../../../app-designer";
@@ -37,7 +37,7 @@ export function PromptPanel({ node }: { node: ImageGenerationNode }) {
 	}));
 	const updateNodeDataContent = useUpdateNodeDataContent();
 	const updateNodeData = useUpdateNodeData();
-	const deleteConnection = useDeleteConnection();
+	const removeConnectionAndInput = useRemoveConnectionAndInput();
 	const usageLimits = useUsageLimits();
 	const userTier = usageLimits?.featureTier ?? Tier.enum.free;
 	const { error } = useToasts();
@@ -103,11 +103,11 @@ export function PromptPanel({ node }: { node: ImageGenerationNode }) {
 				const outputNode = nodes.find((n) => n.id === connection.outputNode.id);
 				if (!outputNode) continue;
 				if (!isSupportedConnection(outputNode, newInputNode).canConnect) {
-					deleteConnection(connection.id);
+					removeConnectionAndInput(connection.id);
 				}
 			}
 		},
-		[allConnections, deleteConnection, node, nodes],
+		[allConnections, removeConnectionAndInput, node, nodes],
 	);
 
 	const header = (

@@ -17,6 +17,7 @@ export * from "./use-disconnect-nodes";
 export * from "./use-duplicate-node";
 export * from "./use-is-valid-connection";
 export * from "./use-paste-node-from-clipboard";
+export * from "./use-remove-connection-and-input";
 export * from "./use-remove-file";
 export * from "./use-remove-web-page";
 export * from "./use-select-connection";

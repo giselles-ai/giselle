@@ -20,7 +20,7 @@ import useSWR from "swr";
 import {
 	useAddConnection,
 	useAppDesignerStore,
-	useDeleteConnection,
+	useRemoveConnectionAndInput,
 	useUpdateNodeData,
 } from "../../../../app-designer";
 import { useGiselle } from "../../../../app-designer/store/giselle-client-provider";
@@ -109,7 +109,7 @@ export function GitHubActionConfiguredView({
 }) {
 	const client = useGiselle();
 	const ui = useAppDesignerStore((s) => s.ui);
-	const deleteConnection = useDeleteConnection();
+	const removeConnectionAndInput = useRemoveConnectionAndInput();
 	const updateNodeData = useUpdateNodeData();
 	const { isLoading, data } = useSWR(
 		{
@@ -127,9 +127,9 @@ export function GitHubActionConfiguredView({
 
 	const handleClickRemoveButton = useCallback(
 		(connectionId: ConnectionId) => () => {
-			deleteConnection(connectionId);
+			removeConnectionAndInput(connectionId);
 		},
-		[deleteConnection],
+		[removeConnectionAndInput],
 	);
 
 	const githubActionOption = useMemo(

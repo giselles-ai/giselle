@@ -4,8 +4,8 @@ import { useNodeGenerations } from "@giselles-ai/react";
 import { useCallback, useMemo } from "react";
 import {
 	useAppDesignerStore,
-	useDeleteConnection,
 	useDeleteNode,
+	useRemoveConnectionAndInput,
 	useUpdateNodeData,
 	useUpdateNodeDataContent,
 } from "../../../app-designer";
@@ -33,7 +33,7 @@ export function TextGenerationNodePropertiesPanel({
 	const updateNodeData = useUpdateNodeData();
 	const updateNodeDataContent = useUpdateNodeDataContent();
 	const deleteNode = useDeleteNode();
-	const deleteConnection = useDeleteConnection();
+	const removeConnectionAndInput = useRemoveConnectionAndInput();
 	const { createAndStartGenerationRunner, isGenerating, stopGenerationRunner } =
 		useNodeGenerations({
 			nodeId: node.id,
@@ -88,9 +88,9 @@ export function TextGenerationNodePropertiesPanel({
 
 	const handleDeleteConnection = useCallback(
 		(connection: Connection) => {
-			deleteConnection(connection.id);
+			removeConnectionAndInput(connection.id);
 		},
-		[deleteConnection],
+		[removeConnectionAndInput],
 	);
 
 	return (

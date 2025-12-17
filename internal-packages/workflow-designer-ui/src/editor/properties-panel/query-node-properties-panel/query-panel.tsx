@@ -7,7 +7,7 @@ import { TextEditor } from "@giselles-ai/text-editor/react-internal";
 import { DatabaseZapIcon, X } from "lucide-react";
 import { useMemo } from "react";
 import {
-	useDeleteConnection,
+	useRemoveConnectionAndInput,
 	useUpdateNodeDataContent,
 } from "../../../app-designer";
 import { GitHubIcon } from "../../../icons";
@@ -146,7 +146,7 @@ function getDataSourceDisplayInfo(
 
 export function QueryPanel({ node }: { node: QueryNode }) {
 	const updateNodeDataContent = useUpdateNodeDataContent();
-	const deleteConnection = useDeleteConnection();
+	const removeConnectionAndInput = useRemoveConnectionAndInput();
 	const vectorStore = useVectorStore();
 	const documentStores = vectorStore?.documentStores ?? [];
 	const documentStoreMap = useMemo(() => {
@@ -238,7 +238,7 @@ export function QueryPanel({ node }: { node: QueryNode }) {
 												type="button"
 												aria-label={`Disconnect ${name}`}
 												onClick={() => {
-													deleteConnection(dataSource.connection.id);
+													removeConnectionAndInput(dataSource.connection.id);
 												}}
 												className="absolute top-[6px] right-[6px] size-[22px] rounded-full flex items-center justify-center text-link-muted hover:text-inverse hover:bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_20%,transparent)] transition-colors"
 												title="Remove data source"
