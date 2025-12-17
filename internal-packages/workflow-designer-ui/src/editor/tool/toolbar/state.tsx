@@ -6,6 +6,7 @@ import { createContext, type ReactNode, useContext, useState } from "react";
 import type {
 	AddNodeTool,
 	MoveTool,
+	SelectContextTool,
 	SelectEnviromentActionTool,
 	SelectFileNodeCategoryTool,
 	SelectGitHubTriggerTool,
@@ -106,6 +107,13 @@ export function selectSourceCategoryTool() {
 		action: "selectSourceCategory",
 		category: "edit",
 	} satisfies SelectSourceCategoryTool;
+}
+
+export function selectContextTool() {
+	return {
+		action: "selectContext",
+		category: "edit",
+	} satisfies SelectContextTool;
 }
 
 export function selectTriggerTool() {

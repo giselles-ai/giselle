@@ -29,6 +29,10 @@ export interface SelectSourceCategoryTool extends ToolBase {
 	category: "edit";
 	action: "selectSourceCategory";
 }
+export interface SelectContextTool extends ToolBase {
+	category: "edit";
+	action: "selectContext";
+}
 export interface SelectTriggerTool extends ToolBase {
 	category: "edit";
 	action: "selectTrigger";
@@ -59,6 +63,7 @@ export type Tool =
 	| SelectFileNodeCategoryTool
 	| SelectLanguageModelTool
 	| SelectSourceCategoryTool
+	| SelectContextTool
 	| SelectTriggerTool
 	| SelectGitHubTriggerTool
 	| SelectIntegrationTool
@@ -76,6 +81,7 @@ export function isToolAction(args: unknown): args is ToolAction {
 			args === "selectLanguageModel" ||
 			args === "selectFileNodeCategory" ||
 			args === "selectSourceCategory" ||
+			args === "selectContext" ||
 			args === "selectTrigger" ||
 			args === "selectGithubTrigger" ||
 			args === "selectIntegration" ||
