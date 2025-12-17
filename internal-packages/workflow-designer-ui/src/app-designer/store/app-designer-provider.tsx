@@ -1,3 +1,5 @@
+"use client";
+
 import type { LanguageModelProvider } from "@giselles-ai/language-model";
 import type { Workspace } from "@giselles-ai/protocol";
 import type { GiselleClient } from "@giselles-ai/react";
