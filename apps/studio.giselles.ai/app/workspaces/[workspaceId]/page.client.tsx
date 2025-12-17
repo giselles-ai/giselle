@@ -5,7 +5,7 @@ import {
 	Editor,
 } from "@giselle-internal/workflow-designer-ui";
 import type { Integration } from "@giselles-ai/giselle";
-import type { Trigger } from "@giselles-ai/protocol";
+import type { Trigger, Workspace } from "@giselles-ai/protocol";
 import {
 	useGiselle,
 	WorkspaceProvider,
