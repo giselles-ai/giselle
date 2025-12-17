@@ -10,7 +10,6 @@ import {
 	DialogTrigger,
 } from "@giselle-internal/ui/dialog";
 import type { LanguageModelTool } from "@giselles-ai/language-model-registry";
-import { useGiselle, useWorkflowDesigner } from "@giselles-ai/react";
 import {
 	type ComponentProps,
 	type PropsWithChildren,
@@ -18,6 +17,8 @@ import {
 	useState,
 	useTransition,
 } from "react";
+import { useGiselle } from "../../../../app-designer/store/giselle-client-provider";
+import { useAppDesignerStore } from "../../../../app-designer/store/hooks";
 import { useWorkspaceSecrets } from "../../../lib/use-workspace-secrets";
 import {
 	ToolConfigurationForm,
@@ -57,7 +58,7 @@ export function ToolConfigurationDialog({
 		currentConfig ?? {},
 	);
 	const client = useGiselle();
-	const { data: workspace } = useWorkflowDesigner();
+	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
 	const [isPending, startTransition] = useTransition();
 
 	// Collect all secret tags from secret-type options
@@ -109,7 +110,7 @@ export function ToolConfigurationDialog({
 							// Create secret if token is provided
 							if (value.tokenInput.token) {
 								const result = await client.addSecret({
-									workspaceId: workspace.id,
+									workspaceId,
 									label: value.tokenInput.label ?? "",
 									value: value.tokenInput.token,
 									tags: option.secretTags,

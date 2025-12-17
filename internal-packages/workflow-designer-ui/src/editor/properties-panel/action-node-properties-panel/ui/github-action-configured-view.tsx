@@ -12,11 +12,18 @@ import type {
 	NodeLike,
 	OutputId,
 } from "@giselles-ai/protocol";
-import { useGiselle, useWorkflowDesigner } from "@giselles-ai/react";
+import { isSupportedConnection } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { PlusIcon, TriangleAlert, XIcon } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import useSWR from "swr";
+import { useGiselle } from "../../../../app-designer/store/giselle-client-provider";
+import { useAppDesignerStore } from "../../../../app-designer/store/hooks";
+import {
+	useAddConnection,
+	useDeleteConnection,
+	useUpdateNodeData,
+} from "../../../../app-designer/store/usecases";
 // Import icons to display next to Event Type
 import {
 	DiscussionCommentCreatedIcon,
@@ -101,11 +108,9 @@ export function GitHubActionConfiguredView({
 	isGenerating: boolean;
 }) {
 	const client = useGiselle();
-	const {
-		deleteConnection,
-		updateNodeData,
-		data: { ui },
-	} = useWorkflowDesigner();
+	const ui = useAppDesignerStore((s) => s.ui);
+	const deleteConnection = useDeleteConnection();
+	const updateNodeData = useUpdateNodeData();
 	const { isLoading, data } = useSWR(
 		{
 			installationId: state.installationId,
@@ -282,11 +287,12 @@ function SelectOutputPopover({
 	nodeId: NodeId;
 	input: InputWithConnectedOutput;
 }) {
-	const { data, addConnection, isSupportedConnection } = useWorkflowDesigner();
+	const nodes = useAppDesignerStore((s) => s.nodes);
+	const addConnection = useAddConnection();
 
 	const node = useMemo(
-		() => data.nodes.find((n) => n.id === nodeId),
-		[data.nodes, nodeId],
+		() => nodes.find((n) => n.id === nodeId),
+		[nodes, nodeId],
 	);
 
 	const groupedOutputs = useMemo(() => {
@@ -302,7 +308,7 @@ function SelectOutputPopover({
 			return [];
 		}
 
-		for (const currentNode of data.nodes) {
+		for (const currentNode of nodes) {
 			if (currentNode.id === nodeId) {
 				continue;
 			}
@@ -362,7 +368,7 @@ function SelectOutputPopover({
 			{ label: "GitHub", nodes: githubNodes },
 			{ label: "Other", nodes: otherNodes },
 		].filter((group) => group.nodes.length > 0);
-	}, [data.nodes, nodeId, node, isSupportedConnection]);
+	}, [nodeId, node, nodes]);
 
 	const handleSelectOutput = useCallback(
 		(outputNode: Node, outputId: OutputId) => {

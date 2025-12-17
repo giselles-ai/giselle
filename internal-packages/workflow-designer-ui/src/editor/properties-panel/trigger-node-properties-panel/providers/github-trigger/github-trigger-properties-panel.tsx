@@ -5,11 +5,7 @@ import {
 	type TriggerId,
 	type TriggerNode,
 } from "@giselles-ai/protocol";
-import {
-	useGiselle,
-	useIntegration,
-	useWorkflowDesigner,
-} from "@giselles-ai/react";
+import { useIntegration } from "@giselles-ai/react";
 import {
 	type GitHubEventId,
 	githubEvents,
@@ -28,6 +24,8 @@ import {
 	useState,
 	useTransition,
 } from "react";
+import { useGiselle } from "../../../../../app-designer/store/giselle-client-provider";
+import { useUpdateNodeData } from "../../../../../app-designer/store/usecases";
 import { Tooltip } from "../../../../../ui/tooltip";
 import { isPromptEmpty as isEmpty } from "../../../../lib/validate-prompt";
 import { GitHubInvalidCredential, SelectRepository } from "../../../ui";
@@ -319,7 +317,7 @@ export function Installed({
 			setSelectedInstallationId(null);
 		}
 	}, [step.state]);
-	const { data: workspace, updateNodeData } = useWorkflowDesigner();
+	const updateNodeData = useUpdateNodeData();
 	const selectedInstallationRepositories = useMemo(
 		() =>
 			(selectedInstallationId === null

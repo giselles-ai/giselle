@@ -1,19 +1,30 @@
 import type { ActionNode, Node } from "@giselles-ai/protocol";
-import { useNodeGenerations, useWorkflowDesigner } from "@giselles-ai/react";
+import { useNodeGenerations } from "@giselles-ai/react";
 import { useCallback } from "react";
+import {
+	useAppDesignerStore,
+	useWorkspaceActions,
+} from "../../../app-designer/store/hooks";
+import {
+	useDeleteNode,
+	useUpdateNodeData,
+} from "../../../app-designer/store/usecases";
 import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
 import { NodePanelHeader } from "../ui/node-panel-header";
 import { GitHubActionPropertiesPanel } from "./github-action-properties-panel";
 import { useConnectedInputs } from "./lib";
 
 export function ActionNodePropertiesPanel({ node }: { node: ActionNode }) {
-	const { data, updateNodeData, deleteNode, setUiNodeState } =
-		useWorkflowDesigner();
+	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
+	const connections = useAppDesignerStore((s) => s.connections);
+	const updateNodeData = useUpdateNodeData();
+	const deleteNode = useDeleteNode();
+	const setUiNodeState = useWorkspaceActions((a) => a.setUiNodeState);
 	const { isValid, connectedInputs } = useConnectedInputs(node.id, node.inputs);
 	const { createAndStartGenerationRunner, isGenerating, stopGenerationRunner } =
 		useNodeGenerations({
 			nodeId: node.id,
-			origin: { type: "studio", workspaceId: data.id },
+			origin: { type: "studio", workspaceId },
 		});
 	const handleClick = useCallback(() => {
 		if (isGenerating) {
@@ -34,13 +45,13 @@ export function ActionNodePropertiesPanel({ node }: { node: ActionNode }) {
 		createAndStartGenerationRunner({
 			origin: {
 				type: "studio",
-				workspaceId: data.id,
+				workspaceId,
 			},
 			operationNode: node,
 			sourceNodes: connectedInputs
 				.map((input) => input.connectedOutput?.node as Node)
 				.filter((node) => node !== null),
-			connections: data.connections.filter(
+			connections: connections.filter(
 				(connection) => connection.inputNode.id === node.id,
 			),
 		});
@@ -50,10 +61,10 @@ export function ActionNodePropertiesPanel({ node }: { node: ActionNode }) {
 		isValid,
 		setUiNodeState,
 		node,
-		data.id,
-		data.connections,
+		connections,
 		createAndStartGenerationRunner,
 		connectedInputs,
+		workspaceId,
 	]);
 	return (
 		<PropertiesPanelRoot>

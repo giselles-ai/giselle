@@ -11,8 +11,9 @@ import {
 	InputId,
 	OutputId,
 } from "@giselles-ai/protocol";
-import { useIntegration, useWorkflowDesigner } from "@giselles-ai/react";
+import { useIntegration } from "@giselles-ai/react";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { useUpdateNodeData } from "../../../app-designer/store/usecases";
 import { GitHubIcon, SpinnerIcon } from "../../../icons";
 // Import icons from GitHub trigger components
 import {
@@ -358,7 +359,7 @@ function Installed({
 			state: "select-repository",
 		},
 	);
-	const { updateNodeData } = useWorkflowDesigner();
+	const updateNodeData = useUpdateNodeData();
 	const [selectedInstallationId, setSelectedInstallationId] = useState<
 		number | null
 	>(null);

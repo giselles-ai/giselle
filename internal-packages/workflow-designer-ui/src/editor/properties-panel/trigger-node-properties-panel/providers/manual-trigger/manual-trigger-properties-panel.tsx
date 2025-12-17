@@ -8,12 +8,7 @@ import {
 	OutputId,
 	type TriggerNode,
 } from "@giselles-ai/protocol";
-import {
-	useFeatureFlag,
-	useGiselle,
-	useTrigger,
-	useWorkflowDesigner,
-} from "@giselles-ai/react";
+import { useFeatureFlag, useTrigger } from "@giselles-ai/react";
 import { TrashIcon } from "lucide-react";
 import {
 	type FormEventHandler,
@@ -21,6 +16,9 @@ import {
 	useState,
 	useTransition,
 } from "react";
+import { useGiselle } from "../../../../../app-designer/store/giselle-client-provider";
+import { useAppDesignerStore } from "../../../../../app-designer/store/hooks";
+import { useUpdateNodeData } from "../../../../../app-designer/store/usecases";
 import { SpinnerIcon } from "../../../../../icons";
 import { SettingDetail, SettingLabel } from "../../../ui/setting-label";
 import { SettingRow } from "../../../ui/setting-row";
@@ -33,7 +31,8 @@ const TYPE_OPTIONS = [
 ];
 
 export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
-	const { data: workspace, updateNodeData } = useWorkflowDesigner();
+	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
+	const updateNodeData = useUpdateNodeData();
 	const client = useGiselle();
 	const [isPending, startTransition] = useTransition();
 	const [parameters, setParameters] = useState<ManualTriggerParameter[]>([]);
@@ -87,7 +86,7 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 				const { triggerId } = await client.configureTrigger({
 					trigger: {
 						nodeId: node.id,
-						workspaceId: workspace?.id,
+						workspaceId,
 						enable: true,
 						configuration: {
 							provider: "manual",
@@ -103,7 +102,7 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 				await callbacks?.triggerUpdate?.({
 					id: triggerId,
 					nodeId: node.id,
-					workspaceId: workspace?.id,
+					workspaceId,
 					enable: true,
 					configuration: {
 						provider: "manual",
@@ -133,7 +132,7 @@ export function ManualTriggerPropertiesPanel({ node }: { node: TriggerNode }) {
 			staged,
 			client,
 			node,
-			workspace?.id,
+			workspaceId,
 			updateNodeData,
 			callbacks?.triggerUpdate,
 		],

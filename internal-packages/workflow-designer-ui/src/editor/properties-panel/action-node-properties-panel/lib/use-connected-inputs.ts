@@ -1,6 +1,6 @@
 import type { Input, NodeId } from "@giselles-ai/protocol";
-import { useWorkflowDesigner } from "@giselles-ai/react";
 import { useMemo } from "react";
+import { useAppDesignerStore } from "../../../../app-designer/store/hooks";
 import type { InputWithConnectedOutput } from "./connected-outputs";
 
 /**
@@ -10,11 +10,14 @@ import type { InputWithConnectedOutput } from "./connected-outputs";
  * @returns Object containing inputs with their connection information and validation status
  */
 export function useConnectedInputs(nodeId: NodeId, inputs: Input[]) {
-	const { data: workspace } = useWorkflowDesigner();
+	const { nodes, connections } = useAppDesignerStore((s) => ({
+		nodes: s.nodes,
+		connections: s.connections,
+	}));
 
 	const connectedInputs = useMemo(() => {
 		const result: InputWithConnectedOutput[] = [];
-		const connectionsToThisNode = workspace.connections.filter(
+		const connectionsToThisNode = connections.filter(
 			(connection) => connection.inputNode.id === nodeId,
 		);
 
@@ -22,7 +25,7 @@ export function useConnectedInputs(nodeId: NodeId, inputs: Input[]) {
 			const connectedConnection = connectionsToThisNode.find(
 				(connection) => connection.inputId === input.id,
 			);
-			const connectedNode = workspace.nodes.find(
+			const connectedNode = nodes.find(
 				(node) => node.id === connectedConnection?.outputNode.id,
 			);
 			const connectedOutput = connectedNode?.outputs.find(
@@ -50,7 +53,7 @@ export function useConnectedInputs(nodeId: NodeId, inputs: Input[]) {
 			});
 		}
 		return result;
-	}, [inputs, nodeId, workspace]);
+	}, [connections, inputs, nodeId, nodes]);
 
 	const missingRequiredConnections = useMemo(() => {
 		return connectedInputs.filter(
