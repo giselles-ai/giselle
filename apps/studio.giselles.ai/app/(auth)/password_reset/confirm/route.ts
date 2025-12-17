@@ -22,7 +22,8 @@ export async function GET(request: NextRequest) {
 			token_hash,
 		});
 		if (data.session == null) {
-			throw new Error("No session returned");
+			redirectTo.pathname = "/password_reset";
+			return NextResponse.redirect(redirectTo);
 		}
 		await supabase.auth.setSession(data.session);
 		if (!error) {
