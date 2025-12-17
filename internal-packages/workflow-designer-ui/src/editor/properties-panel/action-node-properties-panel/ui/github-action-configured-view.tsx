@@ -287,7 +287,10 @@ function SelectOutputPopover({
 	nodeId: NodeId;
 	input: InputWithConnectedOutput;
 }) {
-	const nodes = useAppDesignerStore((s) => s.nodes);
+	const { nodes, connections } = useAppDesignerStore((s) => ({
+		nodes: s.nodes,
+		connections: s.connections,
+	}));
 	const addConnection = useAddConnection();
 
 	const node = useMemo(
@@ -308,7 +311,14 @@ function SelectOutputPopover({
 			return [];
 		}
 
-		for (const currentNode of nodes) {
+		const connectedNodes = nodes.filter((maybeConnectNode) =>
+			connections.some(
+				(connection) =>
+					connection.inputNode.id === nodeId &&
+					connection.outputNode.id === maybeConnectNode.id,
+			),
+		);
+		for (const currentNode of connectedNodes) {
 			if (currentNode.id === nodeId) {
 				continue;
 			}
@@ -368,7 +378,7 @@ function SelectOutputPopover({
 			{ label: "GitHub", nodes: githubNodes },
 			{ label: "Other", nodes: otherNodes },
 		].filter((group) => group.nodes.length > 0);
-	}, [nodeId, node, nodes]);
+	}, [nodeId, node, nodes, connections]);
 
 	const handleSelectOutput = useCallback(
 		(outputNode: Node, outputId: OutputId) => {
