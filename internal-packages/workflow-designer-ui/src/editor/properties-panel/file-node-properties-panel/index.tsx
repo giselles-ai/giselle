@@ -1,5 +1,8 @@
 import type { FileCategory, FileNode } from "@giselles-ai/protocol";
-import { useWorkflowDesigner } from "@giselles-ai/react";
+import {
+	useDeleteNode,
+	useUpdateNodeData,
+} from "../../../app-designer/store/usecases";
 import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
 import { NodePanelHeader } from "../ui/node-panel-header";
 import { FilePanel } from "./file-panel";
@@ -21,7 +24,8 @@ const fileType: Record<FileCategory, FileTypeConfig> = {
 };
 
 export function FileNodePropertiesPanel({ node }: { node: FileNode }) {
-	const { updateNodeData, deleteNode } = useWorkflowDesigner();
+	const updateNodeData = useUpdateNodeData();
+	const deleteNode = useDeleteNode();
 
 	return (
 		<PropertiesPanelRoot>

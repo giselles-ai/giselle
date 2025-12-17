@@ -8,7 +8,7 @@
 
 - [ ] Ensure editor subtree is wrapped with `AppDesignerProvider` (and it receives `initialWorkspace`, `giselleClient`, `llmProviders`)
   - [ ] Replace `useGiselle` imports from `@giselles-ai/react` with `app-designer/store/useGiselle` where needed
-  - [ ] Replace `useWorkflowDesignerStore` usage with `useAppDesignerStore` selectors
+  - [x] Replace `useWorkflowDesignerStore` usage with `useAppDesignerStore` selectors
 
 ---
 
@@ -65,25 +65,22 @@ See `internal-packages/workflow-designer-ui/src/app-designer/store/_handoff.md` 
 
 ### Workspace shell / canvas (XYFlow)
 
-- [ ] `src/editor/v2/components/v2-container.tsx`
-  - [ ] Replace `useWorkflowDesignerStore(...)` selectors with `useAppDesignerStore(...)`
+- [x] `src/editor/v2/components/v2-container.tsx`
+  - [x] Replace `useWorkflowDesignerStore(...)` selectors with `useAppDesignerStore(...)`
   - [ ] Replace `workspaceActions` access with app-designer primitives + usecases:
-    - [ ] `setUiNodeState` -> `useWorkspaceActions`
-    - [ ] `setUiViewport` -> `useSetViewport()`
-    - [ ] `setCurrentShortcutScope` -> `useSetCurrentShortcutScope()`
-    - [ ] `updateNodeData` -> `useUpdateNodeData()`
-    - [ ] `deleteNode` -> `useDeleteNode()`
-    - [ ] `deleteConnection` -> `useDeleteConnection()`
-    - [ ] `addNode` -> `useAddNode()`
-    - [ ] connect logic (`createConnectionWithInput`, `isSupportedConnection`, `isValidConnection`) -> `useConnectNodes()` + `useIsValidConnection()`
-    - [ ] selection (`selectConnection`/`deselectConnection`) -> `useApplyEdgesChange()` / `useSetSelectedConnectionIds()`
+    - [x] `setUiNodeState` -> `useWorkspaceActions`
+    - [x] `setUiViewport` -> `useWorkspaceActions` (direct primitive in UI glue)
+    - [x] `setCurrentShortcutScope` -> `useSetCurrentShortcutScope()`
+    - [x] `updateNodeData` -> `useUpdateNodeData()`
+    - [x] `deleteNode` -> `useDeleteNode()`
+    - [x] `deleteConnection` -> `useDeleteConnection()`
+    - [x] `addNode` -> `useAddNode()`
+    - [x] connect logic kept in `v2-container.tsx` as UI glue (avoid importing `@xyflow/react` from store/usecases)
+    - [x] selection kept in `v2-container.tsx` as UI glue (select/deselect/remove)
   - [ ] Prefer switching handlers to:
-    - [ ] `onConnect` -> `useConnectNodes()`
-    - [ ] `isValidConnection` -> `useIsValidConnection()`
-    - [ ] `onNodesChange` -> `useApplyNodesChange()`
-    - [ ] `onEdgesChange` -> `useApplyEdgesChange()`
-    - [ ] `onNodeClick` -> `useSelectSingleNode()`
-    - [ ] `onPaneClick` -> `useClearSelection()`
+    - [x] Implemented in `v2-container.tsx` (UI glue) + app-designer primitives/usecases
+    - [x] `onNodeClick` -> `useSelectSingleNode()`
+    - [x] `onPaneClick` -> `useClearSelection()`
 
 ### Header / workspace name
 
@@ -93,9 +90,9 @@ See `internal-packages/workflow-designer-ui/src/app-designer/store/_handoff.md` 
 
 ### Run button (highlight UI only)
 
-- [ ] `src/editor/v2/components/run-button.tsx`
-  - [ ] `data` -> `useAppDesignerStore((s) => ({ workspaceId: s.workspaceId, nodes: s.nodes, connections: s.connections }))`
-  - [ ] `setUiNodeState` -> `useWorkspaceActions((a) => a.setUiNodeState)`
+- [x] `src/editor/v2/components/run-button.tsx`
+  - [x] `data` -> `useAppDesignerStore(...)`
+  - [x] `setUiNodeState` -> `useWorkspaceActions((a) => a.setUiNodeState)`
 
 ### Toolbar (LLM providers)
 
@@ -131,16 +128,18 @@ See `internal-packages/workflow-designer-ui/src/app-designer/store/_handoff.md` 
 
 ### Node property panels: common (rename/delete)
 
-- [ ] `src/editor/properties-panel/vector-store/index.tsx`
-- [ ] `src/editor/properties-panel/trigger-node-properties-panel/index.tsx`
-- [ ] `src/editor/properties-panel/file-node-properties-panel/index.tsx`
-- [ ] `src/editor/properties-panel/text-node-properties-panel/index.tsx`
-- [ ] `src/editor/properties-panel/query-node-properties-panel/index.tsx`
-- [ ] `src/editor/properties-panel/image-generation-node-properties-panel/index.tsx`
-  - [ ] `updateNodeData` -> `useUpdateNodeData()`
-  - [ ] `deleteNode` -> `useDeleteNode()`
-  - [ ] `data.id` (origin/workspaceId) -> `useAppDesignerStore((s) => s.workspaceId)`
-  - [ ] `data.connections` -> `useAppDesignerStore((s) => s.connections)`
+- [x] `src/editor/properties-panel/vector-store/index.tsx`
+- [x] `src/editor/properties-panel/vector-store/document/index.tsx`
+- [x] `src/editor/properties-panel/vector-store/github/index.tsx`
+- [x] `src/editor/properties-panel/trigger-node-properties-panel/index.tsx`
+- [x] `src/editor/properties-panel/file-node-properties-panel/index.tsx`
+- [x] `src/editor/properties-panel/text-node-properties-panel/index.tsx`
+- [x] `src/editor/properties-panel/query-node-properties-panel/index.tsx` (root panel only)
+- [x] `src/editor/properties-panel/image-generation-node-properties-panel/index.tsx` (root panel only)
+  - [x] `updateNodeData` -> `useUpdateNodeData()`
+  - [x] `deleteNode` -> `useDeleteNode()`
+  - [x] `data.id` (origin/workspaceId) -> `useAppDesignerStore((s) => s.workspaceId)`
+  - [x] `data.connections` -> `useAppDesignerStore((s) => s.connections)`
 
 ### Text generation (connections cleanup)
 

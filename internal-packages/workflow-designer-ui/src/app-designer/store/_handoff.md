@@ -13,7 +13,9 @@
   - 複合操作（delete node + connection掃除、inputs掃除等）は **usecases** に寄せる
 
 - **Usecase は “UI の意図（intent-unit）”**
-  - XYFlow handlers、Copy/Paste/Duplicate、Secrets/WebPage、File I/O 等は usecase に集約
+  - Copy/Paste/Duplicate、Secrets/WebPage、File I/O 等は usecase に集約
+  - **XYFlow の event handler（`onNodesChange`/`onEdgesChange`/`onMoveEnd` 等）は glue/adapter なので、UI（例: `v2-container.tsx`）側に置いて良い**
+    - 「usecase に `@xyflow/react` を import したくない」方針とも相性が良い
 
 - **外部依存は注入（DI）**
   - `GiselleClient` は `GiselleClientProvider` を作り、usecase 側は `useGiselle()` を使う
@@ -101,12 +103,7 @@
 
 ### 1) 残っている `useWorkflowDesignerStore` の除去（局所的で安全）
 
-grep で残存:
-- `src/editor/properties-panel/text-generation-node-properties-panel/model/model-settings.tsx`
-- `src/editor/properties-panel/text-generation-node-properties-panel-v2/node-context/use-node-context.ts`
-- `src/editor/properties-panel/content-generation-node-properties-panel/node-context/use-node-context.ts`
-
-→ いずれも `useAppDesignerStore` + app-designer usecases に置換する。
+✅ 完了（editor 配下の `useWorkflowDesignerStore` は 0 件）
 
 ### 2) 各 Properties Panel の `useWorkflowDesigner()` を usecases に置換
 
@@ -125,10 +122,9 @@ app-designer の usecases（`useAddSecret/useDeleteSecretAndCleanupNodes/useAddW
 
 ### 4) 最後に V2 canvas（`v2-container.tsx`）
 
-ここは影響大なので最後に回す。
-移行方針は:
-- `useWorkflowDesignerStore + workspaceActions` の組を捨てる
-- `useAppDesignerStore` selector + `useApplyNodesChange/useApplyEdgesChange/useConnectNodes/useIsValidConnection/useClearSelection/useSelectSingleNode/useSetViewport` へ置換
+✅ 完了
+- `useWorkflowDesignerStore + workspaceActions` を除去し、`useAppDesignerStore` + primitives/usecases に移行済み
+- XYFlow handlers は **usecase ではなく `v2-container.tsx` 内に実装**（glue として閉じ込める）
 
 ---
 

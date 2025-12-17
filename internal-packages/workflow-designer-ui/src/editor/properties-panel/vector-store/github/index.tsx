@@ -9,10 +9,11 @@ import {
 	EMBEDDING_PROFILES,
 	isEmbeddingProfileId,
 } from "@giselles-ai/protocol";
-import { useVectorStore, useWorkflowDesigner } from "@giselles-ai/react";
+import { useVectorStore } from "@giselles-ai/react";
 import { Info } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useUpdateNodeData } from "../../../../app-designer/store/usecases";
 import { TriangleAlert } from "../../../../icons";
 import { useGitHubVectorStoreStatus } from "../../../lib/use-github-vector-store-status";
 import { SettingDetail, SettingLabel } from "../../ui/setting-label";
@@ -24,7 +25,7 @@ type GitHubVectorStoreNodePropertiesPanelProps = {
 export function GitHubVectorStoreNodePropertiesPanel({
 	node,
 }: GitHubVectorStoreNodePropertiesPanelProps) {
-	const { updateNodeData } = useWorkflowDesigner();
+	const updateNodeData = useUpdateNodeData();
 	const vectorStore = useVectorStore();
 	const settingPath = vectorStore?.githubSettingPath;
 

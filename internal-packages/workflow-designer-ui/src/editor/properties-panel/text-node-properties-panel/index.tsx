@@ -1,13 +1,18 @@
 import type { TextNode } from "@giselles-ai/protocol";
-import { useWorkflowDesigner } from "@giselles-ai/react";
 import { TextEditor } from "@giselles-ai/text-editor/react";
 import { useRef } from "react";
+import {
+	useDeleteNode,
+	useUpdateNodeData,
+	useUpdateNodeDataContent,
+} from "../../../app-designer/store/usecases";
 import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
 import { NodePanelHeader } from "../ui/node-panel-header";
 
 export function TextNodePropertiesPanel({ node }: { node: TextNode }) {
-	const { updateNodeDataContent, updateNodeData, deleteNode } =
-		useWorkflowDesigner();
+	const updateNodeDataContent = useUpdateNodeDataContent();
+	const updateNodeData = useUpdateNodeData();
+	const deleteNode = useDeleteNode();
 
 	const containerRef = useRef<HTMLDivElement>(null);
 
