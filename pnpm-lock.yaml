@@ -1347,15 +1347,9 @@ importers:
       '@giselles-ai/language-model':
         specifier: workspace:^
         version: link:../language-model
-      '@giselles-ai/node-registry':
-        specifier: workspace:*
-        version: link:../node-registry
       '@giselles-ai/stream':
         specifier: workspace:*
         version: link:../stream
-      '@giselles-ai/workspace-utils':
-        specifier: workspace:*
-        version: link:../workspace-utils
       ai:
         specifier: 'catalog:'
         version: 5.0.101(zod@4.1.12)
