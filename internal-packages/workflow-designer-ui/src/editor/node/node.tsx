@@ -575,7 +575,7 @@ export function NodeComponent({
 	);
 }
 
-export function InputOutput({
+function InputOutput({
 	node,
 	connectedInputIds = [],
 	connectedOutputIds = [],
