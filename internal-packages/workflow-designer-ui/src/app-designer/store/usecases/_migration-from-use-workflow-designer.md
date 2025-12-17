@@ -81,9 +81,9 @@
 
 ### Header / workspace name
 
-- [ ] `src/editor/v2/components/v2-header.tsx`
-  - [ ] `data.name` -> `useAppDesignerStore((s) => s.name)`
-  - [ ] `updateName` -> `useUpdateWorkspaceName()`
+- [x] `src/editor/v2/components/v2-header.tsx`
+  - [x] `data.name` -> `useAppDesignerStore((s) => s.name)`
+  - [x] `updateName` -> `useUpdateWorkspaceName()`
 
 ### Run button (highlight UI only)
 
@@ -93,24 +93,29 @@
 
 ### Toolbar (LLM providers)
 
-- [ ] `src/editor/tool/toolbar/toolbar.tsx`
-  - [ ] `llmProviders` -> `useAppDesignerStore((s) => s.llmProviders)`
-  - [ ] `data: workspace` -> `useAppDesignerStore((s) => ({ nodes: s.nodes }))` (or `s.nodes`)
+- [x] `src/editor/tool/toolbar/toolbar.tsx`
+  - [x] `llmProviders` -> `useAppDesignerStore((s) => s.llmProviders)`
+  - [x] `data: workspace` -> `useAppDesignerStore((s) => ({ nodes: s.nodes }))` (or `s.nodes`)
 
 ### Context menu / clipboard / duplicate
 
-- [ ] `src/editor/context-menu/index.tsx`
-  - [ ] `deleteNode` -> `useDeleteNode()`
-  - [ ] (after migrating `useNodeManipulation`) ensure it no longer relies on `useWorkflowDesigner`
+- [x] `src/editor/context-menu/index.tsx`
+  - [x] `deleteNode` -> `useDeleteNode()`
+  - [x] (after migrating `useNodeManipulation`) ensure it no longer relies on `useWorkflowDesigner`
 
-- [ ] `src/editor/node/use-node-manipulation.ts`
-  - [ ] Replace clipboard state + actions:
-    - [ ] `copiedNode/setCopiedNode` -> `clipboardNode/setClipboardNode` (or `useCopyNodeToClipboard`)
-    - [ ] `copyNode` -> `useCopyNode()`
-    - [ ] `paste` -> `usePasteNodeFromClipboard()`
-    - [ ] `duplicate` -> `useDuplicateNode()`
-  - [ ] `setUiNodeState` -> `useWorkspaceActions((a) => a.setUiNodeState)`
-  - [ ] `copyFiles` -> `useCopyFiles()`
+- [x] `src/editor/node/use-node-manipulation.ts`
+  - [x] Replace clipboard state + actions:
+    - [x] `copiedNode/setCopiedNode` -> `clipboardNode/setClipboardNode` (or `useCopyNodeToClipboard`)
+    - [x] `copyNode` -> `useCopyNode()`
+    - [x] `paste` -> `usePasteNodeFromClipboard()`
+    - [x] `duplicate` -> `useDuplicateNode()`
+  - [x] `setUiNodeState` -> `useWorkspaceActions((a) => a.setUiNodeState)`
+  - [x] `copyFiles` -> `useCopyFiles()`
+
+### Keyboard shortcuts (scope gating)
+
+- [x] `src/editor/hooks/use-keyboard-shortcuts.ts`
+  - [x] `data.ui.currentShortcutScope` -> `useAppDesignerStore((s) => s.ui.currentShortcutScope)`
 
 ### Properties panel root (selection + focus)
 

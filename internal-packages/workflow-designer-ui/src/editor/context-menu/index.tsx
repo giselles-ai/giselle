@@ -1,8 +1,8 @@
 import { Button } from "@giselle-internal/ui/button";
 import { PopoverContent } from "@giselle-internal/ui/popover";
 import { useToasts } from "@giselle-internal/ui/toast";
-import { useWorkflowDesigner } from "@giselles-ai/react";
 import { useCallback } from "react";
+import { useDeleteNode } from "../../app-designer/store/usecases";
 import { useNodeManipulation } from "../node";
 import type { ContextMenuProps } from "./types";
 
@@ -15,7 +15,7 @@ export function ContextMenu({
 	onClose,
 }: ContextMenuProps) {
 	const { duplicate: duplicateNode } = useNodeManipulation();
-	const { deleteNode } = useWorkflowDesigner();
+	const deleteNode = useDeleteNode();
 	const toast = useToasts();
 
 	const handleDuplicate = useCallback(() => {

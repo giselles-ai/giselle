@@ -1,6 +1,6 @@
-import { useWorkflowDesigner } from "@giselles-ai/react";
 import { useKeyPress } from "@xyflow/react";
 import { useCallback, useEffect, useRef } from "react";
+import { useAppDesignerStore } from "../../app-designer/store/hooks";
 import { useNodeManipulation } from "../node";
 import {
 	moveTool,
@@ -54,8 +54,10 @@ function useKeyAction(
 
 function useToolAction(key: string, toolFunction: () => Tool) {
 	const toolbar = useToolbar();
-	const { data } = useWorkflowDesigner();
-	const isCanvasFocused = data.ui.currentShortcutScope === "canvas";
+	const currentShortcutScope = useAppDesignerStore(
+		(s) => s.ui.currentShortcutScope,
+	);
+	const isCanvasFocused = currentShortcutScope === "canvas";
 	const canUseToolShortcuts = isCanvasFocused && !!toolbar;
 
 	useKeyAction(
@@ -72,7 +74,6 @@ interface UseKeyboardShortcutsOptions {
 export function useKeyboardShortcuts(
 	options: UseKeyboardShortcutsOptions = {},
 ) {
-	const { data } = useWorkflowDesigner();
 	const {
 		copy: handleCopy,
 		paste: handlePaste,
@@ -80,9 +81,11 @@ export function useKeyboardShortcuts(
 	} = useNodeManipulation();
 	const { onGenerate } = options;
 
-	const isCanvasFocused = data.ui.currentShortcutScope === "canvas";
-	const isPropertiesPanelFocused =
-		data.ui.currentShortcutScope === "properties-panel";
+	const currentShortcutScope = useAppDesignerStore(
+		(s) => s.ui.currentShortcutScope,
+	);
+	const isCanvasFocused = currentShortcutScope === "canvas";
+	const isPropertiesPanelFocused = currentShortcutScope === "properties-panel";
 
 	// Tool shortcuts using the simplified hook
 	useToolAction("t", selectTriggerTool);
