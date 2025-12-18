@@ -1,11 +1,10 @@
 import { StatusBadge } from "@giselle-internal/ui/status-badge";
-import type { ParametersInput, Task, TaskId } from "@giselles-ai/protocol";
+import type { Task, TaskId } from "@giselles-ai/protocol";
 import { ClipboardList } from "lucide-react";
 import Link from "next/link";
 import { createSearchParamsCache, parseAsInteger } from "nuqs/server";
 import { giselle } from "@/app/giselle";
 import { db } from "@/db";
-import { logger } from "@/lib/logger";
 import { fetchCurrentTeam } from "@/services/teams/fetch-current-team";
 
 interface UITaskListAppOrigin {
@@ -24,41 +23,6 @@ interface UITaskListRow {
 	finishedAt: number;
 	status: Task["status"];
 	origin: UITaskListOrigin;
-	input: ParametersInput | null;
-}
-
-/**
- * Since the input for executing a Task is not stored in the Task itself
- * but in the Generation, we retrieve it from the Generation of the first Step
- * associated with the Task.
- */
-async function getTaskInput(taskId: TaskId) {
-	const task = await giselle.getTask({ taskId });
-	const firstStep = task.sequences[0]?.steps?.[0];
-	if (firstStep === undefined) {
-		logger.warn(`Task ${taskId} has no steps`);
-		return null;
-	}
-	const firstStepGeneration = await giselle.getGeneration(
-		firstStep.generationId,
-	);
-	if (firstStepGeneration === undefined) {
-		logger.warn(`Task ${taskId}, Step ${firstStep.id} has no generation`);
-		return null;
-	}
-	const inputs = firstStepGeneration?.context.inputs;
-
-	// inputs is an optional array, but in the Task use case it should be
-	// an array with length 1, so log a warning if it's different
-	if (inputs?.length !== 1) {
-		return null;
-	}
-	const firstInput = inputs[0];
-	// github-webhook-event is not expected in this Task use case
-	if (firstInput.type !== "parameters") {
-		return null;
-	}
-	return firstInput;
 }
 
 const searchParamsCache = createSearchParamsCache({
@@ -76,26 +40,6 @@ function clampInt(value: number, { min, max }: { min: number; max: number }) {
 
 function formatTimestamp(ms: number) {
 	return new Date(ms).toISOString().slice(0, 19).replace("T", " ");
-}
-
-function formatTaskInputSummary(input: ParametersInput | null) {
-	if (input == null) {
-		return null;
-	}
-	if (input.items.length === 0) {
-		return "No parameters";
-	}
-	const first = input.items[0];
-	if (first === undefined) {
-		return "No parameters";
-	}
-	if (first.type === "string" || first.type === "number") {
-		return `${first.name}: ${String(first.value)}`;
-	}
-	if (first.type === "files") {
-		return `${first.name}: ${first.value.length} file(s)`;
-	}
-	return "Unsupported parameter";
 }
 
 function getStatusBadge(taskStatus: Task["status"]) {
@@ -166,10 +110,7 @@ export default async function TaskListPage({
 
 	const tasks = await Promise.all(
 		_dbTasks.map(async (dbTask) => {
-			const [task, input] = await Promise.all([
-				giselle.getTask({ taskId: dbTask.id }),
-				getTaskInput(dbTask.id),
-			]);
+			const task = await giselle.getTask({ taskId: dbTask.id });
 			if (dbTask.app === null) {
 				return {
 					id: task.id,
@@ -180,7 +121,6 @@ export default async function TaskListPage({
 						type: "github",
 						repoName: "test",
 					},
-					input,
 				} satisfies UITaskListRow;
 			}
 			return {
@@ -192,7 +132,6 @@ export default async function TaskListPage({
 					type: "app",
 					appName: dbTask.app.workspace.name ?? "Untitled App",
 				},
-				input,
 			} satisfies UITaskListRow;
 		}),
 	);
@@ -279,9 +218,6 @@ export default async function TaskListPage({
 										<th className="text-left py-3 px-4 text-white-400 font-normal text-xs w-auto hidden md:table-cell">
 											Origin
 										</th>
-										<th className="text-left py-3 px-4 text-white-400 font-normal text-xs w-auto max-w-80 hidden md:table-cell">
-											Input
-										</th>
 										<th className="py-3 px-4 text-white-400 font-normal text-xs text-center w-24">
 											Status
 										</th>
@@ -289,7 +225,6 @@ export default async function TaskListPage({
 								</thead>
 								<tbody>
 									{tasks.map((task) => {
-										const inputSummary = formatTaskInputSummary(task.input);
 										const originLabel =
 											task.origin.type === "app"
 												? task.origin.appName
@@ -317,15 +252,6 @@ export default async function TaskListPage({
 													<span className="text-sm text-white-700 truncate">
 														{originLabel}
 													</span>
-												</td>
-												<td className="py-3 px-4 text-white-800 whitespace-nowrap w-auto max-w-80 hidden md:table-cell">
-													{inputSummary ? (
-														<span className="text-sm text-white-700 line-clamp-2">
-															{inputSummary}
-														</span>
-													) : (
-														<span className="text-xs text-white-500">-</span>
-													)}
 												</td>
 												<td className="py-3 px-4 text-white-800 whitespace-nowrap text-center w-24">
 													<div className="flex items-center justify-center">

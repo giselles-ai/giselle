@@ -108,7 +108,6 @@ async function enrichActWithNavigationData(
 			teamName: team.name,
 			workspaceName: tmpWorkspace.name ?? "Untitled",
 			llmModels: llmModels.length > 0 ? llmModels : undefined,
-			inputValues: undefined,
 		};
 	} catch {
 		return null;

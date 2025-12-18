@@ -599,9 +599,6 @@ export function FilterableActsList({
 										<TableHead className="text-white-100 w-auto hidden md:table-cell">
 											LLM Models
 										</TableHead>
-										<TableHead className="text-white-100 w-auto max-w-80 hidden md:table-cell">
-											Input Values
-										</TableHead>
 										<TableHead className="text-center text-white-100 w-24">
 											Status
 										</TableHead>
@@ -656,15 +653,6 @@ export function FilterableActsList({
 																</span>
 															)}
 														</div>
-													) : (
-														<span className="text-xs text-white-500">-</span>
-													)}
-												</TableCell>
-												<TableCell className="w-auto max-w-80 hidden md:table-cell">
-													{act.inputValues ? (
-														<span className="text-sm text-white-700 line-clamp-2">
-															{act.inputValues}
-														</span>
 													) : (
 														<span className="text-xs text-white-500">-</span>
 													)}

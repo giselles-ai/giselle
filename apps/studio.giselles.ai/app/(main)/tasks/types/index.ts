@@ -13,5 +13,4 @@ export type ActWithNavigation = {
 	teamName: string;
 	link: string;
 	llmModels?: string[];
-	inputValues?: string;
 };
