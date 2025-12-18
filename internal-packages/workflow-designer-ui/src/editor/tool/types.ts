@@ -29,7 +29,7 @@ export interface SelectContextTool extends ToolBase {
 	category: "edit";
 	action: "selectContext";
 }
-export interface SelectTriggerTool extends ToolBase {
+interface SelectTriggerTool extends ToolBase {
 	category: "edit";
 	action: "selectTrigger";
 }
