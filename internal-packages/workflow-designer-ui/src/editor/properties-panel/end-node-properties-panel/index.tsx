@@ -94,6 +94,43 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 			.filter((maybeOutputNode) => maybeOutputNode.content.type !== "appEntry");
 	}, [connections, node.id, nodes]);
 
+	const addOutputButton =
+		availableOutputSourceNodes.length > 0 ? (
+			<DropdownMenu
+				trigger={
+					<Button type="button" leftIcon={<PlusIcon className="size-[12px]" />}>
+						Add output
+					</Button>
+				}
+				items={[
+					{
+						groupId: "available-nodes",
+						groupLabel: "Nodes",
+						items: availableOutputSourceNodes.map((availableNode) => ({
+							value: availableNode.id,
+							label: availableNode.name ?? defaultName(availableNode),
+							node: availableNode,
+						})),
+					},
+				]}
+				renderItem={(item) => (
+					<p className="text-[12px] truncate">{item.label}</p>
+				)}
+				onSelect={(_event, item) => {
+					connectNodes(item.node.id, node.id);
+				}}
+				modal={false}
+			/>
+		) : (
+			<Button
+				type="button"
+				leftIcon={<PlusIcon className="size-[12px]" />}
+				disabled
+			>
+				Add output
+			</Button>
+		);
+
 	return (
 		<PropertiesPanelRoot>
 			<NodePanelHeader
@@ -107,47 +144,7 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 					<div className="space-y-0">
 						<div className="flex items-center justify-between gap-[12px]">
 							<SettingLabel className="mb-0">Output(s) of the app</SettingLabel>
-							{availableOutputSourceNodes.length > 0 ? (
-								<DropdownMenu
-									trigger={
-										<Button
-											type="button"
-											leftIcon={<PlusIcon className="size-[12px]" />}
-										>
-											Add output
-										</Button>
-									}
-									items={[
-										{
-											groupId: "available-nodes",
-											groupLabel: "Nodes",
-											items: availableOutputSourceNodes.map(
-												(availableNode) => ({
-													value: availableNode.id,
-													label:
-														availableNode.name ?? defaultName(availableNode),
-													node: availableNode,
-												}),
-											),
-										},
-									]}
-									renderItem={(item) => (
-										<p className="text-[12px] truncate">{item.label}</p>
-									)}
-									onSelect={(_event, item) => {
-										connectNodes(item.node.id, node.id);
-									}}
-									modal={false}
-								/>
-							) : (
-								<Button
-									type="button"
-									leftIcon={<PlusIcon className="size-[12px]" />}
-									disabled
-								>
-									Add output
-								</Button>
-							)}
+							{connectedOutputsByOutputNode.length > 0 && addOutputButton}
 						</div>
 						<p className="text-[11px] text-text-muted/50">
 							What is displayed here will be shown as the result of the App.
@@ -156,8 +153,18 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 
 					<div className="flex flex-col gap-[8px]">
 						{connectedOutputsByOutputNode.length === 0 ? (
-							<div className="rounded-[12px] border border-border-muted bg-background px-[12px] py-[10px] text-[12px] text-text-muted">
-								No outputs are connected to this End node yet.
+							<div className="rounded-[12px] border border-border-muted bg-background px-[12px] py-[10px]">
+								<p className="text-[12px] text-text-muted">
+									No outputs are connected to this End node yet.
+								</p>
+								<div className="mt-[10px] flex items-center justify-between gap-[12px]">
+									{addOutputButton}
+									{availableOutputSourceNodes.length === 0 && (
+										<p className="text-[11px] text-text-muted/70">
+											Add a node to use as an App output first.
+										</p>
+									)}
+								</div>
 							</div>
 						) : (
 							<ul className="flex flex-col gap-[8px]">
