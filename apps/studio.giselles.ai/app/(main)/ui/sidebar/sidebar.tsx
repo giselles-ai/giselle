@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import type { IconName } from "lucide-react/dynamic";
 import { Accordion } from "radix-ui";
-import { stageFlag } from "../../../../flags";
+import { stageFlag, stageV2Flag } from "../../../../flags";
 import { CreateAppButton } from "./create-app-button";
 import { SidebarLink } from "./sidebar-link";
 
@@ -57,32 +57,40 @@ function SidebarItem({ part }: { part: SidebarPart }) {
 	}
 }
 
-const stagePart: SidebarPart = {
-	type: "linkGroup",
-	id: "stage",
-	label: "Stage - Run Apps",
-	icon: "sparkle",
-	links: [
+function createStagePart(isStageV2Enabled: boolean): SidebarPart {
+	const links: SidebarLink[] = [
 		{
 			id: "playground",
 			label: "Playground",
 			href: "/playground",
 			activeMatchPattern: "/playground",
 		},
-		{
-			id: "apps",
-			label: "Apps",
-			href: "/stage/showcase",
-			activeMatchPattern: "/stage/showcase",
-		},
+		...(isStageV2Enabled
+			? [
+					{
+						id: "apps",
+						label: "Apps",
+						href: "/stage/showcase",
+						activeMatchPattern: "/stage/showcase",
+					},
+				]
+			: []),
 		{
 			id: "tasks",
 			label: "Task History",
 			href: "/tasks",
 			activeMatchPattern: "/tasks*",
 		},
-	],
-};
+	];
+
+	return {
+		type: "linkGroup",
+		id: "stage",
+		label: "Stage - Run Apps",
+		icon: "sparkle",
+		links,
+	};
+}
 
 const baseSidebarParts: SidebarPart[] = [
 	{
@@ -147,9 +155,12 @@ const baseSidebarParts: SidebarPart[] = [
 ];
 
 export async function Sidebar() {
-	const isStageEnabled = await stageFlag();
+	const [isStageEnabled, isStageV2Enabled] = await Promise.all([
+		stageFlag(),
+		stageV2Flag(),
+	]);
 	const sidebarParts = isStageEnabled
-		? [stagePart, ...baseSidebarParts]
+		? [createStagePart(isStageV2Enabled), ...baseSidebarParts]
 		: baseSidebarParts;
 
 	return (

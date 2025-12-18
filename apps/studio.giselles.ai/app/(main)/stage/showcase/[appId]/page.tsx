@@ -11,6 +11,7 @@ import {
 	teams,
 	users,
 } from "@/db";
+import { stageV2Flag } from "@/flags";
 import { getUser } from "@/lib/supabase";
 
 import { AppDetailClient } from "./app-detail-client";
@@ -235,6 +236,11 @@ async function getAppDetails(unsafeAppId: string) {
 }
 
 export default async function AppDetailPage({ params }: AppDetailPageProps) {
+	const enableStageV2 = await stageV2Flag();
+	if (!enableStageV2) {
+		notFound();
+	}
+
 	const resolvedParams = await params;
 	const appDetails = await getAppDetails(resolvedParams.appId);
 
