@@ -1,13 +1,14 @@
+import { useFeatureFlag } from "@giselles-ai/react";
 import { useKeyPress } from "@xyflow/react";
 import { useCallback, useEffect, useRef } from "react";
 import { useAppDesignerStore } from "../../app-designer";
 import { useNodeManipulation } from "../node";
 import {
 	moveTool,
-	selectActionTool,
+	selectContextTool,
+	selectIntegrationTool,
 	selectLanguageModelTool,
-	selectRetrievalCategoryTool,
-	selectSourceCategoryTool,
+	selectLanguageModelV2Tool,
 	selectTriggerTool,
 	useToolbar,
 } from "../tool/toolbar";
@@ -52,13 +53,13 @@ function useKeyAction(
 	}, [isPressed, enabled, action]);
 }
 
-function useToolAction(key: string, toolFunction: () => Tool) {
+function useToolAction(key: string, toolFunction: () => Tool, enabled = true) {
 	const toolbar = useToolbar();
 	const currentShortcutScope = useAppDesignerStore(
-		(s) => s.currentShortcutScope,
+		(s) => s.ui.currentShortcutScope,
 	);
 	const isCanvasFocused = currentShortcutScope === "canvas";
-	const canUseToolShortcuts = isCanvasFocused && !!toolbar;
+	const canUseToolShortcuts = isCanvasFocused && !!toolbar && enabled;
 
 	useKeyAction(
 		key,
@@ -74,6 +75,10 @@ interface UseKeyboardShortcutsOptions {
 export function useKeyboardShortcuts(
 	options: UseKeyboardShortcutsOptions = {},
 ) {
+	const currentShortcutScope = useAppDesignerStore(
+		(s) => s.ui.currentShortcutScope,
+	);
+	const { generateContentNode } = useFeatureFlag();
 	const {
 		copy: handleCopy,
 		paste: handlePaste,
@@ -81,18 +86,15 @@ export function useKeyboardShortcuts(
 	} = useNodeManipulation();
 	const { onGenerate } = options;
 
-	const currentShortcutScope = useAppDesignerStore(
-		(s) => s.currentShortcutScope,
-	);
 	const isCanvasFocused = currentShortcutScope === "canvas";
 	const isPropertiesPanelFocused = currentShortcutScope === "properties-panel";
 
 	// Tool shortcuts using the simplified hook
-	useToolAction("t", selectTriggerTool);
-	useToolAction("i", selectSourceCategoryTool);
-	useToolAction("g", selectLanguageModelTool);
-	useToolAction("r", selectRetrievalCategoryTool);
-	useToolAction("d", selectActionTool);
+	useToolAction("a", selectTriggerTool);
+	useToolAction("e", selectIntegrationTool);
+	useToolAction("c", selectContextTool);
+	useToolAction("m", selectLanguageModelTool, !generateContentNode);
+	useToolAction("m", selectLanguageModelV2Tool, generateContentNode);
 	useToolAction("Escape", moveTool);
 
 	// Generate shortcut for properties panel

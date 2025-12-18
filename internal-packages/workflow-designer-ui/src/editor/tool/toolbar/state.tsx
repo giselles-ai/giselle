@@ -6,12 +6,12 @@ import { createContext, type ReactNode, useContext, useState } from "react";
 import type {
 	AddNodeTool,
 	MoveTool,
-	SelectEnviromentActionTool,
+	SelectContextTool,
 	SelectFileNodeCategoryTool,
+	SelectGitHubTriggerTool,
+	SelectIntegrationTool,
 	SelectLanguageModelTool,
 	SelectLanguageModelV2Tool,
-	SelectRetrievalCategoryTool,
-	SelectSourceCategoryTool,
 	SelectTriggerTool,
 	Tool,
 } from "../types";
@@ -92,18 +92,11 @@ export function addNodeTool(node: Node) {
 	} satisfies AddNodeTool;
 }
 
-export function selectRetrievalCategoryTool() {
+export function selectContextTool() {
 	return {
-		action: "selectRetrievalCategory",
+		action: "selectContext",
 		category: "edit",
-	} satisfies SelectRetrievalCategoryTool;
-}
-
-export function selectSourceCategoryTool() {
-	return {
-		action: "selectSourceCategory",
-		category: "edit",
-	} satisfies SelectSourceCategoryTool;
+	} satisfies SelectContextTool;
 }
 
 export function selectTriggerTool() {
@@ -113,11 +106,18 @@ export function selectTriggerTool() {
 	} satisfies SelectTriggerTool;
 }
 
-export function selectActionTool() {
+export function selectGithubTriggerTool() {
 	return {
-		action: "selectAction",
+		action: "selectGithubTrigger",
 		category: "edit",
-	} satisfies SelectEnviromentActionTool;
+	} satisfies SelectGitHubTriggerTool;
+}
+
+export function selectIntegrationTool() {
+	return {
+		action: "selectIntegration",
+		category: "edit",
+	} satisfies SelectIntegrationTool;
 }
 
 function _vectorStoreNode(provider: VectorStoreContent["source"]["provider"]) {

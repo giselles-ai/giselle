@@ -13,7 +13,6 @@ export {
 	PromptIcon,
 	SearchIcon,
 	TextFileIcon,
-	TriggerIcon,
 	VideoIcon,
 	WebPageFileIcon,
 } from "../../../../icons";
