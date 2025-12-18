@@ -1,7 +1,6 @@
 import { Button } from "@giselle-internal/ui/button";
 import { useToasts } from "@giselle-internal/ui/toast";
 import type { App, AppEntryNode } from "@giselles-ai/protocol";
-import { AppParameterId } from "@giselles-ai/protocol";
 import { useGiselle } from "@giselles-ai/react";
 import { LoaderIcon } from "lucide-react";
 import { type FormEvent, useCallback, useEffect, useState } from "react";
@@ -9,7 +8,6 @@ import type { KeyedMutator } from "swr";
 import { SettingDetail, SettingLabel } from "../ui/setting-label";
 
 export function AppEntryConfiguredView({
-	node,
 	app,
 	mutateApp,
 }: {
@@ -93,48 +91,6 @@ export function AppEntryConfiguredView({
 					</Button>
 				</form>
 			</div>
-
-			{node.outputs.length > 0 && (
-				<div className="space-y-[4px]">
-					<SettingLabel className="py-[1.5px]">Output Parameters</SettingLabel>
-					<div className="px-[4px] py-0 w-full bg-transparent text-[14px] mt-[8px]">
-						<ul className="w-full flex flex-col gap-[12px]">
-							{node.outputs.map((output) => {
-								const parameterIdResult = AppParameterId.schema.safeParse(
-									output.accessor,
-								);
-								const parameter = parameterIdResult.success
-									? app.parameters.find((p) => p.id === parameterIdResult.data)
-									: undefined;
-
-								return (
-									<li key={output.id}>
-										<div className="flex flex-col gap-[4px]">
-											<div className="flex items-center gap-[8px]">
-												<span className="text-[14px] font-medium">
-													{output.label}
-												</span>
-												{parameter?.required && (
-													<span className="text-[12px] text-muted-foreground">
-														(Required)
-													</span>
-												)}
-											</div>
-											{parameter && (
-												<div className="flex items-center gap-[8px] pl-[4px]">
-													<span className="text-[12px] text-muted-foreground">
-														Type: {parameter.type}
-													</span>
-												</div>
-											)}
-										</div>
-									</li>
-								);
-							})}
-						</ul>
-					</div>
-				</div>
-			)}
 		</div>
 	);
 }
