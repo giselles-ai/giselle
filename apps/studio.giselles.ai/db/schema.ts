@@ -204,7 +204,7 @@ export const teams = pgTable("teams", {
 		.notNull()
 		.$onUpdate(() => new Date()),
 	plan: text("plan").$type<TeamPlan>().notNull().default("free"),
-	activeSubscriptionId: text("active_subscription_id"),
+	activeSubscriptionId: text("active_subscription_id").unique(),
 	activeCustomerId: text("active_customer_id"),
 });
 

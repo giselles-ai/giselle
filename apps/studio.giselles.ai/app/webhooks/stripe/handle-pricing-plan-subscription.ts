@@ -1,4 +1,5 @@
 import { and, desc, eq, ne } from "drizzle-orm";
+import { DrizzleQueryError } from "drizzle-orm/errors";
 import type Stripe from "stripe";
 import {
 	db,
@@ -60,63 +61,104 @@ export async function handlePricingPlanServicingActivated(event: Stripe.Event) {
 
 	const metadata: Record<string, string> = subscription.metadata ?? {};
 
-	await db.transaction(async (tx) => {
-		// Idempotency check: if subscription history already exists, just update the team
-		const [existing] = await tx
-			.select({ teamDbId: stripePricingPlanSubscriptionHistories.teamDbId })
-			.from(stripePricingPlanSubscriptionHistories)
-			.where(eq(stripePricingPlanSubscriptionHistories.id, subscription.id))
-			.orderBy(desc(stripePricingPlanSubscriptionHistories.createdAt))
-			.limit(1);
+	try {
+		await db.transaction(async (tx) => {
+			// Idempotency check: if subscription history already exists, just update the team
+			const [existing] = await tx
+				.select({ teamDbId: stripePricingPlanSubscriptionHistories.teamDbId })
+				.from(stripePricingPlanSubscriptionHistories)
+				.where(eq(stripePricingPlanSubscriptionHistories.id, subscription.id))
+				.orderBy(desc(stripePricingPlanSubscriptionHistories.createdAt))
+				.limit(1);
 
-		if (existing) {
+			if (existing) {
+				logger.info(
+					{ subscriptionId: subscription.id, teamDbId: existing.teamDbId },
+					"[stripe-v2-webhook] Subscription already processed, updating existing team",
+				);
+				await updateExistingTeam(
+					tx,
+					subscription,
+					cadence,
+					customerId,
+					existing.teamDbId,
+				);
+				return;
+			}
+
+			// Check if this is an upgrade of existing team or new team creation
+			if (UPGRADING_TEAM_DB_ID_KEY in metadata) {
+				const teamDbId = Number.parseInt(
+					metadata[UPGRADING_TEAM_DB_ID_KEY],
+					10,
+				);
+				await upgradeExistingTeam(
+					tx,
+					subscription,
+					cadence,
+					customerId,
+					teamDbId,
+				);
+			} else if (
+				DRAFT_TEAM_NAME_METADATA_KEY in metadata &&
+				DRAFT_TEAM_USER_DB_ID_METADATA_KEY in metadata
+			) {
+				const teamName = metadata[DRAFT_TEAM_NAME_METADATA_KEY];
+				const userDbId = Number.parseInt(
+					metadata[DRAFT_TEAM_USER_DB_ID_METADATA_KEY],
+					10,
+				);
+				await createNewProTeam(
+					tx,
+					subscription,
+					cadence,
+					customerId,
+					userDbId,
+					teamName,
+				);
+			} else {
+				throw new Error(
+					`Invalid subscription metadata for pricing plan subscription. Expected one of: [${UPGRADING_TEAM_DB_ID_KEY}, (${DRAFT_TEAM_NAME_METADATA_KEY} & ${DRAFT_TEAM_USER_DB_ID_METADATA_KEY})]. Actual keys: [${Object.keys(metadata).join(", ")}]`,
+				);
+			}
+		});
+	} catch (error) {
+		if (isActiveSubscriptionIdViolation(error)) {
 			logger.info(
-				{ subscriptionId: subscription.id, teamDbId: existing.teamDbId },
-				"[stripe-v2-webhook] Subscription already processed, updating existing team",
-			);
-			await updateExistingTeam(
-				tx,
-				subscription,
-				cadence,
-				customerId,
-				existing.teamDbId,
+				{ subscriptionId: subscription.id },
+				"[stripe-v2-webhook] Subscription already processed",
 			);
 			return;
 		}
 
-		// Check if this is an upgrade of existing team or new team creation
-		if (UPGRADING_TEAM_DB_ID_KEY in metadata) {
-			const teamDbId = Number.parseInt(metadata[UPGRADING_TEAM_DB_ID_KEY], 10);
-			await upgradeExistingTeam(
-				tx,
-				subscription,
-				cadence,
-				customerId,
-				teamDbId,
-			);
-		} else if (
-			DRAFT_TEAM_NAME_METADATA_KEY in metadata &&
-			DRAFT_TEAM_USER_DB_ID_METADATA_KEY in metadata
-		) {
-			const teamName = metadata[DRAFT_TEAM_NAME_METADATA_KEY];
-			const userDbId = Number.parseInt(
-				metadata[DRAFT_TEAM_USER_DB_ID_METADATA_KEY],
-				10,
-			);
-			await createNewProTeam(
-				tx,
-				subscription,
-				cadence,
-				customerId,
-				userDbId,
-				teamName,
-			);
-		} else {
-			throw new Error(
-				`Invalid subscription metadata for pricing plan subscription. Expected one of: [${UPGRADING_TEAM_DB_ID_KEY}, (${DRAFT_TEAM_NAME_METADATA_KEY} & ${DRAFT_TEAM_USER_DB_ID_METADATA_KEY})]. Actual keys: [${Object.keys(metadata).join(", ")}]`,
-			);
-		}
-	});
+		throw error;
+	}
+}
+
+function isPostgresError(
+	value: unknown,
+): value is { code: string; constraint: string } {
+	return (
+		typeof value === "object" &&
+		value !== null &&
+		"code" in value &&
+		"constraint" in value
+	);
+}
+
+function isActiveSubscriptionIdViolation(error: unknown): boolean {
+	if (!(error instanceof DrizzleQueryError)) {
+		return false;
+	}
+
+	if (!isPostgresError(error.cause)) {
+		return false;
+	}
+
+	return (
+		error.cause.code === "23505" &&
+		error.cause.constraint === "teams_active_subscription_id_unique"
+	);
 }
 
 // Helper type for transaction
