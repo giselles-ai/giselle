@@ -1,14 +1,17 @@
+import { createAppEntryNode } from "@giselles-ai/node-registry";
+import { isAppEntryNode, isEndNode } from "@giselles-ai/protocol";
+import { useFeatureFlag } from "@giselles-ai/react";
 import { useKeyPress } from "@xyflow/react";
 import { useCallback, useEffect, useRef } from "react";
 import { useAppDesignerStore } from "../../app-designer";
 import { useNodeManipulation } from "../node";
 import {
+	addNodeTool,
 	moveTool,
-	selectActionTool,
+	selectContextTool,
+	selectIntegrationTool,
 	selectLanguageModelTool,
-	selectRetrievalCategoryTool,
-	selectSourceCategoryTool,
-	selectTriggerTool,
+	selectLanguageModelV2Tool,
 	useToolbar,
 } from "../tool/toolbar";
 import type { Tool } from "../tool/types";
@@ -52,13 +55,13 @@ function useKeyAction(
 	}, [isPressed, enabled, action]);
 }
 
-function useToolAction(key: string, toolFunction: () => Tool) {
+function useToolAction(key: string, toolFunction: () => Tool, enabled = true) {
 	const toolbar = useToolbar();
 	const currentShortcutScope = useAppDesignerStore(
 		(s) => s.currentShortcutScope,
 	);
 	const isCanvasFocused = currentShortcutScope === "canvas";
-	const canUseToolShortcuts = isCanvasFocused && !!toolbar;
+	const canUseToolShortcuts = isCanvasFocused && !!toolbar && enabled;
 
 	useKeyAction(
 		key,
@@ -74,6 +77,11 @@ interface UseKeyboardShortcutsOptions {
 export function useKeyboardShortcuts(
 	options: UseKeyboardShortcutsOptions = {},
 ) {
+	const currentShortcutScope = useAppDesignerStore(
+		(s) => s.currentShortcutScope,
+	);
+	const nodes = useAppDesignerStore((s) => s.nodes);
+	const { generateContentNode } = useFeatureFlag();
 	const {
 		copy: handleCopy,
 		paste: handlePaste,
@@ -81,18 +89,22 @@ export function useKeyboardShortcuts(
 	} = useNodeManipulation();
 	const { onGenerate } = options;
 
-	const currentShortcutScope = useAppDesignerStore(
-		(s) => s.currentShortcutScope,
-	);
 	const isCanvasFocused = currentShortcutScope === "canvas";
 	const isPropertiesPanelFocused = currentShortcutScope === "properties-panel";
+	const isStageFlowAlreadyPlaced =
+		nodes.some((node) => isAppEntryNode(node)) ||
+		nodes.some((node) => isEndNode(node));
 
 	// Tool shortcuts using the simplified hook
-	useToolAction("t", selectTriggerTool);
-	useToolAction("i", selectSourceCategoryTool);
-	useToolAction("g", selectLanguageModelTool);
-	useToolAction("r", selectRetrievalCategoryTool);
-	useToolAction("d", selectActionTool);
+	useToolAction(
+		"a",
+		() => addNodeTool(createAppEntryNode()),
+		!isStageFlowAlreadyPlaced,
+	);
+	useToolAction("e", selectIntegrationTool);
+	useToolAction("c", selectContextTool);
+	useToolAction("m", selectLanguageModelTool, !generateContentNode);
+	useToolAction("m", selectLanguageModelV2Tool, generateContentNode);
 	useToolAction("Escape", moveTool);
 
 	// Generate shortcut for properties panel

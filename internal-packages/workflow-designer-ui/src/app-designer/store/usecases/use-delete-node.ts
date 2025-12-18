@@ -1,98 +1,15 @@
-import {
-	isActionNode,
-	isAppEntryNode,
-	isOperationNode,
-	NodeId,
-	type NodeLike,
-} from "@giselles-ai/protocol";
+import { NodeId } from "@giselles-ai/protocol";
 import { useCallback } from "react";
-import { useAppDesignerStoreApi } from "../app-designer-provider";
-import { useGiselle } from "../giselle-client-provider";
-import { useSyncAppConnectionStateIfNeeded } from "./use-sync-app-connection-state-if-needed";
+import { useDeleteNodes } from "./use-delete-nodes";
 
 export function useDeleteNode() {
-	const client = useGiselle();
-	const store = useAppDesignerStoreApi();
-	const syncAppConnectionStateIfNeeded = useSyncAppConnectionStateIfNeeded();
+	const deleteNodes = useDeleteNodes();
 
 	return useCallback(
 		(nodeIdToDelete: NodeId | string) => {
 			const nodeId = NodeId.parse(nodeIdToDelete);
-
-			const currentState = store.getState();
-			const targetNode = currentState.nodes.find((n) => n.id === nodeId);
-			const appIdToDelete =
-				targetNode &&
-				isAppEntryNode(targetNode) &&
-				targetNode.content.status === "configured"
-					? targetNode.content.appId
-					: null;
-
-			store.setState((s) => {
-				const connectionsToDelete = s.connections.filter(
-					(c) => c.inputNode.id === nodeId || c.outputNode.id === nodeId,
-				);
-				const connectionIdsToDelete = new Set(
-					connectionsToDelete.map((c) => c.id),
-				);
-
-				const ui = { ...s.ui, nodeState: { ...s.ui.nodeState } };
-				delete ui.nodeState[nodeId];
-				if (ui.selectedConnectionIds) {
-					ui.selectedConnectionIds = ui.selectedConnectionIds.filter(
-						(id) => !connectionIdsToDelete.has(id),
-					);
-				}
-
-				const inputIdsToRemoveByNodeId = new Map<string, Set<string>>();
-				for (const c of s.connections.filter(
-					(c) => c.outputNode.id === nodeId,
-				)) {
-					const inputIdsToRemove =
-						inputIdsToRemoveByNodeId.get(c.inputNode.id) ?? new Set<string>();
-					inputIdsToRemove.add(c.inputId);
-					inputIdsToRemoveByNodeId.set(c.inputNode.id, inputIdsToRemove);
-				}
-
-				const nodes: NodeLike[] = s.nodes
-					.filter((n) => n.id !== nodeId)
-					.map((n) => {
-						const inputIdsToRemove = inputIdsToRemoveByNodeId.get(n.id);
-						if (
-							inputIdsToRemove === undefined ||
-							!isOperationNode(n) ||
-							isActionNode(n)
-						) {
-							return n;
-						}
-						return {
-							...n,
-							inputs: n.inputs.filter(
-								(input) => !inputIdsToRemove.has(input.id),
-							),
-						} as NodeLike;
-					});
-
-				const connections = s.connections.filter(
-					(c) => c.inputNode.id !== nodeId && c.outputNode.id !== nodeId,
-				);
-
-				return { ...s, nodes, connections, ui };
-			});
-
-			if (appIdToDelete) {
-				void client
-					.deleteApp({ appId: appIdToDelete })
-					.catch((error) =>
-						console.error(
-							"Failed to delete App for deleted AppEntry node:",
-							error,
-						),
-					);
-			}
-
-			syncAppConnectionStateIfNeeded();
+			void deleteNodes([nodeId]);
 		},
-		[client, store, syncAppConnectionStateIfNeeded],
+		[deleteNodes],
 	);
 }
