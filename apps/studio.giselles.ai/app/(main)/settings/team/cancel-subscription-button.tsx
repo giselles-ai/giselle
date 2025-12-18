@@ -31,9 +31,9 @@ export function CancelSubscriptionButton({
 	const [open, setOpen] = useState(false);
 	const [isPending, startTransition] = useTransition();
 	const [error, setError] = useState<string | null>(null);
-	const [successData, setSuccessData] = useState<{ willCancelAt: Date } | null>(
-		null,
-	);
+	const [successData, setSuccessData] = useState<{
+		willCancelAt: Date | null;
+	} | null>(null);
 
 	// Only show for v2 subscriptions
 	if (!subscriptionId.startsWith("bpps_")) {
@@ -92,9 +92,9 @@ export function CancelSubscriptionButton({
 								Cancellation Scheduled
 							</DialogTitle>
 							<DialogDescription className="font-geist mt-2 text-[14px] text-white-50">
-								Your subscription will be cancelled on{" "}
-								{formatTimestamp.toLongDate(successData.willCancelAt.getTime())}
-								. The page will refresh shortly.
+								{successData.willCancelAt
+									? `Your subscription will be cancelled on ${formatTimestamp.toLongDate(successData.willCancelAt.getTime())}. The page will refresh shortly.`
+									: "Your subscription cancellation has been scheduled. The page will refresh shortly."}
 							</DialogDescription>
 						</DialogHeader>
 						<DialogBody />

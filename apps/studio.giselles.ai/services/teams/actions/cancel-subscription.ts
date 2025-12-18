@@ -20,12 +20,16 @@ function isV2PricingPlanSubscription(subscriptionId: string): boolean {
  * Cancel a v2 pricing plan subscription using Stripe Billing Intent API
  *
  * Schedules the subscription to be cancelled at the end of the current billing period.
- * Returns the scheduled cancellation date.
+ * Returns the scheduled cancellation date if available.
+ *
+ * Note: After commit() succeeds, the cancellation is scheduled in Stripe.
+ * Post-processing (retrieving details, recording history) is best-effort
+ * and won't cause the operation to fail.
  */
 async function cancelV2Subscription(
 	subscriptionId: string,
 	teamDbId: number,
-): Promise<{ willCancelAt: Date }> {
+): Promise<{ willCancelAt: Date | null }> {
 	// Step 1: Create a billing intent with deactivate action (scheduled for billing period end)
 	const billingIntent = await stripe.v2.billing.intents.create({
 		currency: "usd",
@@ -49,35 +53,48 @@ async function cancelV2Subscription(
 	await stripe.v2.billing.intents.reserve(billingIntent.id);
 
 	// Step 3: Commit the billing intent to execute the deactivation
+	// After this point, the cancellation is scheduled in Stripe
 	await stripe.v2.billing.intents.commit(billingIntent.id);
 
-	// Step 4: Retrieve the subscription to get the scheduled cancellation date
-	const subscription =
-		await stripe.v2.billing.pricingPlanSubscriptions.retrieve(subscriptionId);
+	// Post-processing: retrieve details and record history (best effort)
+	try {
+		// Step 4: Retrieve the subscription to get the scheduled cancellation date
+		const subscription =
+			await stripe.v2.billing.pricingPlanSubscriptions.retrieve(subscriptionId);
 
-	const willCancelAtStr =
-		subscription.servicing_status_transitions.will_cancel_at;
-	if (!willCancelAtStr) {
-		throw new Error(
-			"Subscription cancellation was scheduled but will_cancel_at was not returned",
+		const willCancelAtStr =
+			subscription.servicing_status_transitions.will_cancel_at;
+		const willCancelAt = willCancelAtStr ? new Date(willCancelAtStr) : null;
+
+		// Step 5: Record subscription history (best effort)
+		try {
+			const cadence = await stripe.v2.billing.cadences.retrieve(
+				subscription.billing_cadence,
+			);
+
+			await db.transaction(async (tx) => {
+				await recordV2SubscriptionHistory(tx, subscription, cadence, teamDbId);
+			});
+		} catch (historyError) {
+			logger.error(
+				{ error: historyError, subscriptionId, teamDbId },
+				"[cancel-subscription] Failed to record history, but cancellation succeeded",
+			);
+		}
+
+		return { willCancelAt };
+	} catch (error) {
+		logger.error(
+			{ error, subscriptionId, teamDbId },
+			"[cancel-subscription] Failed to retrieve subscription details, but cancellation succeeded",
 		);
+		return { willCancelAt: null };
 	}
-	const willCancelAt = new Date(willCancelAtStr);
-
-	// Step 5: Retrieve the billing cadence and record subscription history
-	const cadence = await stripe.v2.billing.cadences.retrieve(
-		subscription.billing_cadence,
-	);
-
-	await db.transaction(async (tx) => {
-		await recordV2SubscriptionHistory(tx, subscription, cadence, teamDbId);
-	});
-
-	return { willCancelAt };
 }
 
 export type CancelSubscriptionResult =
 	| { success: true; willCancelAt: Date }
+	| { success: true; willCancelAt: null }
 	| { success: false; error: string };
 
 /**
