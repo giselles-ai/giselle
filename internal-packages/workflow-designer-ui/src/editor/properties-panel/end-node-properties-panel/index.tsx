@@ -3,14 +3,20 @@
 import { Button } from "@giselle-internal/ui/button";
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
 import { defaultName } from "@giselles-ai/node-registry";
-import type { EndNode } from "@giselles-ai/protocol";
+import type {
+	Connection,
+	EndNode,
+	NodeId,
+	NodeLike,
+} from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
-import { PlusIcon, SquareArrowOutUpRightIcon } from "lucide-react";
+import { PlusIcon, SquareArrowOutUpRightIcon, TrashIcon } from "lucide-react";
 import { useMemo } from "react";
 import {
 	useAppDesignerStore,
 	useConnectNodes,
 	useDeleteNode,
+	useDisconnectNodes,
 	useUpdateNodeData,
 } from "../../../app-designer";
 import { NodeIcon } from "../../../icons/node";
@@ -21,10 +27,61 @@ import {
 } from "../ui";
 import { SettingLabel } from "../ui/setting-label";
 
+function AddOutputButton({
+	availableNodes,
+	endNodeId,
+	onConnectNodes,
+}: {
+	availableNodes: NodeLike[];
+	endNodeId: NodeId;
+	onConnectNodes: (outputNodeId: NodeId, inputNodeId: NodeId) => void;
+}) {
+	if (availableNodes.length === 0) {
+		return (
+			<Button
+				type="button"
+				leftIcon={<PlusIcon className="size-[12px]" />}
+				disabled
+			>
+				Add output
+			</Button>
+		);
+	}
+
+	return (
+		<DropdownMenu
+			trigger={
+				<Button type="button" leftIcon={<PlusIcon className="size-[12px]" />}>
+					Add output
+				</Button>
+			}
+			items={[
+				{
+					groupId: "available-nodes",
+					groupLabel: "Nodes",
+					items: availableNodes.map((availableNode) => ({
+						value: availableNode.id,
+						label: availableNode.name ?? defaultName(availableNode),
+						node: availableNode,
+					})),
+				},
+			]}
+			renderItem={(item) => (
+				<p className="text-[12px] truncate">{item.label}</p>
+			)}
+			onSelect={(_event, item) => {
+				onConnectNodes(item.node.id, endNodeId);
+			}}
+			modal={false}
+		/>
+	);
+}
+
 export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 	const deleteNode = useDeleteNode();
 	const updateNodeData = useUpdateNodeData();
 	const connectNodes = useConnectNodes();
+	const disconnectNodes = useDisconnectNodes();
 	const { nodes, connections } = useAppDesignerStore((s) => ({
 		nodes: s.nodes,
 		connections: s.connections,
@@ -40,12 +97,12 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 		);
 
 		const groups = new Map<
-			string,
+			NodeId,
 			{
-				outputNodeId: string;
-				outputNode: (typeof nodes extends (infer T)[] ? T : never) | undefined;
+				outputNodeId: NodeId;
+				outputNode: NodeLike;
 				items: {
-					connection: (typeof connectionsToThisNode)[number];
+					connection: Connection;
 					outputLabel: string;
 				}[];
 			}
@@ -57,6 +114,10 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 			const outputLabel =
 				outputNode?.outputs.find((output) => output.id === connection.outputId)
 					?.label ?? connection.outputId;
+
+			if (outputNode === undefined) {
+				continue;
+			}
 
 			const existing = groups.get(outputNodeId);
 			if (!existing) {
@@ -94,43 +155,6 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 			.filter((maybeOutputNode) => maybeOutputNode.content.type !== "appEntry");
 	}, [connections, node.id, nodes]);
 
-	const addOutputButton =
-		availableOutputSourceNodes.length > 0 ? (
-			<DropdownMenu
-				trigger={
-					<Button type="button" leftIcon={<PlusIcon className="size-[12px]" />}>
-						Add output
-					</Button>
-				}
-				items={[
-					{
-						groupId: "available-nodes",
-						groupLabel: "Nodes",
-						items: availableOutputSourceNodes.map((availableNode) => ({
-							value: availableNode.id,
-							label: availableNode.name ?? defaultName(availableNode),
-							node: availableNode,
-						})),
-					},
-				]}
-				renderItem={(item) => (
-					<p className="text-[12px] truncate">{item.label}</p>
-				)}
-				onSelect={(_event, item) => {
-					connectNodes(item.node.id, node.id);
-				}}
-				modal={false}
-			/>
-		) : (
-			<Button
-				type="button"
-				leftIcon={<PlusIcon className="size-[12px]" />}
-				disabled
-			>
-				Add output
-			</Button>
-		);
-
 	return (
 		<PropertiesPanelRoot>
 			<NodePanelHeader
@@ -144,7 +168,13 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 					<div className="space-y-0">
 						<div className="flex items-center justify-between gap-[12px]">
 							<SettingLabel className="mb-0">Output(s) of the app</SettingLabel>
-							{connectedOutputsByOutputNode.length > 0 && addOutputButton}
+							{connectedOutputsByOutputNode.length > 0 && (
+								<AddOutputButton
+									availableNodes={availableOutputSourceNodes}
+									endNodeId={node.id}
+									onConnectNodes={connectNodes}
+								/>
+							)}
 						</div>
 						<p className="text-[11px] text-text-muted/50">
 							What is displayed here will be shown as the result of the App.
@@ -158,7 +188,11 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 									No outputs are connected to this End node yet.
 								</p>
 								<div className="mt-[10px] flex items-center justify-between gap-[12px]">
-									{addOutputButton}
+									<AddOutputButton
+										availableNodes={availableOutputSourceNodes}
+										endNodeId={node.id}
+										onConnectNodes={connectNodes}
+									/>
 									{availableOutputSourceNodes.length === 0 && (
 										<p className="text-[11px] text-text-muted/70">
 											Add a node to use as an App output first.
@@ -174,7 +208,7 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 										<li
 											key={group.outputNodeId}
 											className={clsx(
-												"flex gap-[10px] rounded-[12px] border border-border-muted bg-background px-[12px] py-[10px] min-w-0",
+												"flex gap-[10px] rounded-[12px] border border-border-muted bg-background px-[12px] py-[10px] min-w-0 group",
 												hasMultipleOutputs ? "items-start" : "items-center",
 											)}
 										>
@@ -219,6 +253,20 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 													</ul>
 												)}
 											</div>
+											<Button
+												type="button"
+												size="compact"
+												className={clsx(
+													"shrink-0 opacity-0 transition-opacity pointer-events-none group-hover:pointer-events-auto group-hover:opacity-100 focus:opacity-100 focus:pointer-events-auto",
+													hasMultipleOutputs && "mt-[2px]",
+												)}
+												onClick={() => {
+													disconnectNodes(group.outputNodeId, node.id);
+												}}
+												aria-label="Disconnect this node from the App output"
+											>
+												<TrashIcon className="size-[14px]" aria-hidden="true" />
+											</Button>
 										</li>
 									);
 								})}
