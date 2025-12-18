@@ -44,7 +44,7 @@ export async function createCheckoutSessionV2(
 				cancel_url: cancelUrl,
 			},
 			{
-				apiVersion: "2025-11-17.preview;checkout_product_catalog_preview=v1",
+				apiVersion: "2025-12-15.preview;checkout_product_catalog_preview=v1",
 			},
 		);
 
