@@ -1,12 +1,15 @@
 "use client";
 
+import { Button } from "@giselle-internal/ui/button";
+import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
 import { defaultName } from "@giselles-ai/node-registry";
 import type { EndNode } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
-import { SquareArrowOutUpRightIcon } from "lucide-react";
+import { PlusIcon, SquareArrowOutUpRightIcon } from "lucide-react";
 import { useMemo } from "react";
 import {
 	useAppDesignerStore,
+	useConnectNodes,
 	useDeleteNode,
 	useUpdateNodeData,
 } from "../../../app-designer";
@@ -21,6 +24,7 @@ import { SettingLabel } from "../ui/setting-label";
 export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 	const deleteNode = useDeleteNode();
 	const updateNodeData = useUpdateNodeData();
+	const connectNodes = useConnectNodes();
 	const { nodes, connections } = useAppDesignerStore((s) => ({
 		nodes: s.nodes,
 		connections: s.connections,
@@ -74,6 +78,22 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 		});
 	}, [connections, node.id, nodes]);
 
+	const availableOutputSourceNodes = useMemo(() => {
+		const connectedOutputNodeIdSet = new Set(
+			connections
+				.filter((connection) => connection.inputNode.id === node.id)
+				.map((connection) => connection.outputNode.id),
+		);
+
+		return nodes
+			.filter((maybeOutputNode) => maybeOutputNode.id !== node.id)
+			.filter(
+				(maybeOutputNode) => !connectedOutputNodeIdSet.has(maybeOutputNode.id),
+			)
+			.filter((maybeOutputNode) => maybeOutputNode.outputs.length > 0)
+			.filter((maybeOutputNode) => maybeOutputNode.content.type !== "appEntry");
+	}, [connections, node.id, nodes]);
+
 	return (
 		<PropertiesPanelRoot>
 			<NodePanelHeader
@@ -85,7 +105,50 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 			<PropertiesPanelContent>
 				<div className="flex flex-col gap-[16px]">
 					<div className="space-y-0">
-						<SettingLabel className="mb-0">Output(s) of the app</SettingLabel>
+						<div className="flex items-center justify-between gap-[12px]">
+							<SettingLabel className="mb-0">Output(s) of the app</SettingLabel>
+							{availableOutputSourceNodes.length > 0 ? (
+								<DropdownMenu
+									trigger={
+										<Button
+											type="button"
+											leftIcon={<PlusIcon className="size-[12px]" />}
+										>
+											Add output
+										</Button>
+									}
+									items={[
+										{
+											groupId: "available-nodes",
+											groupLabel: "Nodes",
+											items: availableOutputSourceNodes.map(
+												(availableNode) => ({
+													value: availableNode.id,
+													label:
+														availableNode.name ?? defaultName(availableNode),
+													node: availableNode,
+												}),
+											),
+										},
+									]}
+									renderItem={(item) => (
+										<p className="text-[12px] truncate">{item.label}</p>
+									)}
+									onSelect={(_event, item) => {
+										connectNodes(item.node.id, node.id);
+									}}
+									modal={false}
+								/>
+							) : (
+								<Button
+									type="button"
+									leftIcon={<PlusIcon className="size-[12px]" />}
+									disabled
+								>
+									Add output
+								</Button>
+							)}
+						</div>
 						<p className="text-[11px] text-text-muted/50">
 							What is displayed here will be shown as the result of the App.
 						</p>
