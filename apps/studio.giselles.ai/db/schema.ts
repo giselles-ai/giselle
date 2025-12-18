@@ -150,6 +150,7 @@ export const stripePricingPlanSubscriptionHistories = pgTable(
 		activatedAt: timestamp("activated_at"),
 		canceledAt: timestamp("canceled_at"),
 		pausedAt: timestamp("paused_at"),
+		willCancelAt: timestamp("will_cancel_at"), // https://docs.stripe.com/api/v2/pricing-plan-subscriptions/update?api-version=2025-12-15.preview#v2_update_pricing_plan_subscriptions-response-servicing_status_transitions-will_cancel_at
 
 		// Collection status transitions
 		collectionCurrentAt: timestamp("collection_current_at"),
