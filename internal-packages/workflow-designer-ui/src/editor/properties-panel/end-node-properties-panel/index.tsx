@@ -100,12 +100,6 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 		s.isStartNodeConnectedToEndNode(),
 	);
 	const isTryAppInStageDisabled = !isStartNodeConnectedToEndNode;
-	const tryAppLinkClassName = clsx(
-		"mt-[12px] w-full rounded-[12px] border border-blue-muted bg-blue-muted px-[16px] py-[12px] text-[14px] font-medium text-white transition-[filter]",
-		isTryAppInStageDisabled
-			? "cursor-not-allowed opacity-50"
-			: "hover:brightness-110",
-	);
 
 	const connectedOutputsByOutputNode = useMemo(() => {
 		const connectionsToThisNode = connections.filter(
@@ -290,40 +284,59 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 						)}
 					</div>
 
-					{isTryAppInStageDisabled ? (
-						<div className={tryAppLinkClassName} aria-disabled="true">
-							<span className="inline-flex items-center justify-center gap-[8px]">
-								<span>Try App in Playground</span>
-								<SquareArrowOutUpRightIcon
-									className="size-[14px]"
-									aria-hidden="true"
-								/>
-							</span>
-						</div>
-					) : (
-						<Link
-							href="/playground"
-							target="_blank"
-							rel="noopener noreferrer"
-							className={tryAppLinkClassName}
-						>
-							<span className="inline-flex items-center justify-center gap-[8px]">
-								<span>Try App in Playground</span>
-								<SquareArrowOutUpRightIcon
-									className="size-[14px]"
-									aria-hidden="true"
-								/>
-							</span>
-						</Link>
-					)}
-					{isTryAppInStageDisabled && (
-						<p className="text-[12px] text-text-muted">
-							Connect your flow so it reaches the End Node from the Start Node
-							to enable “Try App in Stage”.
-						</p>
-					)}
+					<TryPlaygroundSection isDisabled={isTryAppInStageDisabled} />
 				</div>
 			</PropertiesPanelContent>
 		</PropertiesPanelRoot>
+	);
+}
+
+function TryPlaygroundContent() {
+	return (
+		<span className="inline-flex items-center justify-center gap-[8px]">
+			<span>Try App in Playground</span>
+			<SquareArrowOutUpRightIcon className="size-[14px]" aria-hidden="true" />
+		</span>
+	);
+}
+
+function TryPlaygroundLink({ isDisabled }: { isDisabled: boolean }) {
+	const className =
+		"mt-[12px] w-full rounded-[12px] border border-blue-muted bg-blue-muted px-[16px] py-[12px] text-[14px] font-medium text-white transition-[filter]";
+
+	if (isDisabled) {
+		return (
+			<div
+				aria-disabled="true"
+				className={clsx(className, "cursor-not-allowed opacity-50")}
+			>
+				<TryPlaygroundContent />
+			</div>
+		);
+	}
+
+	return (
+		<Link
+			href="/playground"
+			target="_blank"
+			rel="noopener noreferrer"
+			className={clsx(className, "hover:brightness-110")}
+		>
+			<TryPlaygroundContent />
+		</Link>
+	);
+}
+
+function TryPlaygroundSection({ isDisabled }: { isDisabled: boolean }) {
+	return (
+		<div>
+			<TryPlaygroundLink isDisabled={isDisabled} />
+			{isDisabled && (
+				<p className="mt-[8px] text-[12px] text-text-muted">
+					Connect your flow so it reaches the End Node from the Start Node to
+					enable “Try App in Playground”.
+				</p>
+			)}
+		</div>
 	);
 }
