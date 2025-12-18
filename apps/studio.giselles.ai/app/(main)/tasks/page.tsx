@@ -119,7 +119,7 @@ export default async function TaskListPage({
 					status: task.status,
 					origin: {
 						type: "github",
-						repoName: "test",
+						repoName: "GitHub",
 					},
 				} satisfies UITaskListRow;
 			}
