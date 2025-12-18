@@ -1,7 +1,6 @@
 "use client";
 
-import { nodeFactories } from "@giselles-ai/node-registry";
-import type { Node, VectorStoreContent } from "@giselles-ai/protocol";
+import type { Node } from "@giselles-ai/protocol";
 import { createContext, type ReactNode, useContext, useState } from "react";
 import type {
 	AddNodeTool,
@@ -12,7 +11,6 @@ import type {
 	SelectIntegrationTool,
 	SelectLanguageModelTool,
 	SelectLanguageModelV2Tool,
-	SelectTriggerTool,
 	Tool,
 } from "../types";
 
