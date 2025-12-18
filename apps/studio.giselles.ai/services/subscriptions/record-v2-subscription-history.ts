@@ -45,6 +45,12 @@ export async function recordV2SubscriptionHistory(
 	cadence: Stripe.V2.Billing.Cadence,
 	teamDbId: number,
 ) {
+	// Validate customerId - database requires non-null value
+	const customerId = cadence.payer.customer;
+	if (!customerId) {
+		throw new Error("Customer ID not found in cadence.payer");
+	}
+
 	// Get billing cycle time based on cycle type
 	const billingCycleTime = getBillingCycleTime(cadence.billing_cycle);
 
@@ -54,7 +60,7 @@ export async function recordV2SubscriptionHistory(
 		.values({
 			teamDbId,
 			id: cadence.id,
-			customerId: cadence.payer.customer ?? "",
+			customerId,
 			billingProfileId: cadence.payer.billing_profile,
 			payerType: cadence.payer.type,
 			billingCycleType: cadence.billing_cycle.type,
