@@ -283,25 +283,27 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 						)}
 					</div>
 
-					<button
-						type="button"
-						disabled={isTryAppInStageDisabled}
-						className="mt-[12px] w-full rounded-[12px] border border-blue-muted bg-blue-muted px-[16px] py-[12px] text-[14px] font-medium text-white transition-[filter] enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
-					>
-						<span className="inline-flex items-center justify-center gap-[8px]">
-							<span>Try App in Stage</span>
-							<SquareArrowOutUpRightIcon
-								className="size-[14px]"
-								aria-hidden="true"
-							/>
-						</span>
-					</button>
-					{isTryAppInStageDisabled && (
-						<p className="text-[12px] text-text-muted">
-							Connect your flow so it reaches the End Node from the Start Node
-							to enable “Try App in Stage”.
-						</p>
-					)}
+					<div className="mt-[12px] flex flex-col">
+						<button
+							type="button"
+							disabled={isTryAppInStageDisabled}
+							className="w-full rounded-[12px] border border-blue-muted bg-blue-muted px-[16px] py-[12px] text-[14px] font-medium text-white transition-[filter] enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+						>
+							<span className="inline-flex items-center justify-center gap-[8px]">
+								<span>Try App in Stage</span>
+								<SquareArrowOutUpRightIcon
+									className="size-[14px]"
+									aria-hidden="true"
+								/>
+							</span>
+						</button>
+						{isTryAppInStageDisabled && (
+							<p className="mt-[6px] text-[11px] text-text-muted/50">
+								Connect your flow so it reaches the End Node from the Start Node
+								to enable “Try App in Stage”.
+							</p>
+						)}
+					</div>
 				</div>
 			</PropertiesPanelContent>
 		</PropertiesPanelRoot>
