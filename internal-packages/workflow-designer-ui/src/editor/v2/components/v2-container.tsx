@@ -24,6 +24,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useShallow } from "zustand/shallow";
 import {
+	ConfirmProvider,
 	useAddAppEntryWithEndNodes,
 	useAddNode,
 	useAppDesignerStore,
@@ -539,62 +540,64 @@ export function V2Container({ leftPanel, onLeftPanelClose }: V2ContainerProps) {
 	const mainRef = useRef<HTMLDivElement>(null);
 
 	return (
-		<main className="relative flex-1 bg-bg overflow-hidden" ref={mainRef}>
-			<PanelGroup direction="horizontal" className="h-full flex">
-				{leftPanel !== null && (
-					<>
-						<Panel order={1}>
-							{leftPanel === "run-history" && (
-								<LeftPanel onClose={onLeftPanelClose} title="Run History">
-									<RunHistoryTable />
-								</LeftPanel>
-							)}
-							{leftPanel === "secret" && (
-								<LeftPanel onClose={onLeftPanelClose} title="Secrets">
-									<SecretTable />
-								</LeftPanel>
-							)}
-						</Panel>
-						<PanelResizeHandle
-							className={clsx(
-								"w-[12px] cursor-col-resize group flex items-center justify-center",
-							)}
-						>
-							<div
-								className={clsx(
-									"w-[3px] h-[32px] rounded-full transition-colors",
-									"bg-[#6b7280] opacity-60",
-									"group-data-[resize-handle-state=hover]:bg-[#4a90e2]",
-									"group-data-[resize-handle-state=drag]:bg-[#4a90e2]",
+		<ConfirmProvider>
+			<main className="relative flex-1 bg-bg overflow-hidden" ref={mainRef}>
+				<PanelGroup direction="horizontal" className="h-full flex">
+					{leftPanel !== null && (
+						<>
+							<Panel order={1}>
+								{leftPanel === "run-history" && (
+									<LeftPanel onClose={onLeftPanelClose} title="Run History">
+										<RunHistoryTable />
+									</LeftPanel>
 								)}
-							/>
-						</PanelResizeHandle>
-					</>
-				)}
+								{leftPanel === "secret" && (
+									<LeftPanel onClose={onLeftPanelClose} title="Secrets">
+										<SecretTable />
+									</LeftPanel>
+								)}
+							</Panel>
+							<PanelResizeHandle
+								className={clsx(
+									"w-[12px] cursor-col-resize group flex items-center justify-center",
+								)}
+							>
+								<div
+									className={clsx(
+										"w-[3px] h-[32px] rounded-full transition-colors",
+										"bg-[#6b7280] opacity-60",
+										"group-data-[resize-handle-state=hover]:bg-[#4a90e2]",
+										"group-data-[resize-handle-state=drag]:bg-[#4a90e2]",
+									)}
+								/>
+							</PanelResizeHandle>
+						</>
+					)}
 
-				<Panel order={2}>
-					{/* Main Content Area */}
-					<V2NodeCanvas />
-					{/* Floating Properties Panel */}
-					<FloatingPropertiesPanel
-						isOpen={isPropertiesPanelOpen}
-						container={mainRef.current}
-						title="Properties Panel"
-						defaultWidth={isTextGenerationPanel ? 400 : undefined}
-						minWidth={isTextGenerationPanel ? 400 : undefined}
-						autoHeight={
-							isFilePanel ||
-							isTextPanel ||
-							isVectorStorePanel ||
-							isWebPagePanel ||
-							isManualTriggerPanel
-						}
-					>
-						<PropertiesPanel />
-					</FloatingPropertiesPanel>
-				</Panel>
-			</PanelGroup>
-			<GradientDef />
-		</main>
+					<Panel order={2}>
+						{/* Main Content Area */}
+						<V2NodeCanvas />
+						{/* Floating Properties Panel */}
+						<FloatingPropertiesPanel
+							isOpen={isPropertiesPanelOpen}
+							container={mainRef.current}
+							title="Properties Panel"
+							defaultWidth={isTextGenerationPanel ? 400 : undefined}
+							minWidth={isTextGenerationPanel ? 400 : undefined}
+							autoHeight={
+								isFilePanel ||
+								isTextPanel ||
+								isVectorStorePanel ||
+								isWebPagePanel ||
+								isManualTriggerPanel
+							}
+						>
+							<PropertiesPanel />
+						</FloatingPropertiesPanel>
+					</Panel>
+				</PanelGroup>
+				<GradientDef />
+			</main>
+		</ConfirmProvider>
 	);
 }

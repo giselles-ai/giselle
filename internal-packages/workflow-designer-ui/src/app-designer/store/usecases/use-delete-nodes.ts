@@ -1,4 +1,5 @@
 import {
+	type AppId,
 	type Connection,
 	isActionNode,
 	isAppEntryNode,
@@ -6,9 +7,10 @@ import {
 	isOperationNode,
 	NodeId,
 	type NodeLike,
-	type NodeUIState,
+	type UIState,
 } from "@giselles-ai/protocol";
 import { useCallback } from "react";
+import { useConfirm } from "../../confirm";
 import { useAppDesignerStoreApi } from "../app-designer-provider";
 import { useGiselle } from "../giselle-client-provider";
 import { useSyncAppConnectionStateIfNeeded } from "./use-sync-app-connection-state-if-needed";
@@ -38,10 +40,7 @@ function computeNextStateForDelete(args: {
 	nodeIdsToDelete: Set<string>;
 	nodes: NodeLike[];
 	connections: Connection[];
-	ui: {
-		nodeState: Record<string, NodeUIState | undefined>;
-		selectedConnectionIds?: string[];
-	};
+	ui: UIState;
 }) {
 	const { nodeIdsToDelete, nodes, connections } = args;
 
@@ -50,9 +49,11 @@ function computeNextStateForDelete(args: {
 			nodeIdsToDelete.has(c.inputNode.id) ||
 			nodeIdsToDelete.has(c.outputNode.id),
 	);
-	const connectionIdsToDelete = new Set(connectionsToDelete.map((c) => c.id));
+	const connectionIdsToDelete = new Set(
+		connectionsToDelete.map((c) => c.id as string),
+	);
 
-	const ui = {
+	const ui: UIState = {
 		...args.ui,
 		nodeState: { ...args.ui.nodeState },
 	};
@@ -105,6 +106,7 @@ export function useDeleteNodes() {
 	const client = useGiselle();
 	const store = useAppDesignerStoreApi();
 	const syncAppConnectionStateIfNeeded = useSyncAppConnectionStateIfNeeded();
+	const confirm = useConfirm();
 
 	return useCallback(
 		async (nodeIdsToDelete: Array<NodeId | string>) => {
@@ -118,16 +120,21 @@ export function useDeleteNodes() {
 				});
 
 			if (shouldPairDelete) {
-				const ok = window.confirm(
-					"App Entry と End はセットです。どちらかを削除すると両方削除されます。削除しますか？",
-				);
+				const ok = await confirm({
+					title: "Delete App Entry and End?",
+					description:
+						"App Entry and End are a pair. Deleting either one will delete both. Do you want to continue?",
+					confirmLabel: "Delete",
+					cancelLabel: "Cancel",
+					destructive: true,
+				});
 				if (!ok) {
 					return;
 				}
 			}
 
 			// If AppEntry is configured and is being deleted, delete its backing App.
-			const appIdsToDelete = new Set<string>();
+			const appIdsToDelete = new Set<AppId>();
 			for (const nodeId of expandedDeleteSet) {
 				const targetNode = currentState.nodes.find((n) => n.id === nodeId);
 				if (
@@ -146,7 +153,12 @@ export function useDeleteNodes() {
 					connections: s.connections,
 					ui: s.ui,
 				});
-				return { ...s, ...next };
+				return {
+					...s,
+					nodes: next.nodes,
+					connections: next.connections,
+					ui: next.ui,
+				};
 			});
 
 			await Promise.all(
@@ -164,6 +176,6 @@ export function useDeleteNodes() {
 
 			syncAppConnectionStateIfNeeded();
 		},
-		[client, store, syncAppConnectionStateIfNeeded],
+		[client, confirm, store, syncAppConnectionStateIfNeeded],
 	);
 }
