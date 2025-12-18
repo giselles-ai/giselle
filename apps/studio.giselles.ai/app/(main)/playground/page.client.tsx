@@ -17,6 +17,7 @@ import {
 	type UploadedFileData,
 } from "@giselles-ai/protocol";
 import { APICallError, useGiselle } from "@giselles-ai/react";
+import clsx from "clsx/lite";
 import { ArrowUpIcon, Paperclip, Search, Sparkles, X } from "lucide-react";
 import { DynamicIcon, type IconName } from "lucide-react/dynamic";
 import { useRouter } from "next/navigation";
@@ -730,9 +731,12 @@ function ChatInputArea({
 								type="button"
 								onClick={handleSubmit}
 								disabled={!canSubmit}
-								className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[5px] bg-[color:var(--color-inverse)] disabled:cursor-not-allowed ${
-									hasInput && !hasPendingUploads ? "opacity-100" : "opacity-40"
-								}`}
+								className={clsx(
+									"flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[5px] disabled:cursor-not-allowed transition-[filter,opacity]",
+									hasInput && !hasPendingUploads
+										? "bg-blue-muted hover:brightness-110 opacity-100"
+										: "bg-blue-muted/40 opacity-40",
+								)}
 							>
 								<ArrowUpIcon className="h-3 w-3 text-[color:var(--color-background)]" />
 							</button>
