@@ -12,6 +12,7 @@ export * from "./use-copy-node";
 export * from "./use-copy-node-to-clipboard";
 export * from "./use-delete-connection";
 export * from "./use-delete-node";
+export * from "./use-delete-nodes";
 export * from "./use-delete-secret-and-cleanup-nodes";
 export * from "./use-deselect-connection";
 export * from "./use-disconnect-nodes";

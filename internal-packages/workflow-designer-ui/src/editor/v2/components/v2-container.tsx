@@ -29,7 +29,7 @@ import {
 	useAppDesignerStore,
 	useClearSelection,
 	useConnectNodes,
-	useDeleteNode,
+	useDeleteNodes,
 	useDeselectConnection,
 	useDisconnectNodes,
 	useSelectConnection,
@@ -137,7 +137,7 @@ function V2NodeCanvas() {
 		setUiNodeState: a.setUiNodeState,
 		setUiViewport: a.setUiViewport,
 	}));
-	const deleteNode = useDeleteNode();
+	const deleteNodes = useDeleteNodes();
 	const selectConnection = useSelectConnection();
 	const deselectConnection = useDeselectConnection();
 	const addNode = useAddNode();
@@ -347,6 +347,7 @@ function V2NodeCanvas() {
 
 	const handleNodesChange: OnNodesChange = useCallback(
 		(changes) => {
+			const nodeIdsToRemove: string[] = [];
 			for (const change of changes) {
 				switch (change.type) {
 					case "position": {
@@ -368,13 +369,16 @@ function V2NodeCanvas() {
 						break;
 					}
 					case "remove": {
-						deleteNode(change.id);
+						nodeIdsToRemove.push(change.id);
 						break;
 					}
 				}
 			}
+			if (nodeIdsToRemove.length > 0) {
+				void deleteNodes(nodeIdsToRemove);
+			}
 		},
-		[deleteNode, setUiNodeState],
+		[deleteNodes, setUiNodeState],
 	);
 
 	const handleEdgesChange: OnEdgesChange = useCallback(
