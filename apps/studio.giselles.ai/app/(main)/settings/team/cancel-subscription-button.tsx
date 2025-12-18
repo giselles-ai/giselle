@@ -13,6 +13,7 @@ import {
 } from "@giselle-internal/ui/dialog";
 import { X } from "lucide-react";
 import { useState, useTransition } from "react";
+import { formatTimestamp } from "@/packages/lib/utils";
 import {
 	type CancelSubscriptionResult,
 	cancelSubscription,
@@ -30,7 +31,9 @@ export function CancelSubscriptionButton({
 	const [open, setOpen] = useState(false);
 	const [isPending, startTransition] = useTransition();
 	const [error, setError] = useState<string | null>(null);
-	const [isSuccess, setIsSuccess] = useState(false);
+	const [successData, setSuccessData] = useState<{ willCancelAt: Date } | null>(
+		null,
+	);
 
 	// Only show for v2 subscriptions
 	if (!subscriptionId.startsWith("bpps_")) {
@@ -42,7 +45,7 @@ export function CancelSubscriptionButton({
 		startTransition(async () => {
 			const result: CancelSubscriptionResult = await cancelSubscription();
 			if (result.success) {
-				setIsSuccess(true);
+				setSuccessData({ willCancelAt: result.willCancelAt });
 				// Delay reload to allow webhook processing
 				setTimeout(() => {
 					window.location.reload();
@@ -54,7 +57,7 @@ export function CancelSubscriptionButton({
 	};
 
 	const handleCloseDialog = (event?: { preventDefault: () => void }) => {
-		if (isPending || isSuccess) {
+		if (isPending || successData) {
 			event?.preventDefault();
 			return;
 		}
@@ -63,7 +66,7 @@ export function CancelSubscriptionButton({
 	};
 
 	const handleOpenChange = (newOpen: boolean) => {
-		if (!newOpen && (isPending || isSuccess)) {
+		if (!newOpen && (isPending || successData)) {
 			return;
 		}
 		setOpen(newOpen);
@@ -78,19 +81,20 @@ export function CancelSubscriptionButton({
 				<Button variant="destructive">Cancel Subscription</Button>
 			</DialogTrigger>
 			<DialogContent
-				variant={isSuccess ? "default" : "destructive"}
+				variant={successData ? "default" : "destructive"}
 				onEscapeKeyDown={(e) => handleCloseDialog(e)}
 				onPointerDownOutside={(e) => handleCloseDialog(e)}
 			>
-				{isSuccess ? (
+				{successData ? (
 					<>
 						<DialogHeader>
 							<DialogTitle className="font-sans text-[20px] font-medium tracking-tight text-primary-400">
-								Subscription Cancelled
+								Cancellation Scheduled
 							</DialogTitle>
 							<DialogDescription className="font-geist mt-2 text-[14px] text-white-50">
-								Your subscription has been cancelled. The page will refresh
-								shortly.
+								Your subscription will be cancelled on{" "}
+								{formatTimestamp.toLongDate(successData.willCancelAt.getTime())}
+								. The page will refresh shortly.
 							</DialogDescription>
 						</DialogHeader>
 						<DialogBody />
@@ -109,7 +113,8 @@ export function CancelSubscriptionButton({
 							</div>
 							<DialogDescription className="font-geist mt-2 text-[14px] text-error-900/50">
 								Are you sure you want to cancel your subscription? Your team
-								will be downgraded to the Free plan immediately.
+								will be downgraded to the Free plan at the end of your current
+								billing period.
 							</DialogDescription>
 						</DialogHeader>
 						{error && (
