@@ -64,17 +64,11 @@ function AddOutputButton({
 					Add output
 				</Button>
 			}
-			items={[
-				{
-					groupId: "available-nodes",
-					groupLabel: "Nodes",
-					items: availableNodes.map((availableNode) => ({
-						value: availableNode.id,
-						label: availableNode.name ?? defaultName(availableNode),
-						node: availableNode,
-					})),
-				},
-			]}
+			items={availableNodes.map((availableNode) => ({
+				value: availableNode.id,
+				label: availableNode.name ?? defaultName(availableNode),
+				node: availableNode,
+			}))}
 			renderItem={(item) => (
 				<p className="text-[12px] truncate">{item.label}</p>
 			)}
@@ -177,13 +171,11 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 					<div className="space-y-0">
 						<div className="flex items-center justify-between gap-[12px]">
 							<SettingLabel className="mb-0">Output(s) of the app</SettingLabel>
-							{connectedOutputsByOutputNode.length > 0 && (
-								<AddOutputButton
-									availableNodes={availableOutputSourceNodes}
-									endNodeId={node.id}
-									onConnectNodes={connectNodes}
-								/>
-							)}
+							<AddOutputButton
+								availableNodes={availableOutputSourceNodes}
+								endNodeId={node.id}
+								onConnectNodes={connectNodes}
+							/>
 						</div>
 						<p className="text-[11px] text-text-muted/50">
 							What is displayed here will be shown as the result of the App.
@@ -192,22 +184,15 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 
 					<div className="flex flex-col gap-[8px]">
 						{connectedOutputsByOutputNode.length === 0 ? (
-							<div className="rounded-[12px] border border-border-muted bg-background px-[12px] py-[10px]">
-								<p className="text-[12px] text-text-muted">
+							<div className="rounded-[12px] bg-error-900/10 px-[12px] py-[10px]">
+								<p className="text-[12px] text-error-900">
 									No outputs are connected to this End node yet.
 								</p>
-								<div className="mt-[10px] flex items-center justify-between gap-[12px]">
-									<AddOutputButton
-										availableNodes={availableOutputSourceNodes}
-										endNodeId={node.id}
-										onConnectNodes={connectNodes}
-									/>
-									{availableOutputSourceNodes.length === 0 && (
-										<p className="text-[11px] text-text-muted/70">
-											Add a node to use as an App output first.
-										</p>
-									)}
-								</div>
+								{availableOutputSourceNodes.length === 0 && (
+									<p className="mt-[6px] text-[11px] text-text-muted/70">
+										Add a node to use as an App output first.
+									</p>
+								)}
 							</div>
 						) : (
 							<ul className="flex flex-col gap-[8px]">
