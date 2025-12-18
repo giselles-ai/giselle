@@ -2,16 +2,15 @@
 
 
 ## Summary
-* 898 MIT
-* 180 Apache 2.0
+* 894 MIT
+* 179 Apache 2.0
 * 41 ISC
 * 27 New BSD
 * 16 Simplified BSD
 * 6 BlueOak-1.0.0
-* 3 MIT OR Apache-2.0
-* 3 Mozilla Public License 2.0
+* 2 MIT OR Apache-2.0
 * 2 MIT-0
-* 2 LGPL-3.0-or-later
+* 2 Mozilla Public License 2.0
 * 1 BSD
 * 1 (MIT OR CC0-1.0)
 * 1 BSD Zero Clause License
@@ -22,6 +21,7 @@
 * 1 CC-BY-4.0
 * 1 Python-2.0
 * 1 (Apache-2.0 AND BSD-3-Clause)
+* 1 LGPL-3.0-or-later
 
 
 
@@ -809,17 +809,6 @@ MIT OR Apache-2.0 permitted
 
 
 
-<a name="@biomejs/cli-linux-x64-musl"></a>
-### @biomejs/cli-linux-x64-musl v2.0.6
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-MIT OR Apache-2.0 permitted
-
-
-
 <a name="@bugsnag/cuid"></a>
 ### @bugsnag/cuid v3.2.1
 #### 
@@ -1282,30 +1271,8 @@ LGPL-3.0-or-later permitted
 
 
 
-<a name="@img/sharp-libvips-linuxmusl-x64"></a>
-### @img/sharp-libvips-linuxmusl-x64 v1.2.3
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-LGPL-3.0-or-later permitted
-
-
-
 <a name="@img/sharp-linux-x64"></a>
 ### @img/sharp-linux-x64 v0.34.4
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
-
-
-
-<a name="@img/sharp-linuxmusl-x64"></a>
-### @img/sharp-linuxmusl-x64 v0.34.4
 #### 
 
 ##### Paths
@@ -1504,17 +1471,6 @@ LGPL-3.0-or-later permitted
 
 <a name="@next/swc-linux-x64-gnu"></a>
 ### @next/swc-linux-x64-gnu v16.0.10
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="@next/swc-linux-x64-musl"></a>
-### @next/swc-linux-x64-musl v16.0.10
 #### 
 
 ##### Paths
@@ -2197,17 +2153,6 @@ LGPL-3.0-or-later permitted
 
 <a name="@oxc-resolver/binding-linux-x64-gnu"></a>
 ### @oxc-resolver/binding-linux-x64-gnu v11.13.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="@oxc-resolver/binding-linux-x64-musl"></a>
-### @oxc-resolver/binding-linux-x64-musl v11.13.0
 #### 
 
 ##### Paths
@@ -3361,17 +3306,6 @@ LGPL-3.0-or-later permitted
 
 
 
-<a name="@rollup/rollup-linux-x64-musl"></a>
-### @rollup/rollup-linux-x64-musl v4.49.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="@s2-dev/streamstore"></a>
 ### @s2-dev/streamstore v0.17.3
 #### 
@@ -4276,17 +4210,6 @@ LGPL-3.0-or-later permitted
 
 <a name="@tailwindcss/oxide-linux-x64-gnu"></a>
 ### @tailwindcss/oxide-linux-x64-gnu v4.1.10
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="@tailwindcss/oxide-linux-x64-musl"></a>
-### @tailwindcss/oxide-linux-x64-musl v4.1.10
 #### 
 
 ##### Paths
@@ -8612,17 +8535,6 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="lightningcss-linux-x64-musl"></a>
-### lightningcss-linux-x64-musl v1.30.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="https://www.mozilla.org/media/MPL/2.0/index.815ca599c9df.txt">Mozilla Public License 2.0</a> permitted
-
-
-
 <a name="lilconfig"></a>
 ### lilconfig v3.1.3
 #### 
@@ -11675,7 +11587,7 @@ Unknown manually approved
 
 
 <a name="stripe"></a>
-### stripe v20.1.0-alpha.4
+### stripe v20.2.0-alpha.1
 #### 
 
 ##### Paths
