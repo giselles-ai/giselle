@@ -135,11 +135,9 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 			existing.items.push({ connection, outputLabel });
 		}
 
-		return [...groups.values()].sort((a, b) => {
-			const aName = a.outputNode ? defaultName(a.outputNode) : a.outputNodeId;
-			const bName = b.outputNode ? defaultName(b.outputNode) : b.outputNodeId;
-			return aName.localeCompare(bName);
-		});
+		// Preserve insertion order (i.e. the order connections were created),
+		// so newly connected output nodes appear below earlier ones.
+		return [...groups.values()];
 	}, [connections, node.id, nodes]);
 
 	const availableOutputSourceNodes = useMemo(() => {
@@ -202,14 +200,14 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 										<li
 											key={group.outputNodeId}
 											className={clsx(
-												"flex gap-[10px] rounded-[12px] border border-border-muted bg-background px-[12px] py-[10px] min-w-0 group",
+												"flex gap-[10px] rounded-[12px] border border-border-muted bg-transparent px-[12px] py-[10px] min-w-0 group",
 												hasMultipleOutputs ? "items-start" : "items-center",
 											)}
 										>
 											{group.outputNode ? (
 												<div
 													className={clsx(
-														"flex size-[24px] shrink-0 items-center justify-center rounded-[6px] bg-black/10",
+														"flex size-[24px] shrink-0 items-center justify-center",
 														hasMultipleOutputs && "mt-[2px]",
 													)}
 												>
@@ -221,7 +219,7 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 											) : (
 												<div
 													className={clsx(
-														"flex size-[24px] shrink-0 items-center justify-center rounded-[6px] bg-black/10 text-[10px] text-text-muted",
+														"flex size-[24px] shrink-0 items-center justify-center text-[10px] text-text-muted",
 														hasMultipleOutputs && "mt-[2px]",
 													)}
 												>
