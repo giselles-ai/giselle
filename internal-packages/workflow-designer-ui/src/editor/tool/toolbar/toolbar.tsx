@@ -199,6 +199,8 @@ export function Toolbar() {
 		/>
 	);
 
+	const { stage } = useFeatureFlag();
+
 	return (
 		<div
 			className="relative rounded-[12px] overflow-hidden"
@@ -257,16 +259,18 @@ export function Toolbar() {
 						}
 					}}
 				>
-					<ToggleGroup.Item
-						value="selectTrigger"
-						data-tool
-						className="relative order-1"
-						disabled={isStageFlowAlreadyPlaced}
-					>
-						<Tooltip text={<TooltipAndHotkey text="App" hotkey="a" />}>
-							<HammerIcon data-icon />
-						</Tooltip>
-					</ToggleGroup.Item>
+					{stage && (
+						<ToggleGroup.Item
+							value="selectTrigger"
+							data-tool
+							className="relative order-1"
+							disabled={isStageFlowAlreadyPlaced}
+						>
+							<Tooltip text={<TooltipAndHotkey text="App" hotkey="a" />}>
+								<HammerIcon data-icon />
+							</Tooltip>
+						</ToggleGroup.Item>
+					)}
 
 					<ToggleGroup.Item
 						value="selectIntegration"
