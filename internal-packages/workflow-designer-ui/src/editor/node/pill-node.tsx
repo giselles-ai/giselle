@@ -50,7 +50,7 @@ export function PillXyFlowNode({ id, selected }: NodeProps) {
 	);
 }
 
-function PillNode({
+export function PillNode({
 	node,
 	selected,
 	highlighted,
