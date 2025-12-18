@@ -1,15 +1,15 @@
 import { and, desc, eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { acts, agents, db } from "@/db";
-import { stageFlag } from "@/flags";
+import { stageV2Flag } from "@/flags";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchCurrentTeam, fetchUserTeams } from "@/services/teams";
 import { fetchFlowTriggers } from "../(depreacted)/services";
 import { ShowcaseClient } from "./showcase-client";
 
 export default async function StageShowcasePage() {
-	const enableStage = await stageFlag();
-	if (!enableStage) {
+	const enableStageV2 = await stageV2Flag();
+	if (!enableStageV2) {
 		return notFound();
 	}
 

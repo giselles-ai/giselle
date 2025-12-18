@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { stageV2Flag } from "@/flags";
 import { PlaylistDetailClient } from "./playlist-detail-client";
 
 interface PlaylistDetailPageProps {
@@ -69,6 +70,11 @@ function fetchPlaylistById(id: string) {
 export default async function PlaylistDetailPage({
 	params,
 }: PlaylistDetailPageProps) {
+	const enableStageV2 = await stageV2Flag();
+	if (!enableStageV2) {
+		notFound();
+	}
+
 	const { id } = await params;
 	const playlist = await fetchPlaylistById(id);
 
