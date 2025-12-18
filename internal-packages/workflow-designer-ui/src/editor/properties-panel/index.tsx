@@ -2,6 +2,7 @@ import {
 	isActionNode,
 	isAppEntryNode,
 	isContentGenerationNode,
+	isEndNode,
 	isFileNode,
 	isImageGenerationNode,
 	isQueryNode,
@@ -19,6 +20,7 @@ import {
 } from "../../app-designer";
 import { ActionNodePropertiesPanel } from "./action-node-properties-panel";
 import { AppEntryNodePropertiesPanel } from "./app-entry-node-properties-panel";
+import { EndNodePropertiesPanel } from "./end-node-properties-panel";
 import { FileNodePropertiesPanel } from "./file-node-properties-panel";
 import { ImageGenerationNodePropertiesPanel } from "./image-generation-node-properties-panel";
 import { QueryNodePropertiesPanel } from "./query-node-properties-panel";
@@ -110,6 +112,12 @@ export function PropertiesPanel() {
 			)}
 			{isContentGenerationNode(selectedNodes[0]) && (
 				<TextGenerationNodePropertiesPanelV2
+					node={selectedNodes[0]}
+					key={selectedNodes[0].id}
+				/>
+			)}
+			{isEndNode(selectedNodes[0]) && (
+				<EndNodePropertiesPanel
 					node={selectedNodes[0]}
 					key={selectedNodes[0].id}
 				/>
