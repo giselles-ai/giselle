@@ -24,6 +24,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useShallow } from "zustand/shallow";
 import {
+	useAddAppEntryWithEndNodes,
 	useAddNode,
 	useAppDesignerStore,
 	useClearSelection,
@@ -140,6 +141,7 @@ function V2NodeCanvas() {
 	const selectConnection = useSelectConnection();
 	const deselectConnection = useDeselectConnection();
 	const addNode = useAddNode();
+	const addAppEntryWithEndNodes = useAddAppEntryWithEndNodes();
 	const selectSingleNode = useSelectSingleNode();
 	const clearSelection = useClearSelection();
 	const setCurrentShortcutScope = useSetCurrentShortcutScope();
@@ -425,7 +427,14 @@ function V2NodeCanvas() {
 					x: e.clientX,
 					y: e.clientY,
 				});
-				addNode(selectedTool.node, { position });
+				if (isAppEntryNode(selectedTool.node)) {
+					addAppEntryWithEndNodes({
+						appEntryNode: selectedTool.node,
+						position,
+					});
+				} else {
+					addNode(selectedTool.node, { position });
+				}
 			}
 			reset();
 			// Set canvas focus when clicking on canvas
@@ -436,6 +445,7 @@ function V2NodeCanvas() {
 			reactFlowInstance,
 			selectedTool,
 			addNode,
+			addAppEntryWithEndNodes,
 			reset,
 			setCurrentShortcutScope,
 		],

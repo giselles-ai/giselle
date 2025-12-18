@@ -1,3 +1,4 @@
+export * from "./use-add-app-entry-with-end-nodes";
 export * from "./use-add-connection";
 export * from "./use-add-connection-and-add-input";
 export * from "./use-add-node";
