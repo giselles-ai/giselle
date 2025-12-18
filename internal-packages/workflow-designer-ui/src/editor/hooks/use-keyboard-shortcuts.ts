@@ -1,15 +1,17 @@
+import { createAppEntryNode } from "@giselles-ai/node-registry";
+import { isAppEntryNode, isEndNode } from "@giselles-ai/protocol";
 import { useFeatureFlag } from "@giselles-ai/react";
 import { useKeyPress } from "@xyflow/react";
 import { useCallback, useEffect, useRef } from "react";
 import { useAppDesignerStore } from "../../app-designer";
 import { useNodeManipulation } from "../node";
 import {
+	addNodeTool,
 	moveTool,
 	selectContextTool,
 	selectIntegrationTool,
 	selectLanguageModelTool,
 	selectLanguageModelV2Tool,
-	selectTriggerTool,
 	useToolbar,
 } from "../tool/toolbar";
 import type { Tool } from "../tool/types";
@@ -78,6 +80,7 @@ export function useKeyboardShortcuts(
 	const currentShortcutScope = useAppDesignerStore(
 		(s) => s.currentShortcutScope,
 	);
+	const nodes = useAppDesignerStore((s) => s.nodes);
 	const { generateContentNode } = useFeatureFlag();
 	const {
 		copy: handleCopy,
@@ -88,9 +91,16 @@ export function useKeyboardShortcuts(
 
 	const isCanvasFocused = currentShortcutScope === "canvas";
 	const isPropertiesPanelFocused = currentShortcutScope === "properties-panel";
+	const isStageFlowAlreadyPlaced =
+		nodes.some((node) => isAppEntryNode(node)) ||
+		nodes.some((node) => isEndNode(node));
 
 	// Tool shortcuts using the simplified hook
-	useToolAction("a", selectTriggerTool);
+	useToolAction(
+		"a",
+		() => addNodeTool(createAppEntryNode()),
+		!isStageFlowAlreadyPlaced,
+	);
 	useToolAction("e", selectIntegrationTool);
 	useToolAction("c", selectContextTool);
 	useToolAction("m", selectLanguageModelTool, !generateContentNode);
