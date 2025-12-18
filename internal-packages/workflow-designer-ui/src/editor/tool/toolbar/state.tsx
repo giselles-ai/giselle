@@ -99,13 +99,6 @@ export function selectContextTool() {
 	} satisfies SelectContextTool;
 }
 
-export function selectTriggerTool() {
-	return {
-		action: "selectTrigger",
-		category: "edit",
-	} satisfies SelectTriggerTool;
-}
-
 export function selectGithubTriggerTool() {
 	return {
 		action: "selectGithubTrigger",
@@ -118,12 +111,4 @@ export function selectIntegrationTool() {
 		action: "selectIntegration",
 		category: "edit",
 	} satisfies SelectIntegrationTool;
-}
-
-function _vectorStoreNode(provider: VectorStoreContent["source"]["provider"]) {
-	return nodeFactories.create("vectorStore", provider);
-}
-
-function _webPageNode() {
-	return nodeFactories.create("webPage");
 }
