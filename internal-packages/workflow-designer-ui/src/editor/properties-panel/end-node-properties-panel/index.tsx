@@ -1,5 +1,14 @@
 "use client";
 
+/**
+ * For editors (humans, Coding Agents like Cursor / Claude Code, etc.)
+ *
+ * Before modifying this component, please read:
+ * - ./end-node-properties-panel-spec.md
+ *
+ * It documents the required behavior/invariants and includes a post-change checklist.
+ */
+
 import { Button } from "@giselle-internal/ui/button";
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
 import { defaultName } from "@giselles-ai/node-registry";
