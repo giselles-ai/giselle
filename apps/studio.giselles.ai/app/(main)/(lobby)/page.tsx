@@ -1,4 +1,12 @@
-export default function LobyPage() {
+import { notFound } from "next/navigation";
+import { stageV2Flag } from "@/flags";
+
+export default async function LobyPage() {
+	const enableStageV2 = await stageV2Flag();
+	if (!enableStageV2) {
+		return notFound();
+	}
+
 	return (
 		<div className="px-6 py-6 md:px-10 md:py-10 text-text">
 			<section className="mb-8">
