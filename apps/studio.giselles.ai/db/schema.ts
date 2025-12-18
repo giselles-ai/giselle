@@ -45,7 +45,7 @@ import { vectorWithoutDimensions } from "./custom-types";
  * Stores snapshots of billing cadence data from Stripe v2 API.
  * Each webhook event creates a new history record.
  *
- * @see https://docs.stripe.com/api/v2/billing-cadences/object?api-version=2025-11-17.preview
+ * @see https://docs.stripe.com/api/v2/billing-cadences/object?api-version=2025-12-15.preview
  */
 export const stripeBillingCadenceHistories = pgTable(
 	"stripe_billing_cadence_histories",
@@ -117,7 +117,7 @@ export const stripeBillingCadenceHistoryRelations = relations(
  * Stores snapshots of pricing plan subscription data from Stripe v2 API.
  * Each webhook event creates a new history record.
  *
- * @see https://docs.stripe.com/api/v2/pricing-plan-subscriptions/object?api-version=2025-11-17.preview
+ * @see https://docs.stripe.com/api/v2/pricing-plan-subscriptions/object?api-version=2025-12-15.preview
  */
 export const stripePricingPlanSubscriptionHistories = pgTable(
 	"stripe_pricing_plan_subscription_histories",
