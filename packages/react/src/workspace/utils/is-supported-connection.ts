@@ -4,6 +4,8 @@ import {
 	languageModels,
 } from "@giselles-ai/language-model";
 import {
+	isAppEntryNode,
+	isEndNode,
 	isFileNode,
 	isImageGenerationNode,
 	isQueryNode,
@@ -33,6 +35,17 @@ export function isSupportedConnection(
 		return {
 			canConnect: false,
 			message: "This node does not receive inputs",
+		};
+	}
+
+	// v2container: AppEntryNode and EndNode cannot be connected directly.
+	if (
+		(isAppEntryNode(outputNode) && isEndNode(inputNode)) ||
+		(isEndNode(outputNode) && isAppEntryNode(inputNode))
+	) {
+		return {
+			canConnect: false,
+			message: "Connecting App Entry and End nodes is not allowed",
 		};
 	}
 

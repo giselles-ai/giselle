@@ -7,6 +7,8 @@ import {
 } from "@giselles-ai/language-model";
 import type {
 	ActionNode,
+	AppEntryNode,
+	EndNode,
 	FileNode,
 	GitHubNode,
 	ImageGenerationLanguageModelData,
@@ -138,6 +140,33 @@ describe("isSupportedConnection", () => {
 		},
 	});
 
+	const createAppEntryNode = (id: NodeId): AppEntryNode => ({
+		id,
+		type: "operation",
+		inputs: [],
+		outputs: [],
+		content: {
+			type: "appEntry",
+			status: "unconfigured",
+			draftApp: {
+				name: "test",
+				description: "test",
+				iconName: "test",
+				parameters: [],
+			},
+		},
+	});
+
+	const createEndNode = (id: NodeId): EndNode => ({
+		id,
+		type: "operation",
+		inputs: [],
+		outputs: [],
+		content: {
+			type: "end",
+		},
+	});
+
 	describe("Basic validation", () => {
 		test("should reject connection between the same node", () => {
 			const node = createTextGenerationNode("nd-test1");
@@ -161,6 +190,29 @@ describe("isSupportedConnection", () => {
 				"message",
 				"This node does not receive inputs",
 			);
+		});
+	});
+
+	describe("v2container restrictions", () => {
+		test("should reject connection between AppEntryNode and EndNode", () => {
+			const appEntryNode = createAppEntryNode(NodeId.generate());
+			const endNode = createEndNode(NodeId.generate());
+
+			const result1 = isSupportedConnection(appEntryNode, endNode);
+			expect(result1.canConnect).toBe(false);
+			if (!result1.canConnect) {
+				expect(result1.message).toBe(
+					"Connecting App Entry and End nodes is not allowed",
+				);
+			}
+
+			const result2 = isSupportedConnection(endNode, appEntryNode);
+			expect(result2.canConnect).toBe(false);
+			if (!result2.canConnect) {
+				expect(result2.message).toBe(
+					"Connecting App Entry and End nodes is not allowed",
+				);
+			}
 		});
 	});
 
