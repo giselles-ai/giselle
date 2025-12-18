@@ -260,7 +260,7 @@ export function Toolbar() {
 					<ToggleGroup.Item
 						value="selectTrigger"
 						data-tool
-						className="relative"
+						className="relative order-1"
 						disabled={isStageFlowAlreadyPlaced}
 					>
 						<Tooltip text={<TooltipAndHotkey text="App" hotkey="a" />}>
@@ -271,7 +271,7 @@ export function Toolbar() {
 					<ToggleGroup.Item
 						value="selectIntegration"
 						data-tool
-						className="relative"
+						className="relative order-4"
 					>
 						<Tooltip text={<TooltipAndHotkey text="Event" hotkey="e" />}>
 							<CableIcon data-icon />
@@ -366,7 +366,7 @@ export function Toolbar() {
 					<ToggleGroup.Item
 						value="selectContext"
 						data-tool
-						className="relative"
+						className="relative order-3"
 					>
 						<Tooltip text={<TooltipAndHotkey text="Context" hotkey="c" />}>
 							<Layers2Icon data-icon />
@@ -553,7 +553,7 @@ export function Toolbar() {
 						<ToggleGroup.Item
 							value="selectLanguageModel"
 							data-tool
-							className="relative"
+							className="relative order-2"
 						>
 							<Tooltip text={<TooltipAndHotkey text="Model" hotkey="m" />}>
 								<SparklesIcon data-icon />
@@ -973,7 +973,7 @@ export function Toolbar() {
 						<ToggleGroup.Item
 							value="selectLanguageModelV2"
 							data-tool
-							className="relative"
+							className="relative order-2"
 						>
 							<Tooltip text={<TooltipAndHotkey text="Model" hotkey="m" />}>
 								<SparklesIcon data-icon />
