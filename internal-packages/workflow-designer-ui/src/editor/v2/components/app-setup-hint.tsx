@@ -28,7 +28,7 @@ export function AppSetupHint() {
 					<div className="flex items-center gap-[8px]">
 						<InfoIcon className="size-[16px]" />
 						<p className="text-[14px] font-medium">
-							Connect nodes to create a path from Start to End
+							Create an app by connecting nodes from Start to End.
 						</p>
 					</div>
 				</motion.div>
