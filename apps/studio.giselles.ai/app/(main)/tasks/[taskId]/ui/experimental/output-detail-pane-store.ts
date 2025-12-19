@@ -7,25 +7,18 @@ type OpenedOutput = {
 	id: string;
 	title: string;
 	generation: Generation;
-	pathname: string;
 };
 
 type OutputDetailPaneState = {
 	opened: OpenedOutput | null;
-	open: (output: Omit<OpenedOutput, "pathname">) => void;
+	open: (output: OpenedOutput) => void;
 	close: () => void;
 };
 
 export const useOutputDetailPaneStore = create<OutputDetailPaneState>(
 	(set) => ({
 		opened: null,
-		open: (output) =>
-			set({
-				opened: {
-					...output,
-					pathname: globalThis.location?.pathname ?? "",
-				},
-			}),
+		open: (output) => set({ opened: output }),
 		close: () => set({ opened: null }),
 	}),
 );
