@@ -82,7 +82,7 @@ export function defaultName(node: NodeLike) {
 					if (!isQueryNode(node)) {
 						throw new Error(`Expected query node, got ${node.type}`);
 					}
-					return node.name ?? "Query";
+					return node.name ?? "Vector Query";
 				case "end":
 					if (!isEndNode(node)) {
 						throw new Error(`Expected end node, got ${node.type}`);
