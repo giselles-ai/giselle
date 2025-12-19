@@ -156,7 +156,7 @@ export function TaskHeader({
 
 				{/* Task input preview */}
 				<div className="mt-3">
-					<div className="rounded-[10px] border border-blue-muted/40 bg-blue-muted/7 px-3 py-2 text-[13px] text-text/80">
+					<div className="rounded-[10px] bg-blue-muted/7 px-3 py-2 text-[13px] text-text/80">
 						{input == null ? (
 							<p>No task input</p>
 						) : (

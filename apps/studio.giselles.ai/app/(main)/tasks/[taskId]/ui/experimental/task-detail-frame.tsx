@@ -28,7 +28,7 @@ export function TaskDetailFrame({ children }: React.PropsWithChildren) {
 				<div className="max-w-[640px] w-full mx-auto flex flex-col h-full px-2">
 					{children}
 					{opened ? (
-						<div className="mt-4 overflow-hidden rounded-xl bg-blue-muted/5 min-w-0 flex flex-col px-2 py-3">
+						<div className="mt-4 overflow-hidden bg-white/5 border border-white/5 min-w-0 flex flex-col px-2 py-3">
 							<div className="flex items-center justify-between mb-2 w-full gap-3">
 								<h3 className="text-[16px] font-medium text-inverse truncate">
 									{opened.title}
@@ -58,7 +58,7 @@ export function TaskDetailFrame({ children }: React.PropsWithChildren) {
 				{opened ? (
 					<PanelGroup
 						direction="horizontal"
-						className="h-full px-2"
+						className="h-full"
 						autoSaveId="task-detail-split"
 					>
 						<Panel defaultSize={50} minSize={30}>
@@ -75,7 +75,7 @@ export function TaskDetailFrame({ children }: React.PropsWithChildren) {
 						>
 							<div
 								className={clsx(
-									"w-full h-[32px] rounded-full transition-colors",
+									"w-full h-[32px] translate-x-[2px] rounded-full transition-colors",
 									"bg-[#6b7280] opacity-60",
 									"group-data-[resize-handle-state=hover]:bg-[#4a90e2]",
 									"group-data-[resize-handle-state=drag]:bg-[#4a90e2]",
@@ -84,7 +84,7 @@ export function TaskDetailFrame({ children }: React.PropsWithChildren) {
 						</PanelResizeHandle>
 						<Panel defaultSize={50} minSize={20}>
 							<div className="h-full">
-								<div className="h-full overflow-hidden rounded-xl bg-blue-muted/5 min-w-0 flex flex-col px-3 py-3">
+								<div className="h-full overflow-hidden bg-white/5 border border-white/5 min-w-0 flex flex-col px-4 py-3">
 									<div className="flex items-center justify-between mb-2 w-full gap-3">
 										<h3 className="text-[16px] font-medium text-inverse truncate">
 											{opened.title}
