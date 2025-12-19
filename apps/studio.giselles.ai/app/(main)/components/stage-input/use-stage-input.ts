@@ -477,13 +477,18 @@ export function useStageInput({
 	const { handleCompositionStart, handleCompositionEnd, handleKeyDown } =
 		useEnterSubmit(submitInputs);
 
+	const localPreviewsRef = useRef(localPreviews);
+	useEffect(() => {
+		localPreviewsRef.current = localPreviews;
+	}, [localPreviews]);
+
 	useEffect(() => {
 		return () => {
-			for (const previewUrl of localPreviews.values()) {
+			for (const previewUrl of localPreviewsRef.current.values()) {
 				URL.revokeObjectURL(previewUrl);
 			}
 		};
-	}, [localPreviews]);
+	}, []);
 
 	return useMemo(
 		() => ({
