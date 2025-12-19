@@ -28,12 +28,21 @@ const defaultConfigurations: OpenAILanguageModelConfigurations = {
 };
 
 /**
- * GPT-5.2 and GPT-5.1 variants default to "none" for lower latency.
+ * GPT-5.2 and GPT-5.1-thinking default to "none" for lower latency.
  * @see https://platform.openai.com/docs/guides/latest-model#gpt-5-2-parameter-compatibility
  */
-const gpt52And51Configurations: OpenAILanguageModelConfigurations = {
+const gpt52And51ThinkingConfigurations: OpenAILanguageModelConfigurations = {
 	...defaultConfigurations,
 	reasoningEffort: "none",
+};
+
+/**
+ * GPT-5.1-codex only supports reasoningEffort: low/medium/high and textVerbosity: medium.
+ */
+const gpt51CodexConfigurations: OpenAILanguageModelConfigurations = {
+	...defaultConfigurations,
+	reasoningEffort: "medium",
+	textVerbosity: "medium",
 };
 
 export const OpenAILanguageModelId = z
@@ -115,7 +124,7 @@ const gpt52: OpenAILanguageModel = {
 		Capability.OptionalSearchGrounding |
 		Capability.Reasoning,
 	tier: Tier.enum.pro,
-	configurations: gpt52And51Configurations,
+	configurations: gpt52And51ThinkingConfigurations,
 };
 
 const gpt51Thinking: OpenAILanguageModel = {
@@ -127,7 +136,7 @@ const gpt51Thinking: OpenAILanguageModel = {
 		Capability.OptionalSearchGrounding |
 		Capability.Reasoning,
 	tier: Tier.enum.pro,
-	configurations: gpt52And51Configurations,
+	configurations: gpt52And51ThinkingConfigurations,
 };
 
 const gpt51codex: OpenAILanguageModel = {
@@ -139,7 +148,7 @@ const gpt51codex: OpenAILanguageModel = {
 		Capability.OptionalSearchGrounding |
 		Capability.Reasoning,
 	tier: Tier.enum.pro,
-	configurations: gpt52And51Configurations,
+	configurations: gpt51CodexConfigurations,
 };
 
 const gpt5: OpenAILanguageModel = {
