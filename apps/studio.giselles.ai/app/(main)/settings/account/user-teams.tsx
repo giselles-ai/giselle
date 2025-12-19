@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { teams as teamsTable } from "@/db";
 import { cn } from "@/lib/utils";
-import { Toast } from "@/packages/components/toast";
 import { useToast } from "@/packages/contexts/toast";
 import { TeamAvatarImage } from "@/services/teams/components/team-avatar-image";
 import { leaveTeam, navigateWithChangeTeam } from "./actions";
@@ -38,7 +37,6 @@ export default function UserTeams({
 	};
 }) {
 	const [teamName, setTeamName] = useState("");
-	const { toasts } = useToast();
 
 	const handleChangeTeamName = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setTeamName(e.target.value);
@@ -86,14 +84,6 @@ export default function UserTeams({
 					))}
 				</div>
 			</div>
-			{toasts.map((toast) => (
-				<Toast
-					key={toast.id}
-					title={toast.title}
-					message={toast.message}
-					type={toast.type}
-				/>
-			))}
 		</>
 	);
 }

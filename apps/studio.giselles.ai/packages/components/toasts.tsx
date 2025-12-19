@@ -1,15 +1,7 @@
 "use client";
 
-import { Toast } from "@giselles-ai/components/toast";
-import { useToast } from "@giselles-ai/contexts/toast";
-
 export function Toasts() {
-	const { toasts } = useToast();
-	return (
-		<>
-			{toasts.map(({ id, ...props }) => (
-				<Toast key={id} {...props} />
-			))}
-		</>
-	);
+	// `@giselle-internal/ui/toast` renders its own viewport + toast UI.
+	// Keep this component as a no-op for any legacy imports.
+	return null;
 }
