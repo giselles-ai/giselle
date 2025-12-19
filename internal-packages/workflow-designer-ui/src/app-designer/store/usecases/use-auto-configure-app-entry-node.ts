@@ -42,7 +42,7 @@ export function useAutoConfigureAppEntryNode() {
 			const parseResult = App.safeParse(appLike);
 			if (!parseResult.success) {
 				console.error(
-					"Failed to auto-configure start node:",
+					"Failed to auto-configure app entry node:",
 					parseResult.error,
 				);
 				return;

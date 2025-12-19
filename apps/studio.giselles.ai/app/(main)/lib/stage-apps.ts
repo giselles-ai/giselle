@@ -77,7 +77,7 @@ async function getAppsBySampleFlag(
 			);
 			if (appEntryNode === undefined) {
 				logger.warn(
-					`Start node<${dbWorkspace.app.appEntryNodeId}> not found for app<${dbWorkspace.app.id}>.`,
+					`App entry node<${dbWorkspace.app.appEntryNodeId}> not found for app<${dbWorkspace.app.id}>.`,
 				);
 				return null;
 			}
@@ -90,7 +90,7 @@ async function getAppsBySampleFlag(
 			const llmProviders = new Set<string>();
 
 			// Build adjacency list from workspace connections so we can
-			// traverse only nodes that are reachable from the start node.
+			// traverse only nodes that are reachable from the app entry node.
 			const connectionsByOutputNodeId = new Map<string, string[]>();
 			for (const connection of giselleWorkspace.connections ?? []) {
 				const outputNodeId = connection.outputNode.id;

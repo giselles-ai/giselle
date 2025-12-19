@@ -116,7 +116,7 @@ export async function createTask(
 		starterNode?.content.type === "appEntry" &&
 		starterNode?.content.status === "unconfigured"
 	) {
-		throw new Error("Start node is unconfigured");
+		throw new Error("App entry node is unconfigured");
 	}
 
 	const taskId = TaskId.generate();
@@ -131,7 +131,7 @@ export async function createTask(
 			// Exclusion conditions: Skip nodes that are:
 			// - undefined (not found)
 			// - not operation nodes
-			// - start nodes (starting points)
+			// - app entry nodes (starting points)
 			// - end nodes (termination points)
 			if (
 				node === undefined ||
@@ -239,7 +239,7 @@ export async function createTask(
 			break;
 		case "stage":
 			if (!isAppEntryNode(starterNode)) {
-				throw new Error("starterNode must be an start node");
+				throw new Error("starterNode must be an app entry node");
 			}
 			if (starterNode.content.status === "unconfigured") {
 				throw new Error("starterNode must be configured");

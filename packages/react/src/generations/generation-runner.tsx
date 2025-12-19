@@ -40,7 +40,7 @@ export function GenerationRunner({ generation }: { generation: Generation }) {
 			return <QueryRunner generation={generation} />;
 		case "appEntry": {
 			console.warn(
-				"start node runner was created. This is unintended behavior as start nodes do not require a runner.",
+				"appEntry node runner was created. This is unintended behavior as appEntry nodes do not require a runner.",
 			);
 			return null;
 		}

@@ -202,7 +202,7 @@ describe("isSupportedConnection", () => {
 			expect(result1.canConnect).toBe(false);
 			if (!result1.canConnect) {
 				expect(result1.message).toBe(
-					"Connecting Start and End nodes is not allowed",
+					"Connecting App Entry and End nodes is not allowed",
 				);
 			}
 
@@ -210,7 +210,7 @@ describe("isSupportedConnection", () => {
 			expect(result2.canConnect).toBe(false);
 			if (!result2.canConnect) {
 				expect(result2.message).toBe(
-					"Connecting Start and End nodes is not allowed",
+					"Connecting App Entry and End nodes is not allowed",
 				);
 			}
 		});

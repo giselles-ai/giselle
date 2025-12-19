@@ -2,6 +2,7 @@ import {
 	type AppId,
 	type Generation,
 	type GenerationStatus,
+	isCompletedGeneration,
 	isOperationNode,
 	type OperationNode,
 	type ParametersInput,
@@ -14,6 +15,8 @@ import {
 import { giselle } from "@/app/giselle";
 import { db, tasks } from "@/db";
 import { logger } from "@/lib/logger";
+
+type UIOutputType = "text" | "markdown" | "json" | "image" | "other";
 
 type UIStepItemBase = {
 	/**
@@ -77,10 +80,65 @@ export interface UITask {
 		totalStepItemsCount: number;
 		finishedStepItemsCount: number;
 		outputs: {
+			id: string;
 			title: string;
+			type: UIOutputType;
 			generation: Generation;
 		}[];
 	};
+}
+
+function isLikelyMarkdown(content: string) {
+	const text = content.trim();
+	return (
+		// Fenced code blocks
+		text.includes("```") ||
+		// ATX headings: #, ##, ..., ###### at line start
+		/^#{1,6}\s/m.test(text) ||
+		// Bullet or numbered lists at line start
+		/^\s*(?:[-*+]|(\d+\.))\s+/m.test(text) ||
+		// Markdown links: [label](url)
+		/\[[^\]]+\]\([^)]+\)/.test(text) ||
+		// Inline code spans using backticks
+		/`[^`]+`/.test(text)
+	);
+}
+
+function getOutputType(generation: Generation): UIOutputType {
+	if (!isCompletedGeneration(generation)) {
+		return "other";
+	}
+
+	const textOutput = generation.outputs.find(
+		(o) => o.type === "generated-text",
+	);
+	if (textOutput?.type === "generated-text") {
+		return isLikelyMarkdown(textOutput.content) ? "markdown" : "text";
+	}
+
+	const queryResult = generation.outputs.find((o) => o.type === "query-result");
+	if (queryResult?.type === "query-result") {
+		return "json";
+	}
+
+	const imageOutput = generation.outputs.find(
+		(o) => o.type === "generated-image",
+	);
+	if (imageOutput?.type === "generated-image") {
+		return "image";
+	}
+
+	const reasoning = generation.outputs.find((o) => o.type === "reasoning");
+	if (reasoning?.type === "reasoning") {
+		return isLikelyMarkdown(reasoning.content) ? "markdown" : "text";
+	}
+
+	const sources = generation.outputs.find((o) => o.type === "source");
+	if (sources?.type === "source") {
+		return "json";
+	}
+
+	return "other";
 }
 
 async function getAppByTaskId(taskId: TaskId) {
@@ -153,11 +211,7 @@ async function getTaskInput(taskId: TaskId) {
 
 export async function getTaskData(taskId: TaskId): Promise<UITask> {
 	const task = await giselle.getTask({ taskId });
-	if (task.nodeIdsConnectedToEnd === undefined) {
-		// This page expects a "new" task shape that includes nodeIdsConnectedToEnd.
-		// If it's missing, fail fast to surface data inconsistencies early.
-		throw new Error(`Task ${taskId} is missing nodeIdsConnectedToEnd`);
-	}
+	const nodeIdsConnectedToEnd = task.nodeIdsConnectedToEnd;
 
 	const allSteps = task.sequences.flatMap((sequence) => sequence.steps);
 
@@ -286,9 +340,19 @@ export async function getTaskData(taskId: TaskId): Promise<UITask> {
 	}));
 
 	const allUiStepItems = steps.flatMap((step) => step.items);
-	const finalStepItems = task.nodeIdsConnectedToEnd
-		.map((nodeId) => allUiStepItems.find((item) => item.node.id === nodeId))
-		.filter((itemOrUndefined) => itemOrUndefined !== undefined);
+	let finalStepItems: UIStepItem[];
+	if (nodeIdsConnectedToEnd === undefined) {
+		logger.warn(
+			`Task ${taskId} is missing nodeIdsConnectedToEnd; falling back to last step items`,
+		);
+		finalStepItems = steps.at(-1)?.items ?? [];
+	} else {
+		finalStepItems = nodeIdsConnectedToEnd
+			.map((nodeId) => allUiStepItems.find((item) => item.node.id === nodeId))
+			.filter((itemOrUndefined): itemOrUndefined is UIStepItem => {
+				return itemOrUndefined !== undefined;
+			});
+	}
 
 	const totalStepItemsCount = finalStepItems.length;
 	const finishedStepItemsCount = finalStepItems.filter(
@@ -304,7 +368,13 @@ export async function getTaskData(taskId: TaskId): Promise<UITask> {
 			if (generation === undefined) {
 				return null;
 			}
-			return { title: item.title, generation };
+			const type = getOutputType(generation);
+			return {
+				id: generation.id,
+				title: item.title,
+				type,
+				generation,
+			};
 		})
 		.filter((outputOrNull) => outputOrNull !== null);
 

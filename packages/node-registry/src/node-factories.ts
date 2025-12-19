@@ -129,7 +129,7 @@ function cloneAndRenewInputIdsWithMap(
 
 function createDefaultDraftApp(): DraftApp {
 	return {
-		name: "Start",
+		name: "App Request",
 		description: "",
 		iconName: "cable",
 		parameters: [

@@ -542,7 +542,7 @@ export function Toolbar() {
 													className="hover:bg-[rgba(222,233,242,0.10)]"
 												>
 													<DatabaseZapIcon className="w-[20px] h-[20px]" />
-													<p className="text-[14px]">Vector Query</p>
+													<p className="text-[14px]">Query</p>
 												</ToggleGroup.Item>
 											</ToggleGroup.Root>
 										</div>

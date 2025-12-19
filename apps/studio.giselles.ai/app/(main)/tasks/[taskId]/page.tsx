@@ -1,13 +1,13 @@
 import "./mobile-scroll.css";
 import { TaskId } from "@giselles-ai/protocol";
 import { notFound } from "next/navigation";
-import { TaskLayout } from "@/components/task/task-layout";
 import { logger } from "@/lib/logger";
 import { ToastProvider } from "@/packages/contexts/toast";
 import { createAndStartTask } from "../../lib/create-and-start-task";
 import { loadStageAppsData } from "../../lib/stage-apps";
 import { TaskClient } from "./ui/experimental/task-client";
 import { getTaskAppId, getTaskData } from "./ui/experimental/task-data";
+import { TaskDetailFrame } from "./ui/experimental/task-detail-frame";
 import { TaskOverlayReset } from "./ui/task-overlay-reset";
 import { TaskStageInput } from "./ui/task-stage-input.client";
 
@@ -37,7 +37,7 @@ export default async function ({
 
 	return (
 		<ToastProvider>
-			<TaskLayout>
+			<TaskDetailFrame>
 				<TaskOverlayReset />
 				<TaskClient initial={taskData} refreshAction={refreshAction} />
 
@@ -55,7 +55,7 @@ export default async function ({
 						createAndStartTaskAction={createAndStartTask}
 					/>
 				</div>
-			</TaskLayout>
+			</TaskDetailFrame>
 		</ToastProvider>
 	);
 }

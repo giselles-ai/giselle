@@ -82,14 +82,14 @@ export function defaultName(node: NodeLike) {
 					if (!isQueryNode(node)) {
 						throw new Error(`Expected query node, got ${node.type}`);
 					}
-					return node.name ?? "Vector Query";
+					return node.name ?? "Query";
 				case "end":
 					if (!isEndNode(node)) {
 						throw new Error(`Expected end node, got ${node.type}`);
 					}
 					return node.name ?? "End";
 				case "appEntry":
-					return node.name ?? "Start";
+					return node.name ?? "App Entry";
 				default: {
 					const _exhaustiveCheck: never = node.content.type;
 					throw new Error(`Unhandled action content type: ${_exhaustiveCheck}`);

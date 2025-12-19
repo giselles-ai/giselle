@@ -287,7 +287,7 @@ function MultipleRunsDropdown({
 			if (appEntryRunItems.length > 0) {
 				groups.push({
 					groupId: "appEntry",
-					groupLabel: "Start Nodes",
+					groupLabel: "App Entry Nodes",
 					items: appEntryRunItems,
 				});
 			}

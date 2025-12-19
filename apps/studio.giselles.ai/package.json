@@ -92,6 +92,7 @@
 		"react": "catalog:",
 		"react-dom": "catalog:",
 		"react-email": "5.0.5",
+		"react-resizable-panels": "catalog:",
 		"require-in-the-middle": "7.5.2",
 		"stripe": "20.2.0-alpha.1",
 		"tailwind-merge": "2.6.0",
