@@ -296,7 +296,7 @@ function TryPlaygroundLink({ isDisabled }: { isDisabled: boolean }) {
 		return (
 			<div
 				aria-disabled="true"
-				className="w-full rounded-[12px] border border-blue-muted bg-blue-muted px-[16px] py-[12px] text-[14px] font-medium text-white transition-[filter] text-center disabled:cursor-not-allowed disabled:opacity-50"
+				className="w-full rounded-[12px] border border-blue-muted bg-blue-muted px-[16px] py-[12px] text-[14px] font-medium text-white transition-[filter] text-center cursor-not-allowed opacity-50"
 			>
 				<TryPlaygroundContent />
 			</div>
