@@ -111,7 +111,7 @@ export const initializeAccount = async (
 			if (templateAppInfo) {
 				const newEntryNodeId = idMap.get(templateAppInfo.appEntryNodeId);
 				const newEndNodeId = templateAppInfo.endNodeId
-					? idMap.get(templateAppInfo.endNodeId)
+					? (idMap.get(templateAppInfo.endNodeId) ?? null)
 					: null;
 
 				if (newEntryNodeId) {
