@@ -854,9 +854,6 @@ importers:
       pino:
         specifier: 'catalog:'
         version: 9.9.0
-      tailwindcss:
-        specifier: 'catalog:'
-        version: 4.1.10
       typescript:
         specifier: 'catalog:'
         version: 5.7.3
