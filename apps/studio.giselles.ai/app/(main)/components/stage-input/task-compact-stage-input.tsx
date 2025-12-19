@@ -1,15 +1,14 @@
 "use client";
 
+import { Select } from "@giselle-internal/ui/select";
 import type { GenerationContextInput } from "@giselles-ai/protocol";
-import { X } from "lucide-react";
+import { ArrowUpIcon, Paperclip, X } from "lucide-react";
 import { FileAttachments } from "../../playground/file-attachments";
 import type { StageApp } from "../../playground/types";
 import {
 	type StageAppSelectionScope,
 	useStageAppSelectionStore,
 } from "../../stores/stage-app-selection-store";
-import { InputAreaHeaderControls } from "../../tasks/[taskId]/ui/input-area-header-controls";
-import { InputAreaTextRow } from "../../tasks/[taskId]/ui/input-area-placeholder";
 import { ACCEPTED_FILE_TYPES, useStageInput } from "./use-stage-input";
 
 export function TaskCompactStageInput({
@@ -62,21 +61,41 @@ export function TaskCompactStageInput({
 		isRunning,
 	});
 
+	const isAttachmentDisabled = isRunning || handleAttachmentButtonClick == null;
+	const isSelectDisabled = isRunning;
+	const isSubmitReady = hasInput && !hasPendingUploads;
+
 	return (
 		<div className="relative w-full max-w-[640px] min-w-[320px] mx-auto">
 			<div className="flex items-center justify-between mb-2">
 				<h2 className="text-text-muted text-[13px] font-semibold">
 					Request new tasks in a new session
 				</h2>
-				<InputAreaHeaderControls
-					options={appOptions}
-					value={selectedApp?.id}
-					onValueChange={(appId) => {
-						setSelectedAppId(scope, appId);
-					}}
-					onAttachmentButtonClick={handleAttachmentButtonClick}
-					isDisabled={isRunning}
-				/>
+				<div className="flex items-center gap-2">
+					<button
+						type="button"
+						onClick={handleAttachmentButtonClick}
+						disabled={isAttachmentDisabled}
+						className="group flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-[4px] transition-colors hover:bg-white/5 disabled:hover:bg-transparent"
+						aria-label="Attach files"
+					>
+						<Paperclip className="h-3.5 w-3.5 text-text-muted/80 transition-colors group-hover:text-white group-disabled:text-text-muted/70" />
+					</button>
+					<div className="w-[200px]">
+						<Select
+							options={appOptions}
+							placeholder="Select an app..."
+							value={selectedApp?.id}
+							widthClassName="w-full"
+							onValueChange={(appId) => {
+								setSelectedAppId(scope, appId);
+							}}
+							disabled={isSelectDisabled}
+							side="top"
+							triggerClassName="border border-border !bg-[rgba(131,157,195,0.1)] hover:!bg-[rgba(131,157,195,0.18)] !px-2 !h-7 !rounded-[6px] text-[12px] [&_svg]:opacity-70"
+						/>
+					</div>
+				</div>
 			</div>
 			<section
 				aria-label="Request new task input and dropzone"
@@ -92,19 +111,30 @@ export function TaskCompactStageInput({
 					<div className="pointer-events-none absolute inset-0 rounded-xl border border-dashed border-blue-muted/60 bg-blue-muted/10" />
 				) : null}
 				<div className="relative">
-					<InputAreaTextRow
-						textareaRef={textareaRef}
-						value={inputValue}
-						onChange={handleInputChange}
-						onCompositionStart={handleCompositionStart}
-						onCompositionEnd={handleCompositionEnd}
-						onKeyDown={handleKeyDown}
-						placeholder="Ask anything—powered by Giselle docs"
-						isDisabled={isRunning}
-						canSubmit={canSubmit}
-						isSubmitReady={hasInput && !hasPendingUploads}
-						onSubmit={handleSubmit}
-					/>
+					<div className="flex items-center gap-2">
+						<textarea
+							ref={textareaRef}
+							value={inputValue}
+							onChange={handleInputChange}
+							onCompositionStart={handleCompositionStart}
+							onCompositionEnd={handleCompositionEnd}
+							onKeyDown={handleKeyDown}
+							placeholder="Ask anything—powered by Giselle docs"
+							rows={1}
+							disabled={isRunning}
+							className="flex-1 resize-none bg-transparent text-[14px] text-foreground placeholder:text-blue-muted/50 outline-none disabled:cursor-not-allowed min-h-[1.9em] pt-0 pb-[0.5em] px-1"
+						/>
+						<button
+							type="button"
+							onClick={handleSubmit}
+							disabled={!canSubmit}
+							className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-inverse)] disabled:cursor-not-allowed ${
+								isSubmitReady ? "opacity-100" : "opacity-40"
+							}`}
+						>
+							<ArrowUpIcon className="h-2.5 w-2.5 text-[color:var(--color-background)]" />
+						</button>
+					</div>
 
 					<FileAttachments
 						files={attachedFiles}
