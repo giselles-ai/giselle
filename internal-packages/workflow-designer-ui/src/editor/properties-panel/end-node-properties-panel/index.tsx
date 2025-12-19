@@ -301,14 +301,11 @@ function TryPlaygroundContent() {
 }
 
 function TryPlaygroundLink({ isDisabled }: { isDisabled: boolean }) {
-	const className =
-		"mt-[12px] w-full rounded-[12px] border border-blue-muted bg-blue-muted px-[16px] py-[12px] text-[14px] font-medium text-white transition-[filter]";
-
 	if (isDisabled) {
 		return (
 			<div
 				aria-disabled="true"
-				className={clsx(className, "cursor-not-allowed opacity-50")}
+				className="mt-[12px] w-full rounded-[12px] border border-blue-muted bg-blue-muted px-[16px] py-[12px] text-[14px] font-medium text-white transition-[filter] cursor-not-allowed opacity-50 text-center"
 			>
 				<TryPlaygroundContent />
 			</div>
@@ -320,7 +317,7 @@ function TryPlaygroundLink({ isDisabled }: { isDisabled: boolean }) {
 			href="/playground"
 			target="_blank"
 			rel="noopener noreferrer"
-			className={clsx(className, "hover:brightness-110")}
+			className="mt-[12px] w-full rounded-[12px] border border-blue-muted bg-blue-muted px-[16px] py-[12px] text-[14px] font-medium text-white transition-[filter] hover:brightness-110 text-center"
 		>
 			<TryPlaygroundContent />
 		</Link>
@@ -329,7 +326,7 @@ function TryPlaygroundLink({ isDisabled }: { isDisabled: boolean }) {
 
 function TryPlaygroundSection({ isDisabled }: { isDisabled: boolean }) {
 	return (
-		<div>
+		<div className="w-full flex flex-col">
 			<TryPlaygroundLink isDisabled={isDisabled} />
 			{isDisabled && (
 				<p className="mt-[8px] text-[12px] text-text-muted">
