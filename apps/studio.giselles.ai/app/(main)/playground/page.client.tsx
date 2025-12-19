@@ -1,45 +1,29 @@
 "use client";
 
 import { AppIcon } from "@giselle-internal/ui/app-icon";
-import { Select, type SelectOption } from "@giselle-internal/ui/select";
-import { useToast } from "@giselles-ai/contexts/toast";
 import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
-import {
-	createFailedFileData,
-	createUploadedFileData,
-	createUploadingFileData,
-	type FileData,
-	type GenerationContextInput,
-	type ParameterItem,
-	type ParametersInput,
-	type TaskId,
-	type UploadedFileData,
+import type {
+	GenerationContextInput,
+	ParametersInput,
+	TaskId,
 } from "@giselles-ai/protocol";
-import { APICallError, useGiselle } from "@giselles-ai/react";
-import {
-	ArrowUpIcon,
-	Paperclip,
-	PlayIcon,
-	Search,
-	Sparkles,
-	X,
-} from "lucide-react";
+import { PlayIcon, Search, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import {
 	use,
 	useCallback,
-	useEffect,
 	useMemo,
 	useRef,
 	useState,
 	useTransition,
 } from "react";
 import { useShallow } from "zustand/shallow";
+import { useSelectedStageApp } from "@/app/(main)/stores/stage-app-selection-store";
 import { useTaskOverlayStore } from "@/app/(main)/stores/task-overlay-store";
 import { LLMProviderIcon } from "@/app/(main)/workspaces/components/llm-provider-icon";
+import { PlaygroundStageInput } from "../components/stage-input/playground-stage-input";
 import type { LoaderData } from "./data-loader";
-import { FileAttachments } from "./file-attachments";
 import type { StageApp } from "./types";
 
 type AppListCardBadgeType =
@@ -209,588 +193,6 @@ function AppCard({
 	);
 }
 
-function getUploadErrorMessage(error: unknown) {
-	if (APICallError.isInstance(error)) {
-		if (error.statusCode === 413) {
-			return "File size is too large.";
-		}
-		return error.message || "Upload failed";
-	}
-	if (error instanceof Error) {
-		return error.message || "Upload failed";
-	}
-	return "Upload failed";
-}
-
-function useEnterSubmit(onSubmit: () => void) {
-	const composingRef = useRef(false);
-
-	const handleCompositionStart = useCallback(() => {
-		composingRef.current = true;
-	}, []);
-
-	const handleCompositionEnd = useCallback(() => {
-		composingRef.current = false;
-	}, []);
-
-	const handleKeyDown = useCallback(
-		(event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-			const nativeEvent = event.nativeEvent;
-
-			if (composingRef.current || nativeEvent.isComposing) {
-				return;
-			}
-
-			if (event.key !== "Enter") {
-				return;
-			}
-
-			if (event.shiftKey) {
-				return;
-			}
-
-			event.preventDefault();
-			onSubmit();
-		},
-		[onSubmit],
-	);
-
-	return {
-		handleCompositionStart,
-		handleCompositionEnd,
-		handleKeyDown,
-	};
-}
-
-type FileRestrictionErrorState = {
-	rejectedFileNames: string[];
-};
-
-const ACCEPTED_FILE_TYPES = "application/pdf,image/*";
-const ALLOWED_FILE_MIME_TYPES = new Set(["application/pdf"]);
-const IMAGE_FILE_EXTENSIONS = new Set([
-	"png",
-	"jpg",
-	"jpeg",
-	"gif",
-	"bmp",
-	"webp",
-	"svg",
-	"tif",
-	"tiff",
-	"heic",
-	"heif",
-]);
-
-function getFileExtension(fileName: string) {
-	const index = fileName.lastIndexOf(".");
-	if (index === -1) {
-		return "";
-	}
-	return fileName.slice(index + 1).toLowerCase();
-}
-
-function isAllowedFileType(file: File) {
-	const mimeType = file.type?.toLowerCase() ?? "";
-	if (mimeType.startsWith("image/")) {
-		return true;
-	}
-	if (mimeType && ALLOWED_FILE_MIME_TYPES.has(mimeType)) {
-		return true;
-	}
-	const extension = getFileExtension(file.name);
-	if (extension === "pdf") {
-		return true;
-	}
-	return extension ? IMAGE_FILE_EXTENSIONS.has(extension) : false;
-}
-
-// Chat-style input area for running apps
-function ChatInputArea({
-	selectedApp,
-	apps,
-	onAppSelect,
-	onSubmit,
-	isRunning,
-}: {
-	selectedApp?: StageApp;
-	apps: StageApp[];
-	onAppSelect: (appId: string) => void;
-	onSubmit: (event: { inputs: GenerationContextInput[] }) => void;
-	isRunning: boolean;
-}) {
-	const client = useGiselle();
-	const { addToast } = useToast();
-	const [inputValue, setInputValue] = useState("");
-	const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-	const fileInputRef = useRef<HTMLInputElement | null>(null);
-	const dragCounterRef = useRef(0);
-	const [isDragActive, setIsDragActive] = useState(false);
-	const [attachedFiles, setAttachedFiles] = useState<FileData[]>([]);
-	const [localPreviews, setLocalPreviews] = useState<Map<string, string>>(
-		new Map(),
-	);
-	const [fileRestrictionError, setFileRestrictionError] =
-		useState<FileRestrictionErrorState | null>(null);
-
-	const appOptions = apps.map(
-		(app) =>
-			({
-				value: app.id,
-				label: app.name,
-				icon: <PlayIcon className="h-4 w-4" />,
-			}) satisfies SelectOption,
-	);
-	const firstAppOptionValue = appOptions[0]?.value;
-
-	useEffect(() => {
-		if (!selectedApp && firstAppOptionValue) {
-			onAppSelect(firstAppOptionValue);
-		}
-	}, [selectedApp, firstAppOptionValue, onAppSelect]);
-
-	const resizeTextarea = () => {
-		const textarea = textareaRef.current;
-		if (textarea) {
-			textarea.style.height = "auto";
-			textarea.style.height = `${Math.min(textarea.scrollHeight, 200)}px`;
-		}
-	};
-
-	const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-		setInputValue(e.target.value);
-		// Auto-resize textarea on input change
-		resizeTextarea();
-	};
-
-	const containsFiles = useCallback(
-		(event: React.DragEvent<HTMLElement>) =>
-			Array.from(event.dataTransfer?.items ?? []).some(
-				(item) => item.kind === "file",
-			),
-		[],
-	);
-
-	const handleDragEnter = useCallback(
-		(event: React.DragEvent<HTMLDivElement>) => {
-			if (!containsFiles(event)) {
-				return;
-			}
-			event.preventDefault();
-			dragCounterRef.current += 1;
-			setIsDragActive(true);
-		},
-		[containsFiles],
-	);
-
-	const handleDragOver = useCallback(
-		(event: React.DragEvent<HTMLDivElement>) => {
-			if (!containsFiles(event)) {
-				return;
-			}
-			event.preventDefault();
-			event.dataTransfer.dropEffect = "copy";
-		},
-		[containsFiles],
-	);
-
-	const handleDragLeave = useCallback(
-		(event: React.DragEvent<HTMLDivElement>) => {
-			if (!containsFiles(event)) {
-				return;
-			}
-			event.preventDefault();
-			dragCounterRef.current = Math.max(dragCounterRef.current - 1, 0);
-			if (dragCounterRef.current === 0) {
-				setIsDragActive(false);
-			}
-		},
-		[containsFiles],
-	);
-
-	const handleFilesAdded = useCallback(
-		async (incomingFiles: File[]) => {
-			if (!selectedApp) {
-				addToast({
-					type: "warning",
-					title: "Select an app",
-					message: "Choose an app before attaching files.",
-				});
-				return;
-			}
-
-			const usableFiles = incomingFiles.filter(
-				(file): file is File => file instanceof File && file.size > 0,
-			);
-			if (usableFiles.length === 0) {
-				return;
-			}
-
-			const rejectedNames = new Set<string>();
-			const existingNames = new Set(attachedFiles.map((file) => file.name));
-			const batchSeen = new Set<string>();
-			const uploads: Array<{
-				file: File;
-				uploading: ReturnType<typeof createUploadingFileData>;
-				workspaceId: StageApp["workspaceId"];
-			}> = [];
-
-			for (const file of usableFiles) {
-				if (!isAllowedFileType(file)) {
-					const rejectedName =
-						file.name.trim().length > 0 ? file.name : "Unnamed file";
-					rejectedNames.add(rejectedName);
-					continue;
-				}
-
-				const name =
-					file.name || `file-${existingNames.size + batchSeen.size + 1}`;
-				if (existingNames.has(name) || batchSeen.has(name)) {
-					addToast({
-						type: "warning",
-						title: "Duplicate file",
-						message: `${name} is already attached.`,
-					});
-					continue;
-				}
-
-				batchSeen.add(name);
-				const uploading = createUploadingFileData({
-					name,
-					type: file.type || "application/octet-stream",
-					size: file.size,
-				});
-
-				// Create local preview URL for image files
-				if (file.type.startsWith("image/")) {
-					const previewUrl = URL.createObjectURL(file);
-					setLocalPreviews((prev) => {
-						const next = new Map(prev);
-						next.set(uploading.id, previewUrl);
-						return next;
-					});
-				}
-
-				uploads.push({
-					file,
-					uploading,
-					workspaceId: selectedApp.workspaceId,
-				});
-			}
-
-			if (rejectedNames.size > 0) {
-				setFileRestrictionError({
-					rejectedFileNames: Array.from(rejectedNames),
-				});
-			}
-
-			if (uploads.length === 0) {
-				return;
-			}
-
-			setAttachedFiles((current) => {
-				const currentNames = new Set(current.map((file) => file.name));
-				const newEntries = uploads
-					.filter(({ uploading }) => !currentNames.has(uploading.name))
-					.map(({ uploading }) => uploading);
-				if (newEntries.length === 0) {
-					return current;
-				}
-				return [...current, ...newEntries];
-			});
-
-			for (const { file, uploading, workspaceId } of uploads) {
-				try {
-					await client.uploadFile({
-						workspaceId,
-						file,
-						fileId: uploading.id,
-						fileName: uploading.name,
-					});
-					const uploaded = createUploadedFileData(uploading, Date.now());
-					setAttachedFiles((current) => {
-						return current.map((entry) =>
-							entry.id === uploaded.id ? uploaded : entry,
-						);
-					});
-					// Keep local preview URL until server URL is confirmed working
-					// It will be cleaned up when the image successfully loads from server
-				} catch (error) {
-					const message = getUploadErrorMessage(error);
-					addToast({
-						type: "error",
-						title: "Upload failed",
-						message,
-					});
-					const failed = createFailedFileData(uploading, message);
-					setAttachedFiles((current) => {
-						return current.map((entry) =>
-							entry.id === failed.id ? failed : entry,
-						);
-					});
-				}
-			}
-		},
-		[selectedApp, attachedFiles, client, addToast],
-	);
-
-	const handleDrop = useCallback(
-		(event: React.DragEvent<HTMLDivElement>) => {
-			if (!containsFiles(event)) {
-				return;
-			}
-			event.preventDefault();
-			dragCounterRef.current = 0;
-			setIsDragActive(false);
-			const droppedFiles = Array.from(event.dataTransfer?.files ?? []);
-			void handleFilesAdded(droppedFiles);
-		},
-		[containsFiles, handleFilesAdded],
-	);
-
-	const handleFileInputChange = (
-		event: React.ChangeEvent<HTMLInputElement>,
-	) => {
-		const files = event.target.files ? Array.from(event.target.files) : [];
-		void handleFilesAdded(files);
-		event.target.value = "";
-	};
-
-	const handleRemoveFile = useCallback((fileId: string) => {
-		setAttachedFiles((current) => current.filter((file) => file.id !== fileId));
-		// Clean up local preview URL
-		setLocalPreviews((prev) => {
-			const previewUrl = prev.get(fileId);
-			if (previewUrl) {
-				URL.revokeObjectURL(previewUrl);
-				const next = new Map(prev);
-				next.delete(fileId);
-				return next;
-			}
-			return prev;
-		});
-	}, []);
-
-	const handleImageLoad = useCallback((fileId: string) => {
-		// Clean up local preview URL after server image loads successfully
-		setLocalPreviews((prev) => {
-			const previewUrl = prev.get(fileId);
-			if (previewUrl) {
-				URL.revokeObjectURL(previewUrl);
-				const next = new Map(prev);
-				next.delete(fileId);
-				return next;
-			}
-			return prev;
-		});
-	}, []);
-
-	const handleDismissFileRestrictionError = () => {
-		setFileRestrictionError(null);
-	};
-
-	const handleAttachmentButtonClick = () => {
-		fileInputRef.current?.click();
-	};
-
-	const hasInput = inputValue.trim().length > 0;
-	const hasPendingUploads = attachedFiles.some(
-		(file) => file.status === "uploading",
-	);
-	const canSubmit =
-		!!selectedApp && hasInput && !isRunning && !hasPendingUploads;
-
-	const handleSubmit = () => {
-		if (!selectedApp || !inputValue.trim() || isRunning) return;
-		if (hasPendingUploads) {
-			addToast({
-				type: "info",
-				title: "Uploading files",
-				message: "Please wait for uploads to finish before sending.",
-			});
-			return;
-		}
-
-		// App parameters can be configured with various types in multiple settings,
-		// but currently when creating an App, we create one multiline-text and one files parameter as fixed,
-		// so we'll create parameters based on that assumption
-		const textParam = selectedApp.parameters.find(
-			(p) => p.type === "multiline-text",
-		);
-		const parameterItems: ParameterItem[] = [];
-		if (textParam) {
-			parameterItems.push({
-				name: textParam.id,
-				type: "string",
-				value: inputValue,
-			});
-		}
-
-		const filesParam = selectedApp.parameters.find((p) => p.type === "files");
-		if (filesParam) {
-			const uploadedFiles = attachedFiles.filter(
-				(file): file is UploadedFileData => file.status === "uploaded",
-			);
-			parameterItems.push({
-				name: filesParam.id,
-				type: "files",
-				value: uploadedFiles,
-			});
-		}
-
-		onSubmit({
-			inputs: [
-				{
-					type: "parameters",
-					items: parameterItems,
-				},
-			],
-		});
-		setAttachedFiles([]);
-		setInputValue("");
-		// Reset textarea height after clearing - use requestAnimationFrame for better timing
-		requestAnimationFrame(() => {
-			resizeTextarea();
-		});
-	};
-
-	const {
-		handleCompositionStart,
-		handleCompositionEnd,
-		handleKeyDown: handleTextareaKeyDown,
-	} = useEnterSubmit(handleSubmit);
-
-	return (
-		<div className="relative w-full max-w-[640px] min-w-[320px] mx-auto">
-			<section
-				aria-label="Message input and dropzone"
-				className={`relative rounded-2xl bg-[rgba(131,157,195,0.14)] shadow-[inset_0_1px_4px_rgba(0,0,0,0.22)] pt-4 pb-3 sm:pt-5 sm:pb-4 px-4 transition-colors ${
-					isDragActive ? "ring-1 ring-blue-muted/50" : ""
-				}`}
-				onDragEnter={handleDragEnter}
-				onDragOver={handleDragOver}
-				onDragLeave={handleDragLeave}
-				onDrop={handleDrop}
-			>
-				{isDragActive ? (
-					<div className="pointer-events-none absolute inset-0 rounded-2xl border border-dashed border-blue-muted/60 bg-blue-muted/10" />
-				) : null}
-				<div className="relative">
-					{/* Textarea */}
-					<textarea
-						ref={textareaRef}
-						value={inputValue}
-						onChange={handleInputChange}
-						onCompositionStart={handleCompositionStart}
-						onCompositionEnd={handleCompositionEnd}
-						onKeyDown={handleTextareaKeyDown}
-						placeholder={selectedApp?.description ?? ""}
-						rows={1}
-						disabled={isRunning}
-						className="w-full resize-none bg-transparent text-[15px] text-foreground placeholder:text-blue-muted/50 outline-none disabled:cursor-not-allowed min-h-[2.4em] sm:min-h-[2.75em] pt-0 pb-[0.7em] px-1"
-					/>
-
-					{/* Bottom row: App selector and buttons */}
-					<div className="flex items-center justify-between mt-2 sm:mt-3">
-						{/* Left side: Attachment + App selector */}
-						<div className="flex items-center gap-2 flex-1 max-w-[260px]">
-							<button
-								type="button"
-								onClick={handleAttachmentButtonClick}
-								className="group flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[5px] transition-colors hover:bg-white/5"
-								aria-label="Attach files"
-							>
-								<Paperclip className="h-4 w-4 text-text-muted transition-colors group-hover:text-white" />
-							</button>
-							<div className="flex-1">
-								<Select
-									options={appOptions}
-									placeholder="Select an app..."
-									value={selectedApp?.id ?? firstAppOptionValue}
-									onValueChange={onAppSelect}
-									widthClassName="w-full"
-									triggerClassName="border-none !bg-[rgba(131,157,195,0.1)] hover:!bg-[rgba(131,157,195,0.18)] !px-2 !h-8 sm:!h-9 !rounded-[7px] sm:!rounded-[9px] text-[13px] [&_svg]:opacity-70"
-								/>
-							</div>
-						</div>
-
-						{/* Right side: Send button */}
-						<div className="flex items-center gap-2">
-							<button
-								type="button"
-								onClick={handleSubmit}
-								disabled={!canSubmit}
-								className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-[5px] bg-[color:var(--color-inverse)] disabled:cursor-not-allowed ${
-									hasInput && !hasPendingUploads ? "opacity-100" : "opacity-40"
-								}`}
-							>
-								<ArrowUpIcon className="h-3 w-3 text-[color:var(--color-background)]" />
-							</button>
-						</div>
-					</div>
-
-					<FileAttachments
-						files={attachedFiles}
-						onRemoveFile={handleRemoveFile}
-						workspaceId={selectedApp?.workspaceId}
-						basePath={client.basePath}
-						localPreviews={localPreviews}
-						onImageLoad={handleImageLoad}
-					/>
-
-					{fileRestrictionError ? (
-						<div
-							className="mt-3 rounded-xl border border-red-400/50 bg-red-500/10 px-3 py-2.5 text-left text-red-100"
-							role="alert"
-						>
-							<div className="flex items-start justify-between gap-3">
-								<div className="flex flex-col gap-0.5">
-									<p className="text-[13px] font-medium">
-										{fileRestrictionError.rejectedFileNames.length === 1
-											? `${fileRestrictionError.rejectedFileNames[0]} — Unsupported file type`
-											: "Some files — Unsupported file type"}
-									</p>
-									<p className="text-[11px] text-red-200/80">
-										Only PDF and image files can be uploaded.
-									</p>
-								</div>
-								<button
-									type="button"
-									onClick={handleDismissFileRestrictionError}
-									className="text-red-200/80 transition-colors hover:text-red-100"
-									aria-label="Dismiss file type error"
-								>
-									<X className="h-3.5 w-3.5" />
-								</button>
-							</div>
-						</div>
-					) : null}
-
-					<input
-						ref={fileInputRef}
-						type="file"
-						className="hidden"
-						multiple
-						accept={ACCEPTED_FILE_TYPES}
-						onChange={handleFileInputChange}
-					/>
-				</div>
-			</section>
-			{/* Keyboard shortcut hint (outside chat container, aligned bottom-right) */}
-			<div className="mt-1 flex flex-wrap items-center justify-end gap-3 pr-0 text-[11px] text-blue-muted/60">
-				<div className="flex items-center gap-[6px]">
-					<div className="flex h-[18px] w-[18px] items-center justify-center rounded-[6px] border border-blue-muted/40 bg-blue-muted/10">
-						<span className="text-[10px] leading-none tracking-[0.08em]">
-							↵
-						</span>
-					</div>
-					<span className="leading-none">to send</span>
-				</div>
-			</div>
-		</div>
-	);
-}
-
 export function Page({
 	dataLoader,
 	createAndStartTaskAction,
@@ -803,7 +205,6 @@ export function Page({
 	const data = use(dataLoader);
 
 	const router = useRouter();
-	const [selectedAppId, setSelectedAppId] = useState<string | undefined>();
 	const [runningAppId, setRunningAppId] = useState<string | undefined>();
 	const [isRunning, startTransition] = useTransition();
 	const [appSearchQuery, setAppSearchQuery] = useState("");
@@ -831,21 +232,9 @@ export function Page({
 		[data.sampleApps, data.apps],
 	);
 
-	// Validate selectedAppId during render - if invalid, treat as undefined
-	const selectedApp = selectedAppId
-		? selectableApps.find((app) => app.id === selectedAppId)
-		: undefined;
-
-	const handleAppSelect = useCallback(
-		(appId: string) => {
-			// Validate app exists before setting
-			if (selectableApps.some((app) => app.id === appId)) {
-				setSelectedAppId(appId);
-			} else {
-				setSelectedAppId(undefined);
-			}
-		},
-		[selectableApps],
+	const { selectedAppId, selectedApp, setSelectedAppId } = useSelectedStageApp(
+		"playground",
+		selectableApps,
 	);
 
 	const handleRunSubmit = useCallback(
@@ -906,12 +295,11 @@ export function Page({
 						</div>
 
 						{/* Chat-style input area */}
-						<ChatInputArea
+						<PlaygroundStageInput
 							key={selectedApp?.workspaceId ?? "no-workspace"}
-							selectedApp={selectedApp}
 							apps={selectableApps}
-							onAppSelect={handleAppSelect}
-							onSubmit={handleRunSubmit}
+							scope="playground"
+							onSubmitAction={handleRunSubmit}
 							isRunning={isRunning}
 						/>
 					</div>
@@ -945,7 +333,7 @@ export function Page({
 												runningAppId === sampleApp.id
 											}
 											onClick={() => {
-												handleAppSelect(sampleApp.id);
+												setSelectedAppId(sampleApp.id);
 											}}
 										/>
 									))}
@@ -1074,7 +462,7 @@ export function Page({
 												selectedAppId === app.id || runningAppId === app.id
 											}
 											onSelect={() => {
-												handleAppSelect(app.id);
+												setSelectedAppId(app.id);
 											}}
 										/>
 									))}

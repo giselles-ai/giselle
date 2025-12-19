@@ -2,7 +2,7 @@ import { Toasts } from "@giselles-ai/components/toasts";
 import { ToastProvider } from "@giselles-ai/contexts/toast";
 import { LoaderCircle } from "lucide-react";
 import { Suspense } from "react";
-import { createAndStartTask } from "./action";
+import { createAndStartTask } from "../lib/create-and-start-task";
 import { dataLoader } from "./data-loader";
 import { Page } from "./page.client";
 

@@ -1,4 +1,5 @@
 import {
+	type AppId,
 	type Generation,
 	type GenerationStatus,
 	isOperationNode,
@@ -97,6 +98,23 @@ async function getAppByTaskId(taskId: TaskId) {
 		throw new Error(`App not found for task ID: ${taskId}`);
 	}
 	return await giselle.getApp({ appId: dbApp.id });
+}
+
+export async function getTaskAppId(taskId: TaskId): Promise<AppId> {
+	const dbApp = await db.query.apps.findFirst({
+		columns: { id: true },
+		where: (apps, { and, exists, eq }) =>
+			exists(
+				db
+					.select({ id: tasks.id })
+					.from(tasks)
+					.where(and(eq(tasks.appDbId, apps.dbId), eq(tasks.id, taskId))),
+			),
+	});
+	if (dbApp === undefined) {
+		throw new Error(`App not found for task ID: ${taskId}`);
+	}
+	return dbApp.id;
 }
 
 /**
