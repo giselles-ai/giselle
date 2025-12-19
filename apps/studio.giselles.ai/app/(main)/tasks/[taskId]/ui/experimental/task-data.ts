@@ -206,11 +206,7 @@ async function getTaskInput(taskId: TaskId) {
 
 export async function getTaskData(taskId: TaskId): Promise<UITask> {
 	const task = await giselle.getTask({ taskId });
-	if (task.nodeIdsConnectedToEnd === undefined) {
-		// This page expects a "new" task shape that includes nodeIdsConnectedToEnd.
-		// If it's missing, fail fast to surface data inconsistencies early.
-		throw new Error(`Task ${taskId} is missing nodeIdsConnectedToEnd`);
-	}
+	const nodeIdsConnectedToEnd = task.nodeIdsConnectedToEnd;
 
 	const allSteps = task.sequences.flatMap((sequence) => sequence.steps);
 
@@ -339,9 +335,19 @@ export async function getTaskData(taskId: TaskId): Promise<UITask> {
 	}));
 
 	const allUiStepItems = steps.flatMap((step) => step.items);
-	const finalStepItems = task.nodeIdsConnectedToEnd
-		.map((nodeId) => allUiStepItems.find((item) => item.node.id === nodeId))
-		.filter((itemOrUndefined) => itemOrUndefined !== undefined);
+	let finalStepItems: UIStepItem[];
+	if (nodeIdsConnectedToEnd === undefined) {
+		logger.warn(
+			`Task ${taskId} is missing nodeIdsConnectedToEnd; falling back to last step items`,
+		);
+		finalStepItems = steps.at(-1)?.items ?? [];
+	} else {
+		finalStepItems = nodeIdsConnectedToEnd
+			.map((nodeId) => allUiStepItems.find((item) => item.node.id === nodeId))
+			.filter((itemOrUndefined): itemOrUndefined is UIStepItem => {
+				return itemOrUndefined !== undefined;
+			});
+	}
 
 	const totalStepItemsCount = finalStepItems.length;
 	const finishedStepItemsCount = finalStepItems.filter(
