@@ -308,7 +308,7 @@ function TryPlaygroundLink({ isDisabled }: { isDisabled: boolean }) {
 			href="/playground"
 			target="_blank"
 			rel="noopener noreferrer"
-			className="mt-[12px] w-full rounded-[12px] border border-blue-muted bg-blue-muted px-[16px] py-[12px] text-[14px] font-medium text-white transition-[filter] text-center hover:brightness-110"
+			className="block w-full rounded-[12px] border border-blue-muted bg-blue-muted px-[16px] py-[12px] text-[14px] font-medium text-white transition-[filter] text-center hover:brightness-110"
 		>
 			<TryPlaygroundContent />
 		</Link>
@@ -317,7 +317,7 @@ function TryPlaygroundLink({ isDisabled }: { isDisabled: boolean }) {
 
 function TryPlaygroundSection({ isDisabled }: { isDisabled: boolean }) {
 	return (
-		<div className="w-full flex flex-col">
+		<div className="mt-[12px]">
 			<TryPlaygroundLink isDisabled={isDisabled} />
 			{isDisabled && (
 				<p className="mt-[6px] text-[11px] text-text-muted/50">
