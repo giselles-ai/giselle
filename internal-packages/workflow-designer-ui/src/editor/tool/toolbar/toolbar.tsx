@@ -433,6 +433,8 @@ export function Toolbar() {
 																createFileNode(FileCategory.parse("text")),
 															),
 														);
+													} else if (sourceType === "webPage") {
+														setSelectedTool(addNodeTool(createWebPageNode()));
 													}
 												}}
 											>
@@ -467,6 +469,14 @@ export function Toolbar() {
 												>
 													<TextFileIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">Text Upload</p>
+												</ToggleGroup.Item>
+												<ToggleGroup.Item
+													value="webPage"
+													data-tool
+													className="hover:bg-[rgba(222,233,242,0.10)]"
+												>
+													<WebPageFileIcon className="w-[20px] h-[20px]" />
+													<p className="text-[14px]">Webpage</p>
 												</ToggleGroup.Item>
 											</ToggleGroup.Root>
 											<ToggleGroup.Root
@@ -523,9 +533,6 @@ export function Toolbar() {
 														case "query":
 															setSelectedTool(addNodeTool(createQueryNode()));
 															break;
-														case "webPage":
-															setSelectedTool(addNodeTool(createWebPageNode()));
-															break;
 													}
 												}}
 											>
@@ -536,14 +543,6 @@ export function Toolbar() {
 												>
 													<DatabaseZapIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">Query</p>
-												</ToggleGroup.Item>
-												<ToggleGroup.Item
-													value="webPage"
-													data-tool
-													className="hover:bg-[rgba(222,233,242,0.10)]"
-												>
-													<WebPageFileIcon className="w-[20px] h-[20px]" />
-													<p className="text-[14px]">Webpage</p>
 												</ToggleGroup.Item>
 											</ToggleGroup.Root>
 										</div>
