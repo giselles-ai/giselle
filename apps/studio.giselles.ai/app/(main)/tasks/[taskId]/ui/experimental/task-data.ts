@@ -12,7 +12,6 @@ import {
 	type TaskId,
 	type WorkspaceId,
 } from "@giselles-ai/protocol";
-import type { UIMessage } from "ai";
 import { giselle } from "@/app/giselle";
 import { db, tasks } from "@/db";
 import { logger } from "@/lib/logger";
@@ -84,7 +83,6 @@ export interface UITask {
 			id: string;
 			title: string;
 			type: UIOutputType;
-			preview: string | null;
 			generation: Generation;
 		}[];
 	};
@@ -101,125 +99,41 @@ function isLikelyMarkdown(content: string) {
 	);
 }
 
-function toPreviewText(text: string, maxChars: number) {
-	const collapsed = text.replace(/\s+/g, " ").trim();
-	if (collapsed.length <= maxChars) {
-		return collapsed;
-	}
-	return `${collapsed.slice(0, maxChars - 1)}…`;
-}
-
-function getPreviewFromMessages(messages: UIMessage[] | undefined) {
-	if (!messages || messages.length === 0) {
-		return null;
-	}
-
-	// Prefer the last assistant message with text-like parts.
-	for (let i = messages.length - 1; i >= 0; i--) {
-		const message = messages[i];
-		if (message?.role !== "assistant") {
-			continue;
-		}
-		const parts = (message as unknown as { parts?: unknown[] }).parts;
-		if (!Array.isArray(parts) || parts.length === 0) {
-			continue;
-		}
-
-		const collected: string[] = [];
-		for (const part of parts) {
-			if (!part || typeof part !== "object") {
-				continue;
-			}
-			const type = (part as { type?: unknown }).type;
-			if (type === "text") {
-				const text = (part as { text?: unknown }).text;
-				if (typeof text === "string" && text.trim().length > 0) {
-					collected.push(text);
-				}
-			}
-			if (type === "reasoning") {
-				const text = (part as { text?: unknown }).text;
-				if (typeof text === "string" && text.trim().length > 0) {
-					collected.push(text);
-				}
-			}
-		}
-
-		const combined = collected.join("\n\n").trim();
-		if (combined.length > 0) {
-			return combined;
-		}
-	}
-
-	return null;
-}
-
-function getOutputTypeAndPreview(generation: Generation): {
-	type: UIOutputType;
-	preview: string | null;
-} {
+function getOutputType(generation: Generation): UIOutputType {
 	if (!isCompletedGeneration(generation)) {
-		return { type: "other", preview: null };
+		return "other";
 	}
 
 	const textOutput = generation.outputs.find(
 		(o) => o.type === "generated-text",
 	);
 	if (textOutput?.type === "generated-text") {
-		const type: UIOutputType = isLikelyMarkdown(textOutput.content)
-			? "markdown"
-			: "text";
-		return { type, preview: toPreviewText(textOutput.content, 140) };
+		return isLikelyMarkdown(textOutput.content) ? "markdown" : "text";
 	}
 
 	const queryResult = generation.outputs.find((o) => o.type === "query-result");
 	if (queryResult?.type === "query-result") {
-		const recordsCount = queryResult.content.reduce((acc, entry) => {
-			if (entry.type === "vector-store") {
-				return acc + entry.records.length;
-			}
-			return acc;
-		}, 0);
-		return {
-			type: "json",
-			preview: `Query results (${recordsCount} record${recordsCount === 1 ? "" : "s"})`,
-		};
+		return "json";
 	}
 
 	const imageOutput = generation.outputs.find(
 		(o) => o.type === "generated-image",
 	);
 	if (imageOutput?.type === "generated-image") {
-		const count = imageOutput.contents.length;
-		return {
-			type: "image",
-			preview: `${count} image${count === 1 ? "" : "s"}`,
-		};
+		return "image";
 	}
 
 	const reasoning = generation.outputs.find((o) => o.type === "reasoning");
 	if (reasoning?.type === "reasoning") {
-		return { type: "text", preview: toPreviewText(reasoning.content, 140) };
+		return isLikelyMarkdown(reasoning.content) ? "markdown" : "text";
 	}
 
 	const sources = generation.outputs.find((o) => o.type === "source");
 	if (sources?.type === "source") {
-		return {
-			type: "json",
-			preview: `Sources (${sources.sources.length})`,
-		};
+		return "json";
 	}
 
-	// Fallback: many generations render their primary content via `messages`.
-	const messagePreview = getPreviewFromMessages(generation.messages);
-	if (messagePreview) {
-		const type: UIOutputType = isLikelyMarkdown(messagePreview)
-			? "markdown"
-			: "text";
-		return { type, preview: toPreviewText(messagePreview, 140) };
-	}
-
-	return { type: "other", preview: null };
+	return "other";
 }
 
 async function getAppByTaskId(taskId: TaskId) {
@@ -443,12 +357,11 @@ export async function getTaskData(taskId: TaskId): Promise<UITask> {
 			if (generation === undefined) {
 				return null;
 			}
-			const { type, preview } = getOutputTypeAndPreview(generation);
+			const type = getOutputType(generation);
 			return {
 				id: generation.id,
 				title: item.title,
 				type,
-				preview,
 				generation,
 			};
 		})

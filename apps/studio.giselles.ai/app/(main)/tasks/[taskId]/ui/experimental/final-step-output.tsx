@@ -155,15 +155,6 @@ export function FinalStepOutput({
 											{output.type}
 										</span>
 									</div>
-									{output.preview != null ? (
-										<p className="mt-1 text-[12px] text-text-muted/70 line-clamp-2">
-											{output.preview}
-										</p>
-									) : (
-										<p className="mt-1 text-[12px] text-text-muted/50 italic">
-											No preview
-										</p>
-									)}
 									<div className="mt-2">
 										<span className="text-[12px] text-[hsl(192,73%,84%)] hover:text-[hsl(192,73%,70%)] transition-colors font-medium">
 											Open →
