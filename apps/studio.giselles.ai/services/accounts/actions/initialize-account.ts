@@ -131,12 +131,6 @@ export const initializeAccount = async (
 						appId: templateAppInfo.id,
 					});
 
-					// Map parameter IDs if needed (parameters reference node IDs in their definitions)
-					const mappedParameters = templateAppJson.parameters.map((param) => ({
-						...param,
-						id: param.id, // Keep parameter IDs as they are unique to the app
-					}));
-
 					// Create new app JSON with mapped node IDs and save directly to storage
 					// (not using giselle.saveApp() because it triggers appCreate callback which inserts DB record)
 					const storage = giselle.getContext().storage;
@@ -151,7 +145,7 @@ export const initializeAccount = async (
 								version: "v1",
 								state: "connected",
 								description: templateAppJson.description,
-								parameters: mappedParameters,
+								parameters: templateAppJson.parameters,
 								entryNodeId: NodeId.parse(newEntryNodeId),
 								endNodeId: NodeId.parse(newEndNodeId),
 								workspaceId: workspace.id,
@@ -166,7 +160,7 @@ export const initializeAccount = async (
 								version: "v1",
 								state: "disconnected",
 								description: templateAppJson.description,
-								parameters: mappedParameters,
+								parameters: templateAppJson.parameters,
 								entryNodeId: NodeId.parse(newEntryNodeId),
 								workspaceId: workspace.id,
 							},
