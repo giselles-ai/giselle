@@ -2,6 +2,7 @@ import type { $ZodIssue } from "@zod/core";
 import type { ZodType, z } from "zod/v4";
 import { addAccessorToInput } from "./mods/add-accessor-to-input";
 import { addProviderToCommand } from "./mods/add-provider-to-command";
+import { fixInvalidAppParameterId } from "./mods/fix-invalid-app-parameter-id";
 import { fixTypoAccesorToAccessor } from "./mods/fix-typo-accesor-to-accessor";
 import { fixTypoQuquedAtToQueuedAt } from "./mods/fix-typo-ququedAt-queuedAt";
 import { renameActionToOperation } from "./mods/rename-action-to-operation";
@@ -15,6 +16,7 @@ function dataMod(data: unknown, issue: $ZodIssue) {
 	modData = addAccessorToInput(modData, issue);
 	modData = addProviderToCommand(modData, issue);
 	modData = unifyGitHubVectorStore(modData, issue);
+	modData = fixInvalidAppParameterId(modData, issue);
 	return modData;
 }
 
