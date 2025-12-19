@@ -17,7 +17,7 @@ const config: KnipConfig = {
 			],
 		},
 		"apps/studio.giselles.ai": {
-			entry: ["emails/**/*.tsx"],
+			entry: ["tests/e2e/global-setup.ts", "emails/**/*.tsx"],
 			ignore: [
 				"scripts/**",
 				"trigger.config.ts",
@@ -41,13 +41,13 @@ const config: KnipConfig = {
 			],
 		},
 		"apps/ui.giselles.ai": {
-			ignoreDependencies: [],
+			ignoreDependencies: ["tailwindcss"],
 		},
 		"internal-packages/ui": {
-			ignoreDependencies: [],
+			ignoreDependencies: ["tailwindcss"],
 		},
 		"internal-packages/workflow-designer-ui": {
-			ignoreDependencies: [],
+			ignoreDependencies: ["tailwindcss"],
 			ignore: [
 				// Not currently used in the product, but kept as a reference implementation for future use
 				"src/editor/properties-panel/content-generation-node-properties-panel/**/*",
