@@ -65,22 +65,15 @@ function AddOutputButton({
 					Add output
 				</Button>
 			}
-			items={[
-				{
-					groupId: "available-nodes",
-					groupLabel: "Nodes",
-					items: availableNodes.map((availableNode) => ({
-						value: availableNode.id,
-						label: availableNode.name ?? defaultName(availableNode),
-						node: availableNode,
-					})),
-				},
-			]}
+			items={availableNodes.map((availableNode) => ({
+				value: availableNode.id,
+				label: availableNode.name ?? defaultName(availableNode),
+			}))}
 			renderItem={(item) => (
 				<p className="text-[12px] truncate">{item.label}</p>
 			)}
 			onSelect={(_event, item) => {
-				onConnectNodes(item.node.id, endNodeId);
+				onConnectNodes(item.value as NodeId, endNodeId);
 			}}
 			modal={false}
 		/>
@@ -101,7 +94,14 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 	);
 	const isTryAppInStageDisabled = !isStartNodeConnectedToEndNode;
 
+	const helperTextClassName = "text-[11px] text-text-muted/50";
+	const emptyStateHelperTextClassName = "text-[11px] text-text-muted/70";
+	const listClassName = "flex flex-col gap-[8px]";
+	const connectedRowBaseClassName =
+		"flex gap-[10px] rounded-[12px] border border-border-muted bg-transparent px-[12px] py-[10px] min-w-0 group";
+
 	const connectedOutputsByOutputNode = useMemo(() => {
+		const nodeById = new Map(nodes.map((node) => [node.id, node] as const));
 		const connectionsToThisNode = connections.filter(
 			(connection) => connection.inputNode.id === node.id,
 		);
@@ -120,7 +120,7 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 
 		for (const connection of connectionsToThisNode) {
 			const outputNodeId = connection.outputNode.id;
-			const outputNode = nodes.find((node) => node.id === outputNodeId);
+			const outputNode = nodeById.get(outputNodeId);
 			const outputLabel =
 				outputNode?.outputs.find((output) => output.id === connection.outputId)
 					?.label ?? connection.outputId;
@@ -142,11 +142,9 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 			existing.items.push({ connection, outputLabel });
 		}
 
-		return [...groups.values()].sort((a, b) => {
-			const aName = a.outputNode ? defaultName(a.outputNode) : a.outputNodeId;
-			const bName = b.outputNode ? defaultName(b.outputNode) : b.outputNodeId;
-			return aName.localeCompare(bName);
-		});
+		// Preserve insertion order (i.e. the order connections were created / stored),
+		// so newly connected output nodes appear below earlier ones.
+		return [...groups.values()];
 	}, [connections, node.id, nodes]);
 
 	const availableOutputSourceNodes = useMemo(() => {
@@ -178,54 +176,47 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 					<div className="space-y-0">
 						<div className="flex items-center justify-between gap-[12px]">
 							<SettingLabel className="mb-0">Output(s) of the app</SettingLabel>
-							{connectedOutputsByOutputNode.length > 0 && (
-								<AddOutputButton
-									availableNodes={availableOutputSourceNodes}
-									endNodeId={node.id}
-									onConnectNodes={connectNodes}
-								/>
-							)}
+							<AddOutputButton
+								availableNodes={availableOutputSourceNodes}
+								endNodeId={node.id}
+								onConnectNodes={connectNodes}
+							/>
 						</div>
-						<p className="text-[11px] text-text-muted/50">
+						<p className={helperTextClassName}>
 							What is displayed here will be shown as the result of the App.
 						</p>
 					</div>
 
-					<div className="flex flex-col gap-[8px]">
+					<div className={listClassName}>
 						{connectedOutputsByOutputNode.length === 0 ? (
-							<div className="rounded-[12px] border border-border-muted bg-background px-[12px] py-[10px]">
-								<p className="text-[12px] text-text-muted">
+							<div className="rounded-[12px] bg-error-900/10 px-[12px] py-[10px]">
+								<p className="text-[12px] text-error-900">
 									No outputs are connected to this End node yet.
 								</p>
-								<div className="mt-[10px] flex items-center justify-between gap-[12px]">
-									<AddOutputButton
-										availableNodes={availableOutputSourceNodes}
-										endNodeId={node.id}
-										onConnectNodes={connectNodes}
-									/>
-									{availableOutputSourceNodes.length === 0 && (
-										<p className="text-[11px] text-text-muted/70">
-											Add a node to use as an App output first.
-										</p>
-									)}
-								</div>
+								{availableOutputSourceNodes.length === 0 && (
+									<p
+										className={clsx("mt-[6px]", emptyStateHelperTextClassName)}
+									>
+										Add a node to use as an App output first.
+									</p>
+								)}
 							</div>
 						) : (
-							<ul className="flex flex-col gap-[8px]">
+							<ul className={listClassName}>
 								{connectedOutputsByOutputNode.map((group) => {
 									const hasMultipleOutputs = group.items.length >= 2;
 									return (
 										<li
 											key={group.outputNodeId}
 											className={clsx(
-												"flex gap-[10px] rounded-[12px] border border-border-muted bg-background px-[12px] py-[10px] min-w-0 group",
+												connectedRowBaseClassName,
 												hasMultipleOutputs ? "items-start" : "items-center",
 											)}
 										>
 											{group.outputNode ? (
 												<div
 													className={clsx(
-														"flex size-[24px] shrink-0 items-center justify-center rounded-[6px] bg-black/10",
+														"flex size-[24px] shrink-0 items-center justify-center",
 														hasMultipleOutputs && "mt-[2px]",
 													)}
 												>
@@ -237,7 +228,7 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 											) : (
 												<div
 													className={clsx(
-														"flex size-[24px] shrink-0 items-center justify-center rounded-[6px] bg-black/10 text-[10px] text-text-muted",
+														"flex size-[24px] shrink-0 items-center justify-center text-[10px] text-text-muted",
 														hasMultipleOutputs && "mt-[2px]",
 													)}
 												>
@@ -305,7 +296,7 @@ function TryPlaygroundLink({ isDisabled }: { isDisabled: boolean }) {
 		return (
 			<div
 				aria-disabled="true"
-				className="mt-[12px] w-full rounded-[12px] border border-blue-muted bg-blue-muted px-[16px] py-[12px] text-[14px] font-medium text-white transition-[filter] cursor-not-allowed opacity-50 text-center"
+				className="w-full rounded-[12px] border border-blue-muted bg-blue-muted px-[16px] py-[12px] text-[14px] font-medium text-white transition-[filter] text-center disabled:cursor-not-allowed disabled:opacity-50"
 			>
 				<TryPlaygroundContent />
 			</div>
@@ -317,7 +308,7 @@ function TryPlaygroundLink({ isDisabled }: { isDisabled: boolean }) {
 			href="/playground"
 			target="_blank"
 			rel="noopener noreferrer"
-			className="mt-[12px] w-full rounded-[12px] border border-blue-muted bg-blue-muted px-[16px] py-[12px] text-[14px] font-medium text-white transition-[filter] hover:brightness-110 text-center"
+			className="mt-[12px] w-full rounded-[12px] border border-blue-muted bg-blue-muted px-[16px] py-[12px] text-[14px] font-medium text-white transition-[filter] text-center hover:brightness-110"
 		>
 			<TryPlaygroundContent />
 		</Link>
@@ -329,7 +320,7 @@ function TryPlaygroundSection({ isDisabled }: { isDisabled: boolean }) {
 		<div className="w-full flex flex-col">
 			<TryPlaygroundLink isDisabled={isDisabled} />
 			{isDisabled && (
-				<p className="mt-[8px] text-[12px] text-text-muted">
+				<p className="mt-[6px] text-[11px] text-text-muted/50">
 					Connect your flow so it reaches the End Node from the Start Node to
 					enable “Try App in Playground”.
 				</p>
