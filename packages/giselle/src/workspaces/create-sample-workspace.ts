@@ -143,12 +143,22 @@ async function createSampleWorkspaceFromTemplate(args: {
 			newWorkspaceId,
 		}),
 	]);
-	return newWorkspace;
+	return {
+		workspace: newWorkspace,
+		templateWorkspaceId: args.templateWorkspaceId,
+		idMap,
+	};
 }
+
+type SampleWorkspaceResult = {
+	workspace: Workspace;
+	templateWorkspaceId: WorkspaceId;
+	idMap: Map<string, string>;
+};
 
 export async function createSampleWorkspaces(args: {
 	context: GiselleContext;
-}) {
+}): Promise<SampleWorkspaceResult[]> {
 	if (
 		!args.context.sampleAppWorkspaceIds ||
 		args.context.sampleAppWorkspaceIds.length === 0
@@ -158,7 +168,7 @@ export async function createSampleWorkspaces(args: {
 		);
 	}
 
-	const workspaces = await Promise.all(
+	const results = await Promise.all(
 		args.context.sampleAppWorkspaceIds.map((templateWorkspaceId) =>
 			createSampleWorkspaceFromTemplate({
 				context: args.context,
@@ -167,5 +177,5 @@ export async function createSampleWorkspaces(args: {
 		),
 	);
 
-	return workspaces;
+	return results;
 }
