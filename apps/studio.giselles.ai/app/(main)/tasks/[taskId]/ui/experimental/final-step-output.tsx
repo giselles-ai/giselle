@@ -1,10 +1,9 @@
 "use client";
 
 import clsx from "clsx/lite";
-import { ChevronRight } from "lucide-react";
+import { useState } from "react";
 import { GenerationView } from "../../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-view";
 import { OutputActions } from "../output-actions";
-import { useOutputDetailPaneStore } from "./output-detail-pane-store";
 import type { UITask } from "./task-data";
 
 export function FinalStepOutput({
@@ -15,8 +14,11 @@ export function FinalStepOutput({
 	const outputs = finalStep.outputs;
 	const outputCount = outputs.length;
 	const singleOutput = outputCount === 1 ? outputs[0] : undefined;
-	const opened = useOutputDetailPaneStore((s) => s.opened);
-	const open = useOutputDetailPaneStore((s) => s.open);
+	const [selectedOutputId, setSelectedOutputId] = useState<string | null>(
+		outputs.at(0)?.id ?? null,
+	);
+	const selectedOutput =
+		outputs.find((o) => o.id === selectedOutputId) ?? outputs.at(0) ?? null;
 
 	return (
 		<div className="mt-8">
@@ -52,57 +54,42 @@ export function FinalStepOutput({
 					</div>
 				</div>
 			) : (
-				<div className="space-y-2">
-					{outputs.map((output) => {
-						const isOpened = opened?.id === output.id;
-						return (
-							<button
-								key={output.id}
-								type="button"
-								onClick={() =>
-									open({
-										id: output.id,
-										title: output.title,
-										generation: output.generation,
-									})
-								}
-								className={clsx(
-									"w-full text-left rounded-xl border px-3 py-2 transition-colors",
-									"bg-blue-muted/5 hover:bg-blue-muted/10",
-									isOpened
-										? "border-[hsl(192,73%,84%)]/30 bg-blue-muted/10"
-										: "border-border",
-								)}
-							>
-								<div className="flex items-center justify-between gap-3">
-									<div className="min-w-0">
-										<div
-											className={clsx(
-												"text-[14px] font-medium truncate",
-												isOpened ? "text-inverse" : "text-text-muted",
-											)}
-										>
-											{output.title}
-										</div>
-										<div className="text-[11px] text-text-muted/70 mt-0.5">
-											{output.type}
-										</div>
-									</div>
-									<div
-										className={clsx(
-											"shrink-0 transition-colors",
-											isOpened
-												? "text-[hsl(192,73%,84%)]"
-												: "text-text-muted/70",
-										)}
-										aria-hidden
-									>
-										<ChevronRight className="h-4 w-4" />
-									</div>
-								</div>
-							</button>
-						);
-					})}
+				<div>
+					<div className="inline-flex items-center gap-1 rounded-xl bg-blue-muted/5 p-1 max-w-full overflow-x-auto">
+						{outputs.map((output) => {
+							const isSelected = selectedOutput?.id === output.id;
+							return (
+								<button
+									key={output.id}
+									type="button"
+									onClick={() => setSelectedOutputId(output.id)}
+									className={clsx(
+										"rounded-lg px-2.5 py-1.5 text-[13px] font-medium transition-colors whitespace-nowrap",
+										"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(192,73%,84%)]/30",
+										isSelected
+											? "bg-blue-muted/10 text-text-muted"
+											: "text-text-muted/70 hover:text-text-muted",
+									)}
+								>
+									{output.title}
+								</button>
+							);
+						})}
+					</div>
+
+					{selectedOutput ? (
+						<div className="mt-3 overflow-hidden rounded-xl bg-blue-muted/5 px-4 py-3">
+							<div className="flex items-center justify-between mb-2 w-full gap-3">
+								<h3 className="text-[14px] font-medium text-inverse truncate">
+									{selectedOutput.title}
+								</h3>
+								<OutputActions generation={selectedOutput.generation} />
+							</div>
+							<div className="[&_.markdown-renderer]:text-[13px] [&_*[class*='text-[14px]']]:text-[13px] [&_*]:text-text-muted/70 [&_*[class*='text-inverse']]:!text-text-muted/70">
+								<GenerationView generation={selectedOutput.generation} />
+							</div>
+						</div>
+					) : null}
 				</div>
 			)}
 		</div>
