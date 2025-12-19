@@ -109,9 +109,9 @@ export const initializeAccount = async (
 			// Create app record and JSON file if template has an app
 			const templateAppInfo = templateAppMap.get(templateWorkspaceId);
 			if (templateAppInfo) {
-				const newEntryNodeId = idMap.get(templateAppInfo.appEntryNodeId);
+				const newEntryNodeId = idMap[templateAppInfo.appEntryNodeId];
 				const newEndNodeId = templateAppInfo.endNodeId
-					? (idMap.get(templateAppInfo.endNodeId) ?? null)
+					? (idMap[templateAppInfo.endNodeId] ?? null)
 					: null;
 
 				if (newEntryNodeId) {

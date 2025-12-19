@@ -146,14 +146,14 @@ async function createSampleWorkspaceFromTemplate(args: {
 	return {
 		workspace: newWorkspace,
 		templateWorkspaceId: args.templateWorkspaceId,
-		idMap,
+		idMap: Object.fromEntries(idMap),
 	};
 }
 
 type SampleWorkspaceResult = {
 	workspace: Workspace;
 	templateWorkspaceId: WorkspaceId;
-	idMap: Map<string, string>;
+	idMap: Record<string, string>;
 };
 
 export async function createSampleWorkspaces(args: {
