@@ -1,6 +1,7 @@
 "use client";
 
 import clsx from "clsx/lite";
+import { usePathname } from "next/navigation";
 import { GenerationView } from "../../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-view";
 import { OutputActions } from "../output-actions";
 import { useOutputDetailPaneStore } from "./output-detail-pane-store";
@@ -11,11 +12,13 @@ export function FinalStepOutput({
 }: {
 	finalStep: UITask["finalStep"];
 }) {
+	const pathname = usePathname();
 	const outputs = finalStep.outputs;
 	const outputCount = outputs.length;
 	const singleOutput = outputCount === 1 ? outputs[0] : undefined;
 	const opened = useOutputDetailPaneStore((s) => s.opened);
 	const open = useOutputDetailPaneStore((s) => s.open);
+	const openedForThisPage = opened?.pathname === pathname ? opened : null;
 
 	return (
 		<div className="mt-8">
@@ -53,7 +56,7 @@ export function FinalStepOutput({
 			) : (
 				<div className="space-y-2">
 					{outputs.map((output) => {
-						const isOpened = opened?.id === output.id;
+						const isOpened = openedForThisPage?.id === output.id;
 						return (
 							<button
 								key={output.id}
