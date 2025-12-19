@@ -2,6 +2,7 @@ import {
 	type AppId,
 	type Generation,
 	type GenerationStatus,
+	isCompletedGeneration,
 	isOperationNode,
 	type OperationNode,
 	type ParametersInput,
@@ -14,6 +15,8 @@ import {
 import { giselle } from "@/app/giselle";
 import { db, tasks } from "@/db";
 import { logger } from "@/lib/logger";
+
+export type UIOutputType = "text" | "markdown" | "json" | "image" | "other";
 
 type UIStepItemBase = {
 	/**
@@ -77,10 +80,91 @@ export interface UITask {
 		totalStepItemsCount: number;
 		finishedStepItemsCount: number;
 		outputs: {
+			id: string;
 			title: string;
+			type: UIOutputType;
+			preview: string | null;
 			generation: Generation;
 		}[];
 	};
+}
+
+function isLikelyMarkdown(content: string) {
+	const text = content.trim();
+	return (
+		text.includes("```") ||
+		text.includes("\n") ||
+		/^#{1,6}\s/m.test(text) ||
+		/^\s*[-*]\s+/m.test(text) ||
+		/\[[^\]]+\]\([^)]+\)/.test(text)
+	);
+}
+
+function toPreviewText(text: string, maxChars: number) {
+	const collapsed = text.replace(/\s+/g, " ").trim();
+	if (collapsed.length <= maxChars) {
+		return collapsed;
+	}
+	return `${collapsed.slice(0, maxChars - 1)}…`;
+}
+
+function getOutputTypeAndPreview(generation: Generation): {
+	type: UIOutputType;
+	preview: string | null;
+} {
+	if (!isCompletedGeneration(generation)) {
+		return { type: "other", preview: null };
+	}
+
+	const textOutput = generation.outputs.find(
+		(o) => o.type === "generated-text",
+	);
+	if (textOutput?.type === "generated-text") {
+		const type: UIOutputType = isLikelyMarkdown(textOutput.content)
+			? "markdown"
+			: "text";
+		return { type, preview: toPreviewText(textOutput.content, 140) };
+	}
+
+	const queryResult = generation.outputs.find((o) => o.type === "query-result");
+	if (queryResult?.type === "query-result") {
+		const recordsCount = queryResult.content.reduce((acc, entry) => {
+			if (entry.type === "vector-store") {
+				return acc + entry.records.length;
+			}
+			return acc;
+		}, 0);
+		return {
+			type: "json",
+			preview: `Query results (${recordsCount} record${recordsCount === 1 ? "" : "s"})`,
+		};
+	}
+
+	const imageOutput = generation.outputs.find(
+		(o) => o.type === "generated-image",
+	);
+	if (imageOutput?.type === "generated-image") {
+		const count = imageOutput.contents.length;
+		return {
+			type: "image",
+			preview: `${count} image${count === 1 ? "" : "s"}`,
+		};
+	}
+
+	const reasoning = generation.outputs.find((o) => o.type === "reasoning");
+	if (reasoning?.type === "reasoning") {
+		return { type: "text", preview: toPreviewText(reasoning.content, 140) };
+	}
+
+	const sources = generation.outputs.find((o) => o.type === "source");
+	if (sources?.type === "source") {
+		return {
+			type: "json",
+			preview: `Sources (${sources.sources.length})`,
+		};
+	}
+
+	return { type: "other", preview: null };
 }
 
 async function getAppByTaskId(taskId: TaskId) {
@@ -304,7 +388,14 @@ export async function getTaskData(taskId: TaskId): Promise<UITask> {
 			if (generation === undefined) {
 				return null;
 			}
-			return { title: item.title, generation };
+			const { type, preview } = getOutputTypeAndPreview(generation);
+			return {
+				id: generation.id,
+				title: item.title,
+				type,
+				preview,
+				generation,
+			};
 		})
 		.filter((outputOrNull) => outputOrNull !== null);
 
