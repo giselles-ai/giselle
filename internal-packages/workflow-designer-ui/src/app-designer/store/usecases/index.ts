@@ -1,3 +1,4 @@
+export * from "./use-add-app-entry-with-end-nodes";
 export * from "./use-add-connection";
 export * from "./use-add-connection-and-add-input";
 export * from "./use-add-node";
@@ -11,6 +12,7 @@ export * from "./use-copy-node";
 export * from "./use-copy-node-to-clipboard";
 export * from "./use-delete-connection";
 export * from "./use-delete-node";
+export * from "./use-delete-nodes";
 export * from "./use-delete-secret-and-cleanup-nodes";
 export * from "./use-deselect-connection";
 export * from "./use-disconnect-nodes";

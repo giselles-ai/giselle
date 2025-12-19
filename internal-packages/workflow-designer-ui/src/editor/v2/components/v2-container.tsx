@@ -24,11 +24,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useShallow } from "zustand/shallow";
 import {
+	ConfirmProvider,
+	useAddAppEntryWithEndNodes,
 	useAddNode,
 	useAppDesignerStore,
 	useClearSelection,
 	useConnectNodes,
-	useDeleteNode,
+	useDeleteNodes,
 	useDeselectConnection,
 	useDisconnectNodes,
 	useSelectConnection,
@@ -48,6 +50,7 @@ import { RunHistoryTable } from "../../run-history/run-history-table";
 import { SecretTable } from "../../secret/secret-table";
 import { FloatingNodePreview, Toolbar, useToolbar } from "../../tool";
 import type { V2LayoutState } from "../state";
+import { AppSetupHint } from "./app-setup-hint";
 import { FloatingPropertiesPanel } from "./floating-properties-panel";
 import { LeftPanel } from "./left-panel";
 
@@ -136,10 +139,11 @@ function V2NodeCanvas() {
 		setUiNodeState: a.setUiNodeState,
 		setUiViewport: a.setUiViewport,
 	}));
-	const deleteNode = useDeleteNode();
+	const deleteNodes = useDeleteNodes();
 	const selectConnection = useSelectConnection();
 	const deselectConnection = useDeselectConnection();
 	const addNode = useAddNode();
+	const addAppEntryWithEndNodes = useAddAppEntryWithEndNodes();
 	const selectSingleNode = useSelectSingleNode();
 	const clearSelection = useClearSelection();
 	const setCurrentShortcutScope = useSetCurrentShortcutScope();
@@ -345,6 +349,7 @@ function V2NodeCanvas() {
 
 	const handleNodesChange: OnNodesChange = useCallback(
 		(changes) => {
+			const nodeIdsToRemove: string[] = [];
 			for (const change of changes) {
 				switch (change.type) {
 					case "position": {
@@ -366,13 +371,16 @@ function V2NodeCanvas() {
 						break;
 					}
 					case "remove": {
-						deleteNode(change.id);
+						nodeIdsToRemove.push(change.id);
 						break;
 					}
 				}
 			}
+			if (nodeIdsToRemove.length > 0) {
+				void deleteNodes(nodeIdsToRemove);
+			}
 		},
-		[deleteNode, setUiNodeState],
+		[deleteNodes, setUiNodeState],
 	);
 
 	const handleEdgesChange: OnEdgesChange = useCallback(
@@ -425,7 +433,14 @@ function V2NodeCanvas() {
 					x: e.clientX,
 					y: e.clientY,
 				});
-				addNode(selectedTool.node, { position });
+				if (isAppEntryNode(selectedTool.node)) {
+					addAppEntryWithEndNodes({
+						appEntryNode: selectedTool.node,
+						position,
+					});
+				} else {
+					addNode(selectedTool.node, { position });
+				}
 			}
 			reset();
 			// Set canvas focus when clicking on canvas
@@ -436,6 +451,7 @@ function V2NodeCanvas() {
 			reactFlowInstance,
 			selectedTool,
 			addNode,
+			addAppEntryWithEndNodes,
 			reset,
 			setCurrentShortcutScope,
 		],
@@ -488,6 +504,9 @@ function V2NodeCanvas() {
 			{selectedTool?.action === "addNode" && (
 				<FloatingNodePreview node={selectedTool.node} />
 			)}
+			<XYFlowPanel position="top-left" className="m-[16px]">
+				<AppSetupHint />
+			</XYFlowPanel>
 			<XYFlowPanel position="bottom-center">
 				<Toolbar />
 			</XYFlowPanel>
@@ -525,62 +544,64 @@ export function V2Container({ leftPanel, onLeftPanelClose }: V2ContainerProps) {
 	const mainRef = useRef<HTMLDivElement>(null);
 
 	return (
-		<main className="relative flex-1 bg-bg overflow-hidden" ref={mainRef}>
-			<PanelGroup direction="horizontal" className="h-full flex">
-				{leftPanel !== null && (
-					<>
-						<Panel order={1}>
-							{leftPanel === "run-history" && (
-								<LeftPanel onClose={onLeftPanelClose} title="Run History">
-									<RunHistoryTable />
-								</LeftPanel>
-							)}
-							{leftPanel === "secret" && (
-								<LeftPanel onClose={onLeftPanelClose} title="Secrets">
-									<SecretTable />
-								</LeftPanel>
-							)}
-						</Panel>
-						<PanelResizeHandle
-							className={clsx(
-								"w-[12px] cursor-col-resize group flex items-center justify-center",
-							)}
-						>
-							<div
-								className={clsx(
-									"w-[3px] h-[32px] rounded-full transition-colors",
-									"bg-[#6b7280] opacity-60",
-									"group-data-[resize-handle-state=hover]:bg-[#4a90e2]",
-									"group-data-[resize-handle-state=drag]:bg-[#4a90e2]",
+		<ConfirmProvider>
+			<main className="relative flex-1 bg-bg overflow-hidden" ref={mainRef}>
+				<PanelGroup direction="horizontal" className="h-full flex">
+					{leftPanel !== null && (
+						<>
+							<Panel order={1}>
+								{leftPanel === "run-history" && (
+									<LeftPanel onClose={onLeftPanelClose} title="Run History">
+										<RunHistoryTable />
+									</LeftPanel>
 								)}
-							/>
-						</PanelResizeHandle>
-					</>
-				)}
+								{leftPanel === "secret" && (
+									<LeftPanel onClose={onLeftPanelClose} title="Secrets">
+										<SecretTable />
+									</LeftPanel>
+								)}
+							</Panel>
+							<PanelResizeHandle
+								className={clsx(
+									"w-[12px] cursor-col-resize group flex items-center justify-center",
+								)}
+							>
+								<div
+									className={clsx(
+										"w-[3px] h-[32px] rounded-full transition-colors",
+										"bg-[#6b7280] opacity-60",
+										"group-data-[resize-handle-state=hover]:bg-[#4a90e2]",
+										"group-data-[resize-handle-state=drag]:bg-[#4a90e2]",
+									)}
+								/>
+							</PanelResizeHandle>
+						</>
+					)}
 
-				<Panel order={2}>
-					{/* Main Content Area */}
-					<V2NodeCanvas />
-					{/* Floating Properties Panel */}
-					<FloatingPropertiesPanel
-						isOpen={isPropertiesPanelOpen}
-						container={mainRef.current}
-						title="Properties Panel"
-						defaultWidth={isTextGenerationPanel ? 400 : undefined}
-						minWidth={isTextGenerationPanel ? 400 : undefined}
-						autoHeight={
-							isFilePanel ||
-							isTextPanel ||
-							isVectorStorePanel ||
-							isWebPagePanel ||
-							isManualTriggerPanel
-						}
-					>
-						<PropertiesPanel />
-					</FloatingPropertiesPanel>
-				</Panel>
-			</PanelGroup>
-			<GradientDef />
-		</main>
+					<Panel order={2}>
+						{/* Main Content Area */}
+						<V2NodeCanvas />
+						{/* Floating Properties Panel */}
+						<FloatingPropertiesPanel
+							isOpen={isPropertiesPanelOpen}
+							container={mainRef.current}
+							title="Properties Panel"
+							defaultWidth={isTextGenerationPanel ? 400 : undefined}
+							minWidth={isTextGenerationPanel ? 400 : undefined}
+							autoHeight={
+								isFilePanel ||
+								isTextPanel ||
+								isVectorStorePanel ||
+								isWebPagePanel ||
+								isManualTriggerPanel
+							}
+						>
+							<PropertiesPanel />
+						</FloatingPropertiesPanel>
+					</Panel>
+				</PanelGroup>
+				<GradientDef />
+			</main>
+		</ConfirmProvider>
 	);
 }

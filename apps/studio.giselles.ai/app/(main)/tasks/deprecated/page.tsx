@@ -2,7 +2,7 @@ import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 import { giselle } from "@/app/giselle";
 import { type acts as actsSchema, db } from "@/db";
-import { stageFlag } from "@/flags";
+import { stageV2Flag } from "@/flags";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchUserTeams } from "@/services/teams";
 import { FilterableActsList } from "../components/filterable-acts-list";
@@ -108,7 +108,6 @@ async function enrichActWithNavigationData(
 			teamName: team.name,
 			workspaceName: tmpWorkspace.name ?? "Untitled",
 			llmModels: llmModels.length > 0 ? llmModels : undefined,
-			inputValues: undefined,
 		};
 	} catch {
 		return null;
@@ -122,8 +121,8 @@ async function reloadPage() {
 }
 
 export default async function StageActsPage() {
-	const enableStage = await stageFlag();
-	if (!enableStage) {
+	const enableStageV2 = await stageV2Flag();
+	if (!enableStageV2) {
 		return notFound();
 	}
 

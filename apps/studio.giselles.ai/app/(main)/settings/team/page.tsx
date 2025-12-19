@@ -2,6 +2,8 @@ import { DocsLink } from "@giselle-internal/ui/docs-link";
 import { PageHeading } from "@giselle-internal/ui/page-heading";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { formatTimestamp } from "@/packages/lib/utils";
+import { getLatestSubscriptionV2 } from "@/services/subscriptions/get-latest-subscription-v2";
 import { fetchCurrentTeam, formatPlanName, isProPlan } from "@/services/teams";
 import { manageBilling } from "@/services/teams/actions/manage-billing";
 import { upgradeTeam } from "@/services/teams/actions/upgrade-team";
@@ -105,10 +107,20 @@ function BillingInfoForFreePlan({ team }: BillingInfoProps) {
 		</div>
 	);
 }
-function BillingInfoForProPlan({ team }: BillingInfoProps) {
+async function BillingInfoForProPlan({ team }: BillingInfoProps) {
 	if (!isProPlan(team)) {
 		return null;
 	}
+
+	// Get willCancelAt for v2 subscriptions
+	let willCancelAt: Date | null = null;
+	if (team.activeSubscriptionId?.startsWith("bpps_")) {
+		const subscription = await getLatestSubscriptionV2(
+			team.activeSubscriptionId,
+		);
+		willCancelAt = subscription?.subscription.willCancelAt ?? null;
+	}
+
 	return (
 		<div className="flex justify-between items-center">
 			<div className="flex flex-col gap-y-[2px]">
@@ -118,6 +130,11 @@ function BillingInfoForProPlan({ team }: BillingInfoProps) {
 							{formatPlanName(team.plan)}
 						</span>
 					</p>
+					{willCancelAt && (
+						<p className="text-black-30 font-medium text-[14px] leading-[20px] font-geist">
+							Cancels {formatTimestamp.toLongDate(willCancelAt.getTime())}
+						</p>
+					)}
 				</div>
 				<p className="text-link-muted font-medium text-[12px] leading-[20.4px] font-geist">
 					Have questions about your plan?{" "}
@@ -140,9 +157,11 @@ function BillingInfoForProPlan({ team }: BillingInfoProps) {
 							<UpdateButton subscriptionId={team.activeSubscriptionId} />
 						</Suspense>
 					</form>
-					<CancelSubscriptionButton
-						subscriptionId={team.activeSubscriptionId}
-					/>
+					{!willCancelAt && (
+						<CancelSubscriptionButton
+							subscriptionId={team.activeSubscriptionId}
+						/>
+					)}
 				</div>
 			)}
 		</div>

@@ -97,6 +97,25 @@ export const stageFlag = flag<boolean>({
 	],
 });
 
+export const stageV2Flag = flag<boolean>({
+	key: "stage-v2",
+	async decide() {
+		if (process.env.NODE_ENV === "development") {
+			return takeLocalEnv("STAGE_V2_FLAG");
+		}
+		const edgeConfig = await get(`flag__${this.key}`);
+		if (edgeConfig === undefined) {
+			return false;
+		}
+		return edgeConfig === true || edgeConfig === "true";
+	},
+	description: "Enable stage showcase (Apps page)",
+	options: [
+		{ value: false, label: "disable" },
+		{ value: true, label: "Enable" },
+	],
+});
+
 export const aiGatewayFlag = flag<boolean>({
 	key: "ai-gateway",
 	async decide() {
