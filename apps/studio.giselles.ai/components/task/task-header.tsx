@@ -6,7 +6,7 @@ import type {
 	UploadedFileData,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
-import { Check, FilePenLineIcon } from "lucide-react";
+import { ArrowLeft, Check, FilePenLineIcon } from "lucide-react";
 import Link from "next/link";
 
 function formatFileSize(bytes?: number) {
@@ -74,6 +74,8 @@ interface TaskHeaderProps {
 	description: string;
 	workspaceId: WorkspaceId;
 	input: ParametersInput | null;
+	backHref?: string;
+	isBackLinkVisible?: boolean;
 }
 
 export function TaskHeader({
@@ -82,6 +84,8 @@ export function TaskHeader({
 	description,
 	workspaceId,
 	input,
+	backHref = "/tasks",
+	isBackLinkVisible = true,
 }: TaskHeaderProps) {
 	return (
 		<div className="w-full pb-3  bg-[color:var(--color-background)]">
@@ -90,6 +94,17 @@ export function TaskHeader({
 			<div className="mx-auto pt-2">
 				{/* App Summary Section */}
 				<div>
+					{isBackLinkVisible ? (
+						<div className="mb-2">
+							<Link
+								href={backHref}
+								className="inline-flex items-center gap-2 text-[13px] text-text-muted/70 hover:text-text-muted transition-colors"
+							>
+								<ArrowLeft className="h-4 w-4" aria-hidden />
+								Back to Tasks
+							</Link>
+						</div>
+					) : null}
 					{/* Task Status */}
 					<div className="mb-2">
 						{status === "created" ? (

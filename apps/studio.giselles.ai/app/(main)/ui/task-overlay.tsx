@@ -40,6 +40,7 @@ export function TaskOverlay() {
 							description={overlayApp.description ?? ""}
 							workspaceId={overlayApp.workspaceId}
 							input={overlayInput}
+							isBackLinkVisible={false}
 						/>
 
 						<p className="text-[13px] text-text-muted/70 italic">
