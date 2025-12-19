@@ -16,7 +16,7 @@ import { giselle } from "@/app/giselle";
 import { db, tasks } from "@/db";
 import { logger } from "@/lib/logger";
 
-export type UIOutputType = "text" | "markdown" | "json" | "image" | "other";
+type UIOutputType = "text" | "markdown" | "json" | "image" | "other";
 
 type UIStepItemBase = {
 	/**

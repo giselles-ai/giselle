@@ -52,7 +52,6 @@
 		"@types/react-dom": "catalog:",
 		"ai": "catalog:",
 		"pino": "catalog:",
-		"tailwindcss": "catalog:",
 		"typescript": "catalog:",
 		"vitest": "catalog:"
 	},
