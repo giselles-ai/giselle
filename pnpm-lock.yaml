@@ -577,6 +577,9 @@ importers:
       react-email:
         specifier: 5.0.5
         version: 5.0.5(bufferutil@4.0.9)(utf-8-validate@6.0.5)
+      react-resizable-panels:
+        specifier: 'catalog:'
+        version: 2.1.7(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       require-in-the-middle:
         specifier: 7.5.2
         version: 7.5.2
