@@ -402,7 +402,7 @@ export function Toolbar() {
 										/>
 										<div className="relative flex flex-col gap-0">
 											<p className="text-[#505D7B] text-[12px] font-medium leading-[170%] mb-[4px] px-[8px]">
-												Static
+												Source
 											</p>
 											<ToggleGroup.Root
 												type="single"
@@ -508,7 +508,7 @@ export function Toolbar() {
 											</ToggleGroup.Root>
 
 											<p className="text-[#505D7B] text-[12px] font-medium leading-[170%] mt-[8px] mb-[4px] px-[8px]">
-												Dynamic
+												Retrieval
 											</p>
 											<ToggleGroup.Root
 												type="single"
