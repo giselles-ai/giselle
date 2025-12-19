@@ -78,8 +78,8 @@ export const google = {
 			},
 			thinkingLevel: {
 				description:
-					"Control thinking behavior. Models adjust reasoning effort dynamically by default, but you can override this for specific latency or complexity requirements.",
-				schema: z.enum(["low", "high"]),
+					"Control thinking behavior. 'minimal' minimizes latency for chat or high-throughput apps. 'low' for simple tasks. 'medium' for balanced thinking. 'high' for complex reasoning.",
+				schema: z.enum(["minimal", "low", "medium", "high"]),
 			},
 		},
 		defaultConfiguration: {
