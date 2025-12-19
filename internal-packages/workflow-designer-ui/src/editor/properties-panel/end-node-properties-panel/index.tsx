@@ -53,7 +53,7 @@ function AddOutputButton({
 				leftIcon={<PlusIcon className="size-[12px]" />}
 				disabled
 			>
-				Add output
+				Add Output
 			</Button>
 		);
 	}
@@ -62,7 +62,7 @@ function AddOutputButton({
 		<DropdownMenu
 			trigger={
 				<Button type="button" leftIcon={<PlusIcon className="size-[12px]" />}>
-					Add output
+					Add Output
 				</Button>
 			}
 			items={availableNodes.map((availableNode) => ({
