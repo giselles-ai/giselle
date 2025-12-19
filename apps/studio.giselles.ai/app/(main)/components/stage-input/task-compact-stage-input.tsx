@@ -1,24 +1,23 @@
 "use client";
 
-import { Select } from "@giselle-internal/ui/select";
 import type { GenerationContextInput } from "@giselles-ai/protocol";
-import { ArrowUpIcon, Paperclip, X } from "lucide-react";
+import { X } from "lucide-react";
 import { FileAttachments } from "../../playground/file-attachments";
 import type { StageApp } from "../../playground/types";
 import {
 	type StageAppSelectionScope,
 	useStageAppSelectionStore,
 } from "../../stores/stage-app-selection-store";
+import { InputAreaHeaderControls } from "../../tasks/[taskId]/ui/input-area-header-controls";
+import { InputAreaTextRow } from "../../tasks/[taskId]/ui/input-area-placeholder";
 import { ACCEPTED_FILE_TYPES, useStageInput } from "./use-stage-input";
 
 export function TaskCompactStageInput({
-	selectedApp,
 	apps,
 	scope,
 	onSubmitAction,
 	isRunning,
 }: {
-	selectedApp?: StageApp;
 	apps: StageApp[];
 	scope: StageAppSelectionScope;
 	onSubmitAction: (event: { inputs: GenerationContextInput[] }) => void;
@@ -55,8 +54,9 @@ export function TaskCompactStageInput({
 		handleImageLoad,
 		handleDismissFileRestrictionError,
 		handleSubmit,
-	} = useStageInput({
 		selectedApp,
+	} = useStageInput({
+		scope,
 		apps,
 		onSubmitAction,
 		isRunning,
@@ -64,6 +64,20 @@ export function TaskCompactStageInput({
 
 	return (
 		<div className="relative w-full max-w-[640px] min-w-[320px] mx-auto">
+			<div className="flex items-center justify-between mb-2">
+				<h2 className="text-text-muted text-[13px] font-semibold">
+					Request new tasks in a new session
+				</h2>
+				<InputAreaHeaderControls
+					options={appOptions}
+					value={selectedApp?.id}
+					onValueChange={(appId) => {
+						setSelectedAppId(scope, appId);
+					}}
+					onAttachmentButtonClick={handleAttachmentButtonClick}
+					isDisabled={isRunning}
+				/>
+			</div>
 			<section
 				aria-label="Request new task input and dropzone"
 				className={`relative rounded-xl bg-[rgba(131,157,195,0.14)] shadow-[inset_0_1px_4px_rgba(0,0,0,0.22)] pt-3 pb-2 px-4 transition-colors ${
@@ -78,59 +92,19 @@ export function TaskCompactStageInput({
 					<div className="pointer-events-none absolute inset-0 rounded-xl border border-dashed border-blue-muted/60 bg-blue-muted/10" />
 				) : null}
 				<div className="relative">
-					<div className="flex items-center gap-2">
-						<textarea
-							ref={textareaRef}
-							value={inputValue}
-							onChange={handleInputChange}
-							onCompositionStart={handleCompositionStart}
-							onCompositionEnd={handleCompositionEnd}
-							onKeyDown={handleKeyDown}
-							placeholder={selectedApp?.description ?? ""}
-							rows={1}
-							disabled={isRunning}
-							className="flex-1 resize-none bg-transparent text-[14px] text-foreground placeholder:text-blue-muted/50 outline-none disabled:cursor-not-allowed min-h-[1.9em] pt-0 pb-[0.5em] px-1"
-						/>
-						<button
-							type="button"
-							onClick={handleSubmit}
-							disabled={!canSubmit}
-							className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-inverse)] disabled:cursor-not-allowed ${
-								hasInput && !hasPendingUploads ? "opacity-100" : "opacity-40"
-							}`}
-						>
-							<ArrowUpIcon className="h-2.5 w-2.5 text-[color:var(--color-background)]" />
-						</button>
-					</div>
-
-					<div className="mt-2 flex items-center justify-between gap-2">
-						<div className="flex items-center gap-2 flex-1 min-w-0">
-							<button
-								type="button"
-								onClick={handleAttachmentButtonClick}
-								className="group flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-[4px] transition-colors hover:bg-white/5"
-								aria-label="Attach files"
-							>
-								<Paperclip className="h-3.5 w-3.5 text-text-muted/80 transition-colors group-hover:text-white" />
-							</button>
-							<div className="min-w-0 flex-1">
-								<Select
-									options={appOptions}
-									placeholder="Select an app..."
-									value={selectedApp?.id}
-									onValueChange={(appId) => {
-										setSelectedAppId(scope, appId);
-									}}
-									widthClassName="w-full"
-									side="top"
-									triggerClassName="border border-border !bg-[rgba(131,157,195,0.1)] hover:!bg-[rgba(131,157,195,0.18)] !px-2 !h-7 !rounded-[6px] text-[12px] [&_svg]:opacity-70"
-								/>
-							</div>
-						</div>
-						<div className="shrink-0 text-[11px] text-blue-muted/60">
-							↵ to send
-						</div>
-					</div>
+					<InputAreaTextRow
+						textareaRef={textareaRef}
+						value={inputValue}
+						onChange={handleInputChange}
+						onCompositionStart={handleCompositionStart}
+						onCompositionEnd={handleCompositionEnd}
+						onKeyDown={handleKeyDown}
+						placeholder="Ask anything—powered by Giselle docs"
+						isDisabled={isRunning}
+						canSubmit={canSubmit}
+						isSubmitReady={hasInput && !hasPendingUploads}
+						onSubmit={handleSubmit}
+					/>
 
 					<FileAttachments
 						files={attachedFiles}

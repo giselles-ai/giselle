@@ -27,3 +27,56 @@ export function InputAreaPlaceholder() {
 		</div>
 	);
 }
+
+export function InputAreaTextRow({
+	textareaRef,
+	value,
+	onChange,
+	onCompositionStart,
+	onCompositionEnd,
+	onKeyDown,
+	placeholder,
+	isDisabled,
+	canSubmit,
+	isSubmitReady,
+	onSubmit,
+}: {
+	textareaRef?: React.Ref<HTMLTextAreaElement>;
+	value: string;
+	onChange: React.ChangeEventHandler<HTMLTextAreaElement>;
+	onCompositionStart?: React.CompositionEventHandler<HTMLTextAreaElement>;
+	onCompositionEnd?: React.CompositionEventHandler<HTMLTextAreaElement>;
+	onKeyDown?: React.KeyboardEventHandler<HTMLTextAreaElement>;
+	placeholder?: string;
+	isDisabled?: boolean;
+	canSubmit: boolean;
+	isSubmitReady?: boolean;
+	onSubmit: () => void;
+}) {
+	return (
+		<div className="flex items-center gap-2">
+			<textarea
+				ref={textareaRef}
+				value={value}
+				onChange={onChange}
+				onCompositionStart={onCompositionStart}
+				onCompositionEnd={onCompositionEnd}
+				onKeyDown={onKeyDown}
+				placeholder={placeholder}
+				rows={1}
+				disabled={isDisabled}
+				className="flex-1 resize-none bg-transparent text-[14px] text-foreground placeholder:text-blue-muted/50 outline-none disabled:cursor-not-allowed min-h-[1.9em] pt-0 pb-[0.5em] px-1"
+			/>
+			<button
+				type="button"
+				onClick={onSubmit}
+				disabled={!canSubmit}
+				className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-[4px] bg-[color:var(--color-inverse)] disabled:cursor-not-allowed ${
+					isSubmitReady ? "opacity-100" : "opacity-40"
+				}`}
+			>
+				<ArrowUpIcon className="h-2.5 w-2.5 text-[color:var(--color-background)]" />
+			</button>
+		</div>
+	);
+}

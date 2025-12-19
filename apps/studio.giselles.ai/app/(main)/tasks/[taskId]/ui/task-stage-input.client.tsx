@@ -7,14 +7,9 @@ import type {
 	TaskId,
 } from "@giselles-ai/protocol";
 import { useRouter } from "next/navigation";
-import {
-	useCallback,
-	useEffect,
-	useMemo,
-	useState,
-	useTransition,
-} from "react";
+import { useCallback, useMemo, useTransition } from "react";
 import { useShallow } from "zustand/shallow";
+import { useSelectedStageApp } from "@/app/(main)/stores/stage-app-selection-store";
 import { useTaskOverlayStore } from "@/app/(main)/stores/task-overlay-store";
 import { TaskCompactStageInput } from "../../../components/stage-input/task-compact-stage-input";
 import type { StageApp } from "../../../playground/types";
@@ -38,26 +33,15 @@ export function TaskStageInput({
 		[sampleApps, apps],
 	);
 
-	const [selectedAppId, setSelectedAppId] = useState<string | undefined>(
-		initialSelectedAppId,
-	);
 	const [isRunning, startTransition] = useTransition();
 
-	const selectedApp = selectedAppId
-		? selectableApps.find((app) => app.id === selectedAppId)
-		: undefined;
-
-	useEffect(() => {
-		if (
-			selectedAppId &&
-			!selectableApps.some((app) => app.id === selectedAppId)
-		) {
-			setSelectedAppId(selectableApps[0]?.id);
-		}
-		if (!selectedAppId && selectableApps.length > 0) {
-			setSelectedAppId(selectableApps[0]?.id);
-		}
-	}, [selectedAppId, selectableApps]);
+	const { selectedApp } = useSelectedStageApp<StageApp>(
+		"task",
+		selectableApps,
+		{
+			preferredAppId: initialSelectedAppId,
+		},
+	);
 
 	const { showOverlay, hideOverlay } = useTaskOverlayStore(
 		useShallow((state) => ({
@@ -106,7 +90,6 @@ export function TaskStageInput({
 
 	return (
 		<TaskCompactStageInput
-			selectedApp={selectedApp}
 			apps={selectableApps}
 			scope="task"
 			onSubmitAction={handleSubmit}

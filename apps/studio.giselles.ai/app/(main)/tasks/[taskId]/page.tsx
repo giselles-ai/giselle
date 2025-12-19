@@ -48,11 +48,6 @@ export default async function ({
 				>
 					{/* Top gradient separator */}
 					<div className="w-full absolute h-6 -top-6 bg-gradient-to-t from-[color:var(--color-background)] to-transparent pointer-events-none" />
-					<div className="flex items-center justify-between mb-2">
-						<h2 className="text-text-muted text-[13px] font-semibold">
-							Request new tasks in a new session
-						</h2>
-					</div>
 					<TaskStageInput
 						apps={stageAppsData.apps}
 						sampleApps={stageAppsData.sampleApps}
