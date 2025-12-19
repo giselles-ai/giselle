@@ -14,10 +14,10 @@ export default function Home() {
 		router.push(`/workspaces/${workspace.id}`);
 	}, [router.push, giselle]);
 	const createSampleWorkspace = useCallback(async () => {
-		const workspaces = await giselle.createSampleWorkspaces();
+		const results = await giselle.createSampleWorkspaces();
 		// Use the first workspace if multiple are created
-		if (Array.isArray(workspaces) && workspaces.length > 0 && workspaces[0]) {
-			const workspace = workspaces[0];
+		if (Array.isArray(results) && results.length > 0 && results[0]) {
+			const { workspace } = results[0];
 			router.push(`/workspaces/${workspace.id}`);
 		}
 	}, [router.push, giselle]);
