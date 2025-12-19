@@ -144,7 +144,7 @@ export function useStageInput({
 	const client = useGiselle();
 	const { addToast } = useToast();
 
-	const { selectedApp } = useSelectedStageApp<StageApp>(scope, apps ?? []);
+	const { selectedApp } = useSelectedStageApp(scope, apps ?? []);
 
 	const appOptions = useMemo(
 		() =>

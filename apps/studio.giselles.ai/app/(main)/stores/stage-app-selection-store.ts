@@ -3,12 +3,9 @@
 import { useCallback, useEffect, useMemo } from "react";
 import { create } from "zustand";
 import { useShallow } from "zustand/shallow";
+import type { StageApp } from "../playground/types";
 
 export type StageAppSelectionScope = "playground" | "task";
-
-export type StageAppSelectable = {
-	id: string;
-};
 
 type StageAppSelectionState = {
 	selectedAppIdByScope: Record<StageAppSelectionScope, string | undefined>;
@@ -87,9 +84,10 @@ export const useStageAppSelectionStore = create<StageAppSelectionState>(
 	}),
 );
 
-export function useSelectedStageApp<TApp extends StageAppSelectable>(
+export function useSelectedStageApp(
 	scope: StageAppSelectionScope,
-	apps: TApp[],
+	/** @todo type location is wrong */
+	apps: StageApp[],
 	params?: {
 		preferredAppId?: string;
 	},

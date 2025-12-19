@@ -35,13 +35,9 @@ export function TaskStageInput({
 
 	const [isRunning, startTransition] = useTransition();
 
-	const { selectedApp } = useSelectedStageApp<StageApp>(
-		"task",
-		selectableApps,
-		{
-			preferredAppId: initialSelectedAppId,
-		},
-	);
+	const { selectedApp } = useSelectedStageApp("task", selectableApps, {
+		preferredAppId: initialSelectedAppId,
+	});
 
 	const { showOverlay, hideOverlay } = useTaskOverlayStore(
 		useShallow((state) => ({
