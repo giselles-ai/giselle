@@ -12,13 +12,11 @@ import {
 import { ACCEPTED_FILE_TYPES, useStageInput } from "./use-stage-input";
 
 export function PlaygroundStageInput({
-	selectedApp,
 	apps,
 	scope,
 	onSubmitAction,
 	isRunning,
 }: {
-	selectedApp?: StageApp;
 	apps: StageApp[];
 	scope: StageAppSelectionScope;
 	onSubmitAction: (event: { inputs: GenerationContextInput[] }) => void;
@@ -55,8 +53,9 @@ export function PlaygroundStageInput({
 		handleImageLoad,
 		handleDismissFileRestrictionError,
 		handleSubmit,
-	} = useStageInput({
 		selectedApp,
+	} = useStageInput({
+		scope,
 		apps,
 		onSubmitAction,
 		isRunning,

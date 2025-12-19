@@ -1,6 +1,14 @@
+"use client";
+
+import { useCallback, useEffect, useMemo } from "react";
 import { create } from "zustand";
+import { useShallow } from "zustand/shallow";
 
 export type StageAppSelectionScope = "playground" | "task";
+
+export type StageAppSelectable = {
+	id: string;
+};
 
 type StageAppSelectionState = {
 	selectedAppIdByScope: Record<StageAppSelectionScope, string | undefined>;
@@ -78,3 +86,69 @@ export const useStageAppSelectionStore = create<StageAppSelectionState>(
 		},
 	}),
 );
+
+export function useSelectedStageApp<TApp extends StageAppSelectable>(
+	scope: StageAppSelectionScope,
+	apps: TApp[],
+	params?: {
+		preferredAppId?: string;
+	},
+) {
+	const { selectedAppId, setSelectedAppId, ensureSelectedAppId } =
+		useStageAppSelectionStore(
+			useShallow((state) => ({
+				selectedAppId: state.selectedAppIdByScope[scope],
+				setSelectedAppId: state.setSelectedAppId,
+				ensureSelectedAppId: state.ensureSelectedAppId,
+			})),
+		);
+
+	const availableAppIds = useMemo(() => apps.map((app) => app.id), [apps]);
+
+	const effectiveSelectedAppId = useMemo(() => {
+		if (isValidAppId(selectedAppId, availableAppIds)) {
+			return selectedAppId;
+		}
+
+		if (isValidAppId(params?.preferredAppId, availableAppIds)) {
+			return params?.preferredAppId;
+		}
+
+		return availableAppIds[0];
+	}, [availableAppIds, params?.preferredAppId, selectedAppId]);
+
+	useEffect(() => {
+		const shouldApplyPreferred =
+			selectedAppId === undefined ||
+			!isValidAppId(selectedAppId, availableAppIds);
+
+		ensureSelectedAppId(scope, {
+			availableAppIds,
+			preferredAppId: shouldApplyPreferred ? params?.preferredAppId : undefined,
+		});
+	}, [
+		availableAppIds,
+		ensureSelectedAppId,
+		params?.preferredAppId,
+		scope,
+		selectedAppId,
+	]);
+
+	const selectedApp = useMemo(() => {
+		if (!effectiveSelectedAppId) return undefined;
+		return apps.find((app) => app.id === effectiveSelectedAppId);
+	}, [apps, effectiveSelectedAppId]);
+
+	const setSelectedAppIdForScope = useCallback(
+		(appId: string | undefined) => {
+			setSelectedAppId(scope, appId);
+		},
+		[scope, setSelectedAppId],
+	);
+
+	return {
+		selectedAppId: effectiveSelectedAppId,
+		selectedApp,
+		setSelectedAppId: setSelectedAppIdForScope,
+	} as const;
+}

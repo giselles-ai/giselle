@@ -41,3 +41,4 @@ export async function createAndStartTask(input: CreateAndStartTaskInputs) {
 	await giselle.startTask({ taskId: task.id, generationOriginType: "stage" });
 	return task.id;
 }
+

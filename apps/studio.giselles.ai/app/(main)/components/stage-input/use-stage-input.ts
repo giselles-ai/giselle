@@ -22,6 +22,10 @@ import {
 	useState,
 } from "react";
 import type { StageApp } from "../../playground/types";
+import {
+	type StageAppSelectionScope,
+	useSelectedStageApp,
+} from "../../stores/stage-app-selection-store";
 
 type FileRestrictionErrorState = {
 	rejectedFileNames: string[];
@@ -127,18 +131,20 @@ function containsFiles(event: React.DragEvent<HTMLElement>) {
 }
 
 export function useStageInput({
-	selectedApp,
+	scope,
 	apps,
 	onSubmitAction,
 	isRunning,
 }: {
-	selectedApp?: StageApp;
+	scope: StageAppSelectionScope;
 	apps?: StageApp[];
 	onSubmitAction: (event: { inputs: GenerationContextInput[] }) => void;
 	isRunning: boolean;
 }) {
 	const client = useGiselle();
 	const { addToast } = useToast();
+
+	const { selectedApp } = useSelectedStageApp<StageApp>(scope, apps ?? []);
 
 	const appOptions = useMemo(
 		() =>
@@ -483,6 +489,7 @@ export function useStageInput({
 		() => ({
 			basePath: client.basePath,
 			appOptions,
+			selectedApp,
 			textareaRef,
 			fileInputRef,
 			inputValue,
@@ -512,6 +519,7 @@ export function useStageInput({
 		[
 			client.basePath,
 			appOptions,
+			selectedApp,
 			inputValue,
 			isDragActive,
 			attachedFiles,

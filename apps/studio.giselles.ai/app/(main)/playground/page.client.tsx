@@ -13,14 +13,13 @@ import type { ReactNode } from "react";
 import {
 	use,
 	useCallback,
-	useEffect,
 	useMemo,
 	useRef,
 	useState,
 	useTransition,
 } from "react";
 import { useShallow } from "zustand/shallow";
-import { useStageAppSelectionStore } from "@/app/(main)/stores/stage-app-selection-store";
+import { useSelectedStageApp } from "@/app/(main)/stores/stage-app-selection-store";
 import { useTaskOverlayStore } from "@/app/(main)/stores/task-overlay-store";
 import { LLMProviderIcon } from "@/app/(main)/workspaces/components/llm-provider-icon";
 import { PlaygroundStageInput } from "../components/stage-input/playground-stage-input";
@@ -211,14 +210,6 @@ export function Page({
 	const [appSearchQuery, setAppSearchQuery] = useState("");
 	const [isSearchActive, setIsSearchActive] = useState(false);
 	const appSearchInputRef = useRef<HTMLInputElement | null>(null);
-	const { selectedAppId, setSelectedAppId, ensureSelectedAppId } =
-		useStageAppSelectionStore(
-			useShallow((state) => ({
-				selectedAppId: state.selectedAppIdByScope.playground,
-				setSelectedAppId: state.setSelectedAppId,
-				ensureSelectedAppId: state.ensureSelectedAppId,
-			})),
-		);
 	const { showOverlay, hideOverlay } = useTaskOverlayStore(
 		useShallow((state) => ({
 			showOverlay: state.showOverlay,
@@ -241,19 +232,10 @@ export function Page({
 		[data.sampleApps, data.apps],
 	);
 
-	const availableAppIds = useMemo(
-		() => selectableApps.map((app) => app.id),
-		[selectableApps],
+	const { selectedAppId, selectedApp, setSelectedAppId } = useSelectedStageApp(
+		"playground",
+		selectableApps,
 	);
-
-	useEffect(() => {
-		ensureSelectedAppId("playground", { availableAppIds });
-	}, [ensureSelectedAppId, availableAppIds]);
-
-	// Validate selectedAppId during render - if invalid, treat as undefined
-	const selectedApp = selectedAppId
-		? selectableApps.find((app) => app.id === selectedAppId)
-		: undefined;
 
 	const handleRunSubmit = useCallback(
 		(event: { inputs: GenerationContextInput[] }) => {
@@ -315,7 +297,6 @@ export function Page({
 						{/* Chat-style input area */}
 						<PlaygroundStageInput
 							key={selectedApp?.workspaceId ?? "no-workspace"}
-							selectedApp={selectedApp}
 							apps={selectableApps}
 							scope="playground"
 							onSubmitAction={handleRunSubmit}
@@ -352,7 +333,7 @@ export function Page({
 												runningAppId === sampleApp.id
 											}
 											onClick={() => {
-												setSelectedAppId("playground", sampleApp.id);
+												setSelectedAppId(sampleApp.id);
 											}}
 										/>
 									))}
@@ -481,7 +462,7 @@ export function Page({
 												selectedAppId === app.id || runningAppId === app.id
 											}
 											onSelect={() => {
-												setSelectedAppId("playground", app.id);
+												setSelectedAppId(app.id);
 											}}
 										/>
 									))}
