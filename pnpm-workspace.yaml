@@ -8,7 +8,7 @@ catalog:
   '@ai-sdk/anthropic': 2.0.49
   '@ai-sdk/fal': 1.0.23
   '@ai-sdk/gateway': 2.0.15
-  '@ai-sdk/google': 2.0.43
+  '@ai-sdk/google': 2.0.49
   '@ai-sdk/openai': 2.0.72
   '@ai-sdk/provider': 2.0.0
   '@ai-sdk/react': 2.0.44
