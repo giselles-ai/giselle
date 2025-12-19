@@ -121,9 +121,9 @@ export function useDeleteNodes() {
 
 			if (shouldPairDelete) {
 				const ok = await confirm({
-					title: "Delete App Entry and End?",
+					title: "Delete Start and End?",
 					description:
-						"App Entry and End are a pair. Deleting either one will delete both. Do you want to continue?",
+						"Start and End are a pair. Deleting either one will delete both. Do you want to continue?",
 					confirmLabel: "Delete",
 					cancelLabel: "Cancel",
 					destructive: true,

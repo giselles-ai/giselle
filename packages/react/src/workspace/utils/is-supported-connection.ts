@@ -45,7 +45,7 @@ export function isSupportedConnection(
 	) {
 		return {
 			canConnect: false,
-			message: "Connecting App Entry and End nodes is not allowed",
+			message: "Connecting Start and End nodes is not allowed",
 		};
 	}
 

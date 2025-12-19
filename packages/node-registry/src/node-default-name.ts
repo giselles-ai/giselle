@@ -89,7 +89,7 @@ export function defaultName(node: NodeLike) {
 					}
 					return node.name ?? "End";
 				case "appEntry":
-					return node.name ?? "App Entry";
+					return node.name ?? "Start";
 				default: {
 					const _exhaustiveCheck: never = node.content.type;
 					throw new Error(`Unhandled action content type: ${_exhaustiveCheck}`);
