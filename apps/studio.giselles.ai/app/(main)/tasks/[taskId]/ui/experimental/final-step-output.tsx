@@ -1,6 +1,7 @@
 "use client";
 
 import clsx from "clsx/lite";
+import { ChevronRight } from "lucide-react";
 import { GenerationView } from "../../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-view";
 import { OutputActions } from "../output-actions";
 import { useOutputDetailPaneStore } from "./output-detail-pane-store";
@@ -73,23 +74,31 @@ export function FinalStepOutput({
 										: "border-border",
 								)}
 							>
-								<div className="flex items-center justify-between gap-2">
-									<span
+								<div className="flex items-center justify-between gap-3">
+									<div className="min-w-0">
+										<div
+											className={clsx(
+												"text-[14px] font-medium truncate",
+												isOpened ? "text-inverse" : "text-text-muted",
+											)}
+										>
+											{output.title}
+										</div>
+										<div className="text-[11px] text-text-muted/70 mt-0.5">
+											{output.type}
+										</div>
+									</div>
+									<div
 										className={clsx(
-											"text-[13px] font-medium truncate",
-											isOpened ? "text-inverse" : "text-text-muted",
+											"shrink-0 transition-colors",
+											isOpened
+												? "text-[hsl(192,73%,84%)]"
+												: "text-text-muted/70",
 										)}
+										aria-hidden
 									>
-										{output.title}
-									</span>
-									<span className="text-[11px] text-text-muted/70 shrink-0">
-										{output.type}
-									</span>
-								</div>
-								<div className="mt-2">
-									<span className="text-[12px] text-[hsl(192,73%,84%)] hover:text-[hsl(192,73%,70%)] transition-colors font-medium">
-										Open →
-									</span>
+										<ChevronRight className="h-4 w-4" />
+									</div>
 								</div>
 							</button>
 						);
