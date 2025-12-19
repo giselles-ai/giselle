@@ -46,4 +46,4 @@ export const useToast = () => {
 	}, [toast]);
 };
 
-export { ToastProvider, useToasts } from "@giselle-internal/ui/toast";
+export { ToastProvider } from "@giselle-internal/ui/toast";
