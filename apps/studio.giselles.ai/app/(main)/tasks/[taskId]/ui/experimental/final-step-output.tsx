@@ -42,7 +42,7 @@ export function FinalStepOutput({
 					</span>
 				</p>
 			) : singleOutput ? (
-				<div className="overflow-hidden rounded-xl bg-blue-muted/5 px-4 py-3">
+				<div className="overflow-hidden rounded-t-xl rounded-b-none bg-blue-muted/5 px-4 py-3">
 					<div className="flex items-center justify-between mb-2 w-full gap-3">
 						<h3 className="text-[14px] font-medium text-inverse truncate">
 							{singleOutput.title}
@@ -55,7 +55,7 @@ export function FinalStepOutput({
 				</div>
 			) : (
 				<div>
-					<div className="inline-flex items-center gap-1 rounded-xl bg-blue-muted/5 p-1 max-w-full overflow-x-auto">
+					<div className="inline-flex items-center gap-0 rounded-t-xl rounded-b-none max-w-full overflow-x-auto pl-4">
 						{outputs.map((output) => {
 							const isSelected = selectedOutput?.id === output.id;
 							return (
@@ -64,7 +64,7 @@ export function FinalStepOutput({
 									type="button"
 									onClick={() => setSelectedOutputId(output.id)}
 									className={clsx(
-										"rounded-lg px-2.5 py-1.5 text-[13px] font-medium transition-colors whitespace-nowrap",
+										"rounded-t-lg rounded-b-none px-2.5 py-1.5 text-[13px] font-medium transition-colors whitespace-nowrap",
 										"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(192,73%,84%)]/30",
 										isSelected
 											? "bg-blue-muted/10 text-text-muted"
@@ -78,7 +78,7 @@ export function FinalStepOutput({
 					</div>
 
 					{selectedOutput ? (
-						<div className="mt-3 overflow-hidden rounded-xl bg-blue-muted/5 px-4 py-3">
+						<div className="overflow-hidden rounded-xl bg-blue-muted/10 px-4 py-3">
 							<div className="flex items-center justify-between mb-2 w-full gap-3">
 								<h3 className="text-[14px] font-medium text-inverse truncate">
 									{selectedOutput.title}
