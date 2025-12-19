@@ -91,11 +91,16 @@ export interface UITask {
 function isLikelyMarkdown(content: string) {
 	const text = content.trim();
 	return (
+		// Fenced code blocks
 		text.includes("```") ||
-		text.includes("\n") ||
+		// ATX headings: #, ##, ..., ###### at line start
 		/^#{1,6}\s/m.test(text) ||
-		/^\s*[-*]\s+/m.test(text) ||
-		/\[[^\]]+\]\([^)]+\)/.test(text)
+		// Bullet or numbered lists at line start
+		/^\s*(?:[-*+]|(\d+\.))\s+/m.test(text) ||
+		// Markdown links: [label](url)
+		/\[[^\]]+\]\([^)]+\)/.test(text) ||
+		// Inline code spans using backticks
+		/`[^`]+`/.test(text)
 	);
 }
 
