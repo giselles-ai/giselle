@@ -277,7 +277,7 @@ export function Toolbar() {
 						data-tool
 						className="relative order-4"
 					>
-						<Tooltip text={<TooltipAndHotkey text="Event" hotkey="e" />}>
+						<Tooltip text={<TooltipAndHotkey text="Integration" hotkey="i" />}>
 							<CableIcon data-icon />
 						</Tooltip>
 						{selectedTool?.action === "selectIntegration" && (

@@ -101,7 +101,7 @@ export function useKeyboardShortcuts(
 		() => addNodeTool(createAppEntryNode()),
 		!isStageFlowAlreadyPlaced,
 	);
-	useToolAction("e", selectIntegrationTool);
+	useToolAction("i", selectIntegrationTool);
 	useToolAction("c", selectContextTool);
 	useToolAction("m", selectLanguageModelTool, !generateContentNode);
 	useToolAction("m", selectLanguageModelV2Tool, generateContentNode);
