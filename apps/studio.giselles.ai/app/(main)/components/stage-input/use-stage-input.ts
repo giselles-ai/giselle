@@ -133,18 +133,22 @@ function containsFiles(event: React.DragEvent<HTMLElement>) {
 export function useStageInput({
 	scope,
 	apps,
+	preferredAppId,
 	onSubmitAction,
 	isRunning,
 }: {
 	scope: StageAppSelectionScope;
 	apps?: StageApp[];
+	preferredAppId?: string;
 	onSubmitAction: (event: { inputs: GenerationContextInput[] }) => void;
 	isRunning: boolean;
 }) {
 	const client = useGiselle();
 	const { addToast } = useToast();
 
-	const { selectedApp } = useSelectedStageApp(scope, apps ?? []);
+	const { selectedApp } = useSelectedStageApp(scope, apps ?? [], {
+		preferredAppId,
+	});
 
 	const appOptions = useMemo(
 		() =>

@@ -88,6 +88,7 @@ export function TaskStageInput({
 		<TaskCompactStageInput
 			apps={selectableApps}
 			scope="task"
+			preferredAppId={initialSelectedAppId}
 			onSubmitAction={handleSubmit}
 			isRunning={isRunning}
 		/>

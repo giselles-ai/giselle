@@ -14,11 +14,13 @@ import { ACCEPTED_FILE_TYPES, useStageInput } from "./use-stage-input";
 export function TaskCompactStageInput({
 	apps,
 	scope,
+	preferredAppId,
 	onSubmitAction,
 	isRunning,
 }: {
 	apps: StageApp[];
 	scope: StageAppSelectionScope;
+	preferredAppId?: string;
 	onSubmitAction: (event: { inputs: GenerationContextInput[] }) => void;
 	isRunning: boolean;
 }) {
@@ -57,6 +59,7 @@ export function TaskCompactStageInput({
 	} = useStageInput({
 		scope,
 		apps,
+		preferredAppId,
 		onSubmitAction,
 		isRunning,
 	});
