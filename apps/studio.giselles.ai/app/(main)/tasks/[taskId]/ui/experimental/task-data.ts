@@ -12,6 +12,7 @@ import {
 	type TaskId,
 	type WorkspaceId,
 } from "@giselles-ai/protocol";
+import type { UIMessage } from "ai";
 import { giselle } from "@/app/giselle";
 import { db, tasks } from "@/db";
 import { logger } from "@/lib/logger";
@@ -108,6 +109,51 @@ function toPreviewText(text: string, maxChars: number) {
 	return `${collapsed.slice(0, maxChars - 1)}…`;
 }
 
+function getPreviewFromMessages(messages: UIMessage[] | undefined) {
+	if (!messages || messages.length === 0) {
+		return null;
+	}
+
+	// Prefer the last assistant message with text-like parts.
+	for (let i = messages.length - 1; i >= 0; i--) {
+		const message = messages[i];
+		if (message?.role !== "assistant") {
+			continue;
+		}
+		const parts = (message as unknown as { parts?: unknown[] }).parts;
+		if (!Array.isArray(parts) || parts.length === 0) {
+			continue;
+		}
+
+		const collected: string[] = [];
+		for (const part of parts) {
+			if (!part || typeof part !== "object") {
+				continue;
+			}
+			const type = (part as { type?: unknown }).type;
+			if (type === "text") {
+				const text = (part as { text?: unknown }).text;
+				if (typeof text === "string" && text.trim().length > 0) {
+					collected.push(text);
+				}
+			}
+			if (type === "reasoning") {
+				const text = (part as { text?: unknown }).text;
+				if (typeof text === "string" && text.trim().length > 0) {
+					collected.push(text);
+				}
+			}
+		}
+
+		const combined = collected.join("\n\n").trim();
+		if (combined.length > 0) {
+			return combined;
+		}
+	}
+
+	return null;
+}
+
 function getOutputTypeAndPreview(generation: Generation): {
 	type: UIOutputType;
 	preview: string | null;
@@ -162,6 +208,15 @@ function getOutputTypeAndPreview(generation: Generation): {
 			type: "json",
 			preview: `Sources (${sources.sources.length})`,
 		};
+	}
+
+	// Fallback: many generations render their primary content via `messages`.
+	const messagePreview = getPreviewFromMessages(generation.messages);
+	if (messagePreview) {
+		const type: UIOutputType = isLikelyMarkdown(messagePreview)
+			? "markdown"
+			: "text";
+		return { type, preview: toPreviewText(messagePreview, 140) };
 	}
 
 	return { type: "other", preview: null };
