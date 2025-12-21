@@ -70,7 +70,7 @@ export function AppEntryConfiguredView({
 				<form onSubmit={handleDescriptionSubmit} className="relative w-full">
 					<textarea
 						id="app-description"
-						placeholder="Enter app description"
+						placeholder="Describe your app..."
 						value={appDescription}
 						onChange={(event) => setAppDescription(event.target.value)}
 						className="w-full rounded-[8px] py-[8px] px-[12px] pr-[96px] outline-none focus:outline-none border-none bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-inverse text-[14px] resize-none"
