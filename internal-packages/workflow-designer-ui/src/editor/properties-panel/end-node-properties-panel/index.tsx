@@ -321,7 +321,8 @@ function TryPlaygroundSection({ isDisabled }: { isDisabled: boolean }) {
 			<TryPlaygroundLink isDisabled={isDisabled} />
 			{isDisabled && (
 				<p className="mt-[6px] text-[11px] text-text-muted/50">
-					Make sure there's a connection from Start to End to try this app in the playground.
+					Make sure there's a connection from Start to End to try this app in
+					the playground.
 				</p>
 			)}
 		</div>
