@@ -3,6 +3,7 @@
 import { Select } from "@giselle-internal/ui/select";
 import type { GenerationContextInput } from "@giselles-ai/protocol";
 import { ArrowUpIcon, Paperclip, X } from "lucide-react";
+import { useEffect } from "react";
 import { FileAttachments } from "../../playground/file-attachments";
 import type { StageApp } from "../../playground/types";
 import {
@@ -16,11 +17,13 @@ export function PlaygroundStageInput({
 	scope,
 	onSubmitAction,
 	isRunning,
+	shouldAutoFocus = false,
 }: {
 	apps: StageApp[];
 	scope: StageAppSelectionScope;
 	onSubmitAction: (event: { inputs: GenerationContextInput[] }) => void;
 	isRunning: boolean;
+	shouldAutoFocus?: boolean;
 }) {
 	const setSelectedAppId = useStageAppSelectionStore(
 		(state) => state.setSelectedAppId,
@@ -62,6 +65,17 @@ export function PlaygroundStageInput({
 	});
 
 	const firstAppOptionValue = appOptions[0]?.value;
+
+	// We intentionally focus the prompt input on /playground entry.
+	// This can't be done during render; it requires an effect after mount.
+	useEffect(() => {
+		if (!shouldAutoFocus || isRunning) return;
+		const textarea = textareaRef.current;
+		if (!textarea) return;
+		textarea.focus();
+		const end = textarea.value.length;
+		textarea.setSelectionRange(end, end);
+	}, [isRunning, shouldAutoFocus, textareaRef]);
 
 	return (
 		<div className="relative w-full max-w-[640px] min-w-[320px] mx-auto">
