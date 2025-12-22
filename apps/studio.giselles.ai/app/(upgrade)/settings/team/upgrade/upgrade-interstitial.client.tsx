@@ -154,7 +154,37 @@ export function UpgradeInterstitial() {
 					</div>
 				) : (
 					<div className="mt-10 flex justify-center">
-						<div className="inline-grid flex-col gap-y-[23px]">
+						<div className="inline-grid flex-col gap-y-[23px] sm:grid sm:grid-cols-2 sm:gap-4 lg:gap-6">
+							<section className="flex justify-center">
+								<PricingCard
+									icon={<CircleIcon variant="team" />}
+									title="Team"
+									subtitle="Perfect for teams collaborating on AI agents"
+									price={{ amount: "$100", cadence: "/month" }}
+									cta={
+										<div className="px-1 pt-3 pb-3">
+											<GlassButton
+												type="button"
+												variant="comingSoon"
+												disableHoverFill
+												aria-disabled="true"
+												tabIndex={-1}
+												className="w-full whitespace-nowrap pointer-events-none"
+												aria-label="Coming Soon"
+											>
+												Coming Soon
+											</GlassButton>
+										</div>
+									}
+									features={[
+										"All Pro features included",
+										"Team collaboration and sharing",
+										"Up to 10 users",
+										"Priority email support",
+									]}
+								/>
+							</section>
+
 							<section className="flex justify-center">
 								<PricingCard
 									icon={<CircleIcon variant="enterprise" />}
