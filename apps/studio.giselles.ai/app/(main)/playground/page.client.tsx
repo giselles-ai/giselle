@@ -301,6 +301,7 @@ export function Page({
 							scope="playground"
 							onSubmitAction={handleRunSubmit}
 							isRunning={isRunning}
+							shouldAutoFocus
 						/>
 					</div>
 
