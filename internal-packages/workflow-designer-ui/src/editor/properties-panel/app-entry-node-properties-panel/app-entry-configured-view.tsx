@@ -63,10 +63,6 @@ export function AppEntryConfiguredView({
 	return (
 		<div className="flex flex-col gap-[16px] p-0 px-1 overflow-y-auto">
 			<div className="flex flex-col gap-[8px]">
-				<SettingLabel className="py-[1.5px]" htmlFor="app-description">
-					App Description
-				</SettingLabel>
-				<SettingDetail>Description</SettingDetail>
 				<form onSubmit={handleDescriptionSubmit} className="relative w-full">
 					<textarea
 						id="app-description"
