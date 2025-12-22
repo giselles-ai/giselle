@@ -10,8 +10,7 @@ import type {
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import { AlertCircle, Check, Loader2, Paperclip, X } from "lucide-react";
-import Image from "next/image";
-import { useState } from "react";
+import type React from "react";
 
 interface FileAttachmentsProps {
 	files: FileData[];
@@ -130,10 +129,6 @@ export function FileAttachments({
 	localPreviews,
 	onImageLoad,
 }: FileAttachmentsProps) {
-	const [failedImageIds, setFailedImageIds] = useState<Set<string>>(
-		() => new Set(),
-	);
-
 	if (files.length === 0) {
 		return null;
 	}
@@ -165,19 +160,13 @@ export function FileAttachments({
 						if (isImage) {
 							const isUploaded = isUploadedFile(file);
 							const localPreview = localPreviews?.get(file.id);
-							const serverImageUrl =
-								isUploaded && workspaceId && basePath
-									? getFileUrl(file, workspaceId, basePath)
-									: null;
+							let imageUrl: string | null = null;
 
-							const shouldUseLocalPreview =
-								serverImageUrl !== null &&
-								localPreview !== undefined &&
-								failedImageIds.has(file.id);
-							const imageUrl =
-								shouldUseLocalPreview === true
-									? localPreview
-									: (serverImageUrl ?? localPreview ?? null);
+							if (isUploaded && workspaceId && basePath) {
+								imageUrl = getFileUrl(file, workspaceId, basePath);
+							} else if (localPreview) {
+								imageUrl = localPreview;
+							}
 
 							return (
 								<div
@@ -185,35 +174,24 @@ export function FileAttachments({
 									className="relative group shrink-0 rounded-lg overflow-hidden bg-white/5 border border-white/5 w-[60px] h-[60px]"
 								>
 									{imageUrl ? (
-										<Image
+										<img
 											src={imageUrl}
 											alt={file.name}
-											fill
-											sizes="60px"
-											className="object-cover"
-											unoptimized
-											onError={() => {
+											className="object-cover w-full h-full"
+											onError={(e) => {
 												// If server URL fails, fallback to local preview
 												if (
-													serverImageUrl !== null &&
-													localPreview !== undefined &&
-													failedImageIds.has(file.id) === false
+													isUploaded &&
+													localPreview &&
+													e.currentTarget.src !== localPreview
 												) {
-													setFailedImageIds((prev) => {
-														const next = new Set(prev);
-														next.add(file.id);
-														return next;
-													});
+													e.currentTarget.src = localPreview;
 												}
 											}}
 											onLoad={() => {
-												// Notify parent that server image loaded successfully.
-												// Parent will clean up local preview URL.
-												if (
-													serverImageUrl !== null &&
-													onImageLoad &&
-													shouldUseLocalPreview === false
-												) {
+												// Notify parent that server image loaded successfully
+												// Parent will clean up local preview URL
+												if (isUploaded && onImageLoad) {
 													onImageLoad(file.id);
 												}
 											}}

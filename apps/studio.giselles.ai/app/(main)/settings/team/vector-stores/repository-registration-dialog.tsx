@@ -12,12 +12,12 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@giselle-internal/ui/dialog";
-import { GlassButton } from "@giselle-internal/ui/glass-button";
 import { Select, type SelectOption } from "@giselle-internal/ui/select";
 import { Toggle } from "@giselle-internal/ui/toggle";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import { CircleDot, Code, GitPullRequest, Plus, X } from "lucide-react";
 import { useCallback, useMemo, useState, useTransition } from "react";
+import { GlassButton } from "@/components/ui/glass-button";
 import type { GitHubRepositoryContentType } from "@/db";
 import { GITHUB_EMBEDDING_PROFILES } from "./github-embedding-profiles";
 import type { ActionResult, InstallationWithRepos } from "./types";

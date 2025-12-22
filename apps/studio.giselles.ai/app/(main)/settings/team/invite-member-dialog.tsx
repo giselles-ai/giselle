@@ -12,12 +12,12 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@giselle-internal/ui/dialog";
-import { GlassButton } from "@giselle-internal/ui/glass-button";
 import { Select } from "@giselle-internal/ui/select";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import { Plus, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { email as emailValidator, parse, pipe, string } from "valibot";
+import { GlassButton } from "@/components/ui/glass-button";
 import type { TeamRole } from "@/db";
 import { type SendInvitationsResult, sendInvitationsAction } from "./actions";
 

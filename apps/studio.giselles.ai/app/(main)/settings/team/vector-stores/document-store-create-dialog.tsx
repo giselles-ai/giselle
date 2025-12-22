@@ -11,7 +11,6 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@giselle-internal/ui/dialog";
-import { GlassButton } from "@giselle-internal/ui/glass-button";
 import { DEFAULT_EMBEDDING_PROFILE_ID } from "@giselles-ai/protocol";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import { Plus, X } from "lucide-react";
@@ -22,6 +21,7 @@ import {
 	useState,
 	useTransition,
 } from "react";
+import { GlassButton } from "@/components/ui/glass-button";
 import { Button } from "../../components/button";
 import { DOCUMENT_EMBEDDING_PROFILES } from "./document-embedding-profiles";
 import type { ActionResult } from "./types";

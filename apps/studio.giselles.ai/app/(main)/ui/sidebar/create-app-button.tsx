@@ -1,9 +1,9 @@
 "use client";
 
-import { GlassButton } from "@giselle-internal/ui/glass-button";
 import { PlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useActionState, useCallback } from "react";
+import { GlassButton } from "@/components/ui/glass-button";
 
 type CreateWorkspaceState = {
 	error?: string;

@@ -1,5 +1,5 @@
 // Copied from giselle-website: src/components/icons/ui.tsx
-// OSS / Free / Pro / Team icons (filled paths, currentColor).
+// Free / Pro icons (filled paths, currentColor).
 export function Free() {
 	return (
 		<svg

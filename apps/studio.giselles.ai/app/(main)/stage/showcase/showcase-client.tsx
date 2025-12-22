@@ -12,13 +12,13 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@giselle-internal/ui/dialog";
-import { GlassButton } from "@giselle-internal/ui/glass-button";
 import { Input } from "@giselle-internal/ui/input";
 import { TabNavigation } from "@giselle-internal/ui/tab-navigation";
 import { Play, RotateCcw, Star } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
+import { GlassButton } from "@/components/ui/glass-button";
 import { Card } from "../../settings/components/card";
 import { SearchHeader } from "../../workspaces/components/search-header";
 
