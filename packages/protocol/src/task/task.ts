@@ -58,6 +58,10 @@ const TaskStarter = z.union([
 	z.object({
 		type: z.literal("github-trigger"),
 		triggerId: TriggerId.schema,
+		end: z.union([
+			z.object({ type: "endNode", appId: AppId.schema }),
+			z.object({ type: "none" }),
+		]),
 	}),
 	z.object({
 		type: z.literal("app"),
