@@ -290,6 +290,7 @@ export function Giselle(config: GiselleConfig) {
 			request: Request;
 			onGenerationComplete?: OnGenerationComplete;
 			onGenerationError?: OnGenerationError;
+			onTaskCreate?: OnTaskCreate;
 		}) => handleGitHubWebhookV2({ ...args, context }),
 		executeQuery: async (generation: QueuedGeneration) =>
 			executeQuery({ context, generation }),

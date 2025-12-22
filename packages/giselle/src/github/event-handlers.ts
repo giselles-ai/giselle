@@ -16,7 +16,7 @@ import type {
 import { findDiscussionReplyTargetId } from "@giselles-ai/github-tool";
 import type { Trigger } from "@giselles-ai/protocol";
 import type { OnGenerationComplete, OnGenerationError } from "../generations";
-import type { createAndStartTask } from "../tasks";
+import type { createAndStartTask, OnTaskCreate } from "../tasks";
 import type { GiselleContext } from "../types";
 import { getWorkspace } from "../workspaces";
 import type { parseCommand } from "./utils";
@@ -485,6 +485,7 @@ export async function processEvent<TEventName extends WebhookEventName>(
 		deps: EventHandlerDependencies;
 		onGenerationComplete?: OnGenerationComplete;
 		onGenerationError?: OnGenerationError;
+		onTaskCreate?: OnTaskCreate;
 	},
 ) {
 	if (
@@ -571,6 +572,7 @@ export async function processEvent<TEventName extends WebhookEventName>(
 				generationComplete: args.onGenerationComplete,
 				generationError: args.onGenerationError,
 				taskCreate: async ({ task }) => {
+					await args.onTaskCreate?.({ task });
 					progressTableData = task.sequences.map((sequence) => ({
 						id: sequence.id,
 						status: "pending" as const,
