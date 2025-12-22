@@ -7,7 +7,7 @@ import type {
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import { Check, FilePenLineIcon } from "lucide-react";
-import Link from "next/link";
+import { EditInStudioLinkWithHint } from "./edit-in-studio-link-with-hint";
 
 function formatFileSize(bytes?: number) {
 	const safeBytes = Number.isFinite(bytes) ? (bytes as number) : 0;
@@ -107,24 +107,13 @@ export function TaskHeader({
 					{/* Title */}
 					<div className="flex items-center gap-3 mb-1">
 						<h3 className="text-[20px] font-normal text-inverse">{title}</h3>
-						<Link
-							href={`/workspaces/${workspaceId}`}
-							className="inline-block"
-							target="_blank"
-							rel="noreferrer"
-						>
-							<div className="group [&>div]:rounded-lg [&>div>div]:rounded-md [&>div>div]:text-[hsl(192,73%,84%)] [&>div>div]:border-[hsl(192,73%,84%)] [&>div>div]:transition-colors [&>div>div]:cursor-pointer hover:[&>div>div]:bg-[hsl(192,73%,84%)] hover:[&>div>div]:text-[hsl(192,73%,20%)]">
-								<StatusBadge
-									status="warning"
-									variant="default"
-									leftIcon={
-										<FilePenLineIcon className="stroke-[hsl(192,73%,84%)] stroke-[1.5] transition-colors group-hover:stroke-[hsl(192,73%,20%)]" />
-									}
-								>
-									Edit in Studio
-								</StatusBadge>
-							</div>
-						</Link>
+						<EditInStudioLinkWithHint
+							workspaceId={workspaceId}
+							leftIcon={
+								<FilePenLineIcon className="stroke-[hsl(192,73%,84%)] stroke-[1.5] transition-colors group-hover:stroke-[hsl(192,73%,20%)]" />
+							}
+							hintText="Explore how this app works."
+						/>
 					</div>
 					{/* App summary heading + text (2-column layout to reduce height) */}
 					{description.length > 0 && (
