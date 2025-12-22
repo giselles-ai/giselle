@@ -1,7 +1,11 @@
 import Link from "next/link";
+import { stageFlag } from "@/flags";
 import { AuthButton } from "../../components/auth-button";
 
-export default function Page() {
+export default async function Page() {
+	const isStageEnabled = await stageFlag();
+	const redirectTo = isStageEnabled ? "/playground" : "/workspaces";
+
 	return (
 		<div className="min-h-screen flex items-center justify-center p-4">
 			<div className="flex items-center justify-center py-12">
@@ -17,7 +21,7 @@ export default function Page() {
 						</p>
 						<div className="mt-2">
 							<AuthButton asChild className="px-8 py-2 text-lg">
-								<Link href="/workspaces">Go to team</Link>
+								<Link href={redirectTo}>Go to team</Link>
 							</AuthButton>
 						</div>
 					</div>
