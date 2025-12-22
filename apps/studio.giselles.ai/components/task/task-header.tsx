@@ -105,11 +105,13 @@ export function TaskHeader({
 						)}
 					</div>
 					{/* Title */}
-					<div className="flex items-center gap-3 mb-1">
-						<h3 className="text-[20px] font-normal text-inverse">{title}</h3>
+					<div className="flex items-start justify-between gap-3 mb-1 w-full">
+						<h3 className="text-[20px] font-normal text-inverse min-w-0 break-words whitespace-normal">
+							{title}
+						</h3>
 						<Link
 							href={`/workspaces/${workspaceId}`}
-							className="inline-block"
+							className="inline-block shrink-0 whitespace-nowrap"
 							target="_blank"
 							rel="noreferrer"
 						>
