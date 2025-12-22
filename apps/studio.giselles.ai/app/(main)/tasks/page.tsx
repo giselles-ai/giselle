@@ -150,7 +150,7 @@ export default async function TaskListPage({
 
 	return (
 		<div className="px-[40px] py-[24px] flex-1 max-w-[1200px] mx-auto w-full">
-			<div className="flex justify-between items-center mb-8">
+			<div className="flex justify-between items-center mb-6">
 				<div>
 					<PageHeading glow>Tasks</PageHeading>
 				</div>
@@ -190,7 +190,7 @@ export default async function TaskListPage({
 				</div>
 			</div>
 
-			<div className="w-full pt-2 pb-2">
+			<div className="w-full">
 				{tasks.length === 0 ? (
 					<div className="flex flex-col items-center justify-center py-16 text-center">
 						<div className="mb-4 flex items-center justify-center">
@@ -219,19 +219,19 @@ export default async function TaskListPage({
 					<Card className="!flex !flex-col gap-0 py-2 px-0">
 						{/* Header */}
 						<div className="grid grid-cols-[1fr_120px] md:grid-cols-[2fr_120px_1fr_1fr_1fr] items-center gap-4 px-[24px] py-2 border-b-[0.5px] border-border-muted">
-							<p className="text-[12px] font-geist font-semibold text-text/60 uppercase tracking-wide">
+							<p className="text-[12px] font-geist font-semibold text-text/60">
 								Task
 							</p>
-							<p className="text-[12px] font-geist font-semibold text-text/60 uppercase tracking-wide">
+							<p className="text-[12px] font-geist font-semibold text-text/60">
 								Status
 							</p>
-							<p className="hidden md:block text-[12px] font-geist font-semibold text-text/60 uppercase tracking-wide">
+							<p className="hidden md:block text-[12px] font-geist font-semibold text-text/60">
 								Input
 							</p>
-							<p className="hidden md:block text-[12px] font-geist font-semibold text-text/60 uppercase tracking-wide">
+							<p className="hidden md:block text-[12px] font-geist font-semibold text-text/60">
 								Model
 							</p>
-							<p className="hidden md:block text-[12px] font-geist font-semibold text-text/60 uppercase tracking-wide">
+							<p className="hidden md:block text-[12px] font-geist font-semibold text-text/60">
 								Origin
 							</p>
 						</div>
