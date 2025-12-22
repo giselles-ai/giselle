@@ -209,7 +209,7 @@ export default async function TaskListPage({
 							Start by creating your first task from the main stage page.
 						</p>
 						<Link
-							href="/stage"
+							href="/playground"
 							className="px-4 py-2 bg-white/10 text-inverse rounded-lg hover:bg-white/20 transition-colors text-sm"
 						>
 							Create new task
