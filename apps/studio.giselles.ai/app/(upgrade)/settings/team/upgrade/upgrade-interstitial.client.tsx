@@ -218,14 +218,16 @@ export function UpgradeInterstitial() {
 	);
 }
 
-function Tabs({
+type TabOption<Id extends string> = { id: Id; label: string };
+
+function Tabs<Id extends string>({
 	options,
 	value,
 	onChange,
 }: {
-	options: readonly { id: string; label: string }[];
-	value: string;
-	onChange: (id: string) => void;
+	options: readonly TabOption<Id>[];
+	value: Id;
+	onChange: (id: Id) => void;
 }) {
 	return (
 		<div className="inline-flex items-center rounded-full bg-white/10 p-1">
