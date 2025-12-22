@@ -53,7 +53,7 @@ function AddOutputButton({
 				leftIcon={<PlusIcon className="size-[12px]" />}
 				disabled
 			>
-				Add output
+				Add Output
 			</Button>
 		);
 	}
@@ -62,7 +62,7 @@ function AddOutputButton({
 		<DropdownMenu
 			trigger={
 				<Button type="button" leftIcon={<PlusIcon className="size-[12px]" />}>
-					Add output
+					Add Output
 				</Button>
 			}
 			items={availableNodes.map((availableNode) => ({
@@ -175,7 +175,7 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 				<div className="flex flex-col gap-[16px]">
 					<div className="space-y-0">
 						<div className="flex items-center justify-between gap-[12px]">
-							<SettingLabel className="mb-0">Output(s) of the app</SettingLabel>
+							<SettingLabel className="mb-0">Outputs</SettingLabel>
 							<AddOutputButton
 								availableNodes={availableOutputSourceNodes}
 								endNodeId={node.id}
@@ -183,7 +183,7 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 							/>
 						</div>
 						<p className={helperTextClassName}>
-							What is displayed here will be shown as the result of the App.
+							These outputs will determine the results of your app.
 						</p>
 					</div>
 
@@ -191,13 +191,13 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 						{connectedOutputsByOutputNode.length === 0 ? (
 							<div className="rounded-[12px] bg-error-900/10 px-[12px] py-[10px]">
 								<p className="text-[12px] text-error-900">
-									No outputs are connected to this End node yet.
+									This node doesn't have any outputs yet.
 								</p>
 								{availableOutputSourceNodes.length === 0 && (
 									<p
 										className={clsx("mt-[6px]", emptyStateHelperTextClassName)}
 									>
-										Add a node to use as an App output first.
+										Add a node as an output first.
 									</p>
 								)}
 							</div>
@@ -321,8 +321,8 @@ function TryPlaygroundSection({ isDisabled }: { isDisabled: boolean }) {
 			<TryPlaygroundLink isDisabled={isDisabled} />
 			{isDisabled && (
 				<p className="mt-[6px] text-[11px] text-text-muted/50">
-					Connect your flow so it reaches the End Node from the Start Node to
-					enable “Try App in Playground”.
+					Make sure there's a connection from Start to End to try this app in
+					the playground.
 				</p>
 			)}
 		</div>
