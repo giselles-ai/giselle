@@ -85,7 +85,8 @@ export default async function TaskListPage({
 	// Fetch one extra row to determine whether there's a next page.
 	const dbTasks = await db.query.tasks.findMany({
 		columns: { id: true, appDbId: true, createdAt: true },
-		where: (tasks, { eq }) => eq(tasks.teamDbId, team.dbId),
+		where: (tasks, { and, eq, isNotNull }) =>
+			and(eq(tasks.teamDbId, team.dbId), isNotNull(tasks.appDbId)),
 		orderBy: (tasks, { desc }) => [desc(tasks.createdAt)],
 		limit: limit + 1,
 		offset,
