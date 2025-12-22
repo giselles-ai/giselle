@@ -7,6 +7,7 @@ import type {
 	ParametersInput,
 	TaskId,
 } from "@giselles-ai/protocol";
+import clsx from "clsx";
 import { PlayIcon, Search, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
@@ -85,32 +86,25 @@ function AppListCard({
 	return (
 		<button
 			type="button"
-			className="relative rounded-[10px] sm:rounded-xl border-[0.5px] border-blue-muted/40 bg-transparent px-4 py-3 flex flex-col gap-2 text-left transition-all duration-150 ease-out hover:bg-white/5"
-			style={
-				isSelected
-					? {
-							borderColor: "rgba(131,157,195,0.32)",
-							boxShadow: "0 0 0 1px rgba(131,157,195,0.18)",
-							backgroundColor: "rgba(131,157,195,0.06)",
-						}
-					: undefined
-			}
+			className={clsx(
+				"relative rounded-[10px] sm:rounded-xl border-[0.5px] border-blue-muted/40 bg-transparent px-4 py-3 flex flex-col gap-2 text-left transition-all duration-150 ease-out hover:bg-white/5 outline-none",
+				isSelected && [
+					// Slightly brighter selected stroke
+					"border-[rgba(177,204,255,0.45)]",
+					// Keep layout stable: use ring instead of changing border width
+					"ring-inset ring-[1.5px] ring-[rgba(177,204,255,0.45)]",
+					"bg-[rgba(131,157,195,0.06)]",
+					"shadow-[0_0_24px_rgba(0,135,246,0.18)]",
+				],
+			)}
 			onClick={onClick}
 		>
 			{badgeType !== "your-team" ? (
 				<span
-					className="pointer-events-none absolute right-4 top-0 -translate-y-[6px] shrink-0 rounded-full px-[7px] py-[3px] text-[10px] sm:px-2 sm:py-[2px] sm:text-[11px] text-text/80"
-					style={
-						isSelected
-							? {
-									// Selected state: slightly darker tone around 505D7B
-									backgroundColor: "rgba(80,93,123,1)",
-								}
-							: {
-									// Unselected state: darker tone to reduce emphasis
-									backgroundColor: "rgba(45,54,76,1)",
-								}
-					}
+					className={clsx(
+						"pointer-events-none absolute right-4 top-0 -translate-y-[6px] shrink-0 rounded-full px-[7px] py-[3px] text-[10px] sm:px-2 sm:py-[2px] sm:text-[11px] text-text/80",
+						isSelected ? "bg-[rgba(80,93,123,1)]" : "bg-[rgba(45,54,76,1)]",
+					)}
 				>
 					{label}
 				</span>
