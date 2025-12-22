@@ -223,7 +223,7 @@ function Tabs({
 	value,
 	onChange,
 }: {
-	options: { id: string; label: string }[];
+	options: readonly { id: string; label: string }[];
 	value: string;
 	onChange: (id: string) => void;
 }) {
