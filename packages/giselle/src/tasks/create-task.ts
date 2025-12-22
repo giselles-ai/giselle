@@ -61,17 +61,6 @@ export async function createTask(
 		throw new Error("workspace or workspaceId is required");
 	}
 
-	let appId: AppId | undefined;
-	for (const node of workspace.nodes) {
-		if (!isAppEntryNode(node)) {
-			continue;
-		}
-		if (node.content.status === "unconfigured") {
-			continue;
-		}
-		appId = node.content.appId;
-	}
-
 	// Determine connectionIds based on input
 	let connectionIds: ConnectionId[];
 	if (args.connectionIds !== undefined) {
@@ -100,6 +89,22 @@ export async function createTask(
 				connection.outputNode.id === node.id,
 		),
 	);
+
+	let appId: AppId | undefined;
+	for (const node of nodes) {
+		if (!isAppEntryNode(node)) {
+			continue;
+		}
+		if (node.content.status === "unconfigured") {
+			continue;
+		}
+		if (appId !== undefined) {
+			throw new Error(
+				`Workspace ${workspace.id} has multiple configured app: ${appId}`,
+			);
+		}
+		appId = node.content.appId;
+	}
 
 	let endNodeId: NodeId | undefined;
 	for (const node of nodes) {
