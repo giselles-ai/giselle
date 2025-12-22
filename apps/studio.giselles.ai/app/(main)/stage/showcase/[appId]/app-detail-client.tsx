@@ -1,10 +1,10 @@
 "use client";
 
+import { GlassButton } from "@giselle-internal/ui/glass-button";
 import { StatusBadge } from "@giselle-internal/ui/status-badge";
 import { Play, Star } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { GlassButton } from "@/components/ui/glass-button";
 import { AvatarImage } from "@/services/accounts/components/user-button/avatar-image";
 import { RunModal } from "./components/run-modal";
 

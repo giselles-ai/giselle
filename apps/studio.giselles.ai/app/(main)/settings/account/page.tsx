@@ -1,5 +1,5 @@
+import { GlassButton } from "@giselle-internal/ui/glass-button";
 import { Plus } from "lucide-react";
-import { GlassButton } from "@/components/ui/glass-button";
 import { ToastProvider } from "@/packages/contexts/toast";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchUserTeams } from "@/services/teams";

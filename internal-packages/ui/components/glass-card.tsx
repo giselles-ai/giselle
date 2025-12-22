@@ -1,6 +1,6 @@
 import clsx from "clsx/lite";
 
-type GlassCardProps = React.HTMLAttributes<HTMLDivElement> & {
+export type GlassCardProps = React.HTMLAttributes<HTMLDivElement> & {
 	paddingClassName?: string;
 };
 
@@ -24,4 +24,3 @@ export function GlassCard({
 		/>
 	);
 }
-

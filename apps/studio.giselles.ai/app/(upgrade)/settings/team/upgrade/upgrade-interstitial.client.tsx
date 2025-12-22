@@ -1,20 +1,17 @@
 "use client";
 
+import { GlassButton } from "@giselle-internal/ui/glass-button";
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { GlassButton } from "@/components/ui/glass-button";
+import { useState } from "react";
 import { CircleIcon } from "./plan-icon";
 import { PricingCard } from "./pricing-card";
 
 export function UpgradeInterstitial() {
-	const tabs = useMemo(
-		() => [
-			{ id: "personal", label: "Personal" },
-			{ id: "business", label: "Business" },
-		],
-		[],
-	);
-	const [tabId, setTabId] = useState(tabs[0]?.id ?? "personal");
+	const tabs = [
+		{ id: "personal", label: "Personal" },
+		{ id: "business", label: "Business" },
+	] as const;
+	const [tabId, setTabId] = useState<(typeof tabs)[number]["id"]>("personal");
 
 	return (
 		<div className="w-full">

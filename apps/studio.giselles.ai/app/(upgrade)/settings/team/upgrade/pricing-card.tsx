@@ -1,5 +1,5 @@
+import { GlassCard } from "@giselle-internal/ui/glass-card";
 import type { ReactNode } from "react";
-import { GlassCard } from "@/components/ui/glass-card";
 
 export function PricingCard({
 	icon,
