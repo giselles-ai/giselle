@@ -1,5 +1,6 @@
 import { defaultName } from "@giselles-ai/node-registry";
 import {
+	type AppId,
 	ConnectionId,
 	type CreatedGeneration,
 	GenerationContextInput,
@@ -60,6 +61,17 @@ export async function createTask(
 		throw new Error("workspace or workspaceId is required");
 	}
 
+	let appId: AppId | undefined;
+	for (const node of workspace.nodes) {
+		if (!isAppEntryNode(node)) {
+			continue;
+		}
+		if (node.content.status === "unconfigured") {
+			continue;
+		}
+		appId = node.content.appId;
+	}
+
 	// Determine connectionIds based on input
 	let connectionIds: ConnectionId[];
 	if (args.connectionIds !== undefined) {
@@ -90,7 +102,7 @@ export async function createTask(
 	);
 
 	let endNodeId: NodeId | undefined;
-	for (const node of workspace.nodes) {
+	for (const node of nodes) {
 		if (!isEndNode(node)) {
 			continue;
 		}
@@ -234,7 +246,7 @@ export async function createTask(
 				type: "run-button",
 			};
 			break;
-		case "github-app":
+		case "github-app": {
 			if (!isTriggerNode(starterNode)) {
 				throw new Error("starterNode must be a trigger node");
 			}
@@ -247,8 +259,16 @@ export async function createTask(
 			starter = {
 				type: "github-trigger",
 				triggerId: starterNode.content.state.flowTriggerId,
+				end:
+					endNodeId === undefined || appId === undefined
+						? { type: "none" }
+						: {
+								type: "endNode",
+								appId,
+							},
 			};
 			break;
+		}
 		case "stage":
 			if (!isAppEntryNode(starterNode)) {
 				throw new Error("starterNode must be an start node");
