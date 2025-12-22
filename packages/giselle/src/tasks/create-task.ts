@@ -89,13 +89,25 @@ export async function createTask(
 		),
 	);
 
-	const endNodeIdSet = new Set(
-		workspace.nodes.filter((node) => isEndNode(node)).map((node) => node.id),
-	);
+	let endNodeId: NodeId | undefined;
+	for (const node of workspace.nodes) {
+		if (!isEndNode(node)) {
+			continue;
+		}
+		if (endNodeId !== undefined) {
+			throw new Error(
+				`Workspace ${workspace.id} has multiple end nodes: ${endNodeId}, ${node.id}`,
+			);
+		}
+		endNodeId = node.id;
+	}
 	const nodeIdsConnectedToEnd = Array.from(
 		new Set(
 			connections
-				.filter((connection) => endNodeIdSet.has(connection.inputNode.id))
+				.filter(
+					(connection) =>
+						endNodeId !== undefined && connection.inputNode.id === endNodeId,
+				)
 				.map((connection) => connection.outputNode.id),
 		),
 	);
