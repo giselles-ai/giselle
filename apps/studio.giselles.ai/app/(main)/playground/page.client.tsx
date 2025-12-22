@@ -90,7 +90,8 @@ function AppListCard({
 				"relative rounded-[10px] sm:rounded-xl border-[0.5px] border-blue-muted/40 bg-transparent px-4 py-3 flex flex-col gap-2 text-left transition-all duration-150 ease-out hover:bg-white/5 outline-none",
 				isSelected && [
 					"border-[1.5px]",
-					"border-[rgba(131,157,195,0.32)]",
+					// Slightly brighter selected stroke
+					"border-[rgba(177,204,255,0.45)]",
 					"bg-[rgba(131,157,195,0.06)]",
 					"shadow-[0_0_24px_rgba(0,135,246,0.18)]",
 				],
