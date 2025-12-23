@@ -236,3 +236,44 @@
 		background: #5a7ee8;
 	}
 }
+
+/* Syntax highlighting for Markdown fenced code blocks (highlight.js) */
+.markdown-renderer pre code.hljs {
+	display: block;
+}
+
+.markdown-renderer pre code.hljs .hljs-comment,
+.markdown-renderer pre code.hljs .hljs-quote {
+	color: rgba(229, 231, 235, 0.45);
+}
+
+.markdown-renderer pre code.hljs .hljs-keyword,
+.markdown-renderer pre code.hljs .hljs-selector-tag,
+.markdown-renderer pre code.hljs .hljs-literal,
+.markdown-renderer pre code.hljs .hljs-name {
+	color: hsl(219, 90%, 60%);
+}
+
+.markdown-renderer pre code.hljs .hljs-string,
+.markdown-renderer pre code.hljs .hljs-regexp,
+.markdown-renderer pre code.hljs .hljs-attribute {
+	color: hsl(141, 100%, 61%);
+}
+
+.markdown-renderer pre code.hljs .hljs-number,
+.markdown-renderer pre code.hljs .hljs-built_in,
+.markdown-renderer pre code.hljs .hljs-type {
+	color: hsl(275, 96%, 60%);
+}
+
+.markdown-renderer pre code.hljs .hljs-title,
+.markdown-renderer pre code.hljs .hljs-section,
+.markdown-renderer pre code.hljs .hljs-function {
+	color: hsl(192, 73%, 84%);
+}
+
+.markdown-renderer pre code.hljs .hljs-meta,
+.markdown-renderer pre code.hljs .hljs-symbol,
+.markdown-renderer pre code.hljs .hljs-bullet {
+	color: hsl(210, 58%, 71%);
+}
