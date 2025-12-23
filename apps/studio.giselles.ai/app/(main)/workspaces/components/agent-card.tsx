@@ -35,7 +35,7 @@ export function AgentCard({ agent }: AgentCardProps) {
 		<section
 			aria-label={agent.name || "Untitled workspace"}
 			className={clsx(
-				"relative flex h-[260px] w-full flex-none flex-col rounded-[12px]",
+				"relative flex h-[252px] w-full flex-none flex-col rounded-[12px]",
 				"bg-[linear-gradient(135deg,color-mix(in_srgb,var(--color-blue-muted)_10%,var(--color-background))_0%,color-mix(in_srgb,var(--color-blue-muted)_6%,var(--color-stage-background))_55%,color-mix(in_srgb,var(--color-blue-muted)_4%,var(--color-background))_100%)]",
 			)}
 		>
@@ -62,14 +62,14 @@ export function AgentCard({ agent }: AgentCardProps) {
 					prefetch={false}
 				>
 					{/* Title */}
-					<h3 className="font-sans text-[18px] font-semibold text-inverse line-clamp-2 mb-2">
+					<h3 className="font-sans text-[18px] font-semibold text-inverse line-clamp-2 mb-3">
 						{agent.name || "Untitled"}
 					</h3>
 
 					{/* Description */}
 					{/* TODO: Render agent descriptions once backend data is available. */}
 					{agent.description ? (
-						<p className="font-geist text-[13px] text-link-muted line-clamp-2">
+						<p className="mb-2 font-geist text-[13px] text-link-muted line-clamp-2">
 							{agent.description}
 						</p>
 					) : null}
