@@ -411,7 +411,7 @@ export function Page({
 													appSearchInputRef.current?.focus();
 												});
 											}}
-											className="group flex items-center gap-2 rounded-[8px] px-3 py-2 text-[13px] text-text-muted transition-colors hover:bg-white/5"
+											className="group flex items-center gap-2 rounded-[8px] px-3 h-10 text-[13px] text-text-muted transition-colors hover:bg-white/5"
 										>
 											<Search className="h-4 w-4 text-text-muted group-hover:text-text" />
 											<span>Search apps</span>
