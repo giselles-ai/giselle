@@ -70,7 +70,6 @@ catalog:
   langfuse-core: 3.38.4
   lowlight: 3.3.0
   lucide-react: 0.473.0
-  marked: 15.0.7
   motion: 12.23.24
   nanoid: 5.0.9
   next: 16.0.10
@@ -86,7 +85,6 @@ catalog:
   radix-ui: 1.4.3
   react: 19.2.1
   react-dom: 19.2.1
-  react-markdown: 9.0.3
   react-resizable-panels: 2.1.7
   swr: 2.3.6
   tailwindcss: 4.1.10
@@ -101,6 +99,7 @@ catalog:
   vitest: 3.2.4
   zod: 4.1.12
   zustand: 5.0.8
+  streamdown: 1.6.10
 
 minimumReleaseAge: 1440
 # Use minimumReleaseAgeExclude temporarily for emergency security vulnerability fixes

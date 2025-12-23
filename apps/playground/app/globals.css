@@ -267,8 +267,6 @@
 			font-weight: 400;
 			font-size: var(--text-sm);
 			line-height: var(--pre-line-height);
-			margin-top: calc(20 / var(--pre-font-size) * 1em);
-			margin-bottom: calc(20 / var(--pre-font-size) * 1em);
 			border-radius: var(--radius-base);
 			padding-top: calc(8 / var(--pre-font-size) * 1em);
 			padding-bottom: calc(8 / var(--pre-font-size) * 1em);

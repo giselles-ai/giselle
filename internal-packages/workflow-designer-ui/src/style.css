@@ -1,4 +1,5 @@
 @import "../../ui/style.css";
+@source "../node_modules/streamdown/dist/*.js";
 
 .mask-fill {
 	-webkit-mask-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
