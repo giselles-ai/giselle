@@ -180,8 +180,8 @@ export function Toolbar() {
 	// Combine all recommended models
 	const recommendedModels = [
 		...openaiModels.slice(0, 1),
-		...anthropicModels.slice(0, 1),
 		...googleModels.slice(0, 1),
+		...anthropicModels.slice(0, 1),
 	];
 
 	// Hover management is handled by useHoverState hook
