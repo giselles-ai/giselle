@@ -21,7 +21,7 @@ import {
 import clsx from "clsx/lite";
 import { CheckIcon, SquareIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useCallback, useEffect, useMemo, useRef, useTransition } from "react";
+import { useCallback, useMemo } from "react";
 import { useShallow } from "zustand/shallow";
 import { NodeIcon } from "../../icons/node";
 import { EditableText } from "../../ui/editable-text";
@@ -30,7 +30,13 @@ import { NodeInputLabel } from "../../ui/node/node-input-label";
 import { Tooltip } from "../../ui/tooltip";
 import { DocumentNodeInfo, GitHubNodeInfo } from "./ui";
 import { GitHubTriggerStatusBadge } from "./ui/github-trigger/status-badge";
-import { useCurrentNodeGeneration } from "./use-current-node-generation";
+import {
+	STAGE_NODE_BG_CLASS,
+	STAGE_NODE_BORDER_CLASS,
+	STAGE_NODE_COLOR_VAR,
+	STAGE_NODE_HANDLE_BG_CLASS,
+	useNodeGenerationStatus,
+} from "./node-utils";
 
 type NodeHandleContentType = Parameters<typeof NodeHandleDot>[0]["contentType"];
 
@@ -174,41 +180,9 @@ export function NodeComponent({
 	connectedInputIds?: InputId[];
 	connectedOutputIds?: OutputId[];
 }) {
-	const stageColorVar =
-		"var(--color-stage-node-1,var(--color-blue-muted))" as const;
-	const stageBgClass =
-		"bg-[color:color-mix(in_srgb,var(--color-stage-node-1,var(--color-blue-muted))_80%,transparent)]" as const;
-	const stageBorderClass =
-		"!border-[color:var(--color-stage-node-1,var(--color-blue-muted))]" as const;
-	const stageHandleBgClass =
-		"!bg-[color:var(--color-stage-node-1,var(--color-blue-muted))]" as const;
-
 	const updateNodeData = useAppDesignerStore((state) => state.updateNode);
-	const { currentGeneration, stopCurrentGeneration } = useCurrentNodeGeneration(
-		node.id,
-	);
-
-	const prevGenerationStatusRef = useRef(currentGeneration?.status);
-	const [showCompleteLabel, startTransition] = useTransition();
-	useEffect(() => {
-		if (currentGeneration === undefined) {
-			return;
-		}
-		if (
-			prevGenerationStatusRef.current === "running" &&
-			currentGeneration.status === "completed"
-		) {
-			startTransition(
-				async () =>
-					new Promise((resolve) => {
-						setTimeout(() => {
-							resolve();
-						}, 2000);
-					}),
-			);
-		}
-		prevGenerationStatusRef.current = currentGeneration.status;
-	}, [currentGeneration]);
+	const { currentGeneration, stopCurrentGeneration, showCompleteLabel } =
+		useNodeGenerationStatus(node.id as NodeId);
 	const metadataTexts = useMemo(() => {
 		const tmp: { label: string; tooltip: string }[] = [];
 		if (isTextGenerationNode(node) || isImageGenerationNode(node)) {
@@ -332,12 +306,12 @@ export function NodeComponent({
 			)
 				return "var(--color-github-node-1)";
 			if (variant.isTrigger) return "var(--color-trigger-node-1)";
-			if (variant.isAppEntry || variant.isEnd) return stageColorVar;
+			if (variant.isAppEntry || variant.isEnd) return STAGE_NODE_COLOR_VAR;
 			if (variant.isAction) return "var(--color-action-node-1)";
 			if (variant.isQuery) return "var(--color-query-node-1)";
 			return undefined;
 		},
-		[stageColorVar],
+		[],
 	);
 
 	// App Entry: shape change only.
@@ -358,7 +332,7 @@ export function NodeComponent({
 	// For unconfigured (dashed) state, keep the container background transparent
 	// and rely on the dashed border layer's gradient fill to match other nodes.
 	const stageBackgroundClass =
-		(v.isAppEntry || v.isEnd) && !requiresSetup ? stageBgClass : undefined;
+		(v.isAppEntry || v.isEnd) && !requiresSetup ? STAGE_NODE_BG_CLASS : undefined;
 
 	const borderGradientStyle = useMemo(() => {
 		if (requiresSetup) return undefined;
@@ -401,8 +375,8 @@ export function NodeComponent({
 					position={Position.Right}
 					className={clsx(
 						"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !right-[-0.5px] !top-1/2",
-						isAppEntryAnyOutputConnected ? stageHandleBgClass : "!bg-bg",
-						stageBorderClass,
+						isAppEntryAnyOutputConnected ? STAGE_NODE_HANDLE_BG_CLASS : "!bg-bg",
+						STAGE_NODE_BORDER_CLASS,
 						isAppEntryAnyOutputConnected &&
 							"[box-shadow:0_0_0_1.5px_rgba(0,0,0,0.8)]",
 					)}
@@ -433,8 +407,8 @@ export function NodeComponent({
 					position={Position.Left}
 					className={clsx(
 						"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !left-[-0.5px] !top-1/2",
-						isEndAnyInputConnected ? stageHandleBgClass : "!bg-bg",
-						stageBorderClass,
+						isEndAnyInputConnected ? STAGE_NODE_HANDLE_BG_CLASS : "!bg-bg",
+						STAGE_NODE_BORDER_CLASS,
 						isEndAnyInputConnected &&
 							"[box-shadow:0_0_0_1.5px_rgba(0,0,0,0.8)]",
 					)}

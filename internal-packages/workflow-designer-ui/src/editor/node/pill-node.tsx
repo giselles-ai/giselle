@@ -11,7 +11,13 @@ import { useMemo } from "react";
 import { useAppDesignerStore } from "../../app-designer";
 import { NodeIcon } from "../../icons/node";
 import { NodeGenerationStatusBadge } from "./node-generation-status-badge";
-import { useNodeGenerationStatus } from "./node-utils";
+import {
+	STAGE_NODE_BG_CLASS,
+	STAGE_NODE_BORDER_CLASS,
+	STAGE_NODE_COLOR_VAR,
+	STAGE_NODE_HANDLE_BG_CLASS,
+	useNodeGenerationStatus,
+} from "./node-utils";
 
 export function PillXyFlowNode({ id, selected }: NodeProps) {
 	const { node, connections, highlighted } = useAppDesignerStore((s) => ({
@@ -81,10 +87,8 @@ export function PillNode({
 	const isEnd = node.content.type === "end";
 	const requiresSetup = !isStartNodeConnectedToEndNode;
 
-	const stageBgClass =
-		"bg-[color:color-mix(in_srgb,var(--color-stage-node-1,var(--color-blue-muted))_80%,transparent)]" as const;
 	const stageBackgroundClass =
-		(isAppEntry || isEnd) && !requiresSetup ? stageBgClass : undefined;
+		(isAppEntry || isEnd) && !requiresSetup ? STAGE_NODE_BG_CLASS : undefined;
 
 	return (
 		<div
@@ -139,9 +143,9 @@ export function PillNode({
 					position={Position.Right}
 					className={clsx(
 						"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !right-[-0.5px] !top-1/2",
-						"!border-[color:var(--color-stage-node-1,var(--color-blue-muted))]",
+						STAGE_NODE_BORDER_CLASS,
 						isAppEntryAnyOutputConnected
-							? "!bg-[color:var(--color-stage-node-1,var(--color-blue-muted))] [box-shadow:0_0_0_1.5px_rgba(0,0,0,0.8)]"
+							? `${STAGE_NODE_HANDLE_BG_CLASS} [box-shadow:0_0_0_1.5px_rgba(0,0,0,0.8)]`
 							: "!bg-background",
 					)}
 				/>
@@ -152,9 +156,9 @@ export function PillNode({
 					position={Position.Left}
 					className={clsx(
 						"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !left-[-0.5px] !top-1/2",
-						"!border-[color:var(--color-stage-node-1,var(--color-blue-muted))]",
+						STAGE_NODE_BORDER_CLASS,
 						isEndAnyInputConnected
-							? "!bg-[color:var(--color-stage-node-1,var(--color-blue-muted))] [box-shadow:0_0_0_1.5px_rgba(0,0,0,0.8)]"
+							? `${STAGE_NODE_HANDLE_BG_CLASS} [box-shadow:0_0_0_1.5px_rgba(0,0,0,0.8)]`
 							: "!bg-background",
 					)}
 				/>
