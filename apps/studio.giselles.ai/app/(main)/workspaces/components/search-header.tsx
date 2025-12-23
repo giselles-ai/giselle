@@ -36,7 +36,7 @@ interface SearchHeaderProps {
 /**
  * SearchHeader
  * Shared header identical to /workspaces top controls:
- * - Left: search input with leading icon
+ * - Left: search input with trailing icon
  * - Right: sort dropdown (+ optional grid/list toggle)
  */
 export function SearchHeader({
