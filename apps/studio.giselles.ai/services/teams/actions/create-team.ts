@@ -7,7 +7,7 @@ import invariant from "tiny-invariant";
 import { db, supabaseUserMappings, teamMemberships, teams, users } from "@/db";
 import { updateGiselleSession } from "@/lib/giselle-session";
 import { getUser } from "@/lib/supabase";
-import { isEmailFromRoute06 } from "@/lib/utils";
+import { isInternalUserEmail } from "@/lib/utils";
 import {
 	DRAFT_TEAM_NAME_METADATA_KEY,
 	DRAFT_TEAM_USER_DB_ID_METADATA_KEY,
@@ -28,7 +28,7 @@ export async function createTeam(formData: FormData) {
 	}
 
 	const isInternalUser =
-		supabaseUser.email != null && isEmailFromRoute06(supabaseUser.email);
+		supabaseUser.email != null && isInternalUserEmail(supabaseUser.email);
 	if (isInternalUser) {
 		const teamId = await createInternalTeam(supabaseUser, teamName);
 		await setCurrentTeam(teamId);

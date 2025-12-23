@@ -1,8 +1,8 @@
 import invariant from "tiny-invariant";
 import { getUser } from "@/lib/supabase";
-import { isEmailFromRoute06 } from "@/lib/utils";
 import { formatStripePrice, getCachedPrice } from "@/services/external/stripe";
 import { fetchUserTeams } from "../fetch-user-teams";
+import { canCreateFreeTeam } from "../plan-features/free-team-creation";
 import { TeamCreationForm } from "./team-creation-form";
 
 export default async function TeamCreation({
@@ -14,9 +14,7 @@ export default async function TeamCreation({
 	if (!user) {
 		throw new Error("User not found");
 	}
-	const isInternalUser = user.email != null && isEmailFromRoute06(user.email);
 	const teams = await fetchUserTeams();
-	const hasExistingFreeTeam = teams.some((team) => team.plan === "free");
 	const proPlanPriceId = process.env.STRIPE_PRO_PLAN_PRICE_ID;
 	invariant(proPlanPriceId, "STRIPE_PRO_PLAN_PRICE_ID is not set");
 	const proPlan = await getCachedPrice(proPlanPriceId);
@@ -24,7 +22,10 @@ export default async function TeamCreation({
 
 	return (
 		<TeamCreationForm
-			canCreateFreeTeam={!isInternalUser && !hasExistingFreeTeam}
+			canCreateFreeTeam={canCreateFreeTeam(
+				user.email,
+				teams.map((t) => t.plan),
+			)}
 			proPlanPrice={proPlanPrice}
 		>
 			{children}
