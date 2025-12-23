@@ -384,7 +384,7 @@ export function Page({
 								</h2>
 								<div className="relative">
 									{isSearchActive ? (
-										<div className="flex items-center gap-2 rounded-full bg-white/5 px-3 py-1 text-[13px] text-text shadow-[0_0_0_1px_rgba(255,255,255,0.12)] transition-all duration-150">
+										<div className="flex items-center gap-2 rounded-[8px] bg-white/5 px-3 py-2 text-[13px] text-text shadow-[0_0_0_1px_rgba(255,255,255,0.12)] transition-all duration-150">
 											<input
 												ref={appSearchInputRef}
 												type="text"
@@ -398,7 +398,7 @@ export function Page({
 													}
 												}}
 												placeholder="Search apps"
-												className="w-[160px] bg-transparent text-[13px] text-text placeholder:text-text-muted outline-none border-none"
+												className="w-[160px] bg-transparent text-[13px] text-text placeholder:text-link-muted outline-none border-none"
 											/>
 											<Search className="h-4 w-4 text-text-muted" />
 										</div>
@@ -411,7 +411,7 @@ export function Page({
 													appSearchInputRef.current?.focus();
 												});
 											}}
-											className="group flex items-center gap-2 rounded-full px-3 py-1 text-[13px] text-text-muted transition-colors hover:bg-white/5"
+											className="group flex items-center gap-2 rounded-[8px] px-3 py-2 text-[13px] text-text-muted transition-colors hover:bg-white/5"
 										>
 											<Search className="h-4 w-4 text-text-muted group-hover:text-text" />
 											<span>Search apps</span>

@@ -2,6 +2,7 @@
 
 import { SearchInput } from "@giselle-internal/ui/search-input";
 import { Select, type SelectOption } from "@giselle-internal/ui/select";
+import clsx from "clsx";
 import {
 	ArrowDownAZ,
 	ArrowUpAZ,
@@ -108,16 +109,16 @@ export function SearchHeader({
 					value={sortOption}
 					onValueChange={(value) => onSortChange(value as SortOption)}
 					widthClassName="w-auto"
-					triggerClassName={selectTextClassName}
+					triggerClassName={clsx("h-10", selectTextClassName)}
 				/>
 
 				{/* Optional view toggle */}
 				{canToggleView ? (
-					<div className="flex rounded-lg border border-border overflow-hidden shrink-0">
+					<div className="flex rounded-lg border border-border overflow-hidden shrink-0 h-10">
 						<button
 							type="button"
 							onClick={() => onViewModeChange?.("grid")}
-							className={`p-3 flex items-center justify-center transition-colors ${
+							className={`h-10 px-3 flex items-center justify-center transition-colors ${
 								viewMode === "grid"
 									? "bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-inverse"
 									: "bg-transparent text-text/60 hover:bg-surface/5 hover:text-inverse"
@@ -129,7 +130,7 @@ export function SearchHeader({
 						<button
 							type="button"
 							onClick={() => onViewModeChange?.("list")}
-							className={`p-3 flex items-center justify-center transition-colors ${
+							className={`h-10 px-3 flex items-center justify-center transition-colors ${
 								viewMode === "list"
 									? "bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-inverse"
 									: "bg-transparent text-text/60 hover:bg-surface/5 hover:text-inverse"
