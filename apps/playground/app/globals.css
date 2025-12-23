@@ -82,6 +82,11 @@
 	--color-trigger-node-2: hsl(220, 10%, 50%);
 	--shadow-trigger-node-1: 0px 4px 12px hsla(220, 10%, 60%, 0.3);
 
+	/* Stage nodes (App Entry / End) */
+	--color-stage-node-1: var(--color-blue-muted);
+	--shadow-stage-node-1: 0px 4px 12px
+		color-mix(in srgb, var(--color-stage-node-1) 30%, transparent);
+
 	--color-action-node-1: var(--color-deep-purple-900);
 	--color-action-node-2: hsl(275, 91%, 26%);
 

@@ -1,10 +1,10 @@
 import type { NodeId } from "@giselles-ai/protocol";
 import { useNodeGenerations } from "@giselles-ai/react";
+import { useAppDesignerStore } from "../../app-designer";
 import { BaseEdge, type EdgeProps, getBezierPath } from "@xyflow/react";
 import clsx from "clsx/lite";
 import type { PropsWithChildren } from "react";
 import { useShallow } from "zustand/shallow";
-import { useAppDesignerStore } from "../../app-designer";
 
 function ConnectedNodeRunning({
 	inputNodeId,
@@ -30,6 +30,7 @@ function getGradientColors(
 	outputContentType: string,
 	inputContentType: string,
 ): { startColor: string; endColor: string } {
+	const stageColor = "var(--color-stage-node-1,var(--color-blue-muted))";
 	const colorMap: Record<string, string> = {
 		textGeneration: "var(--color-primary-900)",
 		contentGeneration: "var(--color-primary-900)",
@@ -41,8 +42,8 @@ function getGradientColors(
 		action: "var(--color-action-node-1)",
 		query: "var(--color-query-node-1)",
 		vectorStore: "var(--color-vector-store-node-1)",
-		appEntry: "var(--color-trigger-node-1)",
-		end: "var(--color-trigger-node-1)",
+		appEntry: stageColor,
+		end: stageColor,
 	};
 
 	return {

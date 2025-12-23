@@ -81,6 +81,11 @@ export function PillNode({
 	const isEnd = node.content.type === "end";
 	const requiresSetup = !isStartNodeConnectedToEndNode;
 
+	const stageBgClass =
+		"bg-[color:color-mix(in_srgb,var(--color-stage-node-1,var(--color-blue-muted))_80%,transparent)]" as const;
+	const stageBackgroundClass =
+		(isAppEntry || isEnd) && !requiresSetup ? stageBgClass : undefined;
+
 	return (
 		<div
 			data-type={node.type}
@@ -97,7 +102,9 @@ export function PillNode({
 					? "shadow-[0px_0px_20px_1px_rgba(0,_0,_0,_0.4)] shadow-trigger-node-1"
 					: "shadow-[4px_4px_8px_4px_rgba(0,_0,_0,_0.5)]",
 				preview && "opacity-50",
-				requiresSetup ? "opacity-80" : "bg-trigger-node-1",
+				stageBackgroundClass,
+				!stageBackgroundClass && requiresSetup ? "opacity-80" : undefined,
+				!stageBackgroundClass && !requiresSetup ? "bg-trigger-node-1" : undefined,
 			)}
 		>
 			<NodeGenerationStatusBadge
@@ -132,9 +139,9 @@ export function PillNode({
 					position={Position.Right}
 					className={clsx(
 						"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !right-[-0.5px] !top-1/2",
-						"!border-trigger-node-1",
+						"!border-[color:var(--color-stage-node-1,var(--color-blue-muted))]",
 						isAppEntryAnyOutputConnected
-							? "!bg-trigger-node-1 [box-shadow:0_0_0_1.5px_rgba(0,0,0,0.8)]"
+							? "!bg-[color:var(--color-stage-node-1,var(--color-blue-muted))] [box-shadow:0_0_0_1.5px_rgba(0,0,0,0.8)]"
 							: "!bg-background",
 					)}
 				/>
@@ -145,9 +152,9 @@ export function PillNode({
 					position={Position.Left}
 					className={clsx(
 						"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !left-[-0.5px] !top-1/2",
-						"!border-trigger-node-1",
+						"!border-[color:var(--color-stage-node-1,var(--color-blue-muted))]",
 						isEndAnyInputConnected
-							? "!bg-trigger-node-1 [box-shadow:0_0_0_1.5px_rgba(0,0,0,0.8)]"
+							? "!bg-[color:var(--color-stage-node-1,var(--color-blue-muted))] [box-shadow:0_0_0_1.5px_rgba(0,0,0,0.8)]"
 							: "!bg-background",
 					)}
 				/>
