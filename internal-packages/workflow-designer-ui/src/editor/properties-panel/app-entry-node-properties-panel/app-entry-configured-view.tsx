@@ -5,7 +5,6 @@ import { useGiselle } from "@giselles-ai/react";
 import { LoaderIcon } from "lucide-react";
 import { type FormEvent, useCallback, useEffect, useState } from "react";
 import type { KeyedMutator } from "swr";
-import { SettingDetail, SettingLabel } from "../ui/setting-label";
 
 export function AppEntryConfiguredView({
 	app,
@@ -76,7 +75,9 @@ export function AppEntryConfiguredView({
 					<Button
 						type="submit"
 						variant="solid"
+						size="compact"
 						disabled={isSavingDescription}
+						className="absolute right-[8px] top-[8px]"
 						leftIcon={
 							isSavingDescription && (
 								<LoaderIcon className="size-[14px] animate-spin" />
