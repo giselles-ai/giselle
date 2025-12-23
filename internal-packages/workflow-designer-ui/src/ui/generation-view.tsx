@@ -6,12 +6,11 @@ import type { UIMessage } from "ai";
 import { ChevronRightIcon } from "lucide-react";
 import { Accordion } from "radix-ui";
 import { Fragment, useEffect, useMemo, useState } from "react";
+import { Streamdown } from "streamdown";
 import { WilliIcon } from "../icons";
 import { THUMB_HEIGHT } from "./constants";
 import { ImageCard } from "./image-card";
 import { Lightbox } from "./lightbox";
-
-import { MemoizedMarkdown } from "./memoized-markdown";
 
 type ToolPart = Extract<UIMessage["parts"][number], { type: string }> & {
 	type: string;
@@ -270,8 +269,10 @@ function ToolResult({ part }: { part: ToolPart }) {
 					</span>
 				</Accordion.Trigger>
 				<Accordion.Content className="overflow-hidden text-[14px] text-inverse ml-[8px] pl-[12px] mb-[8px] data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown border-l border-l-[color-mix(in_srgb,var(--color-text-inverse,#fff)_20%,transparent)]">
-					<div className="markdown-renderer py-[4px]">
-						<MemoizedMarkdown content={compactOutput} />
+					<div className="py-[4px]">
+						<Streamdown className="markdown-renderer">
+							{compactOutput}
+						</Streamdown>
 					</div>
 					{isExpanded && (
 						<div className="mt-[8px] pt-[8px] border-t border-t-[color-mix(in_srgb,var(--color-text-inverse,#fff)_20%,transparent)]">
@@ -447,8 +448,10 @@ export function GenerationView({ generation }: { generation: Generation }) {
 														Thinking...
 													</span>
 												</Accordion.Trigger>
-												<Accordion.Content className="markdown-renderer overflow-hidden italic text-[14px] text-inverse ml-[8px] pl-[12px] mb-[8px] data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown border-l border-l-[color-mix(in_srgb,var(--color-text-inverse,#fff)_20%,transparent)]">
-													<MemoizedMarkdown content={part.text} />
+												<Accordion.Content className="overflow-hidden italic text-[14px] text-inverse ml-[8px] pl-[12px] mb-[8px] data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown border-l border-l-[color-mix(in_srgb,var(--color-text-inverse,#fff)_20%,transparent)]">
+													<Streamdown className="markdown-renderer">
+														{part.text}
+													</Streamdown>
 												</Accordion.Content>
 											</Accordion.Item>
 										</Accordion.Root>
@@ -472,8 +475,10 @@ export function GenerationView({ generation }: { generation: Generation }) {
 												/>
 												<span>Thinking Process</span>
 											</Accordion.Trigger>
-											<Accordion.Content className="markdown-renderer overflow-hidden italic text-[14px] text-inverse ml-[8px] pl-[12px] mb-[8px] data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown border-l border-l-[color-mix(in_srgb,var(--color-text-inverse,#fff)_20%,transparent)]">
-												<MemoizedMarkdown content={part.text} />
+											<Accordion.Content className="overflow-hidden italic text-[14px] text-inverse ml-[8px] pl-[12px] mb-[8px] data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown border-l border-l-[color-mix(in_srgb,var(--color-text-inverse,#fff)_20%,transparent)]">
+												<Streamdown className="markdown-renderer">
+													{part.text}
+												</Streamdown>
 											</Accordion.Content>
 										</Accordion.Item>
 									</Accordion.Root>
@@ -481,8 +486,10 @@ export function GenerationView({ generation }: { generation: Generation }) {
 
 							case "text":
 								return (
-									<div className="markdown-renderer" key={partKey}>
-										<MemoizedMarkdown content={part.text} />
+									<div key={partKey} id={partKey}>
+										<Streamdown className="markdown-renderer">
+											{part.text}
+										</Streamdown>
 									</div>
 								);
 							default: {
