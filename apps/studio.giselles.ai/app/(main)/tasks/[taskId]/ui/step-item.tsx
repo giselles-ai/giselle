@@ -83,7 +83,7 @@ function StepItemOutput({ item }: { item: UIStepItem }) {
 		case "completed":
 			return (
 				<div className="ml-4 pl-4 border-l border-border">
-					<div className="py-4 [&_.markdown-renderer]:text-[13px] [&_*[class*='text-[14px]']]:text-[13px] [&_*]:text-text-muted/70 [&_*[class*='text-inverse']]:!text-text-muted/70">
+					<div className="py-4 [&_.markdown-renderer]:text-[13px] [&_.markdown-renderer]:leading-[1.7] [&_.markdown-renderer_li]:my-2 [&_*[class*='text-[14px]']]:text-[13px] [&_*]:text-inverse/75 [&_*[class*='text-inverse']]:!text-inverse/75">
 						<GenerationView generation={item.generation} />
 					</div>
 				</div>
