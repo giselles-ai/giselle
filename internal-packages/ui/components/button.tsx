@@ -74,7 +74,11 @@ export function Button({
 				<div
 					className={clsx(
 						"*:size-[13px]",
-						style === "destructive" ? "*:text-error-900" : "*:text-text",
+						style === "destructive"
+							? "*:text-error-900"
+							: style === "solid" || style === "primary"
+								? undefined
+								: "*:text-text",
 					)}
 				>
 					{leftIcon}
@@ -84,7 +88,11 @@ export function Button({
 				<div
 					className={clsx(
 						"text-[13px]",
-						style === "destructive" ? "text-error-900" : "text-text",
+						style === "destructive"
+							? "text-error-900"
+							: style === "solid" || style === "primary"
+								? undefined
+								: "text-text",
 					)}
 				>
 					{children}
@@ -94,7 +102,11 @@ export function Button({
 				<div
 					className={clsx(
 						"*:size-[13px]",
-						style === "destructive" ? "*:text-error-900" : "*:text-text",
+						style === "destructive"
+							? "*:text-error-900"
+							: style === "solid" || style === "primary"
+								? undefined
+								: "*:text-text",
 					)}
 				>
 					{rightIcon}

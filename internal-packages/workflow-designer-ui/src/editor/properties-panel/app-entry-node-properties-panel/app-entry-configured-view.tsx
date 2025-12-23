@@ -62,28 +62,31 @@ export function AppEntryConfiguredView({
 	return (
 		<div className="flex flex-col gap-[16px] p-0 px-1 overflow-y-auto">
 			<div className="flex flex-col gap-[8px]">
-				<form onSubmit={handleDescriptionSubmit} className="relative w-full">
+				<form onSubmit={handleDescriptionSubmit} className="w-full">
 					<textarea
 						id="app-description"
 						placeholder="Describe your app..."
 						value={appDescription}
 						onChange={(event) => setAppDescription(event.target.value)}
-						className="w-full rounded-[8px] py-[8px] px-[12px] pr-[96px] outline-none focus:outline-none border-none bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-inverse text-[14px] resize-none"
+						className="w-full rounded-[8px] py-[8px] px-[12px] outline-none focus:outline-none border-none bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-inverse text-[14px] resize-none"
 						rows={3}
 						data-1p-ignore
 					/>
-					<Button
-						type="submit"
-						variant="solid"
-						disabled={isSavingDescription}
-						leftIcon={
-							isSavingDescription && (
-								<LoaderIcon className="size-[14px] animate-spin" />
-							)
-						}
-					>
-						Save
-					</Button>
+					<div className="mt-[4px] flex justify-end">
+						<Button
+							type="submit"
+							variant="primary"
+							size="large"
+							disabled={isSavingDescription}
+							leftIcon={
+								isSavingDescription && (
+									<LoaderIcon className="size-[14px] animate-spin" />
+								)
+							}
+						>
+							Save
+						</Button>
+					</div>
 				</form>
 			</div>
 		</div>
