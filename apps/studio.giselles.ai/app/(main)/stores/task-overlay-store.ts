@@ -1,4 +1,7 @@
-import type { ParametersInput, WorkspaceId } from "@giselles-ai/protocol";
+import type {
+	GenerationContextInput,
+	WorkspaceId,
+} from "@giselles-ai/protocol";
 import { create } from "zustand";
 
 type OverlayAppSummary = {
@@ -10,10 +13,10 @@ type OverlayAppSummary = {
 type TaskOverlayState = {
 	isVisible: boolean;
 	overlayApp: OverlayAppSummary | null;
-	overlayInput: ParametersInput | null;
+	overlayInput: GenerationContextInput | null;
 	showOverlay: (payload: {
 		app: OverlayAppSummary;
-		input?: ParametersInput | null;
+		input?: GenerationContextInput | null;
 	}) => void;
 	hideOverlay: () => void;
 };
