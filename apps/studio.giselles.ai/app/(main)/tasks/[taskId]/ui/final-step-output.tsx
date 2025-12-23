@@ -1,8 +1,8 @@
 "use client";
 
 import { Tabs } from "radix-ui";
-import { GenerationView } from "../../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-view";
-import { OutputActions } from "../output-actions";
+import { GenerationView } from "../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-view";
+import { OutputActions } from "./output-actions";
 import type { UITask } from "./task-data";
 
 export function FinalStepOutput({

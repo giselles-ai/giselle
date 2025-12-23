@@ -6,8 +6,8 @@ import { logger } from "@/lib/logger";
 import { ToastProvider } from "@/packages/contexts/toast";
 import { createAndStartTask } from "../../lib/create-and-start-task";
 import { loadStageAppsData } from "../../lib/stage-apps";
-import { TaskClient } from "./ui/experimental/task-client";
-import { getTaskAppId, getTaskData } from "./ui/experimental/task-data";
+import { TaskClient } from "./ui/task-client";
+import { getTaskAppId, getTaskData } from "./ui/task-data";
 import { TaskOverlayReset } from "./ui/task-overlay-reset";
 import { TaskStageInput } from "./ui/task-stage-input.client";
 

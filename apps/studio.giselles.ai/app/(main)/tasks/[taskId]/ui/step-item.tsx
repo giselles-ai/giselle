@@ -2,7 +2,7 @@ import clsx from "clsx/lite";
 import Link from "next/link";
 import { Accordion } from "radix-ui";
 import { logger } from "@/lib/logger";
-import { GenerationView } from "../../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-view";
+import { GenerationView } from "../../../../../../../internal-packages/workflow-designer-ui/src/ui/generation-view";
 import { StepItemStatusIcon } from "./step-item-icon";
 import type { UIStepItem } from "./task-data";
 
