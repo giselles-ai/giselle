@@ -90,22 +90,6 @@ export async function createTask(
 		),
 	);
 
-	let appId: AppId | undefined;
-	for (const node of nodes) {
-		if (!isAppEntryNode(node)) {
-			continue;
-		}
-		if (node.content.status === "unconfigured") {
-			continue;
-		}
-		if (appId !== undefined) {
-			throw new Error(
-				`Workspace ${workspace.id} has multiple configured app: ${appId}`,
-			);
-		}
-		appId = node.content.appId;
-	}
-
 	let endNodeId: NodeId | undefined;
 	for (const node of nodes) {
 		if (!isEndNode(node)) {
@@ -260,6 +244,22 @@ export async function createTask(
 			}
 			if (starterNode.content.state.status === "unconfigured") {
 				throw new Error("starterNode must be configured");
+			}
+
+			let appId: AppId | undefined;
+			for (const node of workspace.nodes) {
+				if (!isAppEntryNode(node)) {
+					continue;
+				}
+				if (node.content.status === "unconfigured") {
+					continue;
+				}
+				if (appId !== undefined) {
+					throw new Error(
+						`Workspace ${workspace.id} has multiple configured app: ${appId}`,
+					);
+				}
+				appId = node.content.appId;
 			}
 			starter = {
 				type: "github-trigger",
