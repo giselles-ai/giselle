@@ -222,14 +222,6 @@
 		0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 -1px 0 rgba(0, 0, 0, 0.2) inset,
 		0 0 0 1px rgba(255, 255, 255, 0.08);
 	--color-outline-button-bg: var(--color-black);
-
-	--primary: 210 40% 98%;
-	--primary-foreground: 222.2 47.4% 11.2%;
-	--muted: 217.2 32.6% 17.5%;
-	--muted-foreground: 215 20.2% 65.1%;
-	--border: 217.2 32.6% 17.5%;
-	--ring: 212.7 26.8% 83.9%;
-	--radius: 0.25rem;
 }
 
 @layer base {
