@@ -36,7 +36,7 @@ interface SearchHeaderProps {
 /**
  * SearchHeader
  * Shared header identical to /workspaces top controls:
- * - Left: search input with leading icon
+ * - Left: search input with trailing icon
  * - Right: sort dropdown (+ optional grid/list toggle)
  */
 export function SearchHeader({
@@ -113,11 +113,11 @@ export function SearchHeader({
 
 				{/* Optional view toggle */}
 				{canToggleView ? (
-					<div className="flex rounded-lg border border-border overflow-hidden shrink-0">
+					<div className="flex rounded-[8px] border border-border overflow-hidden shrink-0 h-10">
 						<button
 							type="button"
 							onClick={() => onViewModeChange?.("grid")}
-							className={`p-3 flex items-center justify-center transition-colors ${
+							className={`h-10 px-3 flex items-center justify-center transition-colors ${
 								viewMode === "grid"
 									? "bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-inverse"
 									: "bg-transparent text-text/60 hover:bg-surface/5 hover:text-inverse"
@@ -129,7 +129,7 @@ export function SearchHeader({
 						<button
 							type="button"
 							onClick={() => onViewModeChange?.("list")}
-							className={`p-3 flex items-center justify-center transition-colors ${
+							className={`h-10 px-3 flex items-center justify-center transition-colors ${
 								viewMode === "list"
 									? "bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] text-inverse"
 									: "bg-transparent text-text/60 hover:bg-surface/5 hover:text-inverse"

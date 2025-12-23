@@ -86,7 +86,7 @@ export function Select<T extends SelectOption>({
 				type="button"
 				className={clsx(
 					widthClassName ?? "w-full",
-					"flex justify-between items-center rounded-[8px] h-9 px-[8px] text-left text-[14px] shrink-0",
+					"flex justify-between items-center rounded-[8px] h-10 px-[8px] text-left text-[13px] shrink-0",
 					"outline-none focus:outline-none focus-visible:outline-none focus:ring-0",
 					renderTriggerContent
 						? clsx(
@@ -130,7 +130,7 @@ export function Select<T extends SelectOption>({
 					className={clsx(
 						// width: default full, but allow override via widthClassName
 						widthClassName ?? "w-full",
-						"flex justify-between items-center rounded-[8px] h-9 px-[8px] text-left text-[14px] shrink-0",
+						"flex justify-between items-center rounded-[8px] h-10 px-[8px] text-left text-[13px] shrink-0",
 						"outline-none focus:outline-none focus-visible:outline-none focus:ring-0",
 						renderTriggerContent
 							? clsx(
@@ -182,7 +182,7 @@ export function Select<T extends SelectOption>({
 									disabled={option.disabled}
 									className={clsx(
 										"outline-none cursor-pointer hover:bg-white/5",
-										"rounded-[4px] px-[8px] py-[6px] text-[14px]",
+										"rounded-[4px] px-[8px] py-[6px] text-[13px]",
 										"flex items-center justify-between gap-[4px]",
 										"data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed data-[disabled]:pointer-events-none",
 										itemClassNameForOption?.(option),
