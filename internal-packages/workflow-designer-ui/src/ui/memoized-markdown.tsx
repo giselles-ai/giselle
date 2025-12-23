@@ -3,7 +3,6 @@ import { marked } from "marked";
 import type { ComponentProps } from "react";
 import { memo, useMemo } from "react";
 import ReactMarkdown from "react-markdown";
-import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 
 function parseMarkdownIntoBlocks(markdown: string): string[] {
@@ -36,7 +35,6 @@ const MemoizedMarkdownBlock = memo(
 		return (
 			<ReactMarkdown
 				remarkPlugins={[remarkGfm]}
-				rehypePlugins={[rehypeRaw]}
 				components={{
 					// Customize anchor tags (links)
 					a: ({ node, children, ...props }) => (
