@@ -109,12 +109,12 @@ export function SearchHeader({
 					value={sortOption}
 					onValueChange={(value) => onSortChange(value as SortOption)}
 					widthClassName="w-auto"
-					triggerClassName={clsx("h-10", selectTextClassName)}
+					triggerClassName={selectTextClassName}
 				/>
 
 				{/* Optional view toggle */}
 				{canToggleView ? (
-					<div className="flex rounded-lg border border-border overflow-hidden shrink-0 h-10">
+					<div className="flex rounded-[8px] border border-border overflow-hidden shrink-0 h-10">
 						<button
 							type="button"
 							onClick={() => onViewModeChange?.("grid")}

@@ -384,7 +384,7 @@ export function Page({
 								</h2>
 								<div className="relative">
 									{isSearchActive ? (
-										<div className="flex items-center gap-2 rounded-[8px] bg-white/5 px-3 py-2 text-[13px] text-text shadow-[0_0_0_1px_rgba(255,255,255,0.12)] transition-all duration-150">
+										<div className="flex items-center gap-2 rounded-[8px] bg-white/5 px-3 h-10 text-[13px] text-text border border-border transition-all duration-150">
 											<input
 												ref={appSearchInputRef}
 												type="text"
