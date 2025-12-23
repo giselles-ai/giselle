@@ -2,7 +2,6 @@
 
 import { SearchInput } from "@giselle-internal/ui/search-input";
 import { Select, type SelectOption } from "@giselle-internal/ui/select";
-import clsx from "clsx";
 import {
 	ArrowDownAZ,
 	ArrowUpAZ,

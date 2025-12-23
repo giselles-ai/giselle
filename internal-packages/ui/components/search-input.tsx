@@ -20,10 +20,7 @@ export function SearchInput({
 				{...props}
 			/>
 			<Search
-				className={clsx(
-					"h-4 w-4 text-text-muted shrink-0",
-					iconClassName,
-				)}
+				className={clsx("h-4 w-4 text-text-muted shrink-0", iconClassName)}
 			/>
 		</div>
 	);
