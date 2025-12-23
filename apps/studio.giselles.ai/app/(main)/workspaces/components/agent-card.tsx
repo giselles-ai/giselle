@@ -36,8 +36,7 @@ export function AgentCard({ agent }: AgentCardProps) {
 			aria-label={agent.name || "Untitled workspace"}
 			className={clsx(
 				"relative flex h-[260px] w-full flex-none flex-col rounded-[12px]",
-				"bg-[linear-gradient(135deg,rgba(100,130,200,0.20)_0%,rgba(60,80,120,0.35)_40%,rgba(20,30,60,0.85)_100%)]",
-				"filter grayscale",
+				"bg-[linear-gradient(135deg,color-mix(in_srgb,var(--color-blue-muted)_10%,var(--color-background))_0%,color-mix(in_srgb,var(--color-blue-muted)_6%,var(--color-stage-background))_55%,color-mix(in_srgb,var(--color-blue-muted)_4%,var(--color-background))_100%)]",
 			)}
 		>
 			{/* Top reflection line (muted) */}
