@@ -1,11 +1,7 @@
 "use client";
 
 import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
-import type {
-	GenerationContextInput,
-	ParametersInput,
-	TaskId,
-} from "@giselles-ai/protocol";
+import type { GenerationContextInput, TaskId } from "@giselles-ai/protocol";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useTransition } from "react";
 import { useShallow } from "zustand/shallow";
@@ -13,6 +9,17 @@ import { useSelectedStageApp } from "@/app/(main)/stores/stage-app-selection-sto
 import { useTaskOverlayStore } from "@/app/(main)/stores/task-overlay-store";
 import { TaskCompactStageInput } from "../../../components/stage-input/task-compact-stage-input";
 import type { StageApp } from "../../../playground/types";
+
+function pickPreferredInput(
+	inputs: GenerationContextInput[],
+): GenerationContextInput | null {
+	return (
+		inputs.find((input) => input.type === "parameters") ??
+		inputs.find((input) => input.type === "github-webhook-event") ??
+		inputs[0] ??
+		null
+	);
+}
 
 export function TaskStageInput({
 	apps,
@@ -50,16 +57,13 @@ export function TaskStageInput({
 		(event: { inputs: GenerationContextInput[] }) => {
 			if (!selectedApp) return;
 
-			const parametersInput = event.inputs.find(
-				(input): input is ParametersInput => input.type === "parameters",
-			);
 			showOverlay({
 				app: {
 					name: selectedApp.name,
 					description: selectedApp.description,
 					workspaceId: selectedApp.workspaceId,
 				},
-				input: parametersInput ?? null,
+				input: pickPreferredInput(event.inputs),
 			});
 
 			startTransition(async () => {

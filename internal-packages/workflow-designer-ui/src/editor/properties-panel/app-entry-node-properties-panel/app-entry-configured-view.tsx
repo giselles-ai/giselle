@@ -5,7 +5,6 @@ import { useGiselle } from "@giselles-ai/react";
 import { LoaderIcon } from "lucide-react";
 import { type FormEvent, useCallback, useEffect, useState } from "react";
 import type { KeyedMutator } from "swr";
-import { SettingDetail, SettingLabel } from "../ui/setting-label";
 
 export function AppEntryConfiguredView({
 	app,

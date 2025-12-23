@@ -1,13 +1,106 @@
 import { StatusBadge } from "@giselle-internal/ui/status-badge";
 import type {
+	GenerationContextInput,
 	ParameterItem,
-	ParametersInput,
 	Task,
 	UploadedFileData,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import { Check, FilePenLineIcon } from "lucide-react";
 import Link from "next/link";
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+	return typeof value === "object" && value !== null;
+}
+
+function getNestedValue(value: unknown, path: string[]): unknown {
+	let current: unknown = value;
+	for (const key of path) {
+		if (!isRecord(current)) {
+			return undefined;
+		}
+		current = current[key];
+	}
+	return current;
+}
+
+function getNestedString(value: unknown, path: string[]): string | undefined {
+	const nestedValue = getNestedValue(value, path);
+	return typeof nestedValue === "string" ? nestedValue : undefined;
+}
+
+function tryConvertGitHubApiPullRequestUrlToHtmlUrl(
+	apiUrl: string,
+): string | undefined {
+	const match =
+		/^https:\/\/api\.github\.com\/repos\/([^/]+)\/([^/]+)\/pulls\/(\d+)$/.exec(
+			apiUrl,
+		);
+	if (match == null) {
+		return undefined;
+	}
+	const [, owner, repo, number] = match;
+	return `https://github.com/${owner}/${repo}/pull/${number}`;
+}
+
+function getGitHubPullRequestHtmlUrlFromWebhookEvent(webhookEvent: {
+	name: string;
+	data: unknown;
+}): string | undefined {
+	const data = webhookEvent.data;
+
+	const direct = getNestedString(data, ["pull_request", "html_url"]);
+	if (direct != null) {
+		return direct;
+	}
+
+	const fromCheckSuite = getNestedString(data, [
+		"check_suite",
+		"pull_requests",
+		"0",
+		"html_url",
+	]);
+	if (fromCheckSuite != null) {
+		return fromCheckSuite;
+	}
+
+	const fromIssuePullRequest = getNestedString(data, [
+		"issue",
+		"pull_request",
+		"html_url",
+	]);
+	if (fromIssuePullRequest != null) {
+		return fromIssuePullRequest;
+	}
+
+	const apiUrlCandidates = [
+		getNestedString(data, ["pull_request", "url"]),
+		getNestedString(data, ["check_suite", "pull_requests", "0", "url"]),
+		getNestedString(data, ["issue", "pull_request", "url"]),
+	].filter((url): url is string => url != null);
+
+	for (const apiUrl of apiUrlCandidates) {
+		const converted = tryConvertGitHubApiPullRequestUrlToHtmlUrl(apiUrl);
+		if (converted != null) {
+			return converted;
+		}
+	}
+
+	return undefined;
+}
+
+function formatJsonPreview(value: unknown, maxLines: number): string {
+	try {
+		const json = JSON.stringify(value, null, 2) ?? "";
+		const lines = json.split("\n");
+		if (lines.length <= maxLines) {
+			return json;
+		}
+		return `${lines.slice(0, maxLines).join("\n")}\n… (truncated, showing first ${maxLines} lines of ${lines.length})`;
+	} catch {
+		return "[unserializable payload]";
+	}
+}
 
 function formatFileSize(bytes?: number) {
 	const safeBytes = Number.isFinite(bytes) ? (bytes as number) : 0;
@@ -22,6 +115,63 @@ function formatFileSize(bytes?: number) {
 	const value = safeBytes / 1024 ** exponent;
 	const decimals = value >= 10 || exponent === 0 ? 0 : 1;
 	return `${value.toFixed(decimals)} ${units[exponent]}`;
+}
+
+function TaskInputGitHubWebhookEvent({
+	webhookEvent,
+}: {
+	webhookEvent: { name: string; data: unknown };
+}) {
+	const eventName = webhookEvent.name;
+	const action = getNestedString(webhookEvent.data, ["action"]);
+	const repoFullName = getNestedString(webhookEvent.data, [
+		"repository",
+		"full_name",
+	]);
+	const senderLogin = getNestedString(webhookEvent.data, ["sender", "login"]);
+	const prUrl = getGitHubPullRequestHtmlUrlFromWebhookEvent(webhookEvent);
+
+	return (
+		<div className="mt-2">
+			<div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-text/80">
+				<span className="font-medium text-inverse">GitHub webhook</span>
+				<span className="rounded-md border border-white/10 bg-white/5 px-2 py-0.5 font-mono text-[11px]">
+					{eventName}
+				</span>
+				{action != null ? (
+					<span className="text-text-muted">action: {action}</span>
+				) : null}
+				{repoFullName != null ? (
+					<span className="text-text-muted">repo: {repoFullName}</span>
+				) : null}
+				{senderLogin != null ? (
+					<span className="text-text-muted">sender: {senderLogin}</span>
+				) : null}
+			</div>
+
+			{prUrl != null ? (
+				<div className="mt-2">
+					<a
+						href={prUrl}
+						target="_blank"
+						rel="noreferrer"
+						className="text-[12px] text-[hsl(192,73%,84%)] hover:underline"
+					>
+						Open related Pull Request
+					</a>
+				</div>
+			) : null}
+
+			<details className="mt-3">
+				<summary className="cursor-pointer select-none text-[12px] text-text-muted hover:text-inverse">
+					Payload (truncated)
+				</summary>
+				<pre className="mt-2 max-h-64 overflow-auto rounded-md border border-white/10 bg-black/30 p-2 text-[11px] text-text/80">
+					{formatJsonPreview(webhookEvent.data, 120)}
+				</pre>
+			</details>
+		</div>
+	);
 }
 
 function TaskInputItemFile({ file }: { file: UploadedFileData }) {
@@ -73,7 +223,7 @@ interface TaskHeaderProps {
 	title: string;
 	description: string;
 	workspaceId: WorkspaceId;
-	input: ParametersInput | null;
+	input: GenerationContextInput | null;
 }
 
 export function TaskHeader({
@@ -146,10 +296,14 @@ export function TaskHeader({
 					<div className="rounded-[10px] border border-blue-muted/40 bg-blue-muted/7 px-3 py-2 text-[13px] text-text/80">
 						{input == null ? (
 							<p>No task input</p>
-						) : (
+						) : input.type === "parameters" ? (
 							input.items.map((item) => (
 								<TaskInputItem key={item.name} item={item} />
 							))
+						) : input.type === "github-webhook-event" ? (
+							<TaskInputGitHubWebhookEvent webhookEvent={input.webhookEvent} />
+						) : (
+							<p>No task input</p>
 						)}
 					</div>
 				</div>

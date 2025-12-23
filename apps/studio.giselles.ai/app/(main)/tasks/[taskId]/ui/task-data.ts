@@ -1,10 +1,10 @@
 import {
 	type AppId,
 	type Generation,
+	type GenerationContextInput,
 	type GenerationStatus,
 	isOperationNode,
 	type OperationNode,
-	type ParametersInput,
 	type SequenceId,
 	type StepId,
 	type Task,
@@ -66,7 +66,7 @@ export interface UITask {
 	title: string;
 	description: string;
 	workspaceId: WorkspaceId;
-	input: ParametersInput | null;
+	input: GenerationContextInput | null;
 	stepsSection: {
 		title: string;
 		totalStepsCount: number;
@@ -81,6 +81,20 @@ export interface UITask {
 			generation: Generation;
 		}[];
 	};
+}
+
+function pickPreferredInput(
+	inputs: GenerationContextInput[] | undefined,
+): GenerationContextInput | null {
+	if (inputs == null || inputs.length === 0) {
+		return null;
+	}
+	return (
+		inputs.find((input) => input.type === "parameters") ??
+		inputs.find((input) => input.type === "github-webhook-event") ??
+		inputs[0] ??
+		null
+	);
 }
 
 async function getAppByTaskId(taskId: TaskId) {
@@ -140,15 +154,14 @@ async function getTaskInput(taskId: TaskId) {
 
 	// inputs is an optional array, but in the Task use case it should be
 	// an array with length 1, so log a warning if it's different
-	if (inputs?.length !== 1) {
+	if (inputs == null || inputs.length === 0) {
 		return null;
 	}
-	const firstInput = inputs[0];
-	// github-webhook-event is not expected in this Task use case
-	if (firstInput.type !== "parameters") {
-		return null;
+	if (inputs.length !== 1) {
+		logger.warn(`Task ${taskId} has ${inputs.length} inputs (expected 1)`);
 	}
-	return firstInput;
+
+	return pickPreferredInput(inputs);
 }
 
 export async function getTaskData(taskId: TaskId): Promise<UITask> {
