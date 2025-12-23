@@ -367,6 +367,19 @@ export const giselle = NextGiselle({
 				});
 				appDbId = app?.dbId;
 			}
+			if (
+				task.starter.type === "github-trigger" &&
+				task.starter.end.type === "endNode"
+			) {
+				const appId = task.starter.end.appId;
+				const app = await db.query.apps.findFirst({
+					where: (apps, { eq }) => eq(apps.id, appId),
+					columns: {
+						dbId: true,
+					},
+				});
+				appDbId = app?.dbId;
+			}
 
 			const workspace = await db.query.workspaces.findFirst({
 				where: (workspaces, { eq }) => eq(workspaces.id, task.workspaceId),

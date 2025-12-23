@@ -176,6 +176,7 @@ export function createHttpHandler({
 						request,
 						onGenerationComplete: config.callbacks?.generationComplete,
 						onGenerationError: config.callbacks?.generationError,
+						onTaskCreate: config.callbacks?.taskCreate,
 					}),
 				);
 				return new Response("Accepted", { status: 202 });
