@@ -155,34 +155,38 @@ export function Toolbar() {
 	// Recommended models for each provider - adjust based on user tier
 	const isFreeUser = userTier === Tier.enum.free;
 	const openaiModels = getAvailableModels(
-		isFreeUser ? ["gpt-5-nano"] : ["gpt-5"],
+		isFreeUser ? ["gpt-5-nano"] : ["gpt-5.2"],
 		"openai",
 		llmProviders,
 		availableLanguageModels,
 	);
 	const anthropicModels = getAvailableModels(
-		isFreeUser
-			? ["claude-haiku-4.5"]
-			: ["claude-sonnet-4.5", "claude-opus-4.5"],
+		isFreeUser ? ["claude-haiku-4.5"] : ["claude-opus-4.5"],
 		"anthropic",
 		llmProviders,
 		availableLanguageModels,
 	);
 	const googleModels = getAvailableModels(
-		isFreeUser
-			? ["gemini-2.5-flash-lite"]
-			: ["gemini-2.5-pro-exp-03-25", "gemini-1.5-pro-latest", "gemini-1.0-pro"],
+		isFreeUser ? ["gemini-2.5-flash-lite"] : ["gemini-3-flash"],
 		"google",
 		llmProviders,
 		availableLanguageModels,
 	);
 
 	// Combine all recommended models
-	const recommendedModels = [
-		...openaiModels.slice(0, 1),
-		...anthropicModels.slice(0, 1),
-		...googleModels.slice(0, 1),
-	];
+	// Free tier: OpenAI, Google, Anthropic
+	// Pro tier: Google, OpenAI, Anthropic
+	const recommendedModels = isFreeUser
+		? [
+				...openaiModels.slice(0, 1),
+				...googleModels.slice(0, 1),
+				...anthropicModels.slice(0, 1),
+			]
+		: [
+				...googleModels.slice(0, 1),
+				...openaiModels.slice(0, 1),
+				...anthropicModels.slice(0, 1),
+			];
 
 	// Hover management is handled by useHoverState hook
 
