@@ -44,7 +44,7 @@ export function FinalStepOutput({
 						</h3>
 						<OutputActions generation={singleOutput.generation} />
 					</div>
-					<div className="[&_.markdown-renderer]:text-[13px] [&_*[class*='text-[14px]']]:text-[13px] [&_*]:text-text-muted/70 [&_*[class*='text-inverse']]:!text-text-muted/70">
+					<div className="[&_.markdown-renderer]:text-[13px] [&_.markdown-renderer]:leading-[1.7] [&_.markdown-renderer_li]:my-2 [&_*[class*='text-[14px]']]:text-[13px] [&_*]:text-inverse/75 [&_*[class*='text-inverse']]:!text-inverse/75">
 						<GenerationView generation={singleOutput.generation} />
 					</div>
 				</div>
@@ -74,7 +74,7 @@ export function FinalStepOutput({
 								</h3>
 								<OutputActions generation={output.generation} />
 							</div>
-							<div className="[&_.markdown-renderer]:text-[13px] [&_*[class*='text-[14px]']]:text-[13px] [&_*]:text-text-muted/70 [&_*[class*='text-inverse']]:!text-text-muted/70">
+							<div className="[&_.markdown-renderer]:text-[13px] [&_.markdown-renderer]:leading-[1.7] [&_.markdown-renderer_li]:my-2 [&_*[class*='text-[14px]']]:text-[13px] [&_*]:text-inverse/75 [&_*[class*='text-inverse']]:!text-inverse/75">
 								<GenerationView generation={output.generation} />
 							</div>
 						</Tabs.Content>
