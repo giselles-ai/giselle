@@ -160,7 +160,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
 							"data-[type=error]:bg-linear-to-b data-[type=error]:from-[color:var(--color-error)]/18 data-[type=error]:via-[color:var(--color-error)]/12 data-[type=error]:to-[color:var(--color-error)]/8",
 							// border/ring
 							"border-[0.5px] border-white/15 ring-1 ring-inset ring-inverse/10",
-							"group-data-[type=info]:ring-[color:var(--color-info)]/25 group-data-[type=success]:ring-[color:var(--color-success)]/25 group-data-[type=warning]:ring-[color:var(--color-warning)]/25 group-data-[type=error]:ring-[color:var(--color-error)]/30",
+							"data-[type=info]:ring-[color:var(--color-info)]/25 data-[type=success]:ring-[color:var(--color-success)]/25 data-[type=warning]:ring-[color:var(--color-warning)]/25 data-[type=error]:ring-[color:var(--color-error)]/30",
 							"shadow-[inset_0_1px_1px_rgba(255,255,255,0.06)]",
 						)}
 					>
@@ -189,8 +189,6 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
 													"group-data-[type=success]:text-[color:var(--color-success)]/70",
 													"group-data-[type=warning]:text-[color:var(--color-warning)]/70",
 													"group-data-[type=error]:text-[color:var(--color-error)]/70",
-													// default fallback
-													"text-white/70",
 												)}
 											>
 												{toast.message}

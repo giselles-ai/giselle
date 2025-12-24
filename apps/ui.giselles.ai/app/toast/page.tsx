@@ -173,13 +173,13 @@ function ToastDemo() {
 					<Button
 						variant="filled"
 						onClick={() =>
-							toast.toast("File uploaded successfully", {
+							toast.toast("File uploaded with warnings", {
 								type: "warning",
-								title: "Upload Complete",
+								title: "Upload Warning",
 								action: {
-									label: "Undo",
+									label: "View Details",
 									onClick: () => {
-										console.log("Undo clicked");
+										console.log("View Details clicked");
 									},
 								},
 							})
