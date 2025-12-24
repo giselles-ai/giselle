@@ -10,7 +10,6 @@ import {
 	useMemo,
 	useState,
 } from "react";
-import { Button } from "./button";
 
 interface Action {
 	label?: string;
@@ -155,15 +154,13 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
 							// container
 							"group relative rounded-[12px] backdrop-blur-md text-white/90",
 							// glass gradient + border by type
-							"data-[type=info]:bg-linear-to-b data-[type=info]:from-[#232a3c]/60 data-[type=info]:to-[#0f1422]/90",
-							// success matches info styling
-							"data-[type=success]:bg-linear-to-b data-[type=success]:from-[#232a3c]/60 data-[type=success]:to-[#0f1422]/90",
-							// warning/error tinted by tokens
-							"data-[type=warning]:bg-linear-to-b data-[type=warning]:from-[color:var(--color-warning)]/30 data-[type=warning]:to-[#0f1422]/90",
-							"data-[type=error]:bg-linear-to-b data-[type=error]:from-[color:var(--color-error)]/18 data-[type=error]:to-[#1b0a0d]/90",
+							"data-[type=info]:bg-linear-to-b data-[type=info]:from-[color:var(--color-info)]/18 data-[type=info]:via-[color:var(--color-info)]/12 data-[type=info]:to-[color:var(--color-info)]/8",
+							"data-[type=success]:bg-linear-to-b data-[type=success]:from-[color:var(--color-success)]/18 data-[type=success]:via-[color:var(--color-success)]/12 data-[type=success]:to-[color:var(--color-success)]/8",
+							"data-[type=warning]:bg-linear-to-b data-[type=warning]:from-[color:var(--color-warning)]/30 data-[type=warning]:via-[color:var(--color-warning)]/20 data-[type=warning]:to-[color:var(--color-warning)]/12",
+							"data-[type=error]:bg-linear-to-b data-[type=error]:from-[color:var(--color-error)]/18 data-[type=error]:via-[color:var(--color-error)]/12 data-[type=error]:to-[color:var(--color-error)]/8",
 							// border/ring
 							"border-[0.5px] border-white/15 ring-1 ring-inset ring-inverse/10",
-							"group-data-[type=warning]:ring-[color:var(--color-warning)]/25 group-data-[type=error]:ring-[color:var(--color-error)]/30",
+							"group-data-[type=info]:ring-[color:var(--color-info)]/25 group-data-[type=success]:ring-[color:var(--color-success)]/25 group-data-[type=warning]:ring-[color:var(--color-warning)]/25 group-data-[type=error]:ring-[color:var(--color-error)]/30",
 							"shadow-[inset_0_1px_1px_rgba(255,255,255,0.06)]",
 						)}
 					>
@@ -176,13 +173,26 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
 												className={clsx(
 													"text-[14px] font-medium mb-1",
 													// color tokens for types
-													"group-data-[type=error]:text-[color:var(--color-error)]",
+													"group-data-[type=info]:text-[color:var(--color-info)]",
+													"group-data-[type=success]:text-[color:var(--color-success)]",
 													"group-data-[type=warning]:text-[color:var(--color-warning)]",
+													"group-data-[type=error]:text-[color:var(--color-error)]",
 												)}
 											>
 												{toast.title}
 											</ToastPrimitive.Title>
-											<ToastPrimitive.Description className="text-[13px] text-white/70">
+											<ToastPrimitive.Description
+												className={clsx(
+													"text-[13px]",
+													// color tokens for types (same as title but slightly lighter)
+													"group-data-[type=info]:text-[color:var(--color-info)]/70",
+													"group-data-[type=success]:text-[color:var(--color-success)]/70",
+													"group-data-[type=warning]:text-[color:var(--color-warning)]/70",
+													"group-data-[type=error]:text-[color:var(--color-error)]/70",
+													// default fallback
+													"text-white/70",
+												)}
+											>
 												{toast.message}
 											</ToastPrimitive.Description>
 										</>
@@ -191,24 +201,47 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
 											className={clsx(
 												"text-[14px] font-medium",
 												// color tokens for types
-												"group-data-[type=error]:text-[color:var(--color-error)]",
+												"group-data-[type=info]:text-[color:var(--color-info)]",
+												"group-data-[type=success]:text-[color:var(--color-success)]",
 												"group-data-[type=warning]:text-[color:var(--color-warning)]",
+												"group-data-[type=error]:text-[color:var(--color-error)]",
 											)}
 										>
 											{toast.message}
 										</ToastPrimitive.Title>
 									)}
 								</div>
-								<ToastPrimitive.Close className="rounded-[8px] hover:bg-white/10 p-[4px] transition-colors flex-shrink-0">
+								<ToastPrimitive.Close
+									className={clsx(
+										"rounded-[8px] hover:bg-white/10 p-[4px] transition-colors flex-shrink-0",
+										"text-white/70",
+										"group-data-[type=info]:text-[color:var(--color-info)]/80",
+										"group-data-[type=success]:text-[color:var(--color-success)]/80",
+										"group-data-[type=warning]:text-[color:var(--color-warning)]/80",
+										"group-data-[type=error]:text-[color:var(--color-error)]/80",
+									)}
+								>
 									<XIcon size={16} />
 								</ToastPrimitive.Close>
 							</div>
 							{toast.action && (
-								<div className="mt-2">
+								<div className="flex justify-end mt-2">
 									<ToastPrimitive.Action altText="button" asChild>
-										<Button onClick={toast.action.onClick} variant="filled">
+										<button
+											type="button"
+											onClick={toast.action.onClick}
+											className={clsx(
+												"px-[8px] py-[2px] rounded-[3px] text-[12px] font-medium border cursor-pointer transition-colors",
+												"enabled:hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed",
+												// StatusBadge style by type
+												"group-data-[type=info]:bg-[rgba(var(--color-info-rgb),0.05)] group-data-[type=info]:text-[color:var(--color-info)] group-data-[type=info]:border-[rgba(var(--color-info-rgb),0.1)]",
+												"group-data-[type=success]:bg-[rgba(var(--color-success-rgb),0.05)] group-data-[type=success]:text-[color:var(--color-success)] group-data-[type=success]:border-[rgba(var(--color-success-rgb),0.1)]",
+												"group-data-[type=warning]:bg-[rgba(var(--color-warning-rgb),0.05)] group-data-[type=warning]:text-[color:var(--color-warning)] group-data-[type=warning]:border-[rgba(var(--color-warning-rgb),0.1)]",
+												"group-data-[type=error]:bg-[rgba(var(--color-error-rgb),0.05)] group-data-[type=error]:text-[color:var(--color-error)] group-data-[type=error]:border-[rgba(var(--color-error-rgb),0.1)]",
+											)}
+										>
 											{toast.action.label}
-										</Button>
+										</button>
 									</ToastPrimitive.Action>
 								</div>
 							)}
