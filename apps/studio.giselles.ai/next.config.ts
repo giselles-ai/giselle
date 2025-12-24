@@ -62,7 +62,7 @@ const nextConfig: NextConfig = {
 		return [
 			{
 				source: "/",
-				destination: "/workspaces",
+				destination: "/playground",
 				permanent: false,
 			},
 		];
