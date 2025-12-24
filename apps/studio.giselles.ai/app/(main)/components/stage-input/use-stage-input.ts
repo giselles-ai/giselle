@@ -1,7 +1,7 @@
 "use client";
 
 import type { SelectOption } from "@giselle-internal/ui/select";
-import { useToast } from "@giselles-ai/contexts/toast";
+import { useToasts } from "@giselle-internal/ui/toast";
 import {
 	createFailedFileData,
 	createUploadedFileData,
@@ -144,7 +144,7 @@ export function useStageInput({
 	isRunning: boolean;
 }) {
 	const client = useGiselle();
-	const { addToast } = useToast();
+	const { toast } = useToasts();
 
 	const { selectedApp } = useSelectedStageApp(scope, apps ?? [], {
 		preferredAppId,
@@ -233,10 +233,9 @@ export function useStageInput({
 	const handleFilesAdded = useCallback(
 		async (incomingFiles: File[]) => {
 			if (!selectedApp) {
-				addToast({
+				toast("Select an app: Choose an app before attaching files.", {
 					type: "warning",
-					title: "Select an app",
-					message: "Choose an app before attaching files.",
+					preserve: false,
 				});
 				return;
 			}
@@ -268,10 +267,9 @@ export function useStageInput({
 				const name =
 					file.name || `file-${existingNames.size + batchSeen.size + 1}`;
 				if (existingNames.has(name) || batchSeen.has(name)) {
-					addToast({
+					toast(`Duplicate file: ${name} is already attached.`, {
 						type: "warning",
-						title: "Duplicate file",
-						message: `${name} is already attached.`,
+						preserve: false,
 					});
 					continue;
 				}
@@ -336,10 +334,9 @@ export function useStageInput({
 					});
 				} catch (error) {
 					const message = getUploadErrorMessage(error);
-					addToast({
+					toast(`Upload failed: ${message}`, {
 						type: "error",
-						title: "Upload failed",
-						message,
+						preserve: false,
 					});
 					const failed = createFailedFileData(uploading, message);
 					setAttachedFiles((current) => {
@@ -350,7 +347,7 @@ export function useStageInput({
 				}
 			}
 		},
-		[selectedApp, attachedFiles, client, addToast],
+		[selectedApp, attachedFiles, client, toast],
 	);
 
 	const handleDrop = useCallback(
@@ -421,11 +418,10 @@ export function useStageInput({
 	const submitInputs = useCallback(() => {
 		if (!selectedApp || !inputValue.trim() || isRunning) return;
 		if (hasPendingUploads) {
-			addToast({
-				type: "info",
-				title: "Uploading files",
-				message: "Please wait for uploads to finish before sending.",
-			});
+			toast(
+				"Uploading files: Please wait for uploads to finish before sending.",
+				{ type: "info", preserve: false },
+			);
 			return;
 		}
 
@@ -472,10 +468,10 @@ export function useStageInput({
 		inputValue,
 		isRunning,
 		hasPendingUploads,
-		addToast,
 		attachedFiles,
 		onSubmitAction,
 		resizeTextarea,
+		toast,
 	]);
 
 	const { handleCompositionStart, handleCompositionEnd, handleKeyDown } =

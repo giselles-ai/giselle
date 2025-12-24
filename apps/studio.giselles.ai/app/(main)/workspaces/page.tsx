@@ -1,5 +1,3 @@
-import { Toasts } from "@giselles-ai/components/toasts";
-import { ToastProvider } from "@giselles-ai/contexts/toast";
 import type { WorkspaceId } from "@giselles-ai/protocol";
 import {
 	isActionNode,
@@ -293,13 +291,10 @@ export default async function AgentListV2Page() {
 	const currentTeam = await fetchCurrentTeam();
 	const agents = agentsQuery(currentTeam.dbId);
 	return (
-		<ToastProvider>
-			<div className="w-full pt-2 pb-2">
-				<Suspense fallback={<p className="text-center py-8">Loading...</p>}>
-					<AgentList agents={agents} />
-				</Suspense>
-				<Toasts />
-			</div>
-		</ToastProvider>
+		<div className="w-full pt-2 pb-2">
+			<Suspense fallback={<p className="text-center py-8">Loading...</p>}>
+				<AgentList agents={agents} />
+			</Suspense>
+		</div>
 	);
 }
