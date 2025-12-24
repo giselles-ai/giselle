@@ -306,7 +306,7 @@ export function Page({
 							<div className="flex flex-col">
 								<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-2">
 									<h2 className="mt-1 text-[16px] text-text-muted/80">
-										Sample Apps from Giselle Team
+										Sample Apps from Giselle
 									</h2>
 								</div>
 								<div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
@@ -380,7 +380,7 @@ export function Page({
 						<div className="flex flex-col">
 							<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-2">
 								<h2 className="mt-1 text-[16px] text-text-muted/80">
-									Select Your App to Run
+									Your Apps
 								</h2>
 								<div className="relative">
 									{isSearchActive ? (
