@@ -427,8 +427,8 @@ export function Page({
 											<span>No apps yet</span>
 										</h3>
 										<p className="mt-2 text-[13px] text-blue-muted/60 leading-relaxed">
-											Build your first agent in Studio. Agents you create will
-											appear here, ready to run in Stage.
+											Build your first app in the Studio. Apps you create will
+											appear here, ready to run in the playground.
 										</p>
 										<div className="mt-6 flex justify-center">
 											<button
