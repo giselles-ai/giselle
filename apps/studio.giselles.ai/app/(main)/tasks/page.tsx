@@ -8,6 +8,7 @@ import { giselle } from "@/app/giselle";
 import { db } from "@/db";
 import { fetchCurrentTeam } from "@/services/teams/fetch-current-team";
 import { Card } from "../settings/components/card";
+import { LocalDateTime } from "../settings/team/components/local-date-time";
 
 interface UITaskListAppOrigin {
 	type: "app";
@@ -38,10 +39,6 @@ type TaskListPageProps = {
 
 function clampInt(value: number, { min, max }: { min: number; max: number }) {
 	return Math.min(max, Math.max(min, value));
-}
-
-function formatTimestamp(ms: number) {
-	return new Date(ms).toISOString().slice(0, 19).replace("T", " ");
 }
 
 function getStatusBadge(taskStatus: Task["status"]) {
@@ -267,7 +264,7 @@ export default async function TaskListPage({
 											{task.id}
 										</Link>
 										<span className="text-[13px] text-text/60 truncate">
-											{formatTimestamp(task.startedAt)}
+											<LocalDateTime date={new Date(task.startedAt)} />
 											<span className="md:hidden"> · {originLabel}</span>
 										</span>
 									</div>
