@@ -19,6 +19,7 @@ import {
 	type GenerationOutput,
 	type GitHubActionConfiguredState,
 	isActionNode,
+	isAppEntryNode,
 	isTextNode,
 	type NodeId,
 	type OutputId,
@@ -29,6 +30,7 @@ import {
 	jsonContentToText,
 } from "@giselles-ai/text-editor-utils";
 import { useGenerationExecutor } from "../generations/internal/use-generation-executor";
+import type { AppEntryResolver } from "../generations/types";
 import type { GiselleContext } from "../types";
 
 export function executeAction(args: {
@@ -41,6 +43,7 @@ export function executeAction(args: {
 		execute: async ({
 			generationContext,
 			generationContentResolver,
+			appEntryResolver,
 			finishGeneration,
 		}) => {
 			const operationNode = generationContext.operationNode;
@@ -59,6 +62,7 @@ export function executeAction(args: {
 						context: args.context,
 						generationContext,
 						generationContentResolver,
+						appEntryResolver,
 					});
 					break;
 				default: {
@@ -84,6 +88,7 @@ async function resolveActionInputs(args: {
 		nodeId: NodeId,
 		outputId: OutputId,
 	) => Promise<string | undefined>;
+	appEntryResolver: AppEntryResolver;
 }): Promise<Record<string, string>> {
 	const githubActionEntry = githubActions[args.state.commandId];
 	if (githubActionEntry === undefined) {
@@ -110,6 +115,28 @@ async function resolveActionInputs(args: {
 
 		switch (sourceNode.type) {
 			case "operation": {
+				if (isAppEntryNode(sourceNode)) {
+					const parts = await args.appEntryResolver(
+						connection.outputNode.id,
+						connection.outputId,
+					);
+					if (parts.length === 0) {
+						throw new Error(
+							`Missing value for "${payloadKey}" from App Entry Node`,
+						);
+					}
+
+					const textParts = parts.filter((p) => p.type === "text");
+					if (textParts.length === 0) {
+						throw new Error(
+							`"${payloadKey}" requires a text value, but received non-text content (e.g., file or image)`,
+						);
+					}
+
+					inputs[payloadKey] = textParts.map((p) => p.text).join(" ");
+					break;
+				}
+
 				const content = await args.generationContentResolver(
 					connection.outputNode.id,
 					connection.outputId,
@@ -181,6 +208,7 @@ async function executeGitHubAction(args: {
 		nodeId: NodeId,
 		outputId: OutputId,
 	) => Promise<string | undefined>;
+	appEntryResolver: AppEntryResolver;
 }): Promise<GenerationOutput[]> {
 	const authConfig = args.context.integrationConfigs?.github?.authV2;
 	if (authConfig === undefined) {
@@ -191,6 +219,7 @@ async function executeGitHubAction(args: {
 		state: args.state,
 		generationContext: args.generationContext,
 		generationContentResolver: args.generationContentResolver,
+		appEntryResolver: args.appEntryResolver,
 	});
 
 	const commonAuthConfig = {
