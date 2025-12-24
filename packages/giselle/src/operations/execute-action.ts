@@ -120,10 +120,9 @@ async function resolveActionInputs(args: {
 						connection.outputNode.id,
 						connection.outputId,
 					);
+					// Empty values are skipped; validation is delegated to Zod schema
 					if (parts.length === 0) {
-						throw new Error(
-							`Missing value for "${payloadKey}" from App Entry Node`,
-						);
+						break;
 					}
 
 					const textParts = parts.filter((p) => p.type === "text");
