@@ -88,7 +88,7 @@ export function QueryNodePropertiesPanel({ node }: { node: QueryNode }) {
 				onChangeName={(name) => {
 					updateNodeData(node, { name });
 				}}
-				docsUrl="https://docs.giselles.ai/en/glossary/query-node"
+				docsUrl="https://docs.giselles.ai/en/glossary/vector-query-node"
 				onDelete={() => deleteNode(node.id)}
 			/>
 			<PropertiesPanelContent>
