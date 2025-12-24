@@ -28,6 +28,32 @@ function ToastDemo() {
 				</Button>
 			</DemoSection>
 
+			<DemoSection label="Error Toast with Title">
+				<Button
+					variant="filled"
+					onClick={() =>
+						toast.error("Failed to upload file. Please try again.", {
+							title: "Upload Failed",
+						})
+					}
+				>
+					Show Error Toast with Title
+				</Button>
+			</DemoSection>
+
+			<DemoSection label="Toast with Title">
+				<Button
+					variant="filled"
+					onClick={() =>
+						toast.info("File uploaded successfully", {
+							title: "Upload Complete",
+						})
+					}
+				>
+					Show Toast with Title
+				</Button>
+			</DemoSection>
+
 			<DemoSection label="Toast with Action">
 				<Button
 					variant="filled"
@@ -43,6 +69,52 @@ function ToastDemo() {
 					}
 				>
 					Show Toast with Action
+				</Button>
+			</DemoSection>
+
+			<DemoSection label="Toast with Title and Action">
+				<Button
+					variant="filled"
+					onClick={() =>
+						toast.info("File uploaded successfully", {
+							title: "Upload Complete",
+							action: {
+								label: "Undo",
+								onClick: () => {
+									console.log("Undo clicked");
+								},
+							},
+						})
+					}
+				>
+					Show Toast with Title and Action
+				</Button>
+			</DemoSection>
+
+			<DemoSection label="Warning Toast">
+				<Button
+					variant="filled"
+					onClick={() =>
+						toast.toast("This is a warning message", {
+							type: "warning",
+						})
+					}
+				>
+					Show Warning Toast
+				</Button>
+			</DemoSection>
+
+			<DemoSection label="Warning Toast with Title">
+				<Button
+					variant="filled"
+					onClick={() =>
+						toast.toast("Please select an app before attaching files.", {
+							type: "warning",
+							title: "Select an app",
+						})
+					}
+				>
+					Show Warning Toast with Title
 				</Button>
 			</DemoSection>
 

@@ -19,6 +19,7 @@ interface Action {
 interface Toast {
 	id: string;
 	message: string;
+	title?: string;
 	type?: "info" | "success" | "warning" | "error";
 	preserve?: boolean;
 	action?: Action;
@@ -30,6 +31,7 @@ type ToastOptions = ToastActionOptions & {
 	id?: string;
 	type?: Toast["type"];
 	preserve?: boolean;
+	title?: string;
 };
 
 type ToastFn = ((message: string, options?: ToastOptions) => string) & {
@@ -38,8 +40,11 @@ type ToastFn = ((message: string, options?: ToastOptions) => string) & {
 
 interface ToastContextType {
 	toast: ToastFn;
-	info: (message: string, option?: ToastActionOptions) => void;
-	error: (message: string) => void;
+	info: (
+		message: string,
+		option?: ToastActionOptions & { title?: string },
+	) => void;
+	error: (message: string, option?: { title?: string }) => void;
 }
 
 function mergeToastWithOptions(
@@ -50,6 +55,7 @@ function mergeToastWithOptions(
 	return {
 		...existing,
 		message,
+		title: options?.title ?? existing.title,
 		type: options?.type ?? existing.type,
 		preserve: options?.preserve ?? existing.preserve,
 		action: options?.action ?? existing.action,
@@ -69,6 +75,7 @@ function upsertToastArray(
 			{
 				id,
 				message,
+				title: options?.title,
 				type: options?.type ?? "info",
 				preserve: options?.preserve ?? true,
 				action: options?.action,
@@ -114,18 +121,19 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
 	}, []);
 
 	const error = useCallback(
-		(message: string) => {
-			_toast(message, { type: "error", preserve: true });
+		(message: string, option?: { title?: string }) => {
+			_toast(message, { type: "error", preserve: true, title: option?.title });
 		},
 		[_toast],
 	);
 
 	const info = useCallback(
-		(message: string, option?: ToastActionOptions) => {
+		(message: string, option?: ToastActionOptions & { title?: string }) => {
 			_toast(message, {
 				type: "info",
 				preserve: true,
 				action: option?.action,
+				title: option?.title,
 			});
 		},
 		[_toast],
@@ -151,27 +159,47 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
 							// success matches info styling
 							"data-[type=success]:bg-linear-to-b data-[type=success]:from-[#232a3c]/60 data-[type=success]:to-[#0f1422]/90",
 							// warning/error tinted by tokens
-							"data-[type=warning]:bg-linear-to-b data-[type=warning]:from-[color:var(--color-warning)]/18 data-[type=warning]:to-[#0f1422]/90",
+							"data-[type=warning]:bg-linear-to-b data-[type=warning]:from-[color:var(--color-warning)]/30 data-[type=warning]:to-[#0f1422]/90",
 							"data-[type=error]:bg-linear-to-b data-[type=error]:from-[color:var(--color-error)]/18 data-[type=error]:to-[#1b0a0d]/90",
 							// border/ring
-							"border border-white/15 ring-1 ring-inset ring-inverse/10",
+							"border-[0.5px] border-white/15 ring-1 ring-inset ring-inverse/10",
 							"group-data-[type=warning]:ring-[color:var(--color-warning)]/25 group-data-[type=error]:ring-[color:var(--color-error)]/30",
 							"shadow-[inset_0_1px_1px_rgba(255,255,255,0.06)]",
 						)}
 					>
 						<div className="relative px-4 py-3">
-							<div className="flex justify-between items-center gap-2">
-								<ToastPrimitive.Title
-									className={clsx(
-										"text-[14px] font-medium",
-										// color tokens for types
-										"group-data-[type=error]:text-error",
-										"group-data-[type=warning]:text-warning",
+							<div className="flex justify-between items-start gap-2">
+								<div className="flex-1 min-w-0">
+									{toast.title ? (
+										<>
+											<ToastPrimitive.Title
+												className={clsx(
+													"text-[14px] font-medium mb-1",
+													// color tokens for types
+													"group-data-[type=error]:text-[color:var(--color-error)]",
+													"group-data-[type=warning]:text-[color:var(--color-warning)]",
+												)}
+											>
+												{toast.title}
+											</ToastPrimitive.Title>
+											<ToastPrimitive.Description className="text-[13px] text-white/70">
+												{toast.message}
+											</ToastPrimitive.Description>
+										</>
+									) : (
+										<ToastPrimitive.Title
+											className={clsx(
+												"text-[14px] font-medium",
+												// color tokens for types
+												"group-data-[type=error]:text-[color:var(--color-error)]",
+												"group-data-[type=warning]:text-[color:var(--color-warning)]",
+											)}
+										>
+											{toast.message}
+										</ToastPrimitive.Title>
 									)}
-								>
-									{toast.message}
-								</ToastPrimitive.Title>
-								<ToastPrimitive.Close className="rounded-[8px] hover:bg-white/10 p-[4px] transition-colors">
+								</div>
+								<ToastPrimitive.Close className="rounded-[8px] hover:bg-white/10 p-[4px] transition-colors flex-shrink-0">
 									<XIcon size={16} />
 								</ToastPrimitive.Close>
 							</div>
