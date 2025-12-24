@@ -329,7 +329,7 @@ export async function getTaskData(taskId: TaskId): Promise<UITask> {
 
 	return {
 		status: task.status,
-		title: `${workspace.name}:${taskId}`,
+		title: workspace.name || "Untitled",
 		description: app.description,
 		workspaceId: task.workspaceId,
 		input,
