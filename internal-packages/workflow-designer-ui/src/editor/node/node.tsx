@@ -11,7 +11,6 @@ import {
 	type NodeLike,
 	type OutputId,
 } from "@giselles-ai/protocol";
-import { useAppDesignerStore } from "../../app-designer";
 import {
 	Handle,
 	type NodeProps,
@@ -23,13 +22,12 @@ import { CheckIcon, SquareIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useMemo } from "react";
 import { useShallow } from "zustand/shallow";
+import { useAppDesignerStore } from "../../app-designer";
 import { NodeIcon } from "../../icons/node";
 import { EditableText } from "../../ui/editable-text";
 import { NodeHandleDot } from "../../ui/node/node-handle-dot";
 import { NodeInputLabel } from "../../ui/node/node-input-label";
 import { Tooltip } from "../../ui/tooltip";
-import { DocumentNodeInfo, GitHubNodeInfo } from "./ui";
-import { GitHubTriggerStatusBadge } from "./ui/github-trigger/status-badge";
 import {
 	STAGE_NODE_BG_CLASS,
 	STAGE_NODE_BORDER_CLASS,
@@ -37,6 +35,8 @@ import {
 	STAGE_NODE_HANDLE_BG_CLASS,
 	useNodeGenerationStatus,
 } from "./node-utils";
+import { DocumentNodeInfo, GitHubNodeInfo } from "./ui";
+import { GitHubTriggerStatusBadge } from "./ui/github-trigger/status-badge";
 
 type NodeHandleContentType = Parameters<typeof NodeHandleDot>[0]["contentType"];
 
@@ -332,7 +332,9 @@ export function NodeComponent({
 	// For unconfigured (dashed) state, keep the container background transparent
 	// and rely on the dashed border layer's gradient fill to match other nodes.
 	const stageBackgroundClass =
-		(v.isAppEntry || v.isEnd) && !requiresSetup ? STAGE_NODE_BG_CLASS : undefined;
+		(v.isAppEntry || v.isEnd) && !requiresSetup
+			? STAGE_NODE_BG_CLASS
+			: undefined;
 
 	const borderGradientStyle = useMemo(() => {
 		if (requiresSetup) return undefined;
@@ -375,7 +377,9 @@ export function NodeComponent({
 					position={Position.Right}
 					className={clsx(
 						"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !right-[-0.5px] !top-1/2",
-						isAppEntryAnyOutputConnected ? STAGE_NODE_HANDLE_BG_CLASS : "!bg-bg",
+						isAppEntryAnyOutputConnected
+							? STAGE_NODE_HANDLE_BG_CLASS
+							: "!bg-bg",
 						STAGE_NODE_BORDER_CLASS,
 						isAppEntryAnyOutputConnected &&
 							"[box-shadow:0_0_0_1.5px_rgba(0,0,0,0.8)]",

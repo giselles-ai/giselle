@@ -14,7 +14,6 @@ import { NodeGenerationStatusBadge } from "./node-generation-status-badge";
 import {
 	STAGE_NODE_BG_CLASS,
 	STAGE_NODE_BORDER_CLASS,
-	STAGE_NODE_COLOR_VAR,
 	STAGE_NODE_HANDLE_BG_CLASS,
 	useNodeGenerationStatus,
 } from "./node-utils";
@@ -108,7 +107,9 @@ export function PillNode({
 				preview && "opacity-50",
 				stageBackgroundClass,
 				!stageBackgroundClass && requiresSetup ? "opacity-80" : undefined,
-				!stageBackgroundClass && !requiresSetup ? "bg-trigger-node-1" : undefined,
+				!stageBackgroundClass && !requiresSetup
+					? "bg-trigger-node-1"
+					: undefined,
 			)}
 		>
 			<NodeGenerationStatusBadge

@@ -1,10 +1,10 @@
 import type { NodeId } from "@giselles-ai/protocol";
 import { useNodeGenerations } from "@giselles-ai/react";
-import { useAppDesignerStore } from "../../app-designer";
 import { BaseEdge, type EdgeProps, getBezierPath } from "@xyflow/react";
 import clsx from "clsx/lite";
 import type { PropsWithChildren } from "react";
 import { useShallow } from "zustand/shallow";
+import { useAppDesignerStore } from "../../app-designer";
 import { STAGE_NODE_COLOR_VAR } from "../node/node-utils";
 
 function ConnectedNodeRunning({
