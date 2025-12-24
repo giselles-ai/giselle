@@ -278,10 +278,10 @@ export function Page({
 							<div className="w-full flex justify-center items-center pt-1 pb-1 sm:pt-2 sm:pb-2">
 								<div className="flex flex-col items-center relative">
 									<p className="font-thin text-[36px] font-sans text-blue-muted/70 text-center">
-										What's the task?
+										Have a task?
 										<span className="block sm:inline">
 											{" "}
-											Your agent's on it.
+											Your agent is on it.
 										</span>
 									</p>
 								</div>
