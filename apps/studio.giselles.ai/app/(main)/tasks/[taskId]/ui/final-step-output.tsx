@@ -20,8 +20,8 @@ export function FinalStepOutput({
 			<div className="flex items-center justify-between text-text-muted text-[13px] font-semibold mb-2 w-full">
 				<span className="block">
 					{outputCount > 1
-						? `Outputs from last completed step (${outputCount})`
-						: "Output from last completed step"}
+						? `Results (${outputCount})`
+						: "Results"}
 				</span>
 			</div>
 			{finalStep.finishedStepItemsCount === 0 ? (
@@ -33,7 +33,7 @@ export function FinalStepOutput({
 							animationTimingFunction: "linear",
 						}}
 					>
-						Please wait, executing...
+						Running...
 					</span>
 				</p>
 			) : singleOutput ? (

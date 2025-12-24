@@ -72,7 +72,7 @@ export function TaskCompactStageInput({
 		<div className="relative w-full max-w-[640px] min-w-[320px] mx-auto">
 			<div className="flex items-center justify-between mb-2">
 				<h2 className="text-text-muted text-[13px] font-semibold">
-					Request new tasks in a new session
+					Ask something else
 				</h2>
 				<div className="flex items-center gap-2">
 					<button
