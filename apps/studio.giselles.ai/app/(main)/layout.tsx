@@ -6,8 +6,8 @@ import { TaskOverlay } from "./ui/task-overlay";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
 	return (
-		<ToastProvider>
-			<SentryUserWrapper>
+		<SentryUserWrapper>
+			<ToastProvider>
 				<div className="h-screen flex flex-col bg-bg">
 					<Header />
 					<div className="flex overflow-y-hidden divide-x divide-border flex-1">
@@ -18,7 +18,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 						</main>
 					</div>
 				</div>
-			</SentryUserWrapper>
-		</ToastProvider>
+			</ToastProvider>
+		</SentryUserWrapper>
 	);
 }
