@@ -11,7 +11,12 @@ import { useMemo } from "react";
 import { useAppDesignerStore } from "../../app-designer";
 import { NodeIcon } from "../../icons/node";
 import { NodeGenerationStatusBadge } from "./node-generation-status-badge";
-import { useNodeGenerationStatus } from "./node-utils";
+import {
+	STAGE_NODE_BG_CLASS,
+	STAGE_NODE_BORDER_CLASS,
+	STAGE_NODE_HANDLE_BG_CLASS,
+	useNodeGenerationStatus,
+} from "./node-utils";
 
 export function PillXyFlowNode({ id, selected }: NodeProps) {
 	const { node, connections, highlighted } = useAppDesignerStore((s) => ({
@@ -81,6 +86,9 @@ export function PillNode({
 	const isEnd = node.content.type === "end";
 	const requiresSetup = !isStartNodeConnectedToEndNode;
 
+	const stageBackgroundClass =
+		(isAppEntry || isEnd) && !requiresSetup ? STAGE_NODE_BG_CLASS : undefined;
+
 	return (
 		<div
 			data-type={node.type}
@@ -97,7 +105,11 @@ export function PillNode({
 					? "shadow-[0px_0px_20px_1px_rgba(0,_0,_0,_0.4)] shadow-trigger-node-1"
 					: "shadow-[4px_4px_8px_4px_rgba(0,_0,_0,_0.5)]",
 				preview && "opacity-50",
-				requiresSetup ? "opacity-80" : "bg-trigger-node-1",
+				stageBackgroundClass,
+				!stageBackgroundClass && requiresSetup ? "opacity-80" : undefined,
+				!stageBackgroundClass && !requiresSetup
+					? "bg-trigger-node-1"
+					: undefined,
 			)}
 		>
 			<NodeGenerationStatusBadge
@@ -132,9 +144,9 @@ export function PillNode({
 					position={Position.Right}
 					className={clsx(
 						"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !right-[-0.5px] !top-1/2",
-						"!border-trigger-node-1",
+						STAGE_NODE_BORDER_CLASS,
 						isAppEntryAnyOutputConnected
-							? "!bg-trigger-node-1 [box-shadow:0_0_0_1.5px_rgba(0,0,0,0.8)]"
+							? `${STAGE_NODE_HANDLE_BG_CLASS} [box-shadow:0_0_0_1.5px_rgba(0,0,0,0.8)]`
 							: "!bg-background",
 					)}
 				/>
@@ -145,9 +157,9 @@ export function PillNode({
 					position={Position.Left}
 					className={clsx(
 						"!absolute !w-[12px] !h-[12px] !rounded-full !border-[1.5px] !left-[-0.5px] !top-1/2",
-						"!border-trigger-node-1",
+						STAGE_NODE_BORDER_CLASS,
 						isEndAnyInputConnected
-							? "!bg-trigger-node-1 [box-shadow:0_0_0_1.5px_rgba(0,0,0,0.8)]"
+							? `${STAGE_NODE_HANDLE_BG_CLASS} [box-shadow:0_0_0_1.5px_rgba(0,0,0,0.8)]`
 							: "!bg-background",
 					)}
 				/>

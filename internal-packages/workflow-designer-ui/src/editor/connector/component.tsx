@@ -5,6 +5,7 @@ import clsx from "clsx/lite";
 import type { PropsWithChildren } from "react";
 import { useShallow } from "zustand/shallow";
 import { useAppDesignerStore } from "../../app-designer";
+import { STAGE_NODE_COLOR_VAR } from "../node/node-utils";
 
 function ConnectedNodeRunning({
 	inputNodeId,
@@ -41,8 +42,8 @@ function getGradientColors(
 		action: "var(--color-action-node-1)",
 		query: "var(--color-query-node-1)",
 		vectorStore: "var(--color-vector-store-node-1)",
-		appEntry: "var(--color-trigger-node-1)",
-		end: "var(--color-trigger-node-1)",
+		appEntry: STAGE_NODE_COLOR_VAR,
+		end: STAGE_NODE_COLOR_VAR,
 	};
 
 	return {

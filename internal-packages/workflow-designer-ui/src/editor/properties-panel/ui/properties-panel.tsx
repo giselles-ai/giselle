@@ -6,6 +6,7 @@ import clsx from "clsx/lite";
 import type { ReactNode } from "react";
 import { NodeIcon } from "../../../icons/node";
 import { EditableText } from "../../../ui/editable-text";
+import { STAGE_NODE_BG_CLASS_SOLID } from "../../node/node-utils";
 import {
 	getContentClasses,
 	getHeaderClasses,
@@ -70,6 +71,7 @@ function getNodeIconBackground(node: NodeLike): string {
 			case "imageGeneration":
 				return "bg-image-generation-node-1";
 			case "appEntry":
+				return STAGE_NODE_BG_CLASS_SOLID;
 			case "trigger":
 				return "bg-trigger-node-1";
 			case "action":
@@ -77,7 +79,7 @@ function getNodeIconBackground(node: NodeLike): string {
 			case "query":
 				return "bg-query-node-1";
 			case "end":
-				return "bg-trigger-node-1";
+				return STAGE_NODE_BG_CLASS_SOLID;
 			default: {
 				const _exhaustiveCheck: never = node.content.type;
 				throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
