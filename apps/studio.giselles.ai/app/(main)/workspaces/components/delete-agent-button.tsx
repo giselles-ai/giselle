@@ -11,7 +11,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@giselle-internal/ui/dialog";
-import { useToast } from "@giselles-ai/contexts/toast";
+import { useToasts } from "@giselle-internal/ui/toast";
 import { LoaderCircleIcon, TrashIcon, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
@@ -36,7 +36,7 @@ export function DeleteAgentButton({
 	const [mounted, setMounted] = useState(false);
 	useEffect(() => setMounted(true), []);
 	const [isPending, startTransition] = useTransition();
-	const { addToast } = useToast();
+	const { toast } = useToasts();
 	const router = useRouter();
 
 	const handleConfirm = () => {
@@ -47,11 +47,11 @@ export function DeleteAgentButton({
 					router.refresh();
 					return;
 				}
-				addToast({ message: res.message, type: "error" });
+				toast(res.message, { type: "error", preserve: false });
 			} catch (error) {
 				const message =
 					error instanceof Error ? error.message : "Failed to delete workspace";
-				addToast({ message, type: "error" });
+				toast(message, { type: "error", preserve: false });
 			} finally {
 				setOpen(false);
 			}

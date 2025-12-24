@@ -1,5 +1,6 @@
 "use client";
 
+import { useToasts } from "@giselle-internal/ui/toast";
 import { MoreHorizontal, Search } from "lucide-react";
 import { useActionState, useCallback, useState } from "react";
 import { FreeTag } from "@/components/free-tag";
@@ -12,8 +13,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { teams as teamsTable } from "@/db";
 import { cn } from "@/lib/utils";
-import { Toast } from "@/packages/components/toast";
-import { useToast } from "@/packages/contexts/toast";
 import { TeamAvatarImage } from "@/services/teams/components/team-avatar-image";
 import { leaveTeam, navigateWithChangeTeam } from "./actions";
 
@@ -38,7 +37,6 @@ export default function UserTeams({
 	};
 }) {
 	const [teamName, setTeamName] = useState("");
-	const { toasts } = useToast();
 
 	const handleChangeTeamName = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setTeamName(e.target.value);
@@ -49,52 +47,42 @@ export default function UserTeams({
 	);
 
 	return (
-		<>
-			<div className="relative overflow-hidden rounded-[12px] backdrop-blur-md bg-white/[0.02] border-[0.5px] border-border shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(255,255,255,0.2)] before:content-[''] before:absolute before:inset-0 before:bg-white before:opacity-[0.02] before:rounded-[inherit] before:pointer-events-none py-2">
-				<div
-					className="flex items-center gap-x-[11px] mt-4 mb-2 mx-4 py-2 px-3 rounded-[8px]"
-					style={{
-						background: "#00020A",
-						boxShadow: "inset 0 1px 4px rgba(0,0,0,0.5)",
-						border: "0.5px solid rgba(255,255,255,0.05)",
-					}}
-				>
-					<Search className="size-6 text-text-muted" />
-					<input
-						onChange={handleChangeTeamName}
-						type="text"
-						value={teamName}
-						placeholder="Search for a team..."
-						className="w-full text-inverse font-medium text-[14px] leading-[23.8px] font-geist placeholder:text-link-muted bg-transparent outline-none"
-					/>
-				</div>
-				<div>
-					{filteredTeams.map((team, idx) => (
-						<UserTeamsItem
-							className={cn(
-								"border-t border-border mx-4",
-								idx === 0 && "border-t-0",
-							)}
-							key={team.id}
-							teamId={team.id}
-							teamName={team.name}
-							avatarUrl={team.avatarUrl}
-							role={roles[team.role]}
-							isPro={team.isPro}
-							currentUserId={currentUser.id}
-						/>
-					))}
-				</div>
-			</div>
-			{toasts.map((toast) => (
-				<Toast
-					key={toast.id}
-					title={toast.title}
-					message={toast.message}
-					type={toast.type}
+		<div className="relative overflow-hidden rounded-[12px] backdrop-blur-md bg-white/[0.02] border-[0.5px] border-border shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),inset_0_-1px_1px_rgba(255,255,255,0.2)] before:content-[''] before:absolute before:inset-0 before:bg-white before:opacity-[0.02] before:rounded-[inherit] before:pointer-events-none py-2">
+			<div
+				className="flex items-center gap-x-[11px] mt-4 mb-2 mx-4 py-2 px-3 rounded-[8px]"
+				style={{
+					background: "#00020A",
+					boxShadow: "inset 0 1px 4px rgba(0,0,0,0.5)",
+					border: "0.5px solid rgba(255,255,255,0.05)",
+				}}
+			>
+				<Search className="size-6 text-text-muted" />
+				<input
+					onChange={handleChangeTeamName}
+					type="text"
+					value={teamName}
+					placeholder="Search for a team..."
+					className="w-full text-inverse font-medium text-[14px] leading-[23.8px] font-geist placeholder:text-link-muted bg-transparent outline-none"
 				/>
-			))}
-		</>
+			</div>
+			<div>
+				{filteredTeams.map((team, idx) => (
+					<UserTeamsItem
+						className={cn(
+							"border-t border-border mx-4",
+							idx === 0 && "border-t-0",
+						)}
+						key={team.id}
+						teamId={team.id}
+						teamName={team.name}
+						avatarUrl={team.avatarUrl}
+						role={roles[team.role]}
+						isPro={team.isPro}
+						currentUserId={currentUser.id}
+					/>
+				))}
+			</div>
+		</div>
 	);
 }
 
@@ -115,18 +103,17 @@ function UserTeamsItem({
 	currentUserId: string;
 	className?: string;
 }) {
-	const { addToast } = useToast();
+	const { toast } = useToasts();
 
 	const handleLeaveTeam = useCallback(async () => {
 		const result = await leaveTeam(teamId, currentUserId, role);
 		if (!result.success) {
-			addToast({
-				title: "Error",
-				message: result.error,
+			toast(`Error: ${result.error}`, {
 				type: "error",
+				preserve: false,
 			});
 		}
-	}, [addToast, currentUserId, role, teamId]);
+	}, [currentUserId, role, teamId, toast]);
 	return (
 		<div
 			className={cn("flex items-center justify-between gap-4 p-4", className)}

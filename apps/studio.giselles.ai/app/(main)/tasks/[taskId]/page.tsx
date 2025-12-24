@@ -3,7 +3,6 @@ import { TaskId } from "@giselles-ai/protocol";
 import { notFound } from "next/navigation";
 import { TaskLayout } from "@/components/task/task-layout";
 import { logger } from "@/lib/logger";
-import { ToastProvider } from "@/packages/contexts/toast";
 import { createAndStartTask } from "../../lib/create-and-start-task";
 import { loadStageAppsData } from "../../lib/stage-apps";
 import { TaskClient } from "./ui/task-client";
@@ -36,26 +35,24 @@ export default async function ({
 	}
 
 	return (
-		<ToastProvider>
-			<TaskLayout>
-				<TaskOverlayReset />
-				<TaskClient initial={taskData} refreshAction={refreshAction} />
+		<TaskLayout>
+			<TaskOverlayReset />
+			<TaskClient initial={taskData} refreshAction={refreshAction} />
 
-				{/* Main Content Area - Request new tasks section (sticky inside main container) */}
-				<div
-					className="bg-[color:var(--color-background)] pb-4 relative"
-					style={{ marginBottom: "-1px" }}
-				>
-					{/* Top gradient separator */}
-					<div className="w-full absolute h-6 -top-6 bg-gradient-to-t from-[color:var(--color-background)] to-transparent pointer-events-none" />
-					<TaskStageInput
-						apps={stageAppsData.apps}
-						sampleApps={stageAppsData.sampleApps}
-						initialSelectedAppId={taskAppId}
-						createAndStartTaskAction={createAndStartTask}
-					/>
-				</div>
-			</TaskLayout>
-		</ToastProvider>
+			{/* Main Content Area - Request new tasks section (sticky inside main container) */}
+			<div
+				className="bg-[color:var(--color-background)] pb-4 relative"
+				style={{ marginBottom: "-1px" }}
+			>
+				{/* Top gradient separator */}
+				<div className="w-full absolute h-6 -top-6 bg-gradient-to-t from-[color:var(--color-background)] to-transparent pointer-events-none" />
+				<TaskStageInput
+					apps={stageAppsData.apps}
+					sampleApps={stageAppsData.sampleApps}
+					initialSelectedAppId={taskAppId}
+					createAndStartTaskAction={createAndStartTask}
+				/>
+			</div>
+		</TaskLayout>
 	);
 }

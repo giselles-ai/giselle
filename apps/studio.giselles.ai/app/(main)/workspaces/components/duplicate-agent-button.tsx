@@ -11,7 +11,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@giselle-internal/ui/dialog";
-import { useToast } from "@giselles-ai/contexts/toast";
+import { useToasts } from "@giselle-internal/ui/toast";
 import { CopyIcon, LoaderCircleIcon, X } from "lucide-react";
 import { redirect } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
@@ -36,7 +36,7 @@ export function DuplicateAgentButton({
 	const [open, setOpen] = useState(false);
 	const [mounted, setMounted] = useState(false);
 	useEffect(() => setMounted(true), []);
-	const { addToast } = useToast();
+	const { toast } = useToasts();
 
 	const handleConfirm = () => {
 		startTransition(async () => {
@@ -45,9 +45,9 @@ export function DuplicateAgentButton({
 				setOpen(false);
 				redirect(`/workspaces/${res.workspaceId}`);
 			} else {
-				addToast({
+				toast(res.message || "Failed to duplicate workspace.", {
 					type: "error",
-					message: res.message || "Failed to duplicate workspace.",
+					preserve: false,
 				});
 			}
 		});

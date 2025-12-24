@@ -11,7 +11,7 @@ import {
 	DialogTitle,
 } from "@giselle-internal/ui/dialog";
 import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
-import { useToast } from "@giselles-ai/contexts/toast";
+import { useToasts } from "@giselle-internal/ui/toast";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx/lite";
 import { Ellipsis, File, X, Zap } from "lucide-react";
@@ -57,7 +57,7 @@ export function AppListItem({
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 	const [isDuplicatePending, startDuplicateTransition] = useTransition();
 	const [isDeletePending, startDeleteTransition] = useTransition();
-	const { addToast } = useToast();
+	const { toast } = useToasts();
 	const router = useRouter();
 
 	const handleDuplicate = () => {
@@ -78,13 +78,13 @@ export function AppListItem({
 				setDuplicateDialogOpen(false);
 				router.push(`/workspaces/${res.workspaceId}`);
 			} else {
-				addToast({
+				toast(res.message || "Failed to duplicate workspace.", {
 					type: "error",
-					message: res.message || "Failed to duplicate workspace.",
+					preserve: false,
 				});
 			}
 		});
-	}, [agentId, addToast, router]);
+	}, [agentId, router, toast]);
 
 	const handleDeleteConfirm = useCallback(() => {
 		if (!agentId) return;
@@ -96,16 +96,16 @@ export function AppListItem({
 					setDeleteDialogOpen(false);
 					return;
 				}
-				addToast({ message: res.message, type: "error" });
+				toast(res.message, { type: "error", preserve: false });
 			} catch (error) {
 				const message =
 					error instanceof Error ? error.message : "Failed to delete workspace";
-				addToast({ message, type: "error" });
+				toast(message, { type: "error", preserve: false });
 			} finally {
 				setDeleteDialogOpen(false);
 			}
 		});
-	}, [agentId, router, addToast]);
+	}, [agentId, router, toast]);
 
 	return (
 		<div
