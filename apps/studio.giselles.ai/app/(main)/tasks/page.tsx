@@ -1,7 +1,8 @@
+import { DocsLink } from "@giselle-internal/ui/docs-link";
 import { PageHeading } from "@giselle-internal/ui/page-heading";
 import { StatusBadge } from "@giselle-internal/ui/status-badge";
 import type { Task, TaskId as TaskIdType } from "@giselles-ai/protocol";
-import { ClipboardList, ExternalLinkIcon } from "lucide-react";
+import { ClipboardList } from "lucide-react";
 import Link from "next/link";
 import { createSearchParamsCache, parseAsInteger } from "nuqs/server";
 import { giselle } from "@/app/giselle";
@@ -154,15 +155,13 @@ export default async function TaskListPage({
 				</div>
 
 				<div className="flex items-center gap-4">
-					<a
+					<DocsLink
 						href="https://docs.giselles.ai/en/guides/tasks"
 						target="_blank"
 						rel="noopener noreferrer"
-						className="inline-flex items-center gap-1 text-[13px] text-text/60 hover:text-inverse transition-colors"
 					>
-						<span>About Tasks</span>
-						<ExternalLinkIcon className="size-4" />
-					</a>
+						About Tasks
+					</DocsLink>
 					<p className="text-sm text-text/60">Showing {tasks.length} task(s)</p>
 					{prevOffset != null ? (
 						<Link
