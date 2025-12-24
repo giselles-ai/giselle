@@ -216,8 +216,8 @@ export function TeamCreationForm({
 										<Alert className="border-primary-900/40 bg-primary-900/10">
 											<AlertCircle className="h-4 w-4 text-primary-400" />
 											<AlertDescription className="text-primary-400">
-												You can only have one free team. Create a Pro team to
-												collaborate with others.
+												You can only have one free team. Create a Pro team for
+												more credits and premium models.
 											</AlertDescription>
 										</Alert>
 									</div>
