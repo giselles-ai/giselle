@@ -1,6 +1,7 @@
 import { LoaderCircle } from "lucide-react";
 import { createSearchParamsCache, parseAsString } from "nuqs/server";
 import { Suspense } from "react";
+import { StageAppSelectionProvider } from "@/app/(main)/stores/stage-app-selection-store";
 import { createAndStartTask } from "../lib/create-and-start-task";
 import { dataLoader } from "./data-loader";
 import { Page } from "./page.client";
@@ -34,11 +35,14 @@ export default async function HomePage({ searchParams }: PlaygroundPageProps) {
 					</div>
 				}
 			>
-				<Page
-					dataLoader={dataLoader()}
-					createAndStartTaskAction={createAndStartTask}
+				<StageAppSelectionProvider
 					initialSelectedAppId={initialAppId ?? undefined}
-				/>
+				>
+					<Page
+						dataLoader={dataLoader()}
+						createAndStartTaskAction={createAndStartTask}
+					/>
+				</StageAppSelectionProvider>
 			</Suspense>
 		</div>
 	);

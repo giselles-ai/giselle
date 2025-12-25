@@ -14,7 +14,6 @@ import type { ReactNode } from "react";
 import {
 	use,
 	useCallback,
-	useEffect,
 	useMemo,
 	useRef,
 	useState,
@@ -191,13 +190,11 @@ function AppCard({
 export function Page({
 	dataLoader,
 	createAndStartTaskAction,
-	initialSelectedAppId,
 }: {
 	dataLoader: Promise<LoaderData>;
 	createAndStartTaskAction: (
 		inputs: CreateAndStartTaskInputs,
 	) => Promise<TaskId>;
-	initialSelectedAppId?: string;
 }) {
 	const data = use(dataLoader);
 
@@ -229,24 +226,8 @@ export function Page({
 		[data.sampleApps, data.apps],
 	);
 
-	const { selectedAppId, selectedApp, setSelectedAppId } = useSelectedStageApp(
-		"playground",
-		selectableApps,
-	);
-
-	const hasAppliedInitialSelectionRef = useRef(false);
-	useEffect(() => {
-		if (hasAppliedInitialSelectionRef.current) return;
-		if (!initialSelectedAppId) return;
-
-		const isAvailable = selectableApps.some(
-			(app) => app.id === initialSelectedAppId,
-		);
-		if (!isAvailable) return;
-
-		hasAppliedInitialSelectionRef.current = true;
-		setSelectedAppId(initialSelectedAppId);
-	}, [initialSelectedAppId, selectableApps, setSelectedAppId]);
+	const { selectedAppId, selectedApp, setSelectedAppId } =
+		useSelectedStageApp(selectableApps);
 
 	const handleRunSubmit = useCallback(
 		(event: { inputs: GenerationContextInput[] }) => {
@@ -309,7 +290,6 @@ export function Page({
 						<PlaygroundStageInput
 							key={selectedApp?.workspaceId ?? "no-workspace"}
 							apps={selectableApps}
-							scope="playground"
 							onSubmitAction={handleRunSubmit}
 							isRunning={isRunning}
 							shouldAutoFocus

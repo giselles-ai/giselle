@@ -5,32 +5,21 @@ import type { GenerationContextInput } from "@giselles-ai/protocol";
 import { ArrowUpIcon, Paperclip, X } from "lucide-react";
 import { FileAttachments } from "../../playground/file-attachments";
 import type { StageApp } from "../../playground/types";
-import {
-	type StageAppSelectionScope,
-	useStageAppSelectionStore,
-} from "../../stores/stage-app-selection-store";
 import { ACCEPTED_FILE_TYPES, useStageInput } from "./use-stage-input";
 
 export function TaskCompactStageInput({
 	apps,
-	scope,
-	preferredAppId,
 	onSubmitAction,
 	isRunning,
 }: {
 	apps: StageApp[];
-	scope: StageAppSelectionScope;
-	preferredAppId?: string;
 	onSubmitAction: (event: { inputs: GenerationContextInput[] }) => void;
 	isRunning: boolean;
 }) {
-	const setSelectedAppId = useStageAppSelectionStore(
-		(state) => state.setSelectedAppId,
-	);
-
 	const {
 		basePath,
 		appOptions,
+		selectedAppId,
 		textareaRef,
 		fileInputRef,
 		inputValue,
@@ -56,10 +45,9 @@ export function TaskCompactStageInput({
 		handleDismissFileRestrictionError,
 		handleSubmit,
 		selectedApp,
+		setSelectedAppId,
 	} = useStageInput({
-		scope,
 		apps,
-		preferredAppId,
 		onSubmitAction,
 		isRunning,
 	});
@@ -88,10 +76,10 @@ export function TaskCompactStageInput({
 						<Select
 							options={appOptions}
 							placeholder="Select an app..."
-							value={selectedApp?.id}
+							value={selectedAppId}
 							widthClassName="w-full"
 							onValueChange={(appId) => {
-								setSelectedAppId(scope, appId);
+								setSelectedAppId(appId);
 							}}
 							disabled={isSelectDisabled}
 							side="top"

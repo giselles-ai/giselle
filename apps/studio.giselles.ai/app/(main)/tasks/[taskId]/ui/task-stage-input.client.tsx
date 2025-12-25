@@ -24,12 +24,10 @@ function pickPreferredInput(
 export function TaskStageInput({
 	apps,
 	sampleApps,
-	initialSelectedAppId,
 	createAndStartTaskAction,
 }: {
 	apps: StageApp[];
 	sampleApps: StageApp[];
-	initialSelectedAppId?: string;
 	createAndStartTaskAction: (
 		inputs: CreateAndStartTaskInputs,
 	) => Promise<TaskId>;
@@ -42,9 +40,7 @@ export function TaskStageInput({
 
 	const [isRunning, startTransition] = useTransition();
 
-	const { selectedApp } = useSelectedStageApp("task", selectableApps, {
-		preferredAppId: initialSelectedAppId,
-	});
+	const { selectedApp } = useSelectedStageApp(selectableApps);
 
 	const { showOverlay, hideOverlay } = useTaskOverlayStore(
 		useShallow((state) => ({
@@ -91,8 +87,6 @@ export function TaskStageInput({
 	return (
 		<TaskCompactStageInput
 			apps={selectableApps}
-			scope="task"
-			preferredAppId={initialSelectedAppId}
 			onSubmitAction={handleSubmit}
 			isRunning={isRunning}
 		/>
