@@ -11,28 +11,73 @@ async function calculateFileHash(file: File): Promise<string> {
 	return hash.substring(0, 8);
 }
 
-function getExtensionFromMimeType(mimeType: string): string {
-	return (
-		IMAGE_CONSTRAINTS.mimeToExt[
-			mimeType as keyof typeof IMAGE_CONSTRAINTS.mimeToExt
-		] || "jpg"
-	);
+/**
+ * Detects image MIME type by examining its header bytes (magic bytes)
+ */
+function detectImageType(
+	bytes: Uint8Array,
+): { contentType: string; ext: string } | null {
+	// Need at least 12 bytes to detect all supported formats (WebP requires bytes[8-11])
+	if (bytes.length < 12) {
+		return null;
+	}
+
+	// JPEG: Starts with FF D8 FF
+	if (bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) {
+		return { contentType: "image/jpeg", ext: "jpg" };
+	}
+
+	// PNG: Starts with 89 50 4E 47 0D 0A 1A 0A
+	if (
+		bytes[0] === 0x89 &&
+		bytes[1] === 0x50 &&
+		bytes[2] === 0x4e &&
+		bytes[3] === 0x47 &&
+		bytes[4] === 0x0d &&
+		bytes[5] === 0x0a &&
+		bytes[6] === 0x1a &&
+		bytes[7] === 0x0a
+	) {
+		return { contentType: "image/png", ext: "png" };
+	}
+
+	// GIF: Starts with 47 49 46 38 (GIF87a or GIF89a)
+	if (
+		bytes[0] === 0x47 &&
+		bytes[1] === 0x49 &&
+		bytes[2] === 0x46 &&
+		bytes[3] === 0x38
+	) {
+		return { contentType: "image/gif", ext: "gif" };
+	}
+
+	// WebP: Starts with RIFF....WEBP (52 49 46 46 ... 57 45 42 50)
+	if (
+		bytes[0] === 0x52 &&
+		bytes[1] === 0x49 &&
+		bytes[2] === 0x46 &&
+		bytes[3] === 0x46 &&
+		bytes[8] === 0x57 &&
+		bytes[9] === 0x45 &&
+		bytes[10] === 0x42 &&
+		bytes[11] === 0x50
+	) {
+		return { contentType: "image/webp", ext: "webp" };
+	}
+
+	return null;
 }
 
 /**
- * Validate image file MIME type and size
+ * Validate image file by checking magic bytes (actual file content)
  */
-export function validateImageFile(file: File): {
-	valid: boolean;
-	error?: string;
-} {
-	if (!IMAGE_CONSTRAINTS.formats.includes(file.type)) {
-		return {
-			valid: false,
-			error:
-				"Invalid file format. Please upload a JPG, PNG, GIF, or WebP image.",
-		};
-	}
+export async function validateImageFileWithMagicBytes(
+	file: File,
+): Promise<
+	| { valid: true; mimeType: string; ext: string }
+	| { valid: false; error: string }
+> {
+	// Check file size first (fast check)
 	if (file.size >= IMAGE_CONSTRAINTS.maxSize) {
 		return {
 			valid: false,
@@ -40,17 +85,28 @@ export function validateImageFile(file: File): {
 		};
 	}
 
-	return {
-		valid: true,
-	};
+	// Read file buffer for magic byte detection
+	const arrayBuffer = await file.arrayBuffer();
+	const buffer = new Uint8Array(arrayBuffer);
+	const imageType = detectImageType(buffer);
+
+	if (!imageType) {
+		return {
+			valid: false,
+			error:
+				"Invalid file format. Please upload a JPG, PNG, GIF, or WebP image.",
+		};
+	}
+
+	return { valid: true, mimeType: imageType.contentType, ext: imageType.ext };
 }
 
 async function generateAvatarPath(
 	file: File,
 	prefix: string,
 	id: string,
+	ext: string,
 ): Promise<string> {
-	const ext = getExtensionFromMimeType(file.type);
 	const hash = await calculateFileHash(file);
 	return `${prefix}/${id}-${hash}.${ext}`;
 }
@@ -62,14 +118,16 @@ export async function uploadAvatar(
 	file: File,
 	prefix: string,
 	id: string,
+	verifiedMimeType: string,
+	ext: string,
 ): Promise<string> {
-	const filePath = await generateAvatarPath(file, prefix, id);
+	const filePath = await generateAvatarPath(file, prefix, id, ext);
 	const arrayBuffer = await file.arrayBuffer();
 	const buffer = Buffer.from(arrayBuffer);
 
 	logger.debug(`Uploading avatar to ${filePath}`);
 	const uploadResult = await appStorage().upload(filePath, buffer, {
-		contentType: file.type,
+		contentType: verifiedMimeType,
 		upsert: true,
 	});
 

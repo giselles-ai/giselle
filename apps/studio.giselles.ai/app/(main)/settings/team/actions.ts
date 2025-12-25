@@ -30,7 +30,7 @@ import type { TeamId } from "@/services/teams/types";
 import {
 	deleteAvatar,
 	uploadAvatar,
-	validateImageFile,
+	validateImageFileWithMagicBytes,
 } from "../utils/avatar-upload";
 import {
 	createInvitation,
@@ -106,8 +106,8 @@ export async function updateTeamAvatar(teamId: TeamId, formData: FormData) {
 			throw new Error("Team ID is required");
 		}
 
-		// Validate the image file
-		const validation = validateImageFile(file);
+		// Validate the image file by checking magic bytes
+		const validation = await validateImageFileWithMagicBytes(file);
 		if (!validation.valid) {
 			throw new Error(validation.error);
 		}
@@ -136,7 +136,13 @@ export async function updateTeamAvatar(teamId: TeamId, formData: FormData) {
 			);
 		}
 
-		const avatarUrl = await uploadAvatar(file, "team-avatars", teamId);
+		const avatarUrl = await uploadAvatar(
+			file,
+			"team-avatars",
+			teamId,
+			validation.mimeType,
+			validation.ext,
+		);
 
 		await db.update(teams).set({ avatarUrl }).where(eq(teams.id, teamId));
 
