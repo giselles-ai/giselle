@@ -23,7 +23,7 @@ import { deleteTeamMember } from "../team/actions";
 import {
 	deleteAvatar,
 	uploadAvatar,
-	validateImageFile,
+	validateImageFileWithMagicBytes,
 } from "../utils/avatar-upload";
 
 export async function connectGoogleIdentity() {
@@ -193,8 +193,8 @@ export async function updateAvatar(formData: FormData) {
 			throw new Error("Missing avatar file");
 		}
 
-		// Validate the image file
-		const validation = validateImageFile(file);
+		// Validate the image file by checking magic bytes
+		const validation = await validateImageFileWithMagicBytes(file);
 		if (!validation.valid) {
 			throw new Error(validation.error);
 		}
@@ -208,7 +208,13 @@ export async function updateAvatar(formData: FormData) {
 			)
 			.where(eq(supabaseUserMappings.supabaseUserId, supabaseUser.id));
 
-		const avatarUrl = await uploadAvatar(file, "avatars", supabaseUser.id);
+		const avatarUrl = await uploadAvatar(
+			file,
+			"avatars",
+			supabaseUser.id,
+			validation.mimeType,
+			validation.ext,
+		);
 		const userDbIdSubquery = db
 			.select({ userDbId: supabaseUserMappings.userDbId })
 			.from(supabaseUserMappings)
