@@ -133,7 +133,10 @@ export function useStageInput({
 	isRunning,
 }: {
 	apps?: StageApp[];
-	onSubmitAction: (event: { inputs: GenerationContextInput[] }) => void;
+	onSubmitAction: (event: {
+		inputs: GenerationContextInput[];
+		selectedApp: StageApp;
+	}) => void;
 	isRunning: boolean;
 }) {
 	const client = useGiselle();
@@ -449,6 +452,7 @@ export function useStageInput({
 					items: parameterItems,
 				},
 			],
+			selectedApp,
 		});
 
 		setAttachedFiles([]);

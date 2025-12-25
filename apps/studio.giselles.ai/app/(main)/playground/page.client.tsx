@@ -226,31 +226,30 @@ export function Page({
 		[data.sampleApps, data.apps],
 	);
 
-	const { selectedAppId, selectedApp, setSelectedAppId } =
+	const { selectedAppId, setSelectedAppId } =
 		useSelectedStageApp(selectableApps);
 
 	const handleRunSubmit = useCallback(
-		(event: { inputs: GenerationContextInput[] }) => {
-			if (!selectedApp) return;
+		(event: { inputs: GenerationContextInput[]; selectedApp: StageApp }) => {
 			const parametersInput = event.inputs.find(
 				(input): input is ParametersInput => input.type === "parameters",
 			);
 			showOverlay({
 				app: {
-					name: selectedApp.name,
-					description: selectedApp.description,
-					workspaceId: selectedApp.workspaceId,
+					name: event.selectedApp.name,
+					description: event.selectedApp.description,
+					workspaceId: event.selectedApp.workspaceId,
 				},
 				input: parametersInput ?? null,
 			});
-			setRunningAppId(selectedApp.id);
+			setRunningAppId(event.selectedApp.id);
 			startTransition(async () => {
 				try {
 					const taskId = await createAndStartTaskAction({
 						generationOriginType: "stage",
-						nodeId: selectedApp.entryNodeId,
+						nodeId: event.selectedApp.entryNodeId,
 						inputs: event.inputs,
-						workspaceId: selectedApp.workspaceId,
+						workspaceId: event.selectedApp.workspaceId,
 					});
 					// Navigate to task page immediately when completed
 					router.push(`/tasks/${taskId}`);
@@ -262,7 +261,7 @@ export function Page({
 				}
 			});
 		},
-		[selectedApp, createAndStartTaskAction, router, showOverlay, hideOverlay],
+		[createAndStartTaskAction, router, showOverlay, hideOverlay],
 	);
 
 	return (
@@ -288,7 +287,7 @@ export function Page({
 
 						{/* Chat-style input area */}
 						<PlaygroundStageInput
-							key={selectedApp?.workspaceId ?? "no-workspace"}
+							key={selectedAppId ?? "app-id-none"}
 							apps={selectableApps}
 							onSubmitAction={handleRunSubmit}
 							isRunning={isRunning}

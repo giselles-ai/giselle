@@ -15,7 +15,10 @@ export function PlaygroundStageInput({
 	shouldAutoFocus = false,
 }: {
 	apps: StageApp[];
-	onSubmitAction: (event: { inputs: GenerationContextInput[] }) => void;
+	onSubmitAction: (event: {
+		inputs: GenerationContextInput[];
+		selectedApp: StageApp;
+	}) => void;
 	isRunning: boolean;
 	shouldAutoFocus?: boolean;
 }) {

@@ -5,7 +5,6 @@ import type { GenerationContextInput, TaskId } from "@giselles-ai/protocol";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useTransition } from "react";
 import { useShallow } from "zustand/shallow";
-import { useSelectedStageApp } from "@/app/(main)/stores/stage-app-selection-store";
 import { useTaskOverlayStore } from "@/app/(main)/stores/task-overlay-store";
 import { TaskCompactStageInput } from "../../../components/stage-input/task-compact-stage-input";
 import type { StageApp } from "../../../playground/types";
@@ -35,8 +34,6 @@ export function TaskStageInput({
 
 	const [isRunning, startTransition] = useTransition();
 
-	const { selectedApp } = useSelectedStageApp(selectableApps);
-
 	const { showOverlay, hideOverlay } = useTaskOverlayStore(
 		useShallow((state) => ({
 			showOverlay: state.showOverlay,
@@ -45,14 +42,12 @@ export function TaskStageInput({
 	);
 
 	const handleSubmit = useCallback(
-		(event: { inputs: GenerationContextInput[] }) => {
-			if (!selectedApp) return;
-
+		(event: { inputs: GenerationContextInput[]; selectedApp: StageApp }) => {
 			showOverlay({
 				app: {
-					name: selectedApp.name,
-					description: selectedApp.description,
-					workspaceId: selectedApp.workspaceId,
+					name: event.selectedApp.name,
+					description: event.selectedApp.description,
+					workspaceId: event.selectedApp.workspaceId,
 				},
 				input: pickPreferredInput(event.inputs),
 			});
@@ -61,9 +56,9 @@ export function TaskStageInput({
 				try {
 					const taskId = await createAndStartTaskAction({
 						generationOriginType: "stage",
-						nodeId: selectedApp.entryNodeId,
+						nodeId: event.selectedApp.entryNodeId,
 						inputs: event.inputs,
-						workspaceId: selectedApp.workspaceId,
+						workspaceId: event.selectedApp.workspaceId,
 					});
 					router.push(`/tasks/${taskId}`);
 				} catch (error) {
@@ -76,7 +71,7 @@ export function TaskStageInput({
 				}
 			});
 		},
-		[selectedApp, showOverlay, createAndStartTaskAction, router, hideOverlay],
+		[showOverlay, createAndStartTaskAction, router, hideOverlay],
 	);
 
 	return (
