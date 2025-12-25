@@ -17,6 +17,11 @@ async function calculateFileHash(file: File): Promise<string> {
 function detectImageType(
 	bytes: Uint8Array,
 ): { contentType: string; ext: string } | null {
+	// Need at least 12 bytes to detect all supported formats (WebP requires bytes[8-11])
+	if (bytes.length < 12) {
+		return null;
+	}
+
 	// JPEG: Starts with FF D8 FF
 	if (bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) {
 		return { contentType: "image/jpeg", ext: "jpg" };
