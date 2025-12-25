@@ -10,21 +10,90 @@ function ToastDemo() {
 
 	return (
 		<>
-			<DemoSection label="Info Toast">
+			<DemoSection label="Basic Toasts (Default)">
 				<Button
 					variant="filled"
-					onClick={() => toast.info("This is an info message")}
+					onClick={() => toast.info("This is a default toast message")}
 				>
-					Show Info Toast
+					Show Default Toast
 				</Button>
 			</DemoSection>
 
-			<DemoSection label="Error Toast">
+			<DemoSection label="All Toast Types">
+				<div className="flex flex-wrap gap-2">
+					<Button
+						variant="filled"
+						onClick={() =>
+							toast.toast("Info toast", {
+								type: "info",
+							})
+						}
+					>
+						Info
+					</Button>
+					<Button
+						variant="filled"
+						onClick={() =>
+							toast.toast("Success toast", {
+								type: "success",
+							})
+						}
+					>
+						Success
+					</Button>
+					<Button
+						variant="filled"
+						onClick={() =>
+							toast.toast("Warning toast", {
+								type: "warning",
+							})
+						}
+					>
+						Warning
+					</Button>
+					<Button
+						variant="filled"
+						onClick={() =>
+							toast.toast("Error toast", {
+								type: "error",
+							})
+						}
+					>
+						Error
+					</Button>
+					<Button
+						variant="filled"
+						onClick={() => {
+							toast.toast("Info toast", { type: "info" });
+							setTimeout(
+								() => toast.toast("Success toast", { type: "success" }),
+								200,
+							);
+							setTimeout(
+								() => toast.toast("Warning toast", { type: "warning" }),
+								400,
+							);
+							setTimeout(
+								() => toast.toast("Error toast", { type: "error" }),
+								600,
+							);
+						}}
+					>
+						Show All Types
+					</Button>
+				</div>
+			</DemoSection>
+
+			<DemoSection label="Toast with Title">
 				<Button
 					variant="filled"
-					onClick={() => toast.error("This is an error message")}
+					onClick={() =>
+						toast.info("File uploaded successfully", {
+							title: "Upload Complete",
+						})
+					}
 				>
-					Show Error Toast
+					Show Toast with Title
 				</Button>
 			</DemoSection>
 
@@ -44,6 +113,98 @@ function ToastDemo() {
 				>
 					Show Toast with Action
 				</Button>
+			</DemoSection>
+
+			<DemoSection label="Toast with Title and Action">
+				<Button
+					variant="filled"
+					onClick={() =>
+						toast.info("File uploaded successfully", {
+							title: "Upload Complete",
+							action: {
+								label: "Undo",
+								onClick: () => {
+									console.log("Undo clicked");
+								},
+							},
+						})
+					}
+				>
+					Show Toast with Title and Action
+				</Button>
+			</DemoSection>
+
+			<DemoSection label="Toast with Title and Action (All Types)">
+				<div className="flex flex-wrap gap-2">
+					<Button
+						variant="filled"
+						onClick={() =>
+							toast.toast("File uploaded successfully", {
+								type: "info",
+								title: "Upload Complete",
+								action: {
+									label: "Undo",
+									onClick: () => {
+										console.log("Undo clicked");
+									},
+								},
+							})
+						}
+					>
+						Info
+					</Button>
+					<Button
+						variant="filled"
+						onClick={() =>
+							toast.toast("File uploaded successfully", {
+								type: "success",
+								title: "Upload Complete",
+								action: {
+									label: "Undo",
+									onClick: () => {
+										console.log("Undo clicked");
+									},
+								},
+							})
+						}
+					>
+						Success
+					</Button>
+					<Button
+						variant="filled"
+						onClick={() =>
+							toast.toast("File uploaded with warnings", {
+								type: "warning",
+								title: "Upload Warning",
+								action: {
+									label: "View Details",
+									onClick: () => {
+										console.log("View Details clicked");
+									},
+								},
+							})
+						}
+					>
+						Warning
+					</Button>
+					<Button
+						variant="filled"
+						onClick={() =>
+							toast.toast("Failed to upload file", {
+								type: "error",
+								title: "Upload Failed",
+								action: {
+									label: "Retry",
+									onClick: () => {
+										console.log("Retry clicked");
+									},
+								},
+							})
+						}
+					>
+						Error
+					</Button>
+				</div>
 			</DemoSection>
 
 			<DemoSection label="Multiple Toasts">

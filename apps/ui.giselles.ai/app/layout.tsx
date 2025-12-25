@@ -61,7 +61,7 @@ export default function ({ children }: { children: React.ReactNode }) {
 	return (
 		<html lang="en" className={`${dmSans.variable} ${dmMono.variable}`}>
 			<body>
-				<div className="min-h-screen bg-surface-background font-mono">
+				<div className="min-h-screen bg-bg font-sans">
 					<div className="flex">
 						<div className="w-64 border-r border-border min-h-screen">
 							<div className="p-6">
