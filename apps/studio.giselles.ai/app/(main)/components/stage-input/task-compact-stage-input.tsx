@@ -14,7 +14,7 @@ export function TaskCompactStageInput({
 }: {
 	apps: StageApp[];
 	selectedAppId: string | undefined;
-	setSelectedAppId: (appId: string | undefined) => void;
+	setSelectedAppId: (appId: string) => void;
 	onSubmitAction: (event: {
 		inputs: GenerationContextInput[];
 		selectedApp: StageApp;
