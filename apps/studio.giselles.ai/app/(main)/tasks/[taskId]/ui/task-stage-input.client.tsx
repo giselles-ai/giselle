@@ -23,20 +23,15 @@ function pickPreferredInput(
 
 export function TaskStageInput({
 	apps,
-	sampleApps,
 	createAndStartTaskAction,
 }: {
 	apps: StageApp[];
-	sampleApps: StageApp[];
 	createAndStartTaskAction: (
 		inputs: CreateAndStartTaskInputs,
 	) => Promise<TaskId>;
 }) {
 	const router = useRouter();
-	const selectableApps = useMemo(
-		() => [...sampleApps, ...apps],
-		[sampleApps, apps],
-	);
+	const selectableApps = useMemo(() => apps, [apps]);
 
 	const [isRunning, startTransition] = useTransition();
 
