@@ -1,24 +1,23 @@
 "use client";
 
-import {
-	useCallback,
-	useEffect,
-	useLayoutEffect,
-	useRef,
-	useState,
-} from "react";
+import { useCallback, useEffect, useLayoutEffect, useState } from "react";
 
 export function TaskInputString({ value }: { value: string }) {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [isCollapsedOverflowing, setIsCollapsedOverflowing] = useState(false);
 	const [isExpandedOverflowing, setIsExpandedOverflowing] = useState(false);
-	const contentRef = useRef<HTMLDivElement | null>(null);
+	const [contentElement, setContentElement] = useState<HTMLDivElement | null>(
+		null,
+	);
+	const contentRef = useCallback((node: HTMLDivElement | null) => {
+		setContentElement(node);
+	}, []);
 
 	const measureOverflow = useCallback(() => {
 		void value;
 		void isExpanded;
 
-		const element = contentRef.current;
+		const element = contentElement;
 		if (!element) {
 			return;
 		}
@@ -43,15 +42,14 @@ export function TaskInputString({ value }: { value: string }) {
 		if (!nextIsCollapsedOverflowing) {
 			setIsExpanded(false);
 		}
-	}, [isExpanded, value]);
+	}, [contentElement, isExpanded, value]);
 
 	useLayoutEffect(() => {
 		measureOverflow();
 	}, [measureOverflow]);
 
 	useEffect(() => {
-		const element = contentRef.current;
-		if (!element) {
+		if (!contentElement) {
 			return;
 		}
 
@@ -59,11 +57,11 @@ export function TaskInputString({ value }: { value: string }) {
 			measureOverflow();
 		});
 
-		resizeObserver.observe(element);
+		resizeObserver.observe(contentElement);
 		return () => {
 			resizeObserver.disconnect();
 		};
-	}, [measureOverflow]);
+	}, [contentElement, measureOverflow]);
 
 	const shouldShowGradient =
 		(!isExpanded && isCollapsedOverflowing) ||
