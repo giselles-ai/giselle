@@ -29,7 +29,7 @@ export function TaskStageInput({
 	createAndStartTaskAction: (
 		inputs: CreateAndStartTaskInputs,
 	) => Promise<TaskId>;
-	initialSelectedAppId?: string;
+	initialSelectedAppId: string;
 }) {
 	const router = useRouter();
 	const [selectedAppId, setSelectedAppId] = useState<string | undefined>(
