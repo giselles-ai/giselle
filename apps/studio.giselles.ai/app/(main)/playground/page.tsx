@@ -1,10 +1,21 @@
 import { LoaderCircle } from "lucide-react";
+import { createSearchParamsCache, parseAsString } from "nuqs/server";
 import { Suspense } from "react";
 import { createAndStartTask } from "../lib/create-and-start-task";
 import { dataLoader } from "./data-loader";
 import { Page } from "./page.client";
 
-export default function HomePage() {
+const searchParamsCache = createSearchParamsCache({
+	initialAppId: parseAsString,
+});
+
+type PlaygroundPageProps = {
+	searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function HomePage({ searchParams }: PlaygroundPageProps) {
+	const { initialAppId } = await searchParamsCache.parse(searchParams);
+
 	return (
 		<div className="bg-background overflow-x-hidden">
 			<Suspense
@@ -26,6 +37,7 @@ export default function HomePage() {
 				<Page
 					dataLoader={dataLoader()}
 					createAndStartTaskAction={createAndStartTask}
+					initialSelectedAppId={initialAppId ?? undefined}
 				/>
 			</Suspense>
 		</div>

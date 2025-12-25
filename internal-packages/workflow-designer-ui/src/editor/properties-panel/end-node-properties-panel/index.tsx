@@ -18,6 +18,7 @@ import type {
 	NodeId,
 	NodeLike,
 } from "@giselles-ai/protocol";
+import { isAppEntryNode } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import { PlusIcon, SquareArrowOutUpRightIcon, TrashIcon } from "lucide-react";
 import Link from "next/link";
@@ -93,6 +94,12 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 		s.isStartNodeConnectedToEndNode(),
 	);
 	const isTryAppInStageDisabled = !isStartNodeConnectedToEndNode;
+	const appId = useMemo(() => {
+		const appEntryNode = nodes.find((n) => isAppEntryNode(n));
+		if (!appEntryNode) return undefined;
+		if (appEntryNode.content.status !== "configured") return undefined;
+		return appEntryNode.content.appId;
+	}, [nodes]);
 
 	const helperTextClassName = "text-[11px] text-text-muted/50";
 	const emptyStateHelperTextClassName = "text-[11px] text-text-muted/70";
@@ -276,7 +283,10 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 						)}
 					</div>
 
-					<TryPlaygroundSection isDisabled={isTryAppInStageDisabled} />
+					<TryPlaygroundSection
+						isDisabled={isTryAppInStageDisabled}
+						appId={appId}
+					/>
 				</div>
 			</PropertiesPanelContent>
 		</PropertiesPanelRoot>
@@ -292,7 +302,13 @@ function TryPlaygroundContent() {
 	);
 }
 
-function TryPlaygroundLink({ isDisabled }: { isDisabled: boolean }) {
+function TryPlaygroundLink({
+	isDisabled,
+	appId,
+}: {
+	isDisabled: boolean;
+	appId?: string;
+}) {
 	if (isDisabled) {
 		return (
 			<div
@@ -304,9 +320,14 @@ function TryPlaygroundLink({ isDisabled }: { isDisabled: boolean }) {
 		);
 	}
 
+	const href =
+		appId === undefined
+			? "/playground"
+			: `/playground?initialAppId=${encodeURIComponent(appId)}`;
+
 	return (
 		<Link
-			href="/playground"
+			href={href}
 			target="_blank"
 			rel="noopener noreferrer"
 			className="block w-full rounded-[12px] border border-blue-muted bg-blue-muted px-[16px] py-[12px] text-[14px] font-medium text-white transition-[filter] text-center hover:brightness-110"
@@ -316,10 +337,16 @@ function TryPlaygroundLink({ isDisabled }: { isDisabled: boolean }) {
 	);
 }
 
-function TryPlaygroundSection({ isDisabled }: { isDisabled: boolean }) {
+function TryPlaygroundSection({
+	isDisabled,
+	appId,
+}: {
+	isDisabled: boolean;
+	appId?: string;
+}) {
 	return (
 		<div className="mt-[12px]">
-			<TryPlaygroundLink isDisabled={isDisabled} />
+			<TryPlaygroundLink isDisabled={isDisabled} appId={appId} />
 			{isDisabled && (
 				<p className="mt-[6px] text-[11px] text-text-muted/50">
 					Make sure there's a connection from Start to End to try this app in
