@@ -206,6 +206,10 @@ export function Page({
 	const [appSearchQuery, setAppSearchQuery] = useState("");
 	const [isSearchActive, setIsSearchActive] = useState(false);
 	const appSearchInputRef = useRef<HTMLInputElement | null>(null);
+	const [selectedAppId, setSelectedAppId] = useState<string | undefined>(
+		initialSelectedAppId ?? data.sampleApps[0]?.id ?? data.apps[0]?.id,
+	);
+
 	const { showOverlay, hideOverlay } = useTaskOverlayStore(
 		useShallow((state) => ({
 			showOverlay: state.showOverlay,
@@ -222,10 +226,6 @@ export function Page({
 			app.name.toLowerCase().includes(normalizedQuery),
 		);
 	}, [appSearchQuery, data.apps]);
-
-	const [selectedAppId, setSelectedAppId] = useState<string | undefined>(
-		initialSelectedAppId,
-	);
 
 	const handleRunSubmit = useCallback(
 		(event: { inputs: GenerationContextInput[]; selectedApp: StageApp }) => {
