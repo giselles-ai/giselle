@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { TaskHeader } from "@/components/task/task-header";
+import { TaskHeader, TaskInputPreview } from "@/components/task/task-header";
 import { FinalStepOutput } from "./final-step-output";
 import { StepsSection } from "./steps-section";
 import type { UITask } from "./task-data";
@@ -120,8 +120,10 @@ export function TaskClient({
 				description={data.description}
 				workspaceId={data.workspaceId}
 				input={data.input}
+				showInputPreview={false}
 			/>
 			<div className="flex-1 overflow-y-auto overflow-x-hidden pb-8">
+				<TaskInputPreview input={data.input} />
 				<StepsSection {...data.stepsSection} />
 				<FinalStepOutput finalStep={data.finalStep} />
 			</div>

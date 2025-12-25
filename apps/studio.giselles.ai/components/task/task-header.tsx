@@ -247,6 +247,7 @@ interface TaskHeaderProps {
 	description: string;
 	workspaceId: WorkspaceId;
 	input: GenerationContextInput | null;
+	showInputPreview?: boolean;
 }
 
 export function TaskHeader({
@@ -255,6 +256,7 @@ export function TaskHeader({
 	description,
 	workspaceId,
 	input,
+	showInputPreview = true,
 }: TaskHeaderProps) {
 	return (
 		<div className="w-full pb-3  bg-[color:var(--color-background)]">
@@ -314,22 +316,31 @@ export function TaskHeader({
 					)}
 				</div>
 
-				{/* Task input preview */}
-				<div className="mt-3">
-					<div className="rounded-[10px] border border-blue-muted/40 bg-blue-muted/7 px-3 py-2 text-[13px] text-text/80">
-						{input == null ? (
-							<p>No task input</p>
-						) : input.type === "parameters" ? (
-							input.items.map((item) => (
-								<TaskInputItem key={item.name} item={item} />
-							))
-						) : input.type === "github-webhook-event" ? (
-							<TaskInputGitHubWebhookEvent webhookEvent={input.webhookEvent} />
-						) : (
-							<p>No task input</p>
-						)}
-					</div>
-				</div>
+				{showInputPreview ? <TaskInputPreview input={input} /> : null}
+			</div>
+		</div>
+	);
+}
+
+export function TaskInputPreview({
+	input,
+}: {
+	input: GenerationContextInput | null;
+}) {
+	return (
+		<div className="mt-3">
+			<div className="rounded-[10px] border border-blue-muted/40 bg-blue-muted/7 px-3 py-2 text-[13px] text-text/80">
+				{input == null ? (
+					<p>No task input</p>
+				) : input.type === "parameters" ? (
+					input.items.map((item) => (
+						<TaskInputItem key={item.name} item={item} />
+					))
+				) : input.type === "github-webhook-event" ? (
+					<TaskInputGitHubWebhookEvent webhookEvent={input.webhookEvent} />
+				) : (
+					<p>No task input</p>
+				)}
 			</div>
 		</div>
 	);
