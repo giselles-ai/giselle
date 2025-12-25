@@ -32,9 +32,7 @@ export function TaskStageInput({
 	initialSelectedAppId: string;
 }) {
 	const router = useRouter();
-	const [selectedAppId, setSelectedAppId] = useState<string | undefined>(
-		initialSelectedAppId,
-	);
+	const [selectedAppId, setSelectedAppId] = useState(initialSelectedAppId);
 
 	const [isRunning, startTransition] = useTransition();
 
