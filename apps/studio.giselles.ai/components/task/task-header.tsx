@@ -6,7 +6,7 @@ import type {
 	UploadedFileData,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
-import { Check, FilePenLineIcon } from "lucide-react";
+import { Check, ChevronDown, FilePenLineIcon } from "lucide-react";
 import Link from "next/link";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -211,8 +211,31 @@ function TaskInputItem({ item }: { item: ParameterItem }) {
 			);
 		case "number":
 			return <p>{item.value}</p>;
-		case "string":
-			return <p>{item.value}</p>;
+		case "string": {
+			const value = item.value.trimEnd();
+			const shouldCollapse = value.includes("\n") || value.length > 160;
+
+			if (!shouldCollapse) {
+				return <p className="whitespace-pre-wrap break-words">{value}</p>;
+			}
+
+			return (
+				<details className="mt-2 rounded-md relative [&[open]_[data-chevron]]:rotate-180">
+					<summary className="cursor-pointer list-none pr-6 [&::-webkit-details-marker]:hidden">
+						<p className="whitespace-pre-wrap break-words line-clamp-2">
+							{value}
+						</p>
+						<span className="sr-only">Toggle full text</span>
+						<ChevronDown
+							data-chevron
+							className="absolute right-0 top-0 h-4 w-4 text-text-muted transition-transform"
+							aria-hidden
+						/>
+					</summary>
+					<p className="mt-2 whitespace-pre-wrap break-words">{value}</p>
+				</details>
+			);
+		}
 		default: {
 		}
 	}
