@@ -47,10 +47,9 @@ export default async function ({
 				{/* Top gradient separator */}
 				<div className="w-full absolute h-6 -top-6 bg-gradient-to-t from-[color:var(--color-background)] to-transparent pointer-events-none" />
 				<TaskStageInput
-					apps={stageAppsData.apps}
-					sampleApps={stageAppsData.sampleApps}
-					initialSelectedAppId={taskAppId}
+					apps={[...stageAppsData.sampleApps, ...stageAppsData.apps]}
 					createAndStartTaskAction={createAndStartTask}
+					initialSelectedAppId={taskAppId}
 				/>
 			</div>
 		</TaskLayout>

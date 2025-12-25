@@ -1,34 +1,29 @@
-"use client";
-
 import { Select } from "@giselle-internal/ui/select";
 import type { GenerationContextInput } from "@giselles-ai/protocol";
 import { ArrowUpIcon, Paperclip, X } from "lucide-react";
 import { useEffect } from "react";
 import { FileAttachments } from "../../playground/file-attachments";
 import type { StageApp } from "../../playground/types";
-import {
-	type StageAppSelectionScope,
-	useStageAppSelectionStore,
-} from "../../stores/stage-app-selection-store";
 import { ACCEPTED_FILE_TYPES, useStageInput } from "./use-stage-input";
 
 export function PlaygroundStageInput({
 	apps,
-	scope,
+	selectedAppId,
+	setSelectedAppId,
 	onSubmitAction,
 	isRunning,
 	shouldAutoFocus = false,
 }: {
 	apps: StageApp[];
-	scope: StageAppSelectionScope;
-	onSubmitAction: (event: { inputs: GenerationContextInput[] }) => void;
+	selectedAppId: string | undefined;
+	setSelectedAppId: (appId: string | undefined) => void;
+	onSubmitAction: (event: {
+		inputs: GenerationContextInput[];
+		selectedApp: StageApp;
+	}) => void;
 	isRunning: boolean;
 	shouldAutoFocus?: boolean;
 }) {
-	const setSelectedAppId = useStageAppSelectionStore(
-		(state) => state.setSelectedAppId,
-	);
-
 	const {
 		basePath,
 		appOptions,
@@ -58,13 +53,12 @@ export function PlaygroundStageInput({
 		handleSubmit,
 		selectedApp,
 	} = useStageInput({
-		scope,
 		apps,
+		selectedAppId,
+		setSelectedAppId,
 		onSubmitAction,
 		isRunning,
 	});
-
-	const firstAppOptionValue = appOptions[0]?.value;
 
 	// We intentionally focus the prompt input on /playground entry.
 	// This can't be done during render; it requires an effect after mount.
@@ -120,9 +114,9 @@ export function PlaygroundStageInput({
 								<Select
 									options={appOptions}
 									placeholder="Select an app..."
-									value={selectedApp?.id ?? firstAppOptionValue}
+									value={selectedAppId}
 									onValueChange={(appId) => {
-										setSelectedAppId(scope, appId);
+										setSelectedAppId(appId as StageApp["id"]);
 									}}
 									widthClassName="w-full"
 									triggerClassName="border-none !bg-[rgba(131,157,195,0.1)] hover:!bg-[rgba(131,157,195,0.18)] !px-2 !h-8 sm:!h-9 !rounded-[7px] sm:!rounded-[9px] text-[13px] [&_svg]:opacity-70"

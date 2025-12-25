@@ -3,6 +3,7 @@
 import { AppIcon } from "@giselle-internal/ui/app-icon";
 import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
 import type {
+	AppId,
 	GenerationContextInput,
 	ParametersInput,
 	TaskId,
@@ -14,14 +15,12 @@ import type { ReactNode } from "react";
 import {
 	use,
 	useCallback,
-	useEffect,
 	useMemo,
 	useRef,
 	useState,
 	useTransition,
 } from "react";
 import { useShallow } from "zustand/shallow";
-import { useSelectedStageApp } from "@/app/(main)/stores/stage-app-selection-store";
 import { useTaskOverlayStore } from "@/app/(main)/stores/task-overlay-store";
 import { LLMProviderIcon } from "@/app/(main)/workspaces/components/llm-provider-icon";
 import { PlaygroundStageInput } from "../components/stage-input/playground-stage-input";
@@ -202,11 +201,15 @@ export function Page({
 	const data = use(dataLoader);
 
 	const router = useRouter();
-	const [runningAppId, setRunningAppId] = useState<string | undefined>();
+	const [runningAppId, setRunningAppId] = useState<AppId | undefined>();
 	const [isRunning, startTransition] = useTransition();
 	const [appSearchQuery, setAppSearchQuery] = useState("");
 	const [isSearchActive, setIsSearchActive] = useState(false);
 	const appSearchInputRef = useRef<HTMLInputElement | null>(null);
+	const [selectedAppId, setSelectedAppId] = useState<string | undefined>(
+		initialSelectedAppId ?? data.sampleApps[0]?.id ?? data.apps[0]?.id,
+	);
+
 	const { showOverlay, hideOverlay } = useTaskOverlayStore(
 		useShallow((state) => ({
 			showOverlay: state.showOverlay,
@@ -224,52 +227,27 @@ export function Page({
 		);
 	}, [appSearchQuery, data.apps]);
 
-	const selectableApps = useMemo(
-		() => [...data.sampleApps, ...data.apps],
-		[data.sampleApps, data.apps],
-	);
-
-	const { selectedAppId, selectedApp, setSelectedAppId } = useSelectedStageApp(
-		"playground",
-		selectableApps,
-	);
-
-	const hasAppliedInitialSelectionRef = useRef(false);
-	useEffect(() => {
-		if (hasAppliedInitialSelectionRef.current) return;
-		if (!initialSelectedAppId) return;
-
-		const isAvailable = selectableApps.some(
-			(app) => app.id === initialSelectedAppId,
-		);
-		if (!isAvailable) return;
-
-		hasAppliedInitialSelectionRef.current = true;
-		setSelectedAppId(initialSelectedAppId);
-	}, [initialSelectedAppId, selectableApps, setSelectedAppId]);
-
 	const handleRunSubmit = useCallback(
-		(event: { inputs: GenerationContextInput[] }) => {
-			if (!selectedApp) return;
+		(event: { inputs: GenerationContextInput[]; selectedApp: StageApp }) => {
 			const parametersInput = event.inputs.find(
 				(input): input is ParametersInput => input.type === "parameters",
 			);
 			showOverlay({
 				app: {
-					name: selectedApp.name,
-					description: selectedApp.description,
-					workspaceId: selectedApp.workspaceId,
+					name: event.selectedApp.name,
+					description: event.selectedApp.description,
+					workspaceId: event.selectedApp.workspaceId,
 				},
 				input: parametersInput ?? null,
 			});
-			setRunningAppId(selectedApp.id);
+			setRunningAppId(event.selectedApp.id);
 			startTransition(async () => {
 				try {
 					const taskId = await createAndStartTaskAction({
 						generationOriginType: "stage",
-						nodeId: selectedApp.entryNodeId,
+						nodeId: event.selectedApp.entryNodeId,
 						inputs: event.inputs,
-						workspaceId: selectedApp.workspaceId,
+						workspaceId: event.selectedApp.workspaceId,
 					});
 					// Navigate to task page immediately when completed
 					router.push(`/tasks/${taskId}`);
@@ -281,7 +259,7 @@ export function Page({
 				}
 			});
 		},
-		[selectedApp, createAndStartTaskAction, router, showOverlay, hideOverlay],
+		[createAndStartTaskAction, router, showOverlay, hideOverlay],
 	);
 
 	return (
@@ -307,9 +285,10 @@ export function Page({
 
 						{/* Chat-style input area */}
 						<PlaygroundStageInput
-							key={selectedApp?.workspaceId ?? "no-workspace"}
-							apps={selectableApps}
-							scope="playground"
+							key={selectedAppId ?? "app-id-none"}
+							apps={[...data.sampleApps, ...data.apps]}
+							selectedAppId={selectedAppId}
+							setSelectedAppId={setSelectedAppId}
 							onSubmitAction={handleRunSubmit}
 							isRunning={isRunning}
 							shouldAutoFocus
