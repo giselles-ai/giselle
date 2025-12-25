@@ -41,19 +41,19 @@ const APP_LIST_BADGE_CONFIG: Record<
 	}
 > = {
 	sample: {
-		label: "Sample app",
+		label: "Sample App",
 	},
 	"your-team": {
-		label: "Your team app",
+		label: "Team App",
 	},
 	"other-team": {
-		label: "Other team app",
+		label: "Other Team App",
 	},
 	official: {
-		label: "Official app",
+		label: "Official App",
 	},
 	ambassador: {
-		label: "Ambassador app",
+		label: "Ambassador App",
 	},
 };
 
@@ -278,10 +278,10 @@ export function Page({
 							<div className="w-full flex justify-center items-center pt-1 pb-1 sm:pt-2 sm:pb-2">
 								<div className="flex flex-col items-center relative">
 									<p className="font-thin text-[36px] font-sans text-blue-muted/70 text-center">
-										What's the task?
+										Have a task?
 										<span className="block sm:inline">
 											{" "}
-											Your agent's on it.
+											Your agent is on it.
 										</span>
 									</p>
 								</div>
@@ -306,7 +306,7 @@ export function Page({
 							<div className="flex flex-col">
 								<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-2">
 									<h2 className="mt-1 text-[16px] text-text-muted/80">
-										Sample apps from Giselle team
+										Sample Apps from Giselle
 									</h2>
 								</div>
 								<div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 pb-4 max-w-[960px] mx-auto w-full px-4">
@@ -380,7 +380,7 @@ export function Page({
 						<div className="flex flex-col">
 							<div className="flex items-center justify-between max-w-[960px] mx-auto w-full px-2">
 								<h2 className="mt-1 text-[16px] text-text-muted/80">
-									Select Your App to Run
+									Your Apps
 								</h2>
 								<div className="relative">
 									{isSearchActive ? (
@@ -397,7 +397,7 @@ export function Page({
 														setIsSearchActive(false);
 													}
 												}}
-												placeholder="Search apps"
+												placeholder="Search Apps"
 												className="w-[160px] bg-transparent text-[13px] text-text placeholder:text-link-muted outline-none border-none"
 											/>
 											<Search className="h-4 w-4 text-text-muted" />
@@ -414,7 +414,7 @@ export function Page({
 											className="group flex items-center gap-2 rounded-[8px] px-3 h-10 text-[13px] text-text-muted transition-colors hover:bg-white/5"
 										>
 											<Search className="h-4 w-4 text-text-muted group-hover:text-text" />
-											<span>Search apps</span>
+											<span>Search Apps</span>
 										</button>
 									)}
 								</div>
@@ -427,8 +427,8 @@ export function Page({
 											<span>No apps yet</span>
 										</h3>
 										<p className="mt-2 text-[13px] text-blue-muted/60 leading-relaxed">
-											Build your first agent in Studio. Agents you create will
-											appear here, ready to run in Stage.
+											Build your first app in the Studio. Apps you create will
+											appear here, ready to run in the playground.
 										</p>
 										<div className="mt-6 flex justify-center">
 											<button
@@ -438,7 +438,7 @@ export function Page({
 												}}
 												className="inline-flex items-center justify-center rounded-lg border border-[rgba(131,157,195,0.3)] px-4 py-2 text-[13px] text-[rgba(131,157,195,0.7)] transition-colors hover:border-[rgba(131,157,195,0.4)] hover:bg-[rgba(131,157,195,0.1)]"
 											>
-												Create your first app
+												Create Your First App
 											</button>
 										</div>
 									</div>

@@ -191,16 +191,6 @@ export function PlaygroundStageInput({
 					/>
 				</div>
 			</section>
-			<div className="mt-1 flex flex-wrap items-center justify-end gap-3 pr-0 text-[11px] text-blue-muted/60">
-				<div className="flex items-center gap-[6px]">
-					<div className="flex h-[18px] w-[18px] items-center justify-center rounded-[6px] border border-blue-muted/40 bg-blue-muted/10">
-						<span className="text-[10px] leading-none tracking-[0.08em]">
-							↵
-						</span>
-					</div>
-					<span className="leading-none">to send</span>
-				</div>
-			</div>
 		</div>
 	);
 }

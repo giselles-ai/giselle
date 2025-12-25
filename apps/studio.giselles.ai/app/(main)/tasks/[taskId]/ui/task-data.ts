@@ -221,10 +221,10 @@ export async function getTaskData(taskId: TaskId): Promise<UITask> {
 		runningStepNumber !== null
 			? `Running Step ${runningStepNumber}`
 			: preparingStepsCount > 0
-				? `Preparing ${preparingStepsCount} step${
+				? `Preparing ${preparingStepsCount} Step${
 						preparingStepsCount !== 1 ? "s" : ""
 					}`
-				: `Completed ${completedStepsCount} step${
+				: `Completed ${completedStepsCount} Step${
 						completedStepsCount !== 1 ? "s" : ""
 					}`;
 
