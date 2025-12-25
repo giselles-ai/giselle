@@ -1,12 +1,12 @@
 import { DocsLink } from "@giselle-internal/ui/docs-link";
 import { PageHeading } from "@giselle-internal/ui/page-heading";
+import Link from "next/link";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatTimestamp } from "@/packages/lib/utils";
 import { getLatestSubscriptionV2 } from "@/services/subscriptions/get-latest-subscription-v2";
 import { fetchCurrentTeam, formatPlanName, isProPlan } from "@/services/teams";
 import { manageBilling } from "@/services/teams/actions/manage-billing";
-import { upgradeTeam } from "@/services/teams/actions/upgrade-team";
 import type { CurrentTeam } from "@/services/teams/types";
 import { Button } from "../components/button";
 import { Card } from "../components/card";
@@ -169,11 +169,11 @@ async function BillingInfoForProPlan({ team }: BillingInfoProps) {
 }
 
 function UpgradeButton({ team }: { team: CurrentTeam }) {
-	const upgradeTeamWithTeam = upgradeTeam.bind(null, team);
+	void team;
 
 	return (
-		<Button formAction={upgradeTeamWithTeam} variant="primary" className="px-4">
-			Upgrade to Pro
+		<Button asChild variant="primary" className="px-4">
+			<Link href="/settings/team/upgrade">Upgrade to Pro</Link>
 		</Button>
 	);
 }
