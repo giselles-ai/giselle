@@ -1,5 +1,3 @@
-"use client";
-
 import { Select } from "@giselle-internal/ui/select";
 import type { GenerationContextInput } from "@giselles-ai/protocol";
 import { ArrowUpIcon, Paperclip, X } from "lucide-react";
@@ -10,11 +8,15 @@ import { ACCEPTED_FILE_TYPES, useStageInput } from "./use-stage-input";
 
 export function PlaygroundStageInput({
 	apps,
+	selectedAppId,
+	setSelectedAppId,
 	onSubmitAction,
 	isRunning,
 	shouldAutoFocus = false,
 }: {
 	apps: StageApp[];
+	selectedAppId: string | undefined;
+	setSelectedAppId: (appId: string | undefined) => void;
 	onSubmitAction: (event: {
 		inputs: GenerationContextInput[];
 		selectedApp: StageApp;
@@ -25,7 +27,6 @@ export function PlaygroundStageInput({
 	const {
 		basePath,
 		appOptions,
-		selectedAppId,
 		textareaRef,
 		fileInputRef,
 		inputValue,
@@ -51,9 +52,10 @@ export function PlaygroundStageInput({
 		handleDismissFileRestrictionError,
 		handleSubmit,
 		selectedApp,
-		setSelectedAppId,
 	} = useStageInput({
 		apps,
+		selectedAppId,
+		setSelectedAppId,
 		onSubmitAction,
 		isRunning,
 	});
@@ -114,7 +116,7 @@ export function PlaygroundStageInput({
 									placeholder="Select an app..."
 									value={selectedAppId}
 									onValueChange={(appId) => {
-										setSelectedAppId(appId);
+										setSelectedAppId(appId as StageApp["id"]);
 									}}
 									widthClassName="w-full"
 									triggerClassName="border-none !bg-[rgba(131,157,195,0.1)] hover:!bg-[rgba(131,157,195,0.18)] !px-2 !h-8 sm:!h-9 !rounded-[7px] sm:!rounded-[9px] text-[13px] [&_svg]:opacity-70"

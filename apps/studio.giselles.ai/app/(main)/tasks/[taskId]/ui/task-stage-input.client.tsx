@@ -3,7 +3,7 @@
 import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
 import type { GenerationContextInput, TaskId } from "@giselles-ai/protocol";
 import { useRouter } from "next/navigation";
-import { useCallback, useMemo, useTransition } from "react";
+import { useCallback, useState, useTransition } from "react";
 import { useShallow } from "zustand/shallow";
 import { useTaskOverlayStore } from "@/app/(main)/stores/task-overlay-store";
 import { TaskCompactStageInput } from "../../../components/stage-input/task-compact-stage-input";
@@ -23,14 +23,18 @@ function pickPreferredInput(
 export function TaskStageInput({
 	apps,
 	createAndStartTaskAction,
+	initialSelectedAppId,
 }: {
 	apps: StageApp[];
 	createAndStartTaskAction: (
 		inputs: CreateAndStartTaskInputs,
 	) => Promise<TaskId>;
+	initialSelectedAppId?: string;
 }) {
 	const router = useRouter();
-	const selectableApps = useMemo(() => apps, [apps]);
+	const [selectedAppId, setSelectedAppId] = useState<string | undefined>(
+		initialSelectedAppId,
+	);
 
 	const [isRunning, startTransition] = useTransition();
 
@@ -76,7 +80,9 @@ export function TaskStageInput({
 
 	return (
 		<TaskCompactStageInput
-			apps={selectableApps}
+			apps={apps}
+			selectedAppId={selectedAppId}
+			setSelectedAppId={setSelectedAppId}
 			onSubmitAction={handleSubmit}
 			isRunning={isRunning}
 		/>

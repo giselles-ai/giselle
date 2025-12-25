@@ -5,7 +5,6 @@ import { TaskLayout } from "@/components/task/task-layout";
 import { logger } from "@/lib/logger";
 import { createAndStartTask } from "../../lib/create-and-start-task";
 import { loadStageAppsData } from "../../lib/stage-apps";
-import { StageAppSelectionProvider } from "../../stores/stage-app-selection-store";
 import { TaskClient } from "./ui/task-client";
 import { getTaskAppId, getTaskData } from "./ui/task-data";
 import { TaskOverlayReset } from "./ui/task-overlay-reset";
@@ -47,12 +46,11 @@ export default async function ({
 			>
 				{/* Top gradient separator */}
 				<div className="w-full absolute h-6 -top-6 bg-gradient-to-t from-[color:var(--color-background)] to-transparent pointer-events-none" />
-				<StageAppSelectionProvider initialSelectedAppId={taskAppId}>
-					<TaskStageInput
-						apps={[...stageAppsData.sampleApps, ...stageAppsData.apps]}
-						createAndStartTaskAction={createAndStartTask}
-					/>
-				</StageAppSelectionProvider>
+				<TaskStageInput
+					apps={[...stageAppsData.sampleApps, ...stageAppsData.apps]}
+					createAndStartTaskAction={createAndStartTask}
+					initialSelectedAppId={taskAppId}
+				/>
 			</div>
 		</TaskLayout>
 	);

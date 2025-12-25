@@ -3,6 +3,7 @@
 import { AppIcon } from "@giselle-internal/ui/app-icon";
 import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
 import type {
+	AppId,
 	GenerationContextInput,
 	ParametersInput,
 	TaskId,
@@ -20,7 +21,6 @@ import {
 	useTransition,
 } from "react";
 import { useShallow } from "zustand/shallow";
-import { useSelectedStageApp } from "@/app/(main)/stores/stage-app-selection-store";
 import { useTaskOverlayStore } from "@/app/(main)/stores/task-overlay-store";
 import { LLMProviderIcon } from "@/app/(main)/workspaces/components/llm-provider-icon";
 import { PlaygroundStageInput } from "../components/stage-input/playground-stage-input";
@@ -190,16 +190,18 @@ function AppCard({
 export function Page({
 	dataLoader,
 	createAndStartTaskAction,
+	initialSelectedAppId,
 }: {
 	dataLoader: Promise<LoaderData>;
 	createAndStartTaskAction: (
 		inputs: CreateAndStartTaskInputs,
 	) => Promise<TaskId>;
+	initialSelectedAppId?: string;
 }) {
 	const data = use(dataLoader);
 
 	const router = useRouter();
-	const [runningAppId, setRunningAppId] = useState<string | undefined>();
+	const [runningAppId, setRunningAppId] = useState<AppId | undefined>();
 	const [isRunning, startTransition] = useTransition();
 	const [appSearchQuery, setAppSearchQuery] = useState("");
 	const [isSearchActive, setIsSearchActive] = useState(false);
@@ -221,13 +223,9 @@ export function Page({
 		);
 	}, [appSearchQuery, data.apps]);
 
-	const selectableApps = useMemo(
-		() => [...data.sampleApps, ...data.apps],
-		[data.sampleApps, data.apps],
+	const [selectedAppId, setSelectedAppId] = useState<string | undefined>(
+		initialSelectedAppId,
 	);
-
-	const { selectedAppId, setSelectedAppId } =
-		useSelectedStageApp(selectableApps);
 
 	const handleRunSubmit = useCallback(
 		(event: { inputs: GenerationContextInput[]; selectedApp: StageApp }) => {
@@ -288,7 +286,9 @@ export function Page({
 						{/* Chat-style input area */}
 						<PlaygroundStageInput
 							key={selectedAppId ?? "app-id-none"}
-							apps={selectableApps}
+							apps={[...data.sampleApps, ...data.apps]}
+							selectedAppId={selectedAppId}
+							setSelectedAppId={setSelectedAppId}
 							onSubmitAction={handleRunSubmit}
 							isRunning={isRunning}
 							shouldAutoFocus

@@ -1,5 +1,3 @@
-"use client";
-
 import { Select } from "@giselle-internal/ui/select";
 import type { GenerationContextInput } from "@giselles-ai/protocol";
 import { ArrowUpIcon, Paperclip, X } from "lucide-react";
@@ -9,10 +7,14 @@ import { ACCEPTED_FILE_TYPES, useStageInput } from "./use-stage-input";
 
 export function TaskCompactStageInput({
 	apps,
+	selectedAppId,
+	setSelectedAppId,
 	onSubmitAction,
 	isRunning,
 }: {
 	apps: StageApp[];
+	selectedAppId: string | undefined;
+	setSelectedAppId: (appId: string | undefined) => void;
 	onSubmitAction: (event: {
 		inputs: GenerationContextInput[];
 		selectedApp: StageApp;
@@ -22,7 +24,6 @@ export function TaskCompactStageInput({
 	const {
 		basePath,
 		appOptions,
-		selectedAppId,
 		textareaRef,
 		fileInputRef,
 		inputValue,
@@ -48,9 +49,10 @@ export function TaskCompactStageInput({
 		handleDismissFileRestrictionError,
 		handleSubmit,
 		selectedApp,
-		setSelectedAppId,
 	} = useStageInput({
 		apps,
+		selectedAppId,
+		setSelectedAppId,
 		onSubmitAction,
 		isRunning,
 	});

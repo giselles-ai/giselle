@@ -1,5 +1,3 @@
-"use client";
-
 import type { SelectOption } from "@giselle-internal/ui/select";
 import { useToasts } from "@giselle-internal/ui/toast";
 import {
@@ -22,7 +20,6 @@ import {
 	useState,
 } from "react";
 import type { StageApp } from "../../playground/types";
-import { useSelectedStageApp } from "../../stores/stage-app-selection-store";
 
 type FileRestrictionErrorState = {
 	rejectedFileNames: string[];
@@ -129,10 +126,14 @@ function containsFiles(event: React.DragEvent<HTMLElement>) {
 
 export function useStageInput({
 	apps,
+	selectedAppId,
+	setSelectedAppId,
 	onSubmitAction,
 	isRunning,
 }: {
 	apps?: StageApp[];
+	selectedAppId: string | undefined;
+	setSelectedAppId: (appId: string | undefined) => void;
 	onSubmitAction: (event: {
 		inputs: GenerationContextInput[];
 		selectedApp: StageApp;
@@ -142,9 +143,10 @@ export function useStageInput({
 	const client = useGiselle();
 	const { toast } = useToasts();
 
-	const { selectedAppId, selectedApp, setSelectedAppId } = useSelectedStageApp(
-		apps ?? [],
-	);
+	const selectedApp = useMemo(() => {
+		if (!selectedAppId) return undefined;
+		return (apps ?? []).find((app) => app.id === selectedAppId);
+	}, [apps, selectedAppId]);
 
 	const appOptions = useMemo(
 		() =>
@@ -491,7 +493,6 @@ export function useStageInput({
 		() => ({
 			basePath: client.basePath,
 			appOptions,
-			selectedAppId,
 			selectedApp,
 			setSelectedAppId,
 			textareaRef,
@@ -523,7 +524,6 @@ export function useStageInput({
 		[
 			client.basePath,
 			appOptions,
-			selectedAppId,
 			selectedApp,
 			setSelectedAppId,
 			inputValue,
