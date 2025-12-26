@@ -209,7 +209,7 @@ export function AgentCard({ agent }: AgentCardProps) {
 							<span className="font-geist text-[12px] text-text/70">
 								by{" "}
 								{agent.metadata.sample
-									? "Giselle"
+									? "Giselle Team"
 									: agent.creator?.displayName || "Unknown"}
 							</span>
 							<div className="flex items-center gap-3">
