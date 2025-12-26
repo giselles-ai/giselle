@@ -8,6 +8,7 @@ import type {
 } from "@giselles-ai/protocol";
 import { Check, FilePenLineIcon } from "lucide-react";
 import Link from "next/link";
+import { TaskInputString } from "./task-input-string";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
 	return typeof value === "object" && value !== null;
@@ -212,7 +213,7 @@ function TaskInputItem({ item }: { item: ParameterItem }) {
 		case "number":
 			return <p>{item.value}</p>;
 		case "string":
-			return <p>{item.value}</p>;
+			return <TaskInputString value={item.value} />;
 		default: {
 		}
 	}
