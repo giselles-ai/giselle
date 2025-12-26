@@ -1,19 +1,35 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef } from "react";
 import { useShallow } from "zustand/shallow";
 import { TaskHeader } from "@/components/task/task-header";
 import { TaskLayout } from "@/components/task/task-layout";
 import { useTaskOverlayStore } from "../stores/task-overlay-store";
 
 export function TaskOverlay() {
-	const { isVisible, overlayApp, overlayInput } = useTaskOverlayStore(
-		useShallow((state) => ({
-			isVisible: state.isVisible,
-			overlayApp: state.overlayApp,
-			overlayInput: state.overlayInput,
-		})),
-	);
+	const { isVisible, overlayApp, overlayInput, hideOverlay } =
+		useTaskOverlayStore(
+			useShallow((state) => ({
+				isVisible: state.isVisible,
+				overlayApp: state.overlayApp,
+				overlayInput: state.overlayInput,
+				hideOverlay: state.hideOverlay,
+			})),
+		);
+	const pathname = usePathname();
+	const previousPathnameRef = useRef<string | null>(null);
+
+	useEffect(() => {
+		if (
+			previousPathnameRef.current !== null &&
+			previousPathnameRef.current !== pathname
+		) {
+			hideOverlay();
+		}
+		previousPathnameRef.current = pathname;
+	}, [pathname, hideOverlay]);
 
 	return (
 		<AnimatePresence>
