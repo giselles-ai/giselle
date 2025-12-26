@@ -120,7 +120,11 @@ export function SearchableAgentList({
 								href={`/workspaces/${agent.workspaceId}`}
 								title={agent.name || "Untitled"}
 								subtitle={`Edited ${agent.updatedAt.toLocaleDateString()}`}
-								creator={agent.creator?.displayName || null}
+								creator={
+									agent.metadata.sample
+										? "Giselle"
+										: agent.creator?.displayName || null
+								}
 								githubRepositories={agent.githubRepositories}
 								documentVectorStoreFiles={agent.documentVectorStoreFiles}
 								executionCount={agent.executionCount}
