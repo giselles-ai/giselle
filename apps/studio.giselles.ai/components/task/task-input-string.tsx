@@ -14,9 +14,6 @@ export function TaskInputString({ value }: { value: string }) {
 	}, []);
 
 	const measureOverflow = useCallback(() => {
-		void value;
-		void isExpanded;
-
 		const element = contentElement;
 		if (!element) {
 			return;
@@ -42,11 +39,13 @@ export function TaskInputString({ value }: { value: string }) {
 		if (!nextIsCollapsedOverflowing) {
 			setIsExpanded(false);
 		}
-	}, [contentElement, isExpanded, value]);
+	}, [contentElement]);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies(isExpanded): isExpanded isn't read here, but toggling it changes max-height/overflow styles, so we re-measure after expand/collapse.
+	// biome-ignore lint/correctness/useExhaustiveDependencies(value): value isn't read here, but text changes can change scroll sizes, so we re-measure when it updates.
 	useLayoutEffect(() => {
 		measureOverflow();
-	}, [measureOverflow]);
+	}, [measureOverflow, isExpanded, value]);
 
 	useEffect(() => {
 		if (!contentElement) {
