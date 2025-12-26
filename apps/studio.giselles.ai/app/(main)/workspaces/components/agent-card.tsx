@@ -207,7 +207,10 @@ export function AgentCard({ agent }: AgentCardProps) {
 						{/* Footer: Creator and Stats */}
 						<div className="flex items-center justify-between">
 							<span className="font-geist text-[12px] text-text/70">
-								by {agent.creator?.displayName || "Unknown"}
+								by{" "}
+								{agent.metadata.sample
+									? "Giselle"
+									: agent.creator?.displayName || "Unknown"}
 							</span>
 							<div className="flex items-center gap-3">
 								{/* <div className="flex items-center gap-1">
