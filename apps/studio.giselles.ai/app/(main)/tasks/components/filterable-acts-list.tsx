@@ -541,16 +541,16 @@ export function FilterableActsList({
 								</div>
 							</div>
 							<h2 className="mb-2 text-lg font-medium text-link-muted">
-								No tasks yet
+								No tasks completed yet
 							</h2>
 							<p className="mb-6 max-w-sm text-sm text-link-muted">
-								Start by creating your first task from the main stage page.
+								Get started by running an app from the Playground page.
 							</p>
 							<Link href="/stage">
 								<Button variant="glass" size="large" className="h-10 px-4">
 									<div className="flex items-center gap-2">
 										<Sparkles className="w-4 h-4" />
-										<span className="text-sm">Create new task</span>
+										<span className="text-sm">Get Started</span>
 									</div>
 								</Button>
 							</Link>
