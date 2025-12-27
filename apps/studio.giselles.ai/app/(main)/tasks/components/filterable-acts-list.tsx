@@ -546,7 +546,7 @@ export function FilterableActsList({
 							<p className="mb-6 max-w-sm text-sm text-link-muted">
 								Get started by running an app from the Playground page.
 							</p>
-							<Link href="/stage">
+							<Link href="/playground">
 								<Button variant="glass" size="large" className="h-10 px-4">
 									<div className="flex items-center gap-2">
 										<Sparkles className="w-4 h-4" />
