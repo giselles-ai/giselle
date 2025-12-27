@@ -33,7 +33,7 @@ export function AgentCard({ agent }: AgentCardProps) {
 
 	return (
 		<section
-			aria-label={agent.name || "Untitled workspace"}
+			aria-label={agent.name || "Untitled"}
 			className={clsx(
 				"relative flex h-[252px] w-full flex-none flex-col rounded-[12px]",
 				"bg-[linear-gradient(135deg,color-mix(in_srgb,var(--color-blue-muted)_10%,var(--color-background))_0%,color-mix(in_srgb,var(--color-blue-muted)_6%,var(--color-stage-background))_55%,color-mix(in_srgb,var(--color-blue-muted)_4%,var(--color-background))_100%)]",
