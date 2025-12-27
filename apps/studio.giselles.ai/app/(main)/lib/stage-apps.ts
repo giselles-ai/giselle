@@ -192,12 +192,12 @@ async function getAppsBySampleFlag(
 
 		apps.push({
 			id: data.giselleApp.id,
-			name: data.workspace.name ?? "No name app",
+			name: data.workspace.name ?? "Untitled",
 			description: data.giselleApp.description,
 			entryNodeId: data.giselleApp.entryNodeId,
 			parameters: data.giselleApp.parameters,
 			workspaceId: data.workspace.id,
-			workspaceName: data.workspace.name ?? "Untitled workspace",
+			workspaceName: data.workspace.name ?? "Untitled",
 			isMine: data.dbWorkspace.creatorDbId === userDbId,
 			vectorStoreRepositories: data.githubRepositories,
 			vectorStoreFiles: data.documentFiles,

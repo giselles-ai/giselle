@@ -138,7 +138,7 @@ export default async function TaskListPage({
 				inputSummary: null,
 				origin: {
 					type: "app",
-					appName: dbTask.app.workspace.name ?? "Untitled App",
+					appName: dbTask.app.workspace.name ?? "Untitled",
 				},
 			} satisfies UITaskListRow;
 		}),
