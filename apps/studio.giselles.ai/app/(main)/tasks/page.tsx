@@ -209,16 +209,16 @@ export default async function TaskListPage({
 							</div>
 						</div>
 						<h2 className="mb-2 text-lg font-medium text-link-muted">
-							No tasks yet
+							No tasks completed yet
 						</h2>
 						<p className="mb-6 max-w-sm text-sm text-link-muted">
-							Start by creating your first task from the main stage page.
+							Get started by running an app from the Playground page.
 						</p>
 						<Link
 							href="/playground"
 							className="px-4 py-2 bg-white/10 text-inverse rounded-lg hover:bg-white/20 transition-colors text-sm"
 						>
-							Create new task
+							Get Started
 						</Link>
 					</div>
 				) : (
