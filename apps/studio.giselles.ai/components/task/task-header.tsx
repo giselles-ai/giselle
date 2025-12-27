@@ -274,7 +274,7 @@ export function TaskHeader({
 										<FilePenLineIcon className="stroke-[hsl(192,73%,84%)] stroke-[1.5] transition-colors group-hover:stroke-[hsl(192,73%,20%)]" />
 									}
 								>
-									Edit in Studio
+									Edit in Workspace
 								</StatusBadge>
 							</div>
 						</Link>
