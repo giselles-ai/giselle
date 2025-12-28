@@ -158,14 +158,14 @@ function TaskInputGitHubWebhookEvent({
 						rel="noreferrer"
 						className="text-[12px] text-[hsl(192,73%,84%)] hover:underline"
 					>
-						Open related Pull Request
+						Open Pull Request
 					</a>
 				</div>
 			) : null}
 
 			<details className="mt-3">
 				<summary className="cursor-pointer select-none text-[12px] text-text-muted hover:text-inverse">
-					Payload (truncated)
+					Payload
 				</summary>
 				<pre className="mt-2 max-h-64 overflow-auto rounded-md border border-white/10 bg-black/30 p-2 text-[11px] text-text/80">
 					{formatJsonPreview(webhookEvent.data, 120)}
@@ -283,7 +283,7 @@ export function TaskHeader({
 					{description.length > 0 && (
 						<div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:gap-3 w-full">
 							<span className="text-text-muted text-[13px] font-semibold shrink-0">
-								App summary:
+								Description:
 							</span>
 							<p className="text-[14px] font-normal text-inverse leading-relaxed">
 								{description}
