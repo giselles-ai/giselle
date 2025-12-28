@@ -135,13 +135,13 @@ function createDefaultDraftApp(): DraftApp {
 		parameters: [
 			{
 				id: AppParameterId.generate(),
-				name: "Input(Text)",
+				name: "Input (Text)",
 				type: "multiline-text",
 				required: true,
 			},
 			{
 				id: AppParameterId.generate(),
-				name: "Input(File)",
+				name: "Input (File)",
 				type: "files",
 				required: false,
 			},
