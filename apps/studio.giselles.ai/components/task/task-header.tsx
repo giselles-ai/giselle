@@ -135,18 +135,18 @@ function TaskInputGitHubWebhookEvent({
 	return (
 		<div className="mt-2">
 			<div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-text/80">
-				<span className="font-medium text-inverse">GitHub webhook</span>
+				<span className="font-medium text-inverse">GitHub Webhook</span>
 				<span className="rounded-md border border-white/10 bg-white/5 px-2 py-0.5 font-mono text-[11px]">
 					{eventName}
 				</span>
 				{action != null ? (
-					<span className="text-text-muted">action: {action}</span>
+					<span className="text-text-muted">Action: {action}</span>
 				) : null}
 				{repoFullName != null ? (
-					<span className="text-text-muted">repo: {repoFullName}</span>
+					<span className="text-text-muted">Repository: {repoFullName}</span>
 				) : null}
 				{senderLogin != null ? (
-					<span className="text-text-muted">sender: {senderLogin}</span>
+					<span className="text-text-muted">Sender: {senderLogin}</span>
 				) : null}
 			</div>
 
@@ -158,14 +158,14 @@ function TaskInputGitHubWebhookEvent({
 						rel="noreferrer"
 						className="text-[12px] text-[hsl(192,73%,84%)] hover:underline"
 					>
-						Open related Pull Request
+						Open Pull Request
 					</a>
 				</div>
 			) : null}
 
 			<details className="mt-3">
 				<summary className="cursor-pointer select-none text-[12px] text-text-muted hover:text-inverse">
-					Payload (truncated)
+					Payload
 				</summary>
 				<pre className="mt-2 max-h-64 overflow-auto rounded-md border border-white/10 bg-black/30 p-2 text-[11px] text-text/80">
 					{formatJsonPreview(webhookEvent.data, 120)}
@@ -274,7 +274,7 @@ export function TaskHeader({
 										<FilePenLineIcon className="stroke-[hsl(192,73%,84%)] stroke-[1.5] transition-colors group-hover:stroke-[hsl(192,73%,20%)]" />
 									}
 								>
-									Edit in Studio
+									Edit in Workspace
 								</StatusBadge>
 							</div>
 						</Link>
@@ -283,7 +283,7 @@ export function TaskHeader({
 					{description.length > 0 && (
 						<div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:gap-3 w-full">
 							<span className="text-text-muted text-[13px] font-semibold shrink-0">
-								App summary:
+								Description:
 							</span>
 							<p className="text-[14px] font-normal text-inverse leading-relaxed">
 								{description}
