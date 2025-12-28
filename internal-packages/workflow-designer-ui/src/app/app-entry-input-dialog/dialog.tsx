@@ -224,7 +224,7 @@ export function AppEntryInputDialog({
 					onSubmit={handleSubmit}
 				>
 					<p className="text-[12px] mb-[8px] text-text-muted font-sans font-semibold">
-						Execute this app with custom input values
+						Run this app with custom input values
 					</p>
 
 					<div className="flex flex-col gap-[8px]">
