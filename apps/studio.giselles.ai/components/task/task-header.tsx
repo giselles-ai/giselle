@@ -135,18 +135,18 @@ function TaskInputGitHubWebhookEvent({
 	return (
 		<div className="mt-2">
 			<div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-text/80">
-				<span className="font-medium text-inverse">GitHub webhook</span>
+				<span className="font-medium text-inverse">GitHub Webhook</span>
 				<span className="rounded-md border border-white/10 bg-white/5 px-2 py-0.5 font-mono text-[11px]">
 					{eventName}
 				</span>
 				{action != null ? (
-					<span className="text-text-muted">action: {action}</span>
+					<span className="text-text-muted">Action: {action}</span>
 				) : null}
 				{repoFullName != null ? (
-					<span className="text-text-muted">repo: {repoFullName}</span>
+					<span className="text-text-muted">Repository: {repoFullName}</span>
 				) : null}
 				{senderLogin != null ? (
-					<span className="text-text-muted">sender: {senderLogin}</span>
+					<span className="text-text-muted">Sender: {senderLogin}</span>
 				) : null}
 			</div>
 
