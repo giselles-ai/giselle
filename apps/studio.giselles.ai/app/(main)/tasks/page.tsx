@@ -224,19 +224,21 @@ export default async function TaskListPage({
 				) : (
 					<Card className="!flex !flex-col gap-0 py-2 px-0">
 						{/* Header */}
-						<div className="grid grid-cols-[1fr_120px] md:grid-cols-[2fr_120px_1fr_1fr_1fr] items-center gap-4 px-[24px] py-2 border-b-[0.5px] border-border-muted">
+						<div className="grid grid-cols-[1fr_120px] md:grid-cols-[2fr_120px_1fr] items-center gap-4 px-[24px] py-2 border-b-[0.5px] border-border-muted">
 							<p className="text-[12px] font-geist font-semibold text-text/60">
 								Task
 							</p>
 							<p className="text-[12px] font-geist font-semibold text-text/60">
 								Status
 							</p>
-							<p className="hidden md:block text-[12px] font-geist font-semibold text-text/60">
+							{/* TODO: Implement Input column once inputSummary is fetched from task data */}
+							{/* <p className="hidden md:block text-[12px] font-geist font-semibold text-text/60">
 								Input
-							</p>
-							<p className="hidden md:block text-[12px] font-geist font-semibold text-text/60">
+							</p> */}
+							{/* TODO: Implement Model column once LLM model info is available from task data */}
+							{/* <p className="hidden md:block text-[12px] font-geist font-semibold text-text/60">
 								Model
-							</p>
+							</p> */}
 							<p className="hidden md:block text-[12px] font-geist font-semibold text-text/60">
 								Origin
 							</p>
@@ -247,13 +249,15 @@ export default async function TaskListPage({
 								task.origin.type === "app"
 									? task.origin.appName
 									: task.origin.repoName;
-							const inputLabel = task.inputSummary ?? "—";
-							const modelLabel = "—";
+							// TODO: Implement once inputSummary is fetched from task data
+							// const inputLabel = task.inputSummary ?? "—";
+							// TODO: Implement once LLM model info is available from task data
+							// const modelLabel = "—";
 
 							return (
 								<div
 									key={task.id}
-									className="grid grid-cols-[1fr_120px] md:grid-cols-[2fr_120px_1fr_1fr_1fr] items-center gap-4 px-[24px] py-3 border-t-[0.5px] border-border-muted first:border-t-0 hover:bg-white/5 transition-colors duration-200"
+									className="grid grid-cols-[1fr_120px] md:grid-cols-[2fr_120px_1fr] items-center gap-4 px-[24px] py-3 border-t-[0.5px] border-border-muted first:border-t-0 hover:bg-white/5 transition-colors duration-200"
 								>
 									<div className="flex flex-col min-w-0">
 										<Link
@@ -272,17 +276,19 @@ export default async function TaskListPage({
 										{getStatusBadge(task.status)}
 									</div>
 
-									<div className="hidden md:flex min-w-0">
+									{/* TODO: Implement Input column once inputSummary is fetched from task data */}
+									{/* <div className="hidden md:flex min-w-0">
 										<span className="text-sm text-white-700 truncate">
 											{inputLabel}
 										</span>
-									</div>
+									</div> */}
 
-									<div className="hidden md:flex min-w-0">
+									{/* TODO: Implement Model column once LLM model info is available from task data */}
+									{/* <div className="hidden md:flex min-w-0">
 										<span className="text-sm text-white-700 truncate">
 											{modelLabel}
 										</span>
-									</div>
+									</div> */}
 
 									<div className="hidden md:flex min-w-0">
 										<span className="text-sm text-white-700 truncate">
