@@ -115,7 +115,7 @@ export function TaskCompactStageInput({
 							onCompositionStart={handleCompositionStart}
 							onCompositionEnd={handleCompositionEnd}
 							onKeyDown={handleKeyDown}
-							placeholder="Ask anything—powered by Giselle docs"
+							placeholder={selectedApp?.description ?? ""}
 							rows={1}
 							disabled={isRunning}
 							className="flex-1 resize-none bg-transparent text-[14px] text-foreground placeholder:text-blue-muted/50 outline-none disabled:cursor-not-allowed min-h-[1.9em] pt-0 pb-[0.5em] px-1"
