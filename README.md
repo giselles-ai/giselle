@@ -11,7 +11,7 @@
   <span style="font-size: 18px; color: #666; margin-left: 15px;">the AI agent studio powering product delivery</span>
 
 
-  <a href="https://www.producthunt.com/products/giselle?embed=true&utm_source=badge-featured&utm_medium=badge&utm_source=badge-giselle" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=924550&theme=light&t=1757315890418" alt="Giselle - AI&#0032;App&#0032;Builder | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+  <a href="https://www.producthunt.com/products/giselle?embed=true&amp;utm_source=badge-top-post-badge&amp;utm_medium=badge&amp;utm_campaign=badge-giselle" target="_blank" rel="noopener noreferrer"><img alt="Giselle - Build and run AI workflows. Open source. | Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=924550&amp;theme=light&amp;period=daily&amp;t=1767082208449"></a>
 
   <!-- Demo Video -->
  <img src="./docs/assets/introducing.gif" alt="Giselle Video" width="100%"> <br/>
