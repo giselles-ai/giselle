@@ -208,7 +208,7 @@ export function AppEntryInputDialog({
 			<div className="flex justify-between items-center mb-[14px]">
 				<div className="flex items-center gap-[12px]">
 					<h2 className="text-[20px] font-medium text-text tracking-tight font-sans">
-						All Run
+						Run App
 					</h2>
 				</div>
 				<div className="flex gap-[12px]">
