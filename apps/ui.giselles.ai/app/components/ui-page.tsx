@@ -1,3 +1,4 @@
+import { PageHeading } from "@giselle-internal/ui/page-heading";
 import type React from "react";
 
 interface UiPageProps {
@@ -8,7 +9,9 @@ interface UiPageProps {
 export function UiPage({ title, children }: UiPageProps) {
 	return (
 		<>
-			<h2 className="text-text mb-6">{title}</h2>
+			<PageHeading as="h1" glow className="mb-6 text-[24px]">
+				{title}
+			</PageHeading>
 			<div className="space-y-8">{children}</div>
 		</>
 	);

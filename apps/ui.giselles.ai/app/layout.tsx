@@ -1,4 +1,6 @@
 import { DM_Mono, DM_Sans } from "next/font/google";
+import Link from "next/link";
+import { GiselleIcon } from "./components/giselle-icon";
 import { NavLink } from "./nav-link";
 import "./globals.css";
 
@@ -65,7 +67,18 @@ export default function ({ children }: { children: React.ReactNode }) {
 					<div className="flex">
 						<div className="w-64 border-r border-border min-h-screen">
 							<div className="p-6">
-								<h1 className="text-text mb-6">Components</h1>
+								<h1 className="mb-6">
+									<Link
+										href="/"
+										aria-label="Go to home"
+										className="flex items-center gap-[3px] group"
+									>
+										<GiselleIcon className="text-inverse w-[24px] h-[24px] group-hover:text-primary-100 transition-colors" />
+										<span className="text-inverse text-[13px] font-semibold group-hover:text-primary-100 transition-colors">
+											Components
+										</span>
+									</Link>
+								</h1>
 								<nav className="gap-1 flex flex-col">
 									{components.map((component) => (
 										<NavLink key={component.id} pathname={`/${component.id}`}>

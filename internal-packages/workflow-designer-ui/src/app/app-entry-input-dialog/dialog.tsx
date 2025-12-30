@@ -206,7 +206,11 @@ export function AppEntryInputDialog({
 	return (
 		<>
 			<div className="flex justify-between items-center mb-[14px]">
-				<div className="flex items-center gap-[12px]"></div>
+				<div className="flex items-center gap-[12px]">
+					<h2 className="text-[20px] font-medium text-text tracking-tight font-sans">
+						Run App
+					</h2>
+				</div>
 				<div className="flex gap-[12px]">
 					<Dialog.Close asChild>
 						<button
@@ -312,7 +316,7 @@ export function AppEntryInputDialog({
 					</div>
 					<div className="flex justify-end">
 						<Button
-							variant="solid"
+							variant="glass"
 							size="large"
 							type="submit"
 							disabled={isSubmitting}
