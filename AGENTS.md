@@ -13,25 +13,62 @@ Giselle is built to design and run AI workflows beyond prompt chains. Not a chat
 
 ## Architecture
 
-TBD
+The project is a monorepo managed with `pnpm` workspaces and `turbo`.
+
+- **Apps**:
+  - `apps/studio.giselles.ai`: The main Cloud application (Next.js).
+  - `apps/playground`: A Next.js app for testing and self-hosting/development.
+  - `apps/ui.giselles.ai`: UI component showcase/service.
+- **Packages** (`packages/`):
+  - **Core**: `giselle` (SDK), `protocol` (Data types & Schema), `react` (Hooks/Components).
+  - **Modules**: `language-model`, `rag`, `storage`, `vault`, `web-search`, `github-tool`, etc.
+  - **Drivers**: `supabase-driver` (Storage/DB).
+  - **Utils**: `utils`, `logger`, `stream`.
+- **Internal** (`internal-packages/`):
+  - `workflow-designer-ui`: The visual editor component for constructing flows.
+  - `ui`: Shared UI components.
 
 ## Development Workflow
 
-TBD
+- **Setup**: `pnpm install`
+- **Development**:
+  - `pnpm dev` (Runs `playground` for self-hosted/dev environment).
+  - `pnpm dev:studio.giselles.ai` (Runs the Cloud studio app).
+- **Quality Assurance**:
+  - Build: `pnpm build` (All), `pnpm build-sdk` (Packages).
+  - Type Check: `pnpm check-types`.
+  - Format/Lint: `pnpm format` (uses Biome).
+  - Test: `pnpm test` (uses Vitest).
+- **Contribution**:
+  - Create feature branches: `feat/feature-name` or `fix/issue-name`.
+  - Make atomic commits.
+  - Ensure all checks pass (`check-types`, `format`, `test`) before pushing.
 
 ## Key Conventions
 
 ### Naming
 
-TBD
+- **Files**: `kebab-case` (e.g., `user-profile.ts`, `api-client.tsx`).
+- **Components/Classes**: `PascalCase` (e.g., `UserProfile`, `ApiClient`).
+- **Variables/Functions**: `camelCase` (e.g., `userEmail`, `calculateTotalPrice`).
+- **Booleans**: Prefix with `is`, `has`, `can`, `should` (e.g., `isEnabled`, `hasPermission`).
+- **Functions**: Use verb phrases (e.g., `validateUserInput`).
 
 ### Code Style
 
-TBD
+- **Formatter**: Biome (enforced via `pnpm format`).
+  - Indentation: Tabs.
+  - Quotes: Double quotes.
+  - Imports: Organized automatically.
+- **TypeScript**: Strict typing required. Avoid `any`.
+- **React**: Functional components with Hooks. Next.js App Router patterns.
+- **Async**: Prefer `async/await` over raw Promises.
 
 ### Error Handling
 
-TBD
+- **Pattern**: Use standard `try/catch` blocks.
+- **Custom Errors**: Extend the base `Error` class for domain-specific errors (e.g., `class GitHubError extends Error`).
+- **Propagation**: Catch errors at the appropriate level or propagate them up.
 
 
 ## Continuity Ledger (compaction-safe)

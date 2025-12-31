@@ -1,0 +1,14 @@
+- Goal (incl. success criteria): Complete the AGENTS.md documentation by replacing TBD sections with accurate English descriptions of Architecture, Development Workflow, and Conventions. (Done)
+- Constraints/Assumptions: The project is a monorepo with 10k+ commits. Existing code and configs are the source of truth.
+- Key decisions: Analyzed codebase structure, pnpm workspace, and naming/style guides to populate documentation.
+- State: Documentation updated.
+- Done:
+  - Created CONTINUITY.md.
+  - Analyzed architecture (monorepo, apps, packages).
+  - Analyzed workflow (pnpm commands, contribution guide).
+  - Analyzed conventions (naming, biome, error handling).
+  - Updated AGENTS.md with gathered information.
+- Now: Task complete.
+- Next:
+- Open questions (UNCONFIRMED if needed):
+- Working set (files/ids/commands): AGENTS.md, CONTINUITY.md
