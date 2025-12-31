@@ -13,25 +13,85 @@ Giselle is built to design and run AI workflows beyond prompt chains. Not a chat
 
 ## Architecture
 
-TBD
+Giselle is a **pnpm workspace** + **Turborepo** monorepo.
+
+### Repository layout
+- **`apps/*`**: end-user Next.js applications
+  - **`apps/playground`**: self-hostable/standalone playground (easiest entry point for external contributors)
+  - **`apps/studio.giselles.ai`**: the cloud product (`studio.giselles.ai`) with auth/billing/production integrations
+  - **`apps/ui.giselles.ai`**: web UI site/app (Next.js)
+- **`packages/*`**: shared TypeScript libraries (published/consumed as `@giselles-ai/*`)
+  - Examples: `@giselles-ai/giselle` (core SDK), `@giselles-ai/protocol`, registries (`*-registry`), storage/RAG/web-search utilities, etc.
+- **`internal-packages/*`**: shared UI and product packages not meant as public SDK surface
+  - Examples: `@giselle-internal/workflow-designer-ui`, `@giselle-internal/ui`
+- **`tools/*`**: developer tooling/CLIs used by the repo
+
+### Build & runtime model (high-level)
+- **Build orchestration**: Turborepo tasks (`turbo.json`) drive `build`, `dev`, `check-types`, `test`, etc.
+- **Type system**: TypeScript across apps and packages.
+- **Formatting/linting**: Biome (`biome.json`) with tabs and organized imports.
+- **Package compilation**: libraries commonly build via `tsup`; apps build via Next.js.
+- **LLM/providers integration**: the codebase relies on the Vercel AI SDK ecosystem (`ai`, `@ai-sdk/*`) plus provider SDKs where needed.
 
 ## Development Workflow
 
-TBD
+### Prerequisites
+- **Node.js**: `>= 22` (repo `engines.node`)
+- **Package manager**: pnpm (see `packageManager` in root `package.json`)
+
+### Getting started (recommended)
+- **Self-hosting playground** (fastest path):
+  - Create `.env.local` in the repo root with at least one provider API key (see `apps/playground/README.md`).
+  - Install deps: `pnpm install`
+  - Run dev: `pnpm turbo dev` (or `pnpm dev` for the playground-filtered dev script)
+- **Cloud app**:
+  - Requires many environment variables (see `apps/studio.giselles.ai/README.md`)
+  - Run dev: `pnpm turbo dev`
+
+### Day-to-day workflow
+- **Make small, focused changes**: prefer minimal diffs and single-purpose PRs.
+- **Keep the repo clean**:
+  - Don’t hand-edit `pnpm-lock.yaml`
+  - Don’t change ports/config/env files unless the feature requires it
+- **Quality gates (run before you consider a change “done”)**:
+  - `pnpm format`
+  - `pnpm build-sdk`
+  - `pnpm check-types`
+  - `pnpm tidy`
+  - `pnpm test`
+
+### Releases/versioning (libraries)
+- This repo uses **Changesets** (`.changeset/`) for package versioning. Add a changeset when you make a user-facing change to published packages.
 
 ## Key Conventions
 
 ### Naming
 
-TBD
+Follow the repo naming conventions (see `.cursor/rules/naming-guide.mdc`):
+- **Files**: kebab-case (e.g. `user-profile.ts`)
+- **React components / classes**: PascalCase (e.g. `UserProfile`)
+- **Variables / functions**: camelCase (e.g. `userEmail`, `calculateTotalPrice`)
+- **Booleans**: `is/has/can/should` prefixes (e.g. `isEnabled`, `hasPermission`)
 
 ### Code Style
 
-TBD
+Keep implementations small and explicit (see `CLAUDE.md`: “Less is more”).
+
+- **Formatting**: Biome is the source of truth (`pnpm format`). Don’t fight it—format early and often.
+- **TypeScript-first**: prefer clear types at module boundaries and avoid cleverness.
+- **Dependencies**:
+  - Prefer existing workspace packages (`workspace:*` / `workspace:^`) over adding new third-party deps.
+  - When you must add a dependency, add it via pnpm (don’t manually edit lockfiles).
+- **Imports**: let Biome organize imports; avoid unused exports/files (validated via `pnpm tidy`).
 
 ### Error Handling
 
-TBD
+Treat errors as part of the product surface.
+
+- **Validate at boundaries**: fail fast for invalid inputs (e.g., API/route boundaries, action/trigger inputs).
+- **Actionable messages**: throw/return errors that help the caller fix the issue (what failed + how to resolve).
+- **Don’t swallow failures**: if you must catch, either rethrow with context or return a structured error.
+- **Log intentionally**: include enough context for debugging, but avoid leaking secrets (API keys, tokens, PII).
 
 
 ## Continuity Ledger (compaction-safe)
