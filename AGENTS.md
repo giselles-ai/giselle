@@ -13,25 +13,94 @@ Giselle is built to design and run AI workflows beyond prompt chains. Not a chat
 
 ## Architecture
 
-TBD
+Giselle is a pnpm + Turborepo monorepo. At a high level:
+
+- **Apps (`apps/*`)**: user-facing Next.js applications.
+  - `apps/playground`: standalone/self-host friendly app for running Giselle.
+  - `apps/studio.giselles.ai`: the hosted “cloud” app (auth/billing/teams, etc.).
+  - `apps/ui.giselles.ai`: UI component showcase/demo app.
+- **Public packages (`packages/*`)**: reusable libraries published/consumed across apps.
+  - `packages/protocol`: shared domain types/IDs and protocol objects used across the system.
+  - `packages/giselle` (`@giselles-ai/giselle`): core engine/SDK surface (workspaces, tasks, generations, triggers, storage/vault integration).
+  - `packages/react`: React bindings (hooks/providers), plus React-specific error types.
+  - `packages/nextjs`: Next.js integration (server routing/engine wrapper).
+  - Supporting packages: storage, vault, web-search, rag, language-model, registries, etc.
+- **Internal packages (`internal-packages/*`)**: UI and editor code shared by apps but not intended as public SDK.
+  - `internal-packages/ui`: shared UI components.
+  - `internal-packages/workflow-designer-ui`: the workflow designer/editor UI (React + Zustand + XYFlow).
+- **Tools (`tools/*`)**: one-off utilities (e.g. storage migration).
+- **Build & quality tooling**:
+  - **pnpm workspaces** (`pnpm-workspace.yaml`) for dependency management.
+  - **turbo** (`turbo.json`) orchestrates tasks (`build`, `dev`, `check-types`, `test`, etc.).
+  - **Biome** (`biome.json`) formats and lints the codebase.
+  - **Vitest** is the primary unit test runner; **Playwright** is used for e2e tests in the studio app.
 
 ## Development Workflow
 
-TBD
+### Prerequisites
+
+- Node.js **22+** (see `docs/vibe/02-nodejs.md`)
+- pnpm (repo expects pnpm 10.x; see root `package.json`)
+
+### Common commands (from repo root)
+
+- **Install**: `pnpm install`
+- **Run Playground (local)**: `pnpm dev` (root script filters to `playground`)
+- **Run Studio (local)**: `pnpm dev:studio.giselles.ai`
+- **Build everything**: `pnpm build`
+- **Build SDK packages only**: `pnpm build-sdk`
+- **Typecheck**: `pnpm check-types`
+- **Format/lint (Biome)**: `pnpm format`
+- **Unit tests**: `pnpm test`
+- **Dead-code/unused export detection**: `pnpm tidy` (uses Knip)
+
+### Per-package workflow
+
+Most work happens inside one app/package at a time. You can run scripts per workspace:
+
+- `pnpm -F playground dev`
+- `pnpm -F studio.giselles.ai test`
+- `pnpm -F @giselles-ai/giselle test`
+
+### Environment variables
+
+- Apps typically use `.env.local` (see `README.md` and `apps/playground/README.md`).
+- Never commit real secrets. Use the Vault/Secrets abstraction for user-provided credentials (see `docs/adr/0003-managing-secrets.md`).
 
 ## Key Conventions
 
 ### Naming
 
-TBD
+Follow the conventions already used across the repo:
+
+- **Files/folders**: `kebab-case`
+- **React components / classes**: `PascalCase`
+- **Variables / functions / methods**: `camelCase`
+- **IDs**: string IDs often have a **prefix** that encodes the domain (e.g. `rn-` vs `flrn-`; see `docs/run-ids-explanation.md`).
 
 ### Code Style
 
-TBD
+- **TypeScript-first**: prefer clear types and small, explicit APIs over clever abstractions.
+- **Formatting/linting**: Biome is the source of truth. Use `pnpm format`.
+  - Indentation is **tabs** (see `biome.json`).
+  - Quotes are **double quotes** in JS/TS (see `biome.json`).
+- **Monorepo boundaries**:
+  - Prefer importing via package entrypoints (workspace packages) over deep relative paths across packages.
+  - Keep changes scoped: avoid unrelated formatting/lockfile churn in PRs (see `docs/vibe/03-clean-prs.md`).
+- **UI/editor performance**:
+  - For the new editor, follow the Zustand selector + equality patterns documented in
+    `internal-packages/workflow-designer-ui/src/new-editor/AGENTS.md`.
 
 ### Error Handling
 
-TBD
+- **Fail fast with actionable messages**: validate inputs early and throw errors that help users and developers recover.
+- **Use `cause` for error chains**: when rethrowing, preserve the underlying error via `cause`.
+- **Cross-package error identification**:
+  - In React bindings we use marker Symbols (via `Symbol.for(...)`) so errors can be detected across package versions (see `packages/react/src/errors/*`).
+- **API errors should carry context**:
+  - Include request/response metadata when safe, and provide a retry hint (e.g. `isRetryable`) when applicable (see `APICallError`).
+- **Secrets**:
+  - Never log/store plaintext secrets. Encrypt on ingress; decrypt only server-side when needed (see `docs/adr/0003-managing-secrets.md`).
 
 
 ## Continuity Ledger (compaction-safe)
