@@ -13,25 +13,66 @@ Giselle is built to design and run AI workflows beyond prompt chains. Not a chat
 
 ## Architecture
 
-TBD
+The project is structured as a monorepo using **pnpm workspaces** and **Turbo**.
+
+- **apps/**: End-user applications.
+  - `studio.giselles.ai`: The main cloud application (Next.js).
+  - `playground`: Development environment for testing the SDK and components.
+- **packages/**: Core libraries and shared modules.
+  - `giselle`: The core SDK handling workflow execution and state management.
+  - `protocol`: Defines the data schema (Zod) for nodes, edges, tasks, and generations.
+  - `react`, `nextjs`: Integration bindings.
+  - `supabase-driver`: Storage implementation.
+- **internal-packages/**: Shared UI components used across apps.
+  - `workflow-designer-ui`: The visual editor component (React Flow based).
+  - `ui`: Shared design system components.
+
+Data flows from the **Visual Editor** (generating JSON based on `protocol`) to the **Runner** (Giselle SDK), which executes the workflow. State is persisted via storage drivers (e.g., Supabase).
 
 ## Development Workflow
 
-TBD
+- **Package Manager**: `pnpm` (v10.16.0)
+- **Build System**: `turbo`
+- **Linting & Formatting**: `biome`
+
+### Common Commands
+- `pnpm build`: Build all packages.
+- `pnpm dev`: Start the development environment (playground).
+- `pnpm format`: Format code using Biome.
+- `pnpm check-types`: Run type checking.
+- `pnpm test`: Run tests (Vitest).
+
+### Release Process
+- Uses **Changesets** for versioning and changelogs.
+- Run `pnpm changeset` to generate a changeset for your changes.
 
 ## Key Conventions
 
 ### Naming
 
-TBD
+Follow the strict naming conventions outlined in `.cursor/rules/naming-guide.mdc`:
+
+- **Files**: `kebab-case.ts`, `kebab-case.tsx`
+- **Directories**: `kebab-case`
+- **React Components**: `PascalCase`
+- **Variables & Functions**: `camelCase`
+- **Types & Interfaces**: `PascalCase`
 
 ### Code Style
 
-TBD
+- **Formatter**: **Biome** is the single source of truth for formatting. Always run `pnpm format`.
+- **Language**: TypeScript (strict mode).
+- **Styling**: Tailwind CSS.
+- **State Management**: Zustand for global state, React Context for scoped state.
+- **Validation**: Zod for runtime validation and schema definition.
+- **Imports**: Use explicit imports and path aliases (e.g., `@giselles-ai/*`) where defined.
 
 ### Error Handling
 
-TBD
+- **Error Classes**: Use custom error classes extending `BaseError` (defined in `packages/giselle/src/error.ts`).
+- **Type Guards**: Use exported type guards (e.g., `isUsageLimitError`) to check for specific error types.
+- **Propagation**: Errors should be propagated up to the appropriate layer (e.g., API route or UI boundary) for handling and reporting.
+- **UI**: Use error boundaries and toast notifications to inform users of errors gracefully.
 
 
 ## Continuity Ledger (compaction-safe)
