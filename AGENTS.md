@@ -1,5 +1,20 @@
 # Agents.md - Giselle Development Guide
 
+## Development Philosophy
+
+### Core Principle: **Less is more**
+Keep every implementation as small and obvious as possible.
+
+### Guidelines
+- **Simplicity first** – Prefer the simplest data structures and APIs that work
+- **Avoid needless abstractions** – Refactor only when duplication hurts
+- **Remove dead code early** – `pnpm tidy` scans for unused files/deps and lets you delete them in one command
+- **Minimize dependencies** – Before adding a dependency, ask "Can we do this with what we already have?"
+- **Consistency wins** – Follow existing naming and file-layout patterns; if you must diverge, document why
+- **Explicit over implicit** – Favor clear, descriptive names and type annotations over clever tricks
+- **Fail fast** – Validate inputs, throw early, and surface actionable errors
+- **Let the code speak** – If you need a multi-paragraph comment, refactor until intent is obvious
+
 ## Project Overview
 
 Giselle is built to design and run AI workflows beyond prompt chains. Not a chat. Not a chain. A system you can run.
@@ -116,6 +131,7 @@ Run these commands in order:
 3. `pnpm check-types` — Verify types
 4. `pnpm tidy` — Check for unused code
 5. `pnpm test` — Run tests
+6. Update `CONTINUITY.md` — Reflect the change immediately
 
 ### Testing
 
