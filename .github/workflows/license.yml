@@ -48,7 +48,7 @@ jobs:
       # To make the success of this job a prerequisite for merging into the main branch,
       # set a filter here instead of on: to determine whether or not to proceed to the next step.
       - name: Cache dependency files
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: cache
         with:
           path: |
