@@ -393,11 +393,6 @@ function MyComponent() {
 ## Continuity Ledger (compaction-safe)
 Maintain a single Continuity Ledger for this workspace in `CONTINUITY.md`. The ledger is the canonical session briefing designed to survive context compaction; do not rely on earlier chat text unless it’s reflected in the ledger.
 
-### Article-writing ledger (separate from the repo ledger)
-- Keep using the root `CONTINUITY.md` as the canonical **repository** ledger (build/product decisions, implementation state).
-- Use `texts/CONTINUITY.md` as the canonical **article-writing** ledger (drafting state, outline-to-draft progress, publishing constraints).
-- When working on the blog post in `texts/*`, update `texts/CONTINUITY.md` in addition to (or instead of) the root ledger, depending on what changed.
-
 ### How it works
 - At the start of every assistant turn: read `CONTINUITY.md`, update it to reflect the latest goal/constraints/decisions/state, then proceed with the work.
 - **After every file edit: update `CONTINUITY.md` immediately** to reflect the change before proceeding to the next task. Skipping this breaks session continuity and makes context unreliable.
