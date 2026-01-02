@@ -304,6 +304,92 @@ if (!config.vectorStoreQueryService) {
 }
 ```
 
+### Feature Flags
+
+Feature flags protect unreleased features, allowing safe merges to main and production deploys.
+
+**Step 1: Define the flag in `apps/studio.giselles.ai/flags.ts`**
+
+```typescript
+export const myNewFeatureFlag = flag<boolean>({
+  key: "my-new-feature",
+  async decide() {
+    if (process.env.NODE_ENV === "development") {
+      return takeLocalEnv("MY_NEW_FEATURE_FLAG");
+    }
+    const edgeConfig = await get(`flag__${this.key}`);
+    if (edgeConfig === undefined) {
+      return false;
+    }
+    return edgeConfig === true || edgeConfig === "true";
+  },
+  description: "Enable my new feature",
+  options: [
+    { value: false, label: "disable" },
+    { value: true, label: "Enable" },
+  ],
+  defaultValue: false,
+});
+```
+
+**Step 2: Use on server (Next.js server components, data loaders)**
+
+```typescript
+// apps/studio.giselles.ai/app/workspaces/[workspaceId]/data-loader.ts
+const myNewFeature = await myNewFeatureFlag();
+return {
+  // ...
+  featureFlags: {
+    // ...existing flags
+    myNewFeature,
+  },
+};
+```
+
+**Step 3: Expose to React components**
+
+Add the flag to the `FeatureFlagContextValue` interface:
+
+```typescript
+// packages/react/src/feature-flags/context.ts
+export interface FeatureFlagContextValue {
+  // ...existing flags
+  myNewFeature: boolean;
+}
+```
+
+Add to `WorkspaceProvider` defaults:
+
+```typescript
+// packages/react/src/workspace/provider.tsx
+<FeatureFlagContext
+  value={{
+    // ...existing flags
+    myNewFeature: featureFlag?.myNewFeature ?? false,
+  }}
+>
+```
+
+**Step 4: Use in React components**
+
+```typescript
+import { useFeatureFlag } from "@giselles-ai/react";
+
+function MyComponent() {
+  const { myNewFeature } = useFeatureFlag();
+  
+  if (!myNewFeature) {
+    return null; // or fallback UI
+  }
+  
+  return <NewFeatureUI />;
+}
+```
+
+**Local development**: Set the environment variable (e.g., `MY_NEW_FEATURE_FLAG=true`) in `.env.local`.
+
+**Production**: Configure via Vercel Edge Config with key `flag__my-new-feature`.
+
 ## Continuity Ledger (compaction-safe)
 Maintain a single Continuity Ledger for this workspace in `CONTINUITY.md`. The ledger is the canonical session briefing designed to survive context compaction; do not rely on earlier chat text unless it’s reflected in the ledger.
 

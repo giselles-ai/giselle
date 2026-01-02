@@ -1,10 +1,13 @@
 import { Button } from "@giselle-internal/ui/button";
+import { Input } from "@giselle-internal/ui/input";
 import { useToasts } from "@giselle-internal/ui/toast";
+import { Toggle } from "@giselle-internal/ui/toggle";
 import type { App, AppEntryNode } from "@giselles-ai/protocol";
-import { useGiselle } from "@giselles-ai/react";
+import { useFeatureFlag, useGiselle } from "@giselles-ai/react";
 import { LoaderIcon } from "lucide-react";
 import { type FormEvent, useCallback, useEffect, useState } from "react";
 import type { KeyedMutator } from "swr";
+import ClipboardButton from "../../../ui/clipboard-button";
 
 export function AppEntryConfiguredView({
 	app,
@@ -15,9 +18,11 @@ export function AppEntryConfiguredView({
 	mutateApp: KeyedMutator<{ app: App }>;
 }) {
 	const client = useGiselle();
+	const { apiPublishing } = useFeatureFlag();
 
 	const [appDescription, setAppDescription] = useState(app.description);
 	const [isSavingDescription, setIsSavingDescription] = useState(false);
+	const [isApiEnabled, setIsApiEnabled] = useState(false);
 
 	const { info } = useToasts();
 
@@ -59,6 +64,12 @@ export function AppEntryConfiguredView({
 		[app.description, appDescription, persistApp],
 	);
 
+	// TODO: Replace with actual API endpoint and key from app data structure
+	const apiEndpoint = isApiEnabled
+		? `${typeof window !== "undefined" ? window.location.origin : ""}/api/apps/${app.id}`
+		: "";
+	const apiKey = isApiEnabled ? "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" : "";
+
 	return (
 		<div className="flex flex-col gap-[16px] p-0 px-1 overflow-y-auto">
 			<div className="flex flex-col gap-[8px]">
@@ -89,6 +100,68 @@ export function AppEntryConfiguredView({
 					</div>
 				</form>
 			</div>
+
+			{apiPublishing && (
+				<div className="flex flex-col gap-[16px] pt-[8px] border-t border-border">
+					<Toggle
+						name="api-enabled"
+						checked={isApiEnabled}
+						onCheckedChange={setIsApiEnabled}
+					>
+						<span className="text-[14px] text-text">Publish as API</span>
+					</Toggle>
+
+					{isApiEnabled && (
+						<div className="flex flex-col gap-[12px]">
+							<div className="flex flex-col gap-[4px]">
+								<label
+									htmlFor="api-endpoint"
+									className="text-[12px] text-text-muted"
+								>
+									API Endpoint
+								</label>
+								<div className="flex items-center gap-[8px]">
+									<Input
+										id="api-endpoint"
+										type="text"
+										value={apiEndpoint}
+										readOnly
+										className="flex-1 font-mono text-[12px]"
+									/>
+									<ClipboardButton
+										text={apiEndpoint}
+										tooltip="Copy endpoint"
+										sizeClassName="h-[20px] w-[20px]"
+									/>
+								</div>
+							</div>
+
+							<div className="flex flex-col gap-[4px]">
+								<label
+									htmlFor="api-key"
+									className="text-[12px] text-text-muted"
+								>
+									API Key
+								</label>
+								<div className="flex items-center gap-[8px]">
+									<Input
+										id="api-key"
+										type="text"
+										value={apiKey}
+										readOnly
+										className="flex-1 font-mono text-[12px]"
+									/>
+									<ClipboardButton
+										text={apiKey}
+										tooltip="Copy API key"
+										sizeClassName="h-[20px] w-[20px]"
+									/>
+								</div>
+							</div>
+						</div>
+					)}
+				</div>
+			)}
 		</div>
 	);
 }

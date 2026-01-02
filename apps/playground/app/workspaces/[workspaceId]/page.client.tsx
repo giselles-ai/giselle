@@ -34,6 +34,7 @@ export function Page({ dataLoader, workspaceSaveAction }: Props) {
 					googleUrlContext: false,
 					generateContentNode: true,
 					privatePreviewTools: true,
+					apiPublishing: false,
 				}}
 				usageLimits={{
 					featureTier: "pro",
