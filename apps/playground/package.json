@@ -2,7 +2,7 @@
 	"name": "playground",
 	"version": "0.1.0",
 	"engines": {
-		"node": "22.x"
+		"node": "24.x"
 	},
 	"packageManager": "pnpm@10.16.0",
 	"private": true,

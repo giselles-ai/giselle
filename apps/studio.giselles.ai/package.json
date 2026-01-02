@@ -3,7 +3,7 @@
 	"name": "studio.giselles.ai",
 	"version": "0.1.0",
 	"engines": {
-		"node": "22.x"
+		"node": "24.x"
 	},
 	"private": true,
 	"scripts": {

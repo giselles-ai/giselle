@@ -44,7 +44,7 @@ catalog:
   '@trigger.dev/sdk': 4.3.0
   '@turbo/gen': 2.3.3
   '@types/fast-levenshtein': 0.0.4
-  '@types/node': 22.14.0
+  '@types/node': 24.10.4
   '@types/pg': 8.11.13
   '@types/pluralize': 0.0.33
   '@types/pngjs': 6.0.5
