@@ -1,4 +1,4 @@
-# Agents.md - Giselle Development Guide
+# AGENTS.md - Giselle Development Guide
 
 ## Development Philosophy
 
