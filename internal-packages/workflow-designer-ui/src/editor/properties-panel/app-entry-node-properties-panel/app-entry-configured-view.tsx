@@ -1,13 +1,39 @@
 import { Button } from "@giselle-internal/ui/button";
+import {
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogTitle,
+} from "@giselle-internal/ui/dialog";
 import { Input } from "@giselle-internal/ui/input";
 import { useToasts } from "@giselle-internal/ui/toast";
-import { Toggle } from "@giselle-internal/ui/toggle";
 import type { App, AppEntryNode } from "@giselles-ai/protocol";
 import { useFeatureFlag, useGiselle } from "@giselles-ai/react";
 import { LoaderIcon } from "lucide-react";
 import { type FormEvent, useCallback, useEffect, useState } from "react";
 import type { KeyedMutator } from "swr";
 import ClipboardButton from "../../../ui/clipboard-button";
+
+type ApiSecretRecordResponse = {
+	record: {
+		id: string;
+		createdAt: number;
+		lastUsedAt?: number;
+		revokedAt?: number;
+	} | null;
+};
+
+type ApiSecretCreateResponse = {
+	token: string;
+	record: {
+		id: string;
+		createdAt: number;
+		lastUsedAt?: number;
+		revokedAt?: number;
+	};
+};
 
 export function AppEntryConfiguredView({
 	app,
@@ -22,7 +48,13 @@ export function AppEntryConfiguredView({
 
 	const [appDescription, setAppDescription] = useState(app.description);
 	const [isSavingDescription, setIsSavingDescription] = useState(false);
-	const [isApiEnabled, setIsApiEnabled] = useState(false);
+	const [apiSecretRecord, setApiSecretRecord] =
+		useState<ApiSecretRecordResponse["record"]>(null);
+	const [isFetchingApiSecretRecord, setIsFetchingApiSecretRecord] =
+		useState(false);
+	const [isCreatingApiKey, setIsCreatingApiKey] = useState(false);
+	const [showOnceToken, setShowOnceToken] = useState<string | null>(null);
+	const [isTokenDialogOpen, setIsTokenDialogOpen] = useState(false);
 
 	const { info } = useToasts();
 
@@ -30,8 +62,33 @@ export function AppEntryConfiguredView({
 		setAppDescription(app.description);
 	}, [app.description]);
 
+	const fetchApiSecretRecord = useCallback(async () => {
+		setIsFetchingApiSecretRecord(true);
+		try {
+			const res = (await client.getCurrentApiSecretRecordForApp({
+				appId: app.id,
+			})) as ApiSecretRecordResponse;
+			setApiSecretRecord(res.record);
+		} catch {
+			setApiSecretRecord(null);
+		} finally {
+			setIsFetchingApiSecretRecord(false);
+		}
+	}, [app.id, client]);
+
+	useEffect(() => {
+		if (!apiPublishing) return;
+		if (!app.apiPublishing?.apiKeyId) {
+			setApiSecretRecord(null);
+			return;
+		}
+		void fetchApiSecretRecord();
+	}, [apiPublishing, app.apiPublishing?.apiKeyId, fetchApiSecretRecord]);
+
 	const persistApp = useCallback(
-		async (updatedFields: Pick<App, "description">) => {
+		async (
+			updatedFields: Partial<Pick<App, "description" | "apiPublishing">>,
+		) => {
 			await client.saveApp({
 				app: {
 					...app,
@@ -64,11 +121,23 @@ export function AppEntryConfiguredView({
 		[app.description, appDescription, persistApp],
 	);
 
-	// TODO: Replace with actual API endpoint and key from app data structure
-	const apiEndpoint = isApiEnabled
-		? `${typeof window !== "undefined" ? window.location.origin : ""}/api/apps/${app.id}`
-		: "";
-	const apiKey = isApiEnabled ? "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" : "";
+	const handleCreateApiKey = useCallback(async () => {
+		setIsCreatingApiKey(true);
+		try {
+			const json = (await client.createApiSecret({
+				appId: app.id,
+			})) as ApiSecretCreateResponse;
+			setShowOnceToken(json.token);
+			setIsTokenDialogOpen(true);
+			setApiSecretRecord(json.record);
+			await mutateApp();
+			info("API key created (shown once)");
+		} catch (error) {
+			console.error("Failed to create API key", error);
+		} finally {
+			setIsCreatingApiKey(false);
+		}
+	}, [app.id, client, mutateApp, info]);
 
 	return (
 		<div className="flex flex-col gap-[16px] p-0 px-1 overflow-y-auto">
@@ -103,65 +172,92 @@ export function AppEntryConfiguredView({
 
 			{apiPublishing && (
 				<div className="flex flex-col gap-[16px] pt-[8px] border-t border-border">
-					<Toggle
-						name="api-enabled"
-						checked={isApiEnabled}
-						onCheckedChange={setIsApiEnabled}
-					>
-						<span className="text-[14px] text-text">Publish as API</span>
-					</Toggle>
-
-					{isApiEnabled && (
-						<div className="flex flex-col gap-[12px]">
-							<div className="flex flex-col gap-[4px]">
-								<label
-									htmlFor="api-endpoint"
-									className="text-[12px] text-text-muted"
+					<div className="flex flex-col gap-[12px]">
+						<div className="flex flex-col gap-[4px]">
+							<label htmlFor="api-key" className="text-[12px] text-text-muted">
+								Secret Key
+							</label>
+							<div className="flex items-center gap-[8px]">
+								<Input
+									id="api-key"
+									type="text"
+									value={
+										app.apiPublishing?.apiKeyId
+											? `Key created (${apiSecretRecord?.id ?? app.apiPublishing.apiKeyId})`
+											: "No key yet"
+									}
+									readOnly
+									className="flex-1 font-mono text-[12px]"
+								/>
+								<Button
+									type="button"
+									variant="solid"
+									size="compact"
+									disabled={isCreatingApiKey}
+									onClick={handleCreateApiKey}
+									leftIcon={
+										isCreatingApiKey && (
+											<LoaderIcon className="size-[14px] animate-spin" />
+										)
+									}
 								>
-									API Endpoint
-								</label>
-								<div className="flex items-center gap-[8px]">
-									<Input
-										id="api-endpoint"
-										type="text"
-										value={apiEndpoint}
-										readOnly
-										className="flex-1 font-mono text-[12px]"
-									/>
-									<ClipboardButton
-										text={apiEndpoint}
-										tooltip="Copy endpoint"
-										sizeClassName="h-[20px] w-[20px]"
-									/>
-								</div>
+									Create new key
+								</Button>
 							</div>
-
-							<div className="flex flex-col gap-[4px]">
-								<label
-									htmlFor="api-key"
-									className="text-[12px] text-text-muted"
-								>
-									API Key
-								</label>
-								<div className="flex items-center gap-[8px]">
-									<Input
-										id="api-key"
-										type="text"
-										value={apiKey}
-										readOnly
-										className="flex-1 font-mono text-[12px]"
-									/>
-									<ClipboardButton
-										text={apiKey}
-										tooltip="Copy API key"
-										sizeClassName="h-[20px] w-[20px]"
-									/>
-								</div>
+							<div className="flex items-center justify-between text-[12px] text-text-muted">
+								<span>
+									{isFetchingApiSecretRecord
+										? "Loading key metadata..."
+										: apiSecretRecord?.lastUsedAt
+											? `Last used: ${new Date(apiSecretRecord.lastUsedAt).toLocaleString()}`
+											: apiSecretRecord?.id
+												? "Last used: -"
+												: ""}
+								</span>
 							</div>
 						</div>
-					)}
+					</div>
 				</div>
 			)}
+
+			<Dialog
+				open={isTokenDialogOpen}
+				onOpenChange={(open) => {
+					setIsTokenDialogOpen(open);
+					if (!open) {
+						setShowOnceToken(null);
+					}
+				}}
+			>
+				<DialogContent variant="glass">
+					<DialogTitle>API key created</DialogTitle>
+					<DialogDescription>
+						This token is shown only once. Copy it now and store it safely.
+					</DialogDescription>
+
+					<div className="mt-4 flex items-center gap-2">
+						<Input
+							type="text"
+							readOnly
+							value={showOnceToken ?? ""}
+							className="flex-1 font-mono text-[12px]"
+						/>
+						<ClipboardButton
+							text={showOnceToken ?? ""}
+							tooltip="Copy token"
+							sizeClassName="h-[20px] w-[20px]"
+						/>
+					</div>
+
+					<DialogFooter>
+						<DialogClose asChild>
+							<Button type="button" variant="solid" size="large">
+								Close
+							</Button>
+						</DialogClose>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
 		</div>
 	);
 }

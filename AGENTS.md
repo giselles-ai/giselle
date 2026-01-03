@@ -133,6 +133,10 @@ Run these commands in order:
 5. `pnpm test` — Run tests
 6. Update `CONTINUITY.md` — Reflect the change immediately
 
+### API addition rule (Giselle ↔ HTTP)
+
+When adding a new **public API** to `packages/giselle/src/giselle.ts`, also add the corresponding routing entry to `packages/http/src/router.ts` (typically `jsonRoutes.<name>` using `giselle.<name>.inputSchema`) so the API is reachable through the HTTP layer (e.g., via `NextGiselle`).
+
 ### Testing
 
 ```sh
@@ -393,15 +397,12 @@ function MyComponent() {
 ## Continuity Ledger (compaction-safe)
 Maintain a single Continuity Ledger for this workspace in `CONTINUITY.md`. The ledger is the canonical session briefing designed to survive context compaction; do not rely on earlier chat text unless it’s reflected in the ledger.
 
-### Article-writing ledger (separate from the repo ledger)
-- Keep using the root `CONTINUITY.md` as the canonical **repository** ledger (build/product decisions, implementation state).
-- Use `texts/CONTINUITY.md` as the canonical **article-writing** ledger (drafting state, outline-to-draft progress, publishing constraints).
-- When working on the blog post in `texts/*`, update `texts/CONTINUITY.md` in addition to (or instead of) the root ledger, depending on what changed.
-
 ### How it works
 - At the start of every assistant turn: read `CONTINUITY.md`, update it to reflect the latest goal/constraints/decisions/state, then proceed with the work.
 - **After every file edit: update `CONTINUITY.md` immediately** to reflect the change before proceeding to the next task. Skipping this breaks session continuity and makes context unreliable.
 - Keep it short and stable: facts only, no transcripts. Prefer bullets. Mark uncertainty as `UNCONFIRMED` (never guess).
+- Use **Open questions** to track critical unresolved decisions, design risks, and policy choices (including temporary agreements).
+- Use **Next** only for concrete, owned execution steps. Avoid listing “decide X” items there; if sequencing is intentionally handed off, leave `Next` empty and capture the rationale under **Now** / **Open questions**.
 - If you notice missing recall or a compaction/summary event: refresh/rebuild the ledger from visible context, mark gaps `UNCONFIRMED`, ask up to 1–3 targeted questions, then continue.
 
 ### `functions.update_plan` vs the Ledger

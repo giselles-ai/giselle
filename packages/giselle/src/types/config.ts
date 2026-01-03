@@ -13,10 +13,32 @@ import type {
 } from "./usage-limits";
 import type { WaitUntil } from "./wait-until";
 
+export type ApiSecretScryptConfig = {
+	params?: {
+		n: number;
+		r: number;
+		p: number;
+		keyLen: number;
+	};
+	saltBytes?: number;
+	/**
+	 * When enabled, logs derived-key duration to `logger.debug` for observability.
+	 * Never logs secrets or tokens.
+	 */
+	logDuration?: boolean;
+};
+
 export interface GiselleConfig {
 	storage: GiselleStorage;
 	sampleAppWorkspaceIds?: WorkspaceId[];
 	llmProviders?: LanguageModelProvider[];
+	/**
+	 * scrypt configuration for API publishing secret hashing.
+	 *
+	 * These values affect only newly issued API secrets because the chosen params
+	 * are stored in the ApiSecretRecord for verification.
+	 */
+	apiSecretScrypt?: ApiSecretScryptConfig;
 	integrationConfigs?: GiselleIntegrationConfig;
 	onConsumeAgentTime?: ConsumeAgentTimeCallback;
 	telemetry?: {
