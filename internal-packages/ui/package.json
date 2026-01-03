@@ -25,6 +25,8 @@
 		"./docs-link": "./components/docs-link.tsx",
 		"./app-icon": "./components/app-icon.tsx",
 		"./glass-surface": "./components/glass-surface.tsx",
+		"./glass-button": "./components/glass-button.tsx",
+		"./glass-card": "./components/glass-card.tsx",
 		"./utils": "./utils.ts"
 	},
 	"dependencies": {
