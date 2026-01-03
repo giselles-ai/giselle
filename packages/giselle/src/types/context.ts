@@ -11,6 +11,7 @@ import type { Vault } from "@giselles-ai/vault";
 import type { GenerationMetadata } from "../generations";
 import type { TelemetrySettings } from "../telemetry";
 import type { GiselleCallbacks } from "./callbacks";
+import type { ApiSecretScryptConfig } from "./config";
 import type { GitHubIntegrationConfig } from "./integrations";
 import type { VectorStoreQueryServices } from "./query-services";
 import type {
@@ -48,11 +49,7 @@ export interface GiselleContext {
 	storage: GiselleStorage;
 	sampleAppWorkspaceIds?: WorkspaceId[];
 	llmProviders: LanguageModelProvider[];
-	/**
-	 * Server-side pepper used to hash API publishing secrets.
-	 * This must never be sent to clients.
-	 */
-	apiSecretPepper?: string;
+	apiSecretScrypt?: ApiSecretScryptConfig;
 	integrationConfigs?: {
 		github?: GitHubIntegrationConfig;
 	};

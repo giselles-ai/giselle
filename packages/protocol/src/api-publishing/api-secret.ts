@@ -16,15 +16,7 @@ const ApiSecretKdfScrypt = z.object({
 	}),
 });
 
-const ApiSecretKdfHmacSha256 = z.object({
-	type: z.literal("hmac-sha256"),
-	pepperVersion: z.string().optional(),
-});
-
-export const ApiSecretKdf = z.union([
-	ApiSecretKdfScrypt,
-	ApiSecretKdfHmacSha256,
-]);
+export const ApiSecretKdf = ApiSecretKdfScrypt;
 export type ApiSecretKdf = z.infer<typeof ApiSecretKdf>;
 
 export const ApiSecretRecord = z.object({

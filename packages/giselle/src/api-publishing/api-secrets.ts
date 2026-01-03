@@ -1,10 +1,10 @@
 import {
-	createHmac,
 	randomBytes,
 	type ScryptOptions,
 	scrypt as scryptCb,
 	timingSafeEqual,
 } from "node:crypto";
+import { performance } from "node:perf_hooks";
 import {
 	ApiKeyId,
 	type ApiSecretKdf,
@@ -62,23 +62,62 @@ function constantTimeEqualBase64(aBase64: string, bBase64: string): boolean {
 	return timingSafeEqual(a, b);
 }
 
-function computeHmacSha256Base64(args: {
-	pepper: string;
-	secret: string;
-}): string {
-	return createHmac("sha256", Buffer.from(args.pepper, "utf8"))
-		.update(args.secret, "utf8")
-		.digest("base64");
+const defaultApiSecretScryptParams = {
+	n: 16384,
+	r: 8,
+	p: 1,
+	keyLen: 32,
+} satisfies Extract<ApiSecretKdf, { type: "scrypt" }>["params"];
+
+const defaultApiSecretScryptSaltBytes = 16;
+
+function getApiSecretScryptParams(
+	context: GiselleContext,
+): Extract<ApiSecretKdf, { type: "scrypt" }>["params"] {
+	return context.apiSecretScrypt?.params ?? defaultApiSecretScryptParams;
 }
 
-function requireApiSecretPepper(context: GiselleContext): string {
-	const pepper = context.apiSecretPepper;
-	if (pepper === undefined || pepper.length === 0) {
-		throw new Error(
-			"apiSecretPepper is not configured (set GISELLE_API_SECRET_PEPPER)",
-		);
+function getApiSecretScryptSaltBytes(context: GiselleContext): number {
+	return context.apiSecretScrypt?.saltBytes ?? defaultApiSecretScryptSaltBytes;
+}
+
+async function computeScryptHashWithOptionalLogging(args: {
+	context: GiselleContext;
+	purpose: "create" | "verify";
+	secret: string;
+	saltBase64: string;
+	params: Extract<ApiSecretKdf, { type: "scrypt" }>["params"];
+}): Promise<string> {
+	if (!args.context.apiSecretScrypt?.logDuration) {
+		return await computeScryptHash({
+			secret: args.secret,
+			saltBase64: args.saltBase64,
+			params: args.params,
+		});
 	}
-	return pepper;
+
+	const start = performance.now();
+	const secretHash = await computeScryptHash({
+		secret: args.secret,
+		saltBase64: args.saltBase64,
+		params: args.params,
+	});
+	const durationMs = performance.now() - start;
+
+	args.context.logger.debug(
+		{
+			purpose: args.purpose,
+			n: args.params.n,
+			r: args.params.r,
+			p: args.params.p,
+			keyLen: args.params.keyLen,
+			saltBytes: Buffer.from(args.saltBase64, "base64").length,
+			durationMs,
+		},
+		"api secret scrypt derived",
+	);
+
+	return secretHash;
 }
 
 async function getAppOrThrow(context: GiselleContext, appId: AppId) {
@@ -114,19 +153,29 @@ export const createApiSecret = createGiselleFunction({
 		appId: AppId.schema,
 	}),
 	handler: async ({ context, input }) => {
-		const pepper = requireApiSecretPepper(context);
 		const app = await getAppOrThrow(context, input.appId);
 
 		const apiKeyId = ApiKeyId.generate();
 		const secret = randomSecretBytes().toString("base64url");
-		const secretHash = computeHmacSha256Base64({ pepper, secret });
+		const params = getApiSecretScryptParams(context);
+		const saltBase64 = randomBytes(
+			getApiSecretScryptSaltBytes(context),
+		).toString("base64");
+		const secretHash = await computeScryptHashWithOptionalLogging({
+			context,
+			purpose: "create",
+			secret,
+			saltBase64,
+			params,
+		});
 
 		const record: ApiSecretRecordType = {
 			id: apiKeyId,
 			appId: input.appId,
 			kdf: {
-				type: "hmac-sha256",
-				pepperVersion: "v1",
+				type: "scrypt",
+				salt: saltBase64,
+				params,
 			},
 			secretHash,
 			createdAt: Date.now(),
@@ -274,26 +323,13 @@ export async function verifyApiSecretForApp(args: {
 		return { ok: false, reason: "revoked" };
 	}
 
-	let computed: string;
-	switch (record.kdf.type) {
-		case "hmac-sha256": {
-			const pepper = requireApiSecretPepper(args.context);
-			computed = computeHmacSha256Base64({ pepper, secret: parsed.secret });
-			break;
-		}
-		case "scrypt": {
-			computed = await computeScryptHash({
-				secret: parsed.secret,
-				saltBase64: record.kdf.salt,
-				params: record.kdf.params,
-			});
-			break;
-		}
-		default: {
-			const _exhaustiveCheck: never = record.kdf;
-			throw new Error(`Unsupported kdf: ${_exhaustiveCheck}`);
-		}
-	}
+	const computed = await computeScryptHashWithOptionalLogging({
+		context: args.context,
+		purpose: "verify",
+		secret: parsed.secret,
+		saltBase64: record.kdf.salt,
+		params: record.kdf.params,
+	});
 
 	if (!constantTimeEqualBase64(computed, record.secretHash)) {
 		return { ok: false, reason: "invalid" };

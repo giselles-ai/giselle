@@ -73,15 +73,21 @@ Add API publishing settings UI to App Entry Node Properties Panel, protected by 
 - Refactored API publishing UI to use `useGiselle()` client methods instead of manual `fetch()` calls, and added a `getCurrentApiSecretRecordForApp` API/route to support that.
 - Fixed build/type errors: removed duplicate export of `getCurrentApiSecretRecordForApp` in `packages/giselle/src/api-publishing/api-secrets.ts` and updated studio route to call `giselle.getCurrentApiSecretRecordForApp`.
 - Simplified App Entry properties panel to **secret key creation only** (removed run/revoke/toggle flows for now).
-- Updated API publishing secret hashing to **HMAC-SHA256 + server-side pepper** (stored in Vercel env var `GISELLE_API_SECRET_PEPPER`) while keeping **hash-only** storage in Giselle Storage.
-- Added `apiSecretPepper` to `GiselleConfig` / `GiselleContext` and wired it in Studio/Playground Giselle initialization.
-- Kept backward compatibility: verification supports both legacy `scrypt` records and new `hmac-sha256` records.
 - Hardened `lastUsedAt` updates to reduce the chance of overwriting a concurrent revoke.
-- Documented `GISELLE_API_SECRET_PEPPER` in `apps/studio.giselles.ai/README.md`.
+ - Updated Studio docs to describe `scrypt` env vars for API secret hashing (and removed `GISELLE_API_SECRET_PEPPER`).
+ - Started removing `hmac-sha256` support for API secret hashing (protocol schema updated to `scrypt`-only).
+ - Simplified protocol `ApiSecretKdf` schema to the single `scrypt` variant.
+ - Added `GiselleConfig.apiSecretScrypt` to allow configuring scrypt params + salt size + optional duration logging.
+ - Updated `GiselleContext` to carry `apiSecretScrypt` (replacing the removed pepper field).
+ - Refactored API publishing secret hashing to be `scrypt`-only, with optional duration logging for observability.
+ - Updated `packages/giselle` API secret tests to match the `scrypt`-only implementation.
+ - Updated Studio Giselle initialization to configure `apiSecretScrypt` via env (and removed pepper usage).
+ - Updated Playground Giselle initialization to configure `apiSecretScrypt` via env (and removed pepper usage).
 
 ## Now
 - Spec work progressed: endpoint format, App persistence approach, and API key design (hash-only + show-once) are recorded as TEMPORARY agreements in this ledger.
 - Current behavior: key records live in Giselle Storage (hash-only). `createApiSecret` attempts best-effort single-active by revoking the previous key if present, but verification is record-based and does not enforce “current `app.apiPublishing.apiKeyId` only”.
+- Security follow-up: Code scanning flagged `hmac-sha256` for API secret hashing; plan is to remove HMAC and standardize on `scrypt` with configurable parameters.
 
 ## Next
 
@@ -90,6 +96,7 @@ Add API publishing settings UI to App Entry Node Properties Panel, protected by 
 - If we ever need key listing/rotation UX beyond “current key only”, do we need an `appId → keyIds` index (and where should it live)?
 - Should multi-active keys per App ever be supported (explicitly), or is best-effort single-active sufficient?
 - (Optional follow-up) When we revive the public Runs API, what should the request/response schema be?
+- What are the best `scrypt` parameters for API secret hashing in production (Vercel Functions)? Embed timing instrumentation in the hashing path, observe real numbers in the runtime environment, and decide parameters based on measurements. Ensure parameters are configurable (via `GiselleConfig` / env) so we can adjust them later without a refactor.
 
 ## Implementation notes (spec-only; delete once implemented)
 - **Key lifecycle**

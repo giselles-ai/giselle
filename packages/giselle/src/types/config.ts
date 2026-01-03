@@ -13,15 +13,32 @@ import type {
 } from "./usage-limits";
 import type { WaitUntil } from "./wait-until";
 
+export type ApiSecretScryptConfig = {
+	params?: {
+		n: number;
+		r: number;
+		p: number;
+		keyLen: number;
+	};
+	saltBytes?: number;
+	/**
+	 * When enabled, logs derived-key duration to `logger.debug` for observability.
+	 * Never logs secrets or tokens.
+	 */
+	logDuration?: boolean;
+};
+
 export interface GiselleConfig {
 	storage: GiselleStorage;
 	sampleAppWorkspaceIds?: WorkspaceId[];
 	llmProviders?: LanguageModelProvider[];
 	/**
-	 * Server-side pepper used to hash API publishing secrets.
-	 * Store this in a secure environment variable (e.g. Vercel Environment Variables).
+	 * scrypt configuration for API publishing secret hashing.
+	 *
+	 * These values affect only newly issued API secrets because the chosen params
+	 * are stored in the ApiSecretRecord for verification.
 	 */
-	apiSecretPepper?: string;
+	apiSecretScrypt?: ApiSecretScryptConfig;
 	integrationConfigs?: GiselleIntegrationConfig;
 	onConsumeAgentTime?: ConsumeAgentTimeCallback;
 	telemetry?: {
