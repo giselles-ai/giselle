@@ -1,5 +1,6 @@
 import { createIdGenerator } from "@giselles-ai/utils";
 import * as z from "zod/v4";
+import { ApiKeyId } from "../api-publishing/api-secret";
 import { NodeId } from "../node/base";
 import { WorkspaceId } from "../workspace/id";
 import { AppId } from "./app-id";
@@ -23,6 +24,12 @@ export const AppParameter = z.object({
 });
 export type AppParameter = z.infer<typeof AppParameter>;
 
+export const ApiPublishingSettings = z.object({
+	isEnabled: z.boolean(),
+	apiKeyId: ApiKeyId.schema.optional(),
+});
+export type ApiPublishingSettings = z.infer<typeof ApiPublishingSettings>;
+
 export const DisconnectedApp = z.object({
 	id: AppId.schema,
 	version: z.literal("v1"),
@@ -31,6 +38,7 @@ export const DisconnectedApp = z.object({
 	parameters: z.array(AppParameter),
 	entryNodeId: NodeId.schema,
 	workspaceId: WorkspaceId.schema,
+	apiPublishing: ApiPublishingSettings.optional(),
 });
 export type DisconnectedApp = z.infer<typeof DisconnectedApp>;
 
@@ -43,6 +51,7 @@ export const ConnectedApp = z.object({
 	entryNodeId: NodeId.schema,
 	endNodeId: NodeId.schema,
 	workspaceId: WorkspaceId.schema,
+	apiPublishing: ApiPublishingSettings.optional(),
 });
 export type ConnectedApp = z.infer<typeof ConnectedApp>;
 

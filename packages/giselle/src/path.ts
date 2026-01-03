@@ -1,4 +1,5 @@
 import type {
+	ApiKeyId,
 	AppId,
 	GenerationId,
 	TaskId,
@@ -15,6 +16,10 @@ export function generationUiMessageChunksPath(generationId: GenerationId) {
 
 export function appPath(appId: AppId) {
 	return `apps/${appId}.json` as const;
+}
+
+export function apiSecretPath(apiKeyId: ApiKeyId) {
+	return `api-secrets/${apiKeyId}.json` as const;
 }
 
 export function taskPath(taskId: TaskId) {

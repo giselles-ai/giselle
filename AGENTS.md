@@ -133,6 +133,10 @@ Run these commands in order:
 5. `pnpm test` — Run tests
 6. Update `CONTINUITY.md` — Reflect the change immediately
 
+### API addition rule (Giselle ↔ HTTP)
+
+When adding a new **public API** to `packages/giselle/src/giselle.ts`, also add the corresponding routing entry to `packages/http/src/router.ts` (typically `jsonRoutes.<name>` using `giselle.<name>.inputSchema`) so the API is reachable through the HTTP layer (e.g., via `NextGiselle`).
+
 ### Testing
 
 ```sh

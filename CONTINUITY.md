@@ -29,6 +29,7 @@ Add API publishing settings UI to App Entry Node Properties Panel, protected by 
   - Secret storage: hash-only (do NOT store plaintext; do NOT store decryptable ciphertext). The secret is shown once at creation and is not retrievable later.
   - App stores only references/flags (no secret): `app.apiPublishing.apiKeyId?: ApiKeyId`
   - UI must change accordingly: remove “copy API key” for existing keys; instead use “Create new key” → show-once modal and then only show fingerprint/metadata + revoke/rotate actions.
+- TEMPORARY agreement (spec-only; delete once implemented): public Runs API design is deferred for now; we keep only secret key generation in the App Entry properties panel.
 
 ## State
 - Repository is a large monorepo (>10k commits) using pnpm and turbo.
@@ -55,21 +56,35 @@ Add API publishing settings UI to App Entry Node Properties Panel, protected by 
   - Added to data-loader in `apps/studio.giselles.ai/app/workspaces/[workspaceId]/data-loader.ts`.
   - Added to playground in `apps/playground/app/workspaces/[workspaceId]/page.client.tsx`.
   - Used flag in `app-entry-configured-view.tsx` to conditionally render API publishing section.
+- Started implementing API publishing key management schemas in `packages/protocol` (`api-publishing/api-secret.ts`).
+- Added protocol exports for API publishing and extended `App` schema with `apiPublishing` (non-secret settings).
+- Added Giselle Storage path helper for API secrets and started implementing API secret key management in `packages/giselle` (token parsing + create/revoke/verify).
+- Exposed API secret key management APIs from `@giselles-ai/giselle` (exports + `giselle.createApiSecret` / `giselle.revokeApiSecret` methods).
+- (Rolled back) Removed Studio API routes for API publishing under `/api/v1/apps/{appId}/...` for now; key generation is handled via the Giselle HTTP layer.
+- Updated App Entry Properties Panel API publishing UI to use show-once key creation and revoke (no copy of existing keys), behind `apiPublishing`.
+- Added unit tests for API publishing token parsing, hashing verification, and single-active revoke behavior in `packages/giselle`.
+- Fixed `pnpm build-sdk` failure: replaced promisified `crypto.scrypt` call with a typed async wrapper for TS DTS generation.
+- Added a short comment explaining the `gsk_` token prefix meaning in `packages/giselle/src/api-publishing/token.ts`.
+- Added `createApiSecret` and `revokeApiSecret` JSON routes to `@giselles-ai/http` (`packages/http/src/router.ts`) to match `packages/giselle/src/giselle.ts`.
+- Updated `AGENTS.md` with a rule: when adding a new public API to `packages/giselle/src/giselle.ts`, also add the corresponding route in `packages/http/src/router.ts`.
+- Refactored API publishing UI to use `useGiselle()` client methods instead of manual `fetch()` calls, and added a `getCurrentApiSecretRecordForApp` API/route to support that.
+- Fixed build/type errors: removed duplicate export of `getCurrentApiSecretRecordForApp` in `packages/giselle/src/api-publishing/api-secrets.ts` and updated studio route to call `giselle.getCurrentApiSecretRecordForApp`.
+- Simplified App Entry properties panel to **secret key creation only** (removed run/revoke/toggle flows for now).
 
 ## Now
 - Spec work progressed: endpoint format, App persistence approach, and API key design (hash-only + show-once) are recorded as TEMPORARY agreements in this ledger.
-- Remaining work is to decide the persistence location/model for ApiKey records and active-key policy, then implement UI + backend accordingly.
+- Decisions locked: key records in Giselle Storage (hash-only) and single-active key policy.
 
 ## Next
 - Decide where ApiKey records live (Studio DB vs Giselle storage JSON index) and the minimal metadata/fingerprint needs.
 - Decide active-key policy (allow multiple active keys vs auto-revoke on new key).
-- Implement the agreed UI changes (show-once key creation, list metadata, revoke/rotate) behind `apiPublishing`.
-- Implement backend endpoints for create/rotate/revoke and request authentication for `POST /api/v1/apps/{appId}/runs`.
+- Keep the App Entry properties panel focused on **secret key creation only** (show-once) behind `apiPublishing`.
+- Revisit public Runs API design later (including `{ text }` and future `{ text, file: FileId }`).
 
 ## Open questions (UNCONFIRMED if needed)
 - What is the minimal persistence location for ApiKey records (Studio DB table vs Giselle storage JSON index) and what metadata do we need (createdAt, revokedAt, lastUsedAt, label, fingerprint)?
 - Should multiple active keys per App be allowed, or should creating a new key auto-revoke previous keys?
-- (Optional follow-up) What should the request/response schema for `POST /api/v1/apps/{appId}/runs` be (inputs, run id, status, errors)?
+- (Optional follow-up) When we revive the public Runs API, what should the request/response schema be?
 
 ## Implementation notes (spec-only; delete once implemented)
 - **Key lifecycle**
