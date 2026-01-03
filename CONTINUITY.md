@@ -84,12 +84,24 @@ Add API publishing settings UI to App Entry Node Properties Panel, protected by 
  - Updated Studio Giselle initialization to configure `apiSecretScrypt` via env (and removed pepper usage).
  - Updated Playground Giselle initialization to configure `apiSecretScrypt` via env (and removed pepper usage).
 
+- Added a new `GenerationOrigin` type: `api` (public API executions).
+- Added a Studio API Route to run an App via API key: `POST /api/apps/{appId}/run` with body `{ text: string }` and `Authorization: Bearer gsk_{apiKeyId}.{secret}`.
+- Updated origin-type switches/callbacks to handle `api` (task creation, generation execution, trigger resolution, file paths, Studio tracing + Trigger.dev processes).
+- Updated `@giselles-ai/giselle` exports to expose API publishing helpers needed by the Studio route.
+- Updated App Entry properties panel to show the API URL (copyable) above the Secret Key section so users can discover `appId` easily.
+
 ## Now
 - Spec work progressed: endpoint format, App persistence approach, and API key design (hash-only + show-once) are recorded as TEMPORARY agreements in this ledger.
 - Current behavior: key records live in Giselle Storage (hash-only). `createApiSecret` attempts best-effort single-active by revoking the previous key if present, but verification is record-based and does not enforce “current `app.apiPublishing.apiKeyId` only”.
 - Security follow-up: Code scanning flagged `hmac-sha256` for API secret hashing; plan is to remove HMAC and standardize on `scrypt` with configurable parameters.
 
+- Public App Run API is implemented and callable locally; the next missing piece for richer inputs is a public File Upload API so Runs can accept files (e.g. `{ text, file: FileId }`).
+
 ## Next
+
+- Add documentation / examples for the public run API (`curl` usage) in an appropriate Studio doc page.
+- Add a public API to fetch task status/results for API-triggered runs (e.g. `GET /api/tasks/{taskId}` or a dedicated Runs API that returns outputs/steps).
+- Define and implement a public upload API to support file parameters in public runs.
 
 ## Open questions (UNCONFIRMED if needed)
 - What minimal metadata/fingerprint do we need for Api secret records (e.g., createdAt, revokedAt, lastUsedAt, label, fingerprint)?
