@@ -78,12 +78,11 @@ Add API publishing settings UI to App Entry Node Properties Panel, protected by 
 
 ## Now
 - Spec work progressed: endpoint format, App persistence approach, and API key design (hash-only + show-once) are recorded as TEMPORARY agreements in this ledger.
-- Decisions locked: key records in Giselle Storage (hash-only) and single-active key policy.
+- Current behavior: key records live in Giselle Storage (hash-only). `createApiSecret` attempts best-effort single-active by revoking the previous key if present, but verification is record-based and does not enforce “current `app.apiPublishing.apiKeyId` only”.
 
 ## Next
 - Decide where ApiKey records live (Studio DB vs Giselle storage JSON index) and the minimal metadata/fingerprint needs.
-- Decide active-key policy (allow multiple active keys vs auto-revoke on new key).
-- Keep the App Entry properties panel focused on **secret key creation only** (show-once) behind `apiPublishing`.
+- Decide active-key policy: best-effort single-active (current) vs strict single-active (verify against `app.apiPublishing.apiKeyId`) vs allow multiple active keys.
 - Revisit public Runs API design later (including `{ text }` and future `{ text, file: FileId }`).
 
 ## Open questions (UNCONFIRMED if needed)
