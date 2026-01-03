@@ -20,7 +20,7 @@ import {
 	createApiSecret,
 	getCurrentApiSecretRecordForApp,
 	revokeApiSecret,
-} from "./api-publishing/api-secrets";
+} from "./api-publishing";
 import { getApp, saveApp } from "./apps";
 import { deleteApp } from "./apps/delete-app";
 import { getLanguageModelProviders } from "./configurations/get-language-model-providers";

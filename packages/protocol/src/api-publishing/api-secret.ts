@@ -5,7 +5,7 @@ import { AppId } from "../app/app-id";
 export const ApiKeyId = createIdGenerator("apk");
 export type ApiKeyId = z.infer<typeof ApiKeyId.schema>;
 
-export const ApiSecretKdf = z.object({
+const ApiSecretKdfScrypt = z.object({
 	type: z.literal("scrypt"),
 	salt: z.string(),
 	params: z.object({
@@ -15,6 +15,16 @@ export const ApiSecretKdf = z.object({
 		keyLen: z.number(),
 	}),
 });
+
+const ApiSecretKdfHmacSha256 = z.object({
+	type: z.literal("hmac-sha256"),
+	pepperVersion: z.string().optional(),
+});
+
+export const ApiSecretKdf = z.union([
+	ApiSecretKdfScrypt,
+	ApiSecretKdfHmacSha256,
+]);
 export type ApiSecretKdf = z.infer<typeof ApiSecretKdf>;
 
 export const ApiSecretRecord = z.object({

@@ -17,6 +17,11 @@ export interface GiselleConfig {
 	storage: GiselleStorage;
 	sampleAppWorkspaceIds?: WorkspaceId[];
 	llmProviders?: LanguageModelProvider[];
+	/**
+	 * Server-side pepper used to hash API publishing secrets.
+	 * Store this in a secure environment variable (e.g. Vercel Environment Variables).
+	 */
+	apiSecretPepper?: string;
 	integrationConfigs?: GiselleIntegrationConfig;
 	onConsumeAgentTime?: ConsumeAgentTimeCallback;
 	telemetry?: {

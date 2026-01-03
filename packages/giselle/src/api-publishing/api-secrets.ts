@@ -1,4 +1,5 @@
 import {
+	createHmac,
 	randomBytes,
 	type ScryptOptions,
 	scrypt as scryptCb,
@@ -35,31 +36,21 @@ async function scryptAsync(
 	});
 }
 
-const kdfParams = {
-	n: 16384,
-	r: 8,
-	p: 1,
-	keyLen: 32,
-} as const satisfies ApiSecretKdf["params"];
-
 function randomSecretBytes(): Buffer {
 	// 32 bytes of entropy is enough for a long-lived bearer token secret.
 	return randomBytes(32);
 }
 
-function randomSaltBytes(): Buffer {
-	return randomBytes(16);
-}
-
 async function computeScryptHash(args: {
 	secret: string;
 	saltBase64: string;
+	params: Extract<ApiSecretKdf, { type: "scrypt" }>["params"];
 }): Promise<string> {
 	const salt = Buffer.from(args.saltBase64, "base64");
-	const derived = await scryptAsync(args.secret, salt, kdfParams.keyLen, {
-		N: kdfParams.n,
-		r: kdfParams.r,
-		p: kdfParams.p,
+	const derived = await scryptAsync(args.secret, salt, args.params.keyLen, {
+		N: args.params.n,
+		r: args.params.r,
+		p: args.params.p,
 	});
 	return derived.toString("base64");
 }
@@ -69,6 +60,25 @@ function constantTimeEqualBase64(aBase64: string, bBase64: string): boolean {
 	const b = Buffer.from(bBase64, "base64");
 	if (a.length !== b.length) return false;
 	return timingSafeEqual(a, b);
+}
+
+function computeHmacSha256Base64(args: {
+	pepper: string;
+	secret: string;
+}): string {
+	return createHmac("sha256", Buffer.from(args.pepper, "utf8"))
+		.update(args.secret, "utf8")
+		.digest("base64");
+}
+
+function requireApiSecretPepper(context: GiselleContext): string {
+	const pepper = context.apiSecretPepper;
+	if (pepper === undefined || pepper.length === 0) {
+		throw new Error(
+			"apiSecretPepper is not configured (set GISELLE_API_SECRET_PEPPER)",
+		);
+	}
+	return pepper;
 }
 
 async function getAppOrThrow(context: GiselleContext, appId: AppId) {
@@ -104,20 +114,19 @@ export const createApiSecret = createGiselleFunction({
 		appId: AppId.schema,
 	}),
 	handler: async ({ context, input }) => {
+		const pepper = requireApiSecretPepper(context);
 		const app = await getAppOrThrow(context, input.appId);
 
 		const apiKeyId = ApiKeyId.generate();
 		const secret = randomSecretBytes().toString("base64url");
-		const salt = randomSaltBytes().toString("base64");
-		const secretHash = await computeScryptHash({ secret, saltBase64: salt });
+		const secretHash = computeHmacSha256Base64({ pepper, secret });
 
 		const record: ApiSecretRecordType = {
 			id: apiKeyId,
 			appId: input.appId,
 			kdf: {
-				type: "scrypt",
-				salt,
-				params: { ...kdfParams },
+				type: "hmac-sha256",
+				pepperVersion: "v1",
 			},
 			secretHash,
 			createdAt: Date.now(),
@@ -265,10 +274,26 @@ export async function verifyApiSecretForApp(args: {
 		return { ok: false, reason: "revoked" };
 	}
 
-	const computed = await computeScryptHash({
-		secret: parsed.secret,
-		saltBase64: record.kdf.salt,
-	});
+	let computed: string;
+	switch (record.kdf.type) {
+		case "hmac-sha256": {
+			const pepper = requireApiSecretPepper(args.context);
+			computed = computeHmacSha256Base64({ pepper, secret: parsed.secret });
+			break;
+		}
+		case "scrypt": {
+			computed = await computeScryptHash({
+				secret: parsed.secret,
+				saltBase64: record.kdf.salt,
+				params: record.kdf.params,
+			});
+			break;
+		}
+		default: {
+			const _exhaustiveCheck: never = record.kdf;
+			throw new Error(`Unsupported kdf: ${_exhaustiveCheck}`);
+		}
+	}
 
 	if (!constantTimeEqualBase64(computed, record.secretHash)) {
 		return { ok: false, reason: "invalid" };
@@ -276,8 +301,9 @@ export async function verifyApiSecretForApp(args: {
 
 	// Best-effort lastUsedAt update
 	try {
+		const latest = await getApiSecretRecord(args.context, record.id);
 		await setApiSecretRecord(args.context, {
-			...record,
+			...latest,
 			lastUsedAt: Date.now(),
 		});
 	} catch {

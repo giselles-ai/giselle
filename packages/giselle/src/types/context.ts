@@ -48,6 +48,11 @@ export interface GiselleContext {
 	storage: GiselleStorage;
 	sampleAppWorkspaceIds?: WorkspaceId[];
 	llmProviders: LanguageModelProvider[];
+	/**
+	 * Server-side pepper used to hash API publishing secrets.
+	 * This must never be sent to clients.
+	 */
+	apiSecretPepper?: string;
 	integrationConfigs?: {
 		github?: GitHubIntegrationConfig;
 	};

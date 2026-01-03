@@ -160,6 +160,7 @@ export const giselle = NextGiselle({
 	basePath: "/api/giselle",
 	storage,
 	llmProviders: ["openai", "anthropic", "google"],
+	apiSecretPepper: process.env.GISELLE_API_SECRET_PEPPER,
 	onConsumeAgentTime,
 	fetchUsageLimitsFn: fetchUsageLimits,
 	sampleAppWorkspaceIds,

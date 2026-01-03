@@ -70,6 +70,11 @@ Add API publishing settings UI to App Entry Node Properties Panel, protected by 
 - Refactored API publishing UI to use `useGiselle()` client methods instead of manual `fetch()` calls, and added a `getCurrentApiSecretRecordForApp` API/route to support that.
 - Fixed build/type errors: removed duplicate export of `getCurrentApiSecretRecordForApp` in `packages/giselle/src/api-publishing/api-secrets.ts` and updated studio route to call `giselle.getCurrentApiSecretRecordForApp`.
 - Simplified App Entry properties panel to **secret key creation only** (removed run/revoke/toggle flows for now).
+- Updated API publishing secret hashing to **HMAC-SHA256 + server-side pepper** (stored in Vercel env var `GISELLE_API_SECRET_PEPPER`) while keeping **hash-only** storage in Giselle Storage.
+- Added `apiSecretPepper` to `GiselleConfig` / `GiselleContext` and wired it in Studio/Playground Giselle initialization.
+- Kept backward compatibility: verification supports both legacy `scrypt` records and new `hmac-sha256` records.
+- Hardened `lastUsedAt` updates to reduce the chance of overwriting a concurrent revoke.
+- Documented `GISELLE_API_SECRET_PEPPER` in `apps/studio.giselles.ai/README.md`.
 
 ## Now
 - Spec work progressed: endpoint format, App persistence approach, and API key design (hash-only + show-once) are recorded as TEMPORARY agreements in this ledger.

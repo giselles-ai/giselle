@@ -121,6 +121,7 @@ export const giselle = NextGiselle({
 	basePath: "/api/giselle",
 	storage,
 	llmProviders,
+	apiSecretPepper: process.env.GISELLE_API_SECRET_PEPPER,
 	integrationConfigs,
 	sampleAppWorkspaceIds,
 	callbacks: {

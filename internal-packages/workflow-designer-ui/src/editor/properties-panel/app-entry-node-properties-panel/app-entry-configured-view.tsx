@@ -83,11 +83,7 @@ export function AppEntryConfiguredView({
 			return;
 		}
 		void fetchApiSecretRecord();
-	}, [
-		apiPublishing,
-		app.apiPublishing?.apiKeyId,
-		fetchApiSecretRecord,
-	]);
+	}, [apiPublishing, app.apiPublishing?.apiKeyId, fetchApiSecretRecord]);
 
 	const persistApp = useCallback(
 		async (

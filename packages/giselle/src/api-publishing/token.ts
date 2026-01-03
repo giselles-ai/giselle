@@ -1,6 +1,6 @@
 import type { ApiKeyId } from "@giselles-ai/protocol";
 
-export type ParsedApiToken = {
+type ParsedApiToken = {
 	apiKeyId: ApiKeyId;
 	secret: string;
 };

@@ -48,6 +48,7 @@ describe("api publishing token parsing", () => {
 function createTestContext(): GiselleContext {
 	return {
 		storage: memoryStorageDriver({}),
+		apiSecretPepper: "test-pepper",
 		// Not used by api-publishing functions, but required by the context type.
 		vault: {
 			encrypt: async (v: string) => v,
@@ -63,6 +64,34 @@ function createTestContext(): GiselleContext {
 }
 
 describe("api publishing key lifecycle", () => {
+	test("createApiSecret fails when apiSecretPepper is missing", async () => {
+		const context = createTestContext();
+		context.apiSecretPepper = undefined;
+		const appId = AppId.generate();
+		const app = {
+			id: appId,
+			version: "v1",
+			state: "disconnected",
+			description: "",
+			parameters: [
+				{
+					id: AppParameterId.generate(),
+					name: "Prompt",
+					type: "multiline-text",
+					required: true,
+				},
+			],
+			entryNodeId: NodeId.generate(),
+			workspaceId: WorkspaceId.generate(),
+		} as const;
+
+		await context.storage.setJson({ path: appPath(appId), data: app });
+
+		await expect(
+			createApiSecret({ context, input: { appId } }),
+		).rejects.toThrow(/apiSecretPepper is not configured/i);
+	});
+
 	test("createApiSecret stores record and updates app.apiPublishing", async () => {
 		const context = createTestContext();
 		const appId = AppId.generate();
@@ -100,6 +129,7 @@ describe("api publishing key lifecycle", () => {
 			schema: ApiSecretRecord,
 		});
 		expect(storedRecord.id).toBe(result.record.id);
+		expect(storedRecord.kdf.type).toBe("hmac-sha256");
 	});
 
 	test("createApiSecret revokes the previous key (single-active)", async () => {
