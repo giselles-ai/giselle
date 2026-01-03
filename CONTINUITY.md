@@ -30,6 +30,8 @@ Add API publishing settings UI to App Entry Node Properties Panel, protected by 
   - App stores only references/flags (no secret): `app.apiPublishing.apiKeyId?: ApiKeyId`
   - UI must change accordingly: remove “copy API key” for existing keys; instead use “Create new key” → show-once modal and then only show fingerprint/metadata + revoke/rotate actions.
 - TEMPORARY agreement (spec-only; delete once implemented): public Runs API design is deferred for now; we keep only secret key generation in the App Entry properties panel.
+- Api secret key records live in Giselle Storage (one `ApiSecretRecord` per `apiKeyId` at `apiSecretPath(apiKeyId)`; no scans).
+- Active-key policy is **best-effort single-active**: `createApiSecret` revokes the previous key if present; verification accepts any non-revoked record for the requested `appId` (does not enforce “current `app.apiPublishing.apiKeyId` only”).
 
 ## State
 - Repository is a large monorepo (>10k commits) using pnpm and turbo.
@@ -46,6 +48,7 @@ Add API publishing settings UI to App Entry Node Properties Panel, protected by 
 - Updated `AGENTS.md` with gathered information.
 - Added "Development Philosophy" section from `CLAUDE.md` to `AGENTS.md`.
 - Added "Update CONTINUITY.md" to "After Every Code Change" section in `AGENTS.md`.
+- Added `CONTINUITY.md` operation guidance in `AGENTS.md`: track unresolved design decisions under **Open questions** and reserve **Next** for concrete execution steps.
 - Added API publishing toggle to App Entry Node Properties Panel.
 - Added API endpoint and authentication key display with copy functionality.
 - Documented Feature Flags usage in `AGENTS.md`.
@@ -81,13 +84,11 @@ Add API publishing settings UI to App Entry Node Properties Panel, protected by 
 - Current behavior: key records live in Giselle Storage (hash-only). `createApiSecret` attempts best-effort single-active by revoking the previous key if present, but verification is record-based and does not enforce “current `app.apiPublishing.apiKeyId` only”.
 
 ## Next
-- Decide where ApiKey records live (Studio DB vs Giselle storage JSON index) and the minimal metadata/fingerprint needs.
-- Decide active-key policy: best-effort single-active (current) vs strict single-active (verify against `app.apiPublishing.apiKeyId`) vs allow multiple active keys.
-- Revisit public Runs API design later (including `{ text }` and future `{ text, file: FileId }`).
 
 ## Open questions (UNCONFIRMED if needed)
-- What is the minimal persistence location for ApiKey records (Studio DB table vs Giselle storage JSON index) and what metadata do we need (createdAt, revokedAt, lastUsedAt, label, fingerprint)?
-- Should multiple active keys per App be allowed, or should creating a new key auto-revoke previous keys?
+- What minimal metadata/fingerprint do we need for Api secret records (e.g., createdAt, revokedAt, lastUsedAt, label, fingerprint)?
+- If we ever need key listing/rotation UX beyond “current key only”, do we need an `appId → keyIds` index (and where should it live)?
+- Should multi-active keys per App ever be supported (explicitly), or is best-effort single-active sufficient?
 - (Optional follow-up) When we revive the public Runs API, what should the request/response schema be?
 
 ## Implementation notes (spec-only; delete once implemented)

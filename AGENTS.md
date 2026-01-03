@@ -401,6 +401,8 @@ Maintain a single Continuity Ledger for this workspace in `CONTINUITY.md`. The l
 - At the start of every assistant turn: read `CONTINUITY.md`, update it to reflect the latest goal/constraints/decisions/state, then proceed with the work.
 - **After every file edit: update `CONTINUITY.md` immediately** to reflect the change before proceeding to the next task. Skipping this breaks session continuity and makes context unreliable.
 - Keep it short and stable: facts only, no transcripts. Prefer bullets. Mark uncertainty as `UNCONFIRMED` (never guess).
+- Use **Open questions** to track critical unresolved decisions, design risks, and policy choices (including temporary agreements).
+- Use **Next** only for concrete, owned execution steps. Avoid listing “decide X” items there; if sequencing is intentionally handed off, leave `Next` empty and capture the rationale under **Now** / **Open questions**.
 - If you notice missing recall or a compaction/summary event: refresh/rebuild the ledger from visible context, mark gaps `UNCONFIRMED`, ask up to 1–3 targeted questions, then continue.
 
 ### `functions.update_plan` vs the Ledger
