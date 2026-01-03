@@ -98,6 +98,30 @@ export async function resolveTrigger(args: {
 
 					break;
 				}
+				case "api": {
+					const parameterInput = generationContext.inputs?.find(
+						(input) => input.type === "parameters",
+					);
+					if (parameterInput === undefined) {
+						throw new Error("Missing Parameters Input");
+					}
+
+					for (const output of operationNode.outputs) {
+						const inputItem = parameterInput.items.find(
+							(item) => item.name === output.accessor,
+						);
+						if (inputItem === undefined) {
+							continue;
+						}
+						outputs.push({
+							outputId: output.id,
+							type: "generated-text",
+							content: `${inputItem.value}`,
+						});
+					}
+
+					break;
+				}
 				default: {
 					const _exhaustiveCheck: never = args.generation.context.origin;
 					throw new Error(`Unhandled origin type: ${_exhaustiveCheck}`);

@@ -46,6 +46,11 @@ export function AppEntryConfiguredView({
 	const client = useGiselle();
 	const { apiPublishing } = useFeatureFlag();
 
+	const apiUrl =
+		typeof window === "undefined"
+			? `/api/apps/${app.id}/run`
+			: `${window.location.origin}/api/apps/${app.id}/run`;
+
 	const [appDescription, setAppDescription] = useState(app.description);
 	const [isSavingDescription, setIsSavingDescription] = useState(false);
 	const [apiSecretRecord, setApiSecretRecord] =
@@ -173,6 +178,25 @@ export function AppEntryConfiguredView({
 			{apiPublishing && (
 				<div className="flex flex-col gap-[16px] pt-[8px] border-t border-border">
 					<div className="flex flex-col gap-[12px]">
+						<div className="flex flex-col gap-[4px]">
+							<label htmlFor="api-url" className="text-[12px] text-text-muted">
+								API URL
+							</label>
+							<div className="flex items-center gap-[8px]">
+								<Input
+									id="api-url"
+									type="text"
+									value={apiUrl}
+									readOnly
+									className="flex-1 font-mono text-[12px]"
+								/>
+								<ClipboardButton
+									text={apiUrl}
+									tooltip="Copy API URL"
+									sizeClassName="h-[20px] w-[20px]"
+								/>
+							</div>
+						</div>
 						<div className="flex flex-col gap-[4px]">
 							<label htmlFor="api-key" className="text-[12px] text-text-muted">
 								Secret Key

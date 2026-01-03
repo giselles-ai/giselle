@@ -29,10 +29,18 @@ export type GenerationOriginGitHubApp = z.infer<
 	typeof GenerationOriginGitHubApp
 >;
 
+export const GenerationOriginApi = z.object({
+	taskId: TaskId.schema,
+	workspaceId: WorkspaceId.schema,
+	type: z.literal("api"),
+});
+export type GenerationOriginApi = z.infer<typeof GenerationOriginApi>;
+
 export const GenerationOrigin = z.discriminatedUnion("type", [
 	GenerationOriginStudio,
 	GenerationOriginStage,
 	GenerationOriginGitHubApp,
+	GenerationOriginApi,
 ]);
 export type GenerationOrigin = z.infer<typeof GenerationOrigin>;
 
