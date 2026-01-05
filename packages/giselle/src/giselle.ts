@@ -16,6 +16,11 @@ import {
 	type Workspace,
 	type WorkspaceId,
 } from "@giselles-ai/protocol";
+import {
+	createApiSecret,
+	getCurrentApiSecretRecordForApp,
+	revokeApiSecret,
+} from "./api-publishing";
 import { getApp, saveApp } from "./apps";
 import { deleteApp } from "./apps/delete-app";
 import { getLanguageModelProviders } from "./configurations/get-language-model-providers";
@@ -417,6 +422,12 @@ export function Giselle(config: GiselleConfig) {
 				context,
 			});
 		},
+		createApiSecret: bindGiselleFunction(createApiSecret, context),
+		getCurrentApiSecretRecordForApp: bindGiselleFunction(
+			getCurrentApiSecretRecordForApp,
+			context,
+		),
+		revokeApiSecret: bindGiselleFunction(revokeApiSecret, context),
 		saveApp: bindGiselleFunction(saveApp, context),
 		deleteApp: bindGiselleFunction(deleteApp, context),
 		getApp: bindGiselleFunction(getApp, context),

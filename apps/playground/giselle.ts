@@ -9,6 +9,11 @@ import { nodeVaultDriver } from "./lib/vault-driver";
 
 const isVercelEnvironment = process.env.VERCEL === "1";
 
+function parseEnvNumber(value: string | undefined, fallback: number): number {
+	const parsed = Number(value);
+	return Number.isFinite(parsed) ? parsed : fallback;
+}
+
 const storage = isVercelEnvironment
 	? experimental_supabaseStorageDriver({
 			endpoint: process.env.SUPABASE_STORAGE_URL ?? "",
@@ -121,6 +126,19 @@ export const giselle = NextGiselle({
 	basePath: "/api/giselle",
 	storage,
 	llmProviders,
+	apiSecretScrypt: {
+		params: {
+			n: parseEnvNumber(process.env.GISELLE_API_SECRET_SCRYPT_N, 16384),
+			r: parseEnvNumber(process.env.GISELLE_API_SECRET_SCRYPT_R, 8),
+			p: parseEnvNumber(process.env.GISELLE_API_SECRET_SCRYPT_P, 1),
+			keyLen: parseEnvNumber(process.env.GISELLE_API_SECRET_SCRYPT_KEY_LEN, 32),
+		},
+		saltBytes: parseEnvNumber(
+			process.env.GISELLE_API_SECRET_SCRYPT_SALT_BYTES,
+			16,
+		),
+		logDuration: process.env.GISELLE_API_SECRET_SCRYPT_LOG_DURATION === "1",
+	},
 	integrationConfigs,
 	sampleAppWorkspaceIds,
 	callbacks: {
