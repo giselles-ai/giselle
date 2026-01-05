@@ -1,10 +1,12 @@
-# giselle-ai
+# @giselles-ai/sdk
 
 TypeScript SDK for running a Giselle App via the Studio public Runs API.
 
 ## Install
 
-This package is currently part of the Giselle monorepo workspace.
+```sh
+npm i @giselles-ai/sdk
+```
 
 ## Environment
 
@@ -13,7 +15,7 @@ This SDK is intended for **server-side usage** (Node.js / server runtimes). Do n
 ## Usage
 
 ```ts
-import Giselle from "giselle-ai";
+import Giselle from "@giselles-ai/sdk";
 
 const client = new Giselle({
   // Secret key token (e.g. "gsk_xxx.yyy")

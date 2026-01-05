@@ -2,7 +2,7 @@
 # Continuity Ledger
 
 ## Goal
-Add a public Runs SDK package (`giselle-ai`) under `packages/` to call `POST /api/apps/{appId}/run` and expose `client.app.run()` (and a stubbed `runAndWait()`).
+Add a public Runs SDK package (`@giselles-ai/sdk`) under `packages/` to call `POST /api/apps/{appId}/run` and expose `client.app.run()` (and a stubbed `runAndWait()`).
 
 ## Constraints/Assumptions
 - Adhere to `AGENTS.md` and `CLAUDE.md`.
@@ -91,6 +91,7 @@ Add a public Runs SDK package (`giselle-ai`) under `packages/` to call `POST /ap
 - Updated App Entry properties panel to show the API URL (copyable) above the Secret Key section so users can discover `appId` easily.
 
 ## Now
+- Requested: run `mise doctor` in this worktree and report the output.
 - Spec work progressed: endpoint format, App persistence approach, and API key design (hash-only + show-once) are recorded as TEMPORARY agreements in this ledger.
 - Current behavior: key records live in Giselle Storage (hash-only). `createApiSecret` attempts best-effort single-active by revoking the previous key if present, but verification is record-based and does not enforce “current `app.apiPublishing.apiKeyId` only”.
 - Security follow-up: Code scanning flagged `hmac-sha256` for API secret hashing; plan is to remove HMAC and standardize on `scrypt` with configurable parameters.
@@ -98,11 +99,12 @@ Add a public Runs SDK package (`giselle-ai`) under `packages/` to call `POST /ap
 - Public App Run API is implemented and callable locally; the next missing piece for richer inputs is a public File Upload API so Runs can accept files (e.g. `{ text, file: FileId }`).
 
 - Started implementing SDK package `packages/giselle-ai` (scaffold + initial client code).
+- Renamed the SDK npm package from `giselle-ai` to `@giselles-ai/sdk`.
 - Added SDK tests for `packages/giselle-ai` (mocked fetch; validates auth/header/path, rejects `input.file`, `runAndWait` stub).
 - `packages/giselle-ai` format (Biome) + tests (Vitest) are passing.
 - Added `packages/giselle-ai/README.md` documenting usage, auth, and current limitations.
-- Updated `giselle-ai` SDK to default `baseUrl` to `https://studio.giselles.ai` (no browser use case assumed).
-- Updated `giselle-ai` tests to cover the default `baseUrl` behavior.
+- Updated `@giselles-ai/sdk` to default `baseUrl` to `https://studio.giselles.ai` (no browser use case assumed).
+- Updated `@giselles-ai/sdk` tests to cover the default `baseUrl` behavior.
 - Updated `packages/giselle-ai/README.md` to reflect the new `baseUrl` default and remove browser guidance.
 - Refined `packages/giselle-ai/README.md` usage example to omit `baseUrl` on the happy path and added a server-side-only note.
 
