@@ -98,15 +98,15 @@ Add a public Runs SDK package (`@giselles-ai/sdk`) under `packages/` to call `PO
 
 - Public App Run API is implemented and callable locally; the next missing piece for richer inputs is a public File Upload API so Runs can accept files (e.g. `{ text, file: FileId }`).
 
-- Started implementing SDK package `packages/giselle-ai` (scaffold + initial client code).
+- Started implementing SDK package `packages/sdk` (scaffold + initial client code).
 - Renamed the SDK npm package from `giselle-ai` to `@giselles-ai/sdk`.
-- Added SDK tests for `packages/giselle-ai` (mocked fetch; validates auth/header/path, rejects `input.file`, `runAndWait` stub).
-- `packages/giselle-ai` format (Biome) + tests (Vitest) are passing.
-- Added `packages/giselle-ai/README.md` documenting usage, auth, and current limitations.
+- Added SDK tests for `packages/sdk` (mocked fetch; validates auth/header/path, rejects `input.file`, `runAndWait` stub).
+- `packages/sdk` format (Biome) + tests (Vitest) are passing.
+- Added `packages/sdk/README.md` documenting usage, auth, and current limitations.
 - Updated `@giselles-ai/sdk` to default `baseUrl` to `https://studio.giselles.ai` (no browser use case assumed).
 - Updated `@giselles-ai/sdk` tests to cover the default `baseUrl` behavior.
-- Updated `packages/giselle-ai/README.md` to reflect the new `baseUrl` default and remove browser guidance.
-- Refined `packages/giselle-ai/README.md` usage example to omit `baseUrl` on the happy path and added a server-side-only note.
+- Updated `packages/sdk/README.md` to reflect the new `baseUrl` default and remove browser guidance.
+- Refined `packages/sdk/README.md` usage example to omit `baseUrl` on the happy path and added a server-side-only note.
 
 ## Next
 
@@ -140,4 +140,4 @@ Add a public Runs SDK package (`@giselles-ai/sdk`) under `packages/` to call `PO
 - `apps/studio.giselles.ai/app/workspaces/[workspaceId]/data-loader.ts`
 - `AGENTS.md`
 - `CONTINUITY.md`
-- `packages/giselle-ai/*`
+- `packages/sdk/*`
