@@ -89,6 +89,7 @@ Add API publishing settings UI to App Entry Node Properties Panel, protected by 
 - Updated origin-type switches/callbacks to handle `api` (task creation, generation execution, trigger resolution, file paths, Studio tracing + Trigger.dev processes).
 - Updated `@giselles-ai/giselle` exports to expose API publishing helpers needed by the Studio route.
 - Updated App Entry properties panel to show the API URL (copyable) above the Secret Key section so users can discover `appId` easily.
+- Improved cleanup function error handling in `packages/giselle/src/generations/generate-content.ts`: replaced `Promise.all` with `Promise.allSettled` to handle individual cleanup failures gracefully with proper error logging.
 
 ## Now
 - Spec work progressed: endpoint format, App persistence approach, and API key design (hash-only + show-once) are recorded as TEMPORARY agreements in this ledger.

@@ -335,11 +335,21 @@ export function generateContent({
 						`Text generation stream completed in ${Date.now() - textGenerationStartTime}ms`,
 					);
 					const toolCleanupStartTime = Date.now();
-					await Promise.all(
+					const cleanupResults = await Promise.allSettled(
 						preparedToolSet.cleanupFunctions.map((cleanupFunction) =>
 							cleanupFunction(),
 						),
 					);
+					cleanupResults.forEach((result, idx) => {
+						if (result.status === "rejected") {
+							logger.error(
+								{ error: result.reason },
+								`Cleanup function at index ${idx} failed`,
+							);
+						} else {
+							logger.debug(`Cleanup function at index ${idx} succeeded`);
+						}
+					});
 					logger.info(
 						`Tool cleanup completed in ${Date.now() - toolCleanupStartTime}ms`,
 					);
@@ -676,9 +686,19 @@ function generateContentV2({
 						`Text generation stream completed in ${Date.now() - textGenerationStartTime}ms`,
 					);
 					const toolCleanupStartTime = Date.now();
-					await Promise.all(
+					const cleanupResults = await Promise.allSettled(
 						cleanupFunctions.map((cleanupFunction) => cleanupFunction()),
 					);
+					cleanupResults.forEach((result, idx) => {
+						if (result.status === "rejected") {
+							logger.error(
+								{ error: result.reason },
+								`Cleanup function at index ${idx} failed`,
+							);
+						} else {
+							logger.debug(`Cleanup function at index ${idx} succeeded`);
+						}
+					});
 					logger.info(
 						`Tool cleanup completed in ${Date.now() - toolCleanupStartTime}ms`,
 					);
