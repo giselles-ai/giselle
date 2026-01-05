@@ -2,7 +2,7 @@
 # Continuity Ledger
 
 ## Goal
-Add API publishing settings UI to App Entry Node Properties Panel, protected by feature flag for safe production deploy.
+Add a public Runs SDK package (`giselle-ai`) under `packages/` to call `POST /api/apps/{appId}/run` and expose `client.app.run()` (and a stubbed `runAndWait()`).
 
 ## Constraints/Assumptions
 - Adhere to `AGENTS.md` and `CLAUDE.md`.
@@ -97,6 +97,15 @@ Add API publishing settings UI to App Entry Node Properties Panel, protected by 
 
 - Public App Run API is implemented and callable locally; the next missing piece for richer inputs is a public File Upload API so Runs can accept files (e.g. `{ text, file: FileId }`).
 
+- Started implementing SDK package `packages/giselle-ai` (scaffold + initial client code).
+- Added SDK tests for `packages/giselle-ai` (mocked fetch; validates auth/header/path, rejects `input.file`, `runAndWait` stub).
+- `packages/giselle-ai` format (Biome) + tests (Vitest) are passing.
+- Added `packages/giselle-ai/README.md` documenting usage, auth, and current limitations.
+- Updated `giselle-ai` SDK to default `baseUrl` to `https://studio.giselles.ai` (no browser use case assumed).
+- Updated `giselle-ai` tests to cover the default `baseUrl` behavior.
+- Updated `packages/giselle-ai/README.md` to reflect the new `baseUrl` default and remove browser guidance.
+- Refined `packages/giselle-ai/README.md` usage example to omit `baseUrl` on the happy path and added a server-side-only note.
+
 ## Next
 
 - Add documentation / examples for the public run API (`curl` usage) in an appropriate Studio doc page.
@@ -129,3 +138,4 @@ Add API publishing settings UI to App Entry Node Properties Panel, protected by 
 - `apps/studio.giselles.ai/app/workspaces/[workspaceId]/data-loader.ts`
 - `AGENTS.md`
 - `CONTINUITY.md`
+- `packages/giselle-ai/*`
