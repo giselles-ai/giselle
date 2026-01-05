@@ -260,14 +260,20 @@ export const giselle = NextGiselle({
 		},
 		generationComplete: async (args) => {
 			const requestId = getRequestId();
-			if (args.generation.context.origin.type === "github-app") {
+			if (
+				args.generation.context.origin.type === "github-app" ||
+				args.generation.context.origin.type === "api"
+			) {
 				const team = await getWorkspaceTeam(
 					args.generation.context.origin.workspaceId,
 				);
 				await traceGenerationForTeam({
 					...args,
 					requestId,
-					userId: "github-app",
+					userId:
+						args.generation.context.origin.type === "github-app"
+							? "github-app"
+							: "api",
 					team,
 					sessionId: args.generation.context.origin.taskId,
 				});
@@ -287,14 +293,20 @@ export const giselle = NextGiselle({
 		},
 		generationError: async (args) => {
 			const requestId = getRequestId();
-			if (args.generation.context.origin.type === "github-app") {
+			if (
+				args.generation.context.origin.type === "github-app" ||
+				args.generation.context.origin.type === "api"
+			) {
 				const team = await getWorkspaceTeam(
 					args.generation.context.origin.workspaceId,
 				);
 				await traceGenerationForTeam({
 					...args,
 					requestId,
-					userId: "github-app",
+					userId:
+						args.generation.context.origin.type === "github-app"
+							? "github-app"
+							: "api",
 					team,
 				});
 				return;
@@ -343,6 +355,20 @@ export const giselle = NextGiselle({
 							queryContext: args.queryContext,
 							sessionId: args.generation.context.origin.taskId,
 							userId: "github-app",
+							team,
+						});
+						break;
+					}
+					case "api": {
+						const team = await getWorkspaceTeam(
+							args.generation.context.origin.workspaceId,
+						);
+						await traceEmbeddingForTeam({
+							metrics: args.embeddingMetrics,
+							generation: args.generation,
+							queryContext: args.queryContext,
+							sessionId: args.generation.context.origin.taskId,
+							userId: "api",
 							team,
 						});
 						break;
@@ -503,6 +529,23 @@ if (generateContentProcessor === "trigger.dev") {
 				});
 				break;
 			}
+			case "api": {
+				const team = await getWorkspaceTeam(
+					generation.context.origin.workspaceId,
+				);
+				await jobs.trigger<typeof generateContentJob>("generate-content", {
+					generationId: generation.id,
+					requestId,
+					userId: "api",
+					team: {
+						id: team.id,
+						subscriptionId: team.activeSubscriptionId,
+						activeCustomerId: team.activeCustomerId,
+						plan: team.plan,
+					},
+				});
+				break;
+			}
 			case "stage":
 			case "studio": {
 				switch (runtimeEnv) {
@@ -559,6 +602,22 @@ if (generateContentProcessor === "trigger.dev") {
 					taskId: task.id,
 					requestId,
 					userId: "github-app",
+					team: {
+						id: team.id,
+						subscriptionId: team.activeSubscriptionId,
+						activeCustomerId: team.activeCustomerId,
+						plan: team.plan,
+					},
+				});
+				break;
+			}
+			case "api": {
+				const team = await getWorkspaceTeam(task.workspaceId);
+
+				await jobs.trigger<typeof runTaskJob>("run-task-job", {
+					taskId: task.id,
+					requestId,
+					userId: "api",
 					team: {
 						id: team.id,
 						subscriptionId: team.activeSubscriptionId,

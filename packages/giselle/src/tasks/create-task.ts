@@ -274,6 +274,7 @@ export async function createTask(
 			};
 			break;
 		}
+		case "api":
 		case "stage":
 			if (!isAppEntryNode(starterNode)) {
 				throw new Error("starterNode must be an start node");

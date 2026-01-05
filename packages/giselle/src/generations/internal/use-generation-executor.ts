@@ -131,6 +131,7 @@ export async function useGenerationExecutor<T>(args: {
 	let workspaceId: WorkspaceId;
 	switch (args.generation.context.origin.type) {
 		case "stage":
+		case "api":
 		case "github-app":
 			workspaceId = args.generation.context.origin.workspaceId;
 			break;
