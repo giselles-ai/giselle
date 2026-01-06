@@ -1,5 +1,9 @@
 
-# Continuity Ledger
+# Continuity Ledger (batched snapshot)
+
+This file is a **low-churn, batched snapshot** (“as of <date>”) of the repo’s current focus and key decisions.
+
+Recent, detailed intent logs live in `.continuity/` (per-branch ledgers). Periodically summarize `.continuity/*` into this file.
 
 ## Goal
 Add API publishing settings UI to App Entry Node Properties Panel, protected by feature flag for safe production deploy.
