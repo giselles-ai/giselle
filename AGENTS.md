@@ -131,7 +131,7 @@ Run these commands in order:
 3. `pnpm check-types` — Verify types
 4. `pnpm tidy` — Check for unused code
 5. `pnpm test` — Run tests
-6. Update `CONTINUITY.md` — Reflect the change immediately
+6. Update `.continuity/` per-branch ledger — Reflect the change immediately
 
 ### API addition rule (Giselle ↔ HTTP)
 
@@ -394,24 +394,34 @@ function MyComponent() {
 
 **Production**: Configure via Vercel Edge Config with key `flag__my-new-feature`.
 
-## Continuity Ledger (compaction-safe)
-Maintain a single Continuity Ledger for this workspace in `CONTINUITY.md`. The ledger is the canonical session briefing designed to survive context compaction; do not rely on earlier chat text unless it’s reflected in the ledger.
+## Continuity (per-branch ledgers + batched summary)
+Keep “human intent” and session context in-repo for review **without frequent merge conflicts** by using a two-layer model:
+- `CONTINUITY.md`: a **batched snapshot** (low churn), updated occasionally.
+- `.continuity/`: **per-branch ledgers** (high churn), updated on every request / during work.
 
-### How it works
-- At the start of every assistant turn: read `CONTINUITY.md`, update it to reflect the latest goal/constraints/decisions/state, then proceed with the work.
-- **After every file edit: update `CONTINUITY.md` immediately** to reflect the change before proceeding to the next task. Skipping this breaks session continuity and makes context unreliable.
-- Keep it short and stable: facts only, no transcripts. Prefer bullets. Mark uncertainty as `UNCONFIRMED` (never guess).
-- Use **Open questions** to track critical unresolved decisions, design risks, and policy choices (including temporary agreements).
-- Use **Next** only for concrete, owned execution steps. Avoid listing “decide X” items there; if sequencing is intentionally handed off, leave `Next` empty and capture the rationale under **Now** / **Open questions**.
-- If you notice missing recall or a compaction/summary event: refresh/rebuild the ledger from visible context, mark gaps `UNCONFIRMED`, ask up to 1–3 targeted questions, then continue.
+### Agent behavior spec
+- Locate ledger (every user request):
+  - Determine current git branch name: `git rev-parse --abbrev-ref HEAD`.
+  - Sanitize branch by replacing `/` with `__`.
+- Find ledger file:
+  - In `.continuity/`, find files whose filename ends with `-<sanitizedBranch>.md` (suffix match).
+  - If multiple match, pick the latest by lexicographically greatest datetime prefix `YYYYMMDD-HHMMSS`.
+- Reuse / create:
+  - If one exists: read it first and update it as needed.
+  - If none exists: create `YYYYMMDD-HHMMSS-<sanitizedBranch>.md` initialized from `.continuity/template.md` and the current user request.
+
+### Notes on the two-layer model
+- Read **both** `CONTINUITY.md` and the current `.continuity/` branch ledger to understand context.
+- Write high-churn notes only to `.continuity/` (what changed, why, tradeoffs, open questions, working set).
+- Periodically batch-summarize `.continuity/*` into `CONTINUITY.md` (“as of <date>”).
 
 ### `functions.update_plan` vs the Ledger
 - `functions.update_plan` is for short-term execution scaffolding while you work (a small 3–7 step plan with pending/in_progress/completed).
-- `CONTINUITY.md` is for long-running continuity across compaction (the “what/why/current state”), not a step-by-step task list.
-- Keep them consistent: when the plan or state changes, update the ledger at the intent/progress level (not every micro-step).
+- `CONTINUITY.md` is a batched summary; per-branch ledgers live in `.continuity/`.
+- Keep them consistent: summarize `.continuity/` into `CONTINUITY.md` periodically (not every micro-step).
 
 ### In replies
-- Begin with a brief “Ledger Snapshot” (Goal + Now/Next + Open Questions). Print the full ledger only when it materially changes or when the user asks.
+- Begin with a brief “Ledger Snapshot” based on the current per-branch ledger (Goal + Now/Next + Open Questions). Print the full ledger only when it materially changes or when the user asks.
 
 ### `CONTINUITY.md` format (keep headings)
 - Goal (incl. success criteria):

@@ -10,7 +10,9 @@ import type {
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import { AlertCircle, Check, Loader2, Paperclip, X } from "lucide-react";
+import Image from "next/image";
 import type React from "react";
+import { useEffect, useState } from "react";
 
 interface FileAttachmentsProps {
 	files: FileData[];
@@ -19,6 +21,44 @@ interface FileAttachmentsProps {
 	basePath?: string;
 	localPreviews?: Map<string, string>;
 	onImageLoad?: (fileId: string) => void;
+}
+
+function ImageThumbnail(props: {
+	remoteSrc: string;
+	localFallbackSrc?: string;
+	alt: string;
+	onRemoteLoaded?: () => void;
+}) {
+	const { remoteSrc, localFallbackSrc, alt, onRemoteLoaded } = props;
+	const [src, setSrc] = useState(remoteSrc);
+
+	useEffect(() => {
+		setSrc(remoteSrc);
+	}, [remoteSrc]);
+
+	return (
+		<Image
+			src={src}
+			alt={alt}
+			fill
+			sizes="60px"
+			// We may render blob/object URLs (local previews) here.
+			unoptimized
+			className="object-cover"
+			onError={() => {
+				if (localFallbackSrc && src !== localFallbackSrc) {
+					setSrc(localFallbackSrc);
+				}
+			}}
+			onLoad={() => {
+				// Notify the parent only when the remote image successfully loads.
+				// The parent uses this to safely clean up the local preview URL.
+				if (src === remoteSrc) {
+					onRemoteLoaded?.();
+				}
+			}}
+		/>
+	);
 }
 
 function formatFileSize(bytes: number) {
@@ -174,21 +214,11 @@ export function FileAttachments({
 									className="relative group shrink-0 rounded-lg overflow-hidden bg-white/5 border border-white/5 w-[60px] h-[60px]"
 								>
 									{imageUrl ? (
-										<img
-											src={imageUrl}
+										<ImageThumbnail
+											remoteSrc={imageUrl}
+											localFallbackSrc={isUploaded ? localPreview : undefined}
 											alt={file.name}
-											className="object-cover w-full h-full"
-											onError={(e) => {
-												// If server URL fails, fallback to local preview
-												if (
-													isUploaded &&
-													localPreview &&
-													e.currentTarget.src !== localPreview
-												) {
-													e.currentTarget.src = localPreview;
-												}
-											}}
-											onLoad={() => {
+											onRemoteLoaded={() => {
 												// Notify parent that server image loaded successfully
 												// Parent will clean up local preview URL
 												if (isUploaded && onImageLoad) {
