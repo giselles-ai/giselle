@@ -148,9 +148,30 @@ describe("Giselle SDK (public Runs API)", () => {
 							status: "completed",
 							workspaceId: "ws_123",
 							name: "My Task",
-							steps: [],
-							outputs: [],
+							nodeIdsConnectedToEnd: ["nd_end"],
+							sequences: [
+								{
+									status: "completed",
+									steps: [
+										{
+											id: "step_1",
+											name: "Generate",
+											generationId: "gen_1",
+										},
+									],
+								},
+							],
 						},
+						generations: [
+							{
+								id: "gen_1",
+								status: "completed",
+								outputs: [{ type: "text", value: "Hello" }],
+								context: {
+									operationNode: { id: "nd_end" },
+								},
+							},
+						],
 					}),
 					{
 						status: 200,
@@ -180,8 +201,28 @@ describe("Giselle SDK (public Runs API)", () => {
 				status: "completed",
 				workspaceId: "ws_123",
 				name: "My Task",
-				steps: [],
-				outputs: [],
+				steps: [
+					{
+						title: "Step 1",
+						status: "completed",
+						items: [
+							{
+								id: "step_1",
+								title: "Generate",
+								status: "completed",
+								generationId: "gen_1",
+								outputs: [{ type: "text", value: "Hello" }],
+							},
+						],
+					},
+				],
+				outputs: [
+					{
+						title: "Generate",
+						generationId: "gen_1",
+						outputs: [{ type: "text", value: "Hello" }],
+					},
+				],
 			},
 		});
 	});

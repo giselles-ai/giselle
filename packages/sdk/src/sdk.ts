@@ -116,6 +116,154 @@ export type AppTaskResult = {
 	task: AppTask;
 };
 
+type PrimitiveTask = {
+	id: string;
+	workspaceId: string;
+	name: string;
+	status: string;
+	sequences?: unknown;
+	nodeIdsConnectedToEnd?: unknown;
+} & Record<string, unknown>;
+
+type PrimitiveGeneration = {
+	id: string;
+	status: string;
+	outputs?: unknown;
+	error?: { message?: unknown };
+	context?: { operationNode?: { id?: unknown } };
+} & Record<string, unknown>;
+
+function isObject(value: unknown): value is Record<string, unknown> {
+	return typeof value === "object" && value !== null;
+}
+
+function isNonEmptyString(value: unknown): value is string {
+	return typeof value === "string" && value.length > 0;
+}
+
+function buildSdkTaskFromPrimitives(args: {
+	task: PrimitiveTask;
+	generations: PrimitiveGeneration[];
+}): AppTaskResult {
+	const generationsById = new Map(
+		args.generations
+			.filter((g) => isNonEmptyString(g.id))
+			.map((g) => [g.id, g]),
+	);
+
+	const sequences = args.task.sequences;
+	if (!Array.isArray(sequences)) {
+		// Fall back to status-only shape.
+		return { task: args.task as TaskWithStatus };
+	}
+
+	const steps: AppTaskStep[] = sequences.map((sequence, sequenceIndex) => {
+		const sequenceStatus = isObject(sequence) ? sequence.status : undefined;
+		const sequenceSteps = isObject(sequence) ? sequence.steps : undefined;
+
+		const items: AppTaskStepItem[] = Array.isArray(sequenceSteps)
+			? sequenceSteps
+					.map((step): AppTaskStepItem | null => {
+						if (!isObject(step)) return null;
+						const generationId = step.generationId;
+						if (!isNonEmptyString(generationId)) return null;
+						const generation = generationsById.get(generationId);
+						if (!generation) return null;
+
+						const operationNodeId = generation.context?.operationNode?.id;
+						if (!isNonEmptyString(operationNodeId)) return null;
+
+						const title = isNonEmptyString(step.name) ? step.name : "";
+						const status = generation.status;
+						if (!isNonEmptyString(status)) return null;
+
+						if (status === "completed") {
+							const outputs = Array.isArray(generation.outputs)
+								? (generation.outputs as unknown[])
+								: undefined;
+							return outputs
+								? ({
+										id: isNonEmptyString(step.id) ? step.id : generationId,
+										title,
+										status,
+										generationId,
+										outputs,
+									} satisfies AppTaskStepItem)
+								: ({
+										id: isNonEmptyString(step.id) ? step.id : generationId,
+										title,
+										status,
+										generationId,
+									} satisfies AppTaskStepItem);
+						}
+						if (status === "failed") {
+							const message = generation.error?.message;
+							return {
+								id: isNonEmptyString(step.id) ? step.id : generationId,
+								title,
+								status,
+								generationId,
+								error: isNonEmptyString(message)
+									? message
+									: "Generation failed",
+							} satisfies AppTaskStepItem;
+						}
+						return {
+							id: isNonEmptyString(step.id) ? step.id : generationId,
+							title,
+							status,
+							generationId,
+						} satisfies AppTaskStepItem;
+					})
+					.filter((item): item is AppTaskStepItem => item !== null)
+			: [];
+
+		return {
+			title: `Step ${sequenceIndex + 1}`,
+			status: isNonEmptyString(sequenceStatus) ? sequenceStatus : "",
+			items,
+		} satisfies AppTaskStep;
+	});
+
+	const allStepItems = steps.flatMap((step) => step.items);
+	const nodeIdsConnectedToEnd = args.task.nodeIdsConnectedToEnd;
+	const outputs: AppTaskOutput[] = Array.isArray(nodeIdsConnectedToEnd)
+		? nodeIdsConnectedToEnd
+				.map((nodeId) => {
+					if (!isNonEmptyString(nodeId)) return null;
+					const match = allStepItems.find((item) => {
+						const generation = generationsById.get(item.generationId);
+						return generation?.context?.operationNode?.id === nodeId;
+					});
+					if (!match) return null;
+
+					const generation = generationsById.get(match.generationId);
+					if (!generation || generation.status !== "completed") return null;
+
+					const genOutputs = generation.outputs;
+					if (!Array.isArray(genOutputs)) return null;
+
+					return {
+						title: match.title,
+						generationId: generation.id,
+						outputs: genOutputs as unknown[],
+					} satisfies AppTaskOutput;
+				})
+				.filter((output): output is AppTaskOutput => output !== null)
+		: [];
+
+	return {
+		task: {
+			id: args.task.id,
+			status: args.task.status,
+			workspaceId: args.task.workspaceId,
+			name: args.task.name,
+			steps,
+			outputs,
+		},
+	};
+}
+
 function parseTaskResponseJson(json: unknown): AppTaskResult {
 	if (typeof json !== "object" || json === null) {
 		throw new Error("Invalid response JSON");
@@ -123,6 +271,26 @@ function parseTaskResponseJson(json: unknown): AppTaskResult {
 	const task = (json as { task?: unknown }).task;
 	if (typeof task !== "object" || task === null) {
 		throw new Error("Invalid response JSON");
+	}
+
+	// New primitive shape: `{ task, generations }` (SDK is responsible for shaping).
+	const generations = (json as { generations?: unknown }).generations;
+	if (Array.isArray(generations)) {
+		const id = (task as { id?: unknown }).id;
+		const workspaceId = (task as { workspaceId?: unknown }).workspaceId;
+		const name = (task as { name?: unknown }).name;
+		const status = (task as { status?: unknown }).status;
+		if (
+			isNonEmptyString(id) &&
+			isNonEmptyString(workspaceId) &&
+			typeof name === "string" &&
+			isNonEmptyString(status)
+		) {
+			return buildSdkTaskFromPrimitives({
+				task: task as PrimitiveTask,
+				generations: generations as PrimitiveGeneration[],
+			});
+		}
 	}
 
 	const steps = (task as { steps?: unknown }).steps;
