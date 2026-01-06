@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import type { IconName } from "lucide-react/dynamic";
 import { Accordion } from "radix-ui";
-import { stageFlag, stageV2Flag } from "../../../../flags";
+import { apiPublishingFlag, stageFlag, stageV2Flag } from "../../../../flags";
 import { CreateAppButton } from "./create-app-button";
 import { SidebarLink } from "./sidebar-link";
 
@@ -92,79 +92,86 @@ function createStagePart(isStageV2Enabled: boolean): SidebarPart {
 	};
 }
 
-const baseSidebarParts: SidebarPart[] = [
-	{
-		type: "linkGroup",
-		id: "studio",
-		label: "Studio - Build Apps",
-		icon: "blocks",
-		links: [
-			{
-				id: "workspaces",
-				label: "Workspaces",
-				href: "/workspaces",
-				activeMatchPattern: "/workspaces*",
-			},
-			{
-				id: "integration",
-				label: "Integration",
-				href: "/settings/team/integrations",
-				activeMatchPattern: "/settings/team/integrations*",
-			},
-			{
-				id: "vector-stores",
-				label: "Vector Stores",
-				href: "/settings/team/vector-stores",
-				activeMatchPattern: "/settings/team/vector-stores*",
-			},
-		],
-	},
-	{ type: "divider", id: "divider1" },
-	{
-		type: "linkGroup",
-		id: "manage",
-		label: "Manage",
-		icon: "settings",
-		links: [
-			{
-				id: "member",
-				label: "Member",
-				href: "/settings/team/members",
-				activeMatchPattern: "/settings/team/members*",
-			},
-			{
-				id: "usage",
-				label: "Usage",
-				href: "/settings/team/usage",
-				activeMatchPattern: "/settings/team/usage*",
-			},
-			{
-				id: "api-keys",
-				label: "API keys",
-				href: "/manage/api-keys",
-				activeMatchPattern: "/manage/api-keys*",
-			},
-			{
-				id: "team-settings",
-				label: "Team Settings",
-				href: "/settings/team",
-				activeMatchPattern: [
-					"/settings/team*",
-					"!/settings/team/members*",
-					"!/settings/team/integrations*",
-					"!/settings/team/vector-stores*",
-					"!/settings/team/usage*",
-				],
-			},
-		],
-	},
-];
+function createBaseSidebarParts(
+	isApiPublishingEnabled: boolean,
+): SidebarPart[] {
+	return [
+		{
+			type: "linkGroup",
+			id: "studio",
+			label: "Studio - Build Apps",
+			icon: "blocks",
+			links: [
+				{
+					id: "workspaces",
+					label: "Workspaces",
+					href: "/workspaces",
+					activeMatchPattern: "/workspaces*",
+				},
+				{
+					id: "integration",
+					label: "Integration",
+					href: "/settings/team/integrations",
+					activeMatchPattern: "/settings/team/integrations*",
+				},
+				{
+					id: "vector-stores",
+					label: "Vector Stores",
+					href: "/settings/team/vector-stores",
+					activeMatchPattern: "/settings/team/vector-stores*",
+				},
+			],
+		},
+		{ type: "divider", id: "divider1" },
+		{
+			type: "linkGroup",
+			id: "manage",
+			label: "Manage",
+			icon: "settings",
+			links: [
+				{
+					id: "member",
+					label: "Member",
+					href: "/settings/team/members",
+					activeMatchPattern: "/settings/team/members*",
+				},
+				{
+					id: "usage",
+					label: "Usage",
+					href: "/settings/team/usage",
+					activeMatchPattern: "/settings/team/usage*",
+				},
+				...(isApiPublishingEnabled
+					? [
+							{
+								id: "api-keys",
+								label: "API keys",
+								href: "/manage/api-keys",
+								activeMatchPattern: "/manage/api-keys*",
+							},
+						]
+					: []),
+				{
+					id: "team-settings",
+					label: "Team Settings",
+					href: "/settings/team",
+					activeMatchPattern: [
+						"/settings/team*",
+						"!/settings/team/members*",
+						"!/settings/team/integrations*",
+						"!/settings/team/vector-stores*",
+						"!/settings/team/usage*",
+					],
+				},
+			],
+		},
+	];
+}
 
 export async function Sidebar() {
-	const [isStageEnabled, isStageV2Enabled] = await Promise.all([
-		stageFlag(),
-		stageV2Flag(),
-	]);
+	const [isStageEnabled, isStageV2Enabled, isApiPublishingEnabled] =
+		await Promise.all([stageFlag(), stageV2Flag(), apiPublishingFlag()]);
+	const baseSidebarParts = createBaseSidebarParts(isApiPublishingEnabled);
 	const sidebarParts = isStageEnabled
 		? [createStagePart(isStageV2Enabled), ...baseSidebarParts]
 		: baseSidebarParts;
