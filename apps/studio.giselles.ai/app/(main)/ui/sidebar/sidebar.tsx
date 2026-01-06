@@ -139,6 +139,12 @@ const baseSidebarParts: SidebarPart[] = [
 				activeMatchPattern: "/settings/team/usage*",
 			},
 			{
+				id: "api-keys",
+				label: "API keys",
+				href: "/manage/api-keys",
+				activeMatchPattern: "/manage/api-keys*",
+			},
+			{
 				id: "team-settings",
 				label: "Team Settings",
 				href: "/settings/team",
