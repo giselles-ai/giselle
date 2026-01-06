@@ -22,12 +22,20 @@ const client = new Giselle({
   apiKey: process.env.GISELLE_API_KEY,
 });
 
-const result = await client.app.run({
-  appId: "app-xxxxx",
-  input: { text: "hello" },
-});
+async function main() {
+	const { taskId } = await client.app.run({
+		appId: "app-xxxxx",
+		input: { text: "hello" },
+	});
+	return taskId;
+}
 
-console.log(result.taskId);
+main()
+	.then((taskId) => console.log(taskId))
+	.catch((error) => {
+		console.error(error);
+		process.exitCode = 1;
+	});
 ```
 
 ## API

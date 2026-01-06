@@ -107,6 +107,7 @@ Add a public Runs SDK package (`@giselles-ai/sdk`) under `packages/` to call `PO
 - Updated `@giselles-ai/sdk` tests to cover the default `baseUrl` behavior.
 - Updated `packages/sdk/README.md` to reflect the new `baseUrl` default and remove browser guidance.
 - Refined `packages/sdk/README.md` usage example to omit `baseUrl` on the happy path and added a server-side-only note.
+- Updated `packages/sdk/README.md` usage example to avoid top-level `await` (works with `tsx index.ts`).
 
 ## Next
 
