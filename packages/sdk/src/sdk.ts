@@ -125,8 +125,12 @@ function parseTaskResponseJson(json: unknown): AppTaskResult {
 		throw new Error("Invalid response JSON");
 	}
 
-	const status = (task as { status?: unknown }).status;
-	if (status !== undefined) {
+	const steps = (task as { steps?: unknown }).steps;
+	const outputs = (task as { outputs?: unknown }).outputs;
+
+	const hasFinalResultShape = Array.isArray(steps) && Array.isArray(outputs);
+	if (!hasFinalResultShape) {
+		const status = (task as { status?: unknown }).status;
 		if (typeof status !== "string" || status.length === 0) {
 			throw new Error("Invalid response JSON");
 		}
@@ -146,12 +150,8 @@ function parseTaskResponseJson(json: unknown): AppTaskResult {
 		throw new Error("Invalid response JSON");
 	}
 
-	const steps = (task as { steps?: unknown }).steps;
-	if (!Array.isArray(steps)) {
-		throw new Error("Invalid response JSON");
-	}
-	const outputs = (task as { outputs?: unknown }).outputs;
-	if (!Array.isArray(outputs)) {
+	const status = (task as { status?: unknown }).status;
+	if (typeof status !== "string" || status.length === 0) {
 		throw new Error("Invalid response JSON");
 	}
 

@@ -145,6 +145,7 @@ describe("Giselle SDK (public Runs API)", () => {
 					JSON.stringify({
 						task: {
 							id: "tsk_123",
+							status: "completed",
 							workspaceId: "ws_123",
 							name: "My Task",
 							steps: [],
@@ -176,6 +177,7 @@ describe("Giselle SDK (public Runs API)", () => {
 		).resolves.toEqual({
 			task: {
 				id: "tsk_123",
+				status: "completed",
 				workspaceId: "ws_123",
 				name: "My Task",
 				steps: [],
