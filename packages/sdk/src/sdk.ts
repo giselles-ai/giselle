@@ -211,7 +211,7 @@ export default class Giselle {
 		if (!response.ok) {
 			const responseText = await readResponseText(response);
 			throw new ApiError(
-				`Tasks API request failed: ${response.status} ${response.statusText}`,
+				`Runs API request failed: ${response.status} ${response.statusText}`,
 				response.status,
 				responseText,
 			);
@@ -222,7 +222,7 @@ export default class Giselle {
 			json = await response.json();
 		} catch {
 			throw new ApiError(
-				"Tasks API returned invalid JSON",
+				"Runs API returned invalid JSON",
 				response.status,
 				await readResponseText(response),
 			);
