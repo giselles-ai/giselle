@@ -25,3 +25,7 @@ export class UnsupportedFeatureError extends GiselleSdkError {
 export class NotImplementedError extends GiselleSdkError {
 	name = "NotImplementedError";
 }
+
+export class TimeoutError extends GiselleSdkError {
+	name = "TimeoutError";
+}
