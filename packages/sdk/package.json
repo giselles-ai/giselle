@@ -10,7 +10,8 @@
 		"check-types": "tsc --noEmit",
 		"clean": "rm -rf .turbo dist node_modules",
 		"test": "vitest run",
-		"format": "biome check --write ."
+		"format": "biome check --write .",
+		"prepack": "pnpm build"
 	},
 	"exports": {
 		"./package.json": "./package.json",

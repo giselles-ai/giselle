@@ -103,7 +103,9 @@ describe("Giselle SDK (public Runs API)", () => {
 			}
 
 			if (callIndex === 2) {
-				expect(url).toBe("https://example.com/api/apps/app-xxxxx/tasks/tsk_123");
+				expect(url).toBe(
+					"https://example.com/api/apps/app-xxxxx/tasks/tsk_123",
+				);
 				expect(init?.method).toBe("GET");
 				expect(headers.get("Authorization")).toBe("Bearer gsk_test.secret");
 
@@ -117,7 +119,9 @@ describe("Giselle SDK (public Runs API)", () => {
 			}
 
 			if (callIndex === 3) {
-				expect(url).toBe("https://example.com/api/apps/app-xxxxx/tasks/tsk_123");
+				expect(url).toBe(
+					"https://example.com/api/apps/app-xxxxx/tasks/tsk_123",
+				);
 				expect(init?.method).toBe("GET");
 				expect(headers.get("Authorization")).toBe("Bearer gsk_test.secret");
 
@@ -140,6 +144,8 @@ describe("Giselle SDK (public Runs API)", () => {
 				return new Response(
 					JSON.stringify({
 						task: { id: "tsk_123", status: "completed" },
+						steps: [],
+						outputs: [],
 						generationsById: { gen_1: { id: "gen_1", status: "completed" } },
 					}),
 					{
@@ -166,6 +172,8 @@ describe("Giselle SDK (public Runs API)", () => {
 			}),
 		).resolves.toEqual({
 			task: { id: "tsk_123", status: "completed" },
+			steps: [],
+			outputs: [],
 			generationsById: { gen_1: { id: "gen_1", status: "completed" } },
 		});
 	});

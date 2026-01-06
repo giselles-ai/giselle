@@ -1,7 +1,45 @@
 import { verifyApiSecretForApp } from "@giselles-ai/giselle";
-import { AppId, TaskId } from "@giselles-ai/protocol";
+import {
+	AppId,
+	type GenerationOutput,
+	isCompletedGeneration,
+	isFailedGeneration,
+	isOperationNode,
+	TaskId,
+} from "@giselles-ai/protocol";
 import type { NextRequest } from "next/server";
 import { giselle } from "@/app/giselle";
+
+type ApiStepItem =
+	| {
+			id: string;
+			title: string;
+			status: string;
+			generationId: string;
+			outputs?: GenerationOutput[];
+			error?: string;
+	  }
+	| {
+			id: string;
+			title: string;
+			status: string;
+			generationId: string;
+			error: string;
+	  };
+
+type ApiStep = {
+	id: string;
+	index: number;
+	title: string;
+	status: string;
+	items: ApiStepItem[];
+};
+
+type ApiOutput = {
+	title: string;
+	generationId: string;
+	outputs: GenerationOutput[];
+};
 
 export async function GET(
 	request: NextRequest,
@@ -50,25 +88,90 @@ export async function GET(
 		);
 	}
 
-	const generationIds = task.sequences.flatMap((sequence) =>
-		sequence.steps.map((step) => step.generationId),
-	);
-
-	const generations = await Promise.all(
-		generationIds.map(async (generationId) => {
-			return await giselle.getGeneration(generationId).catch(() => undefined);
-		}),
-	);
-
 	const generationsById = Object.fromEntries(
-		generations
-			.filter((g) => g !== undefined)
-			.map((g) => [g.id, g]),
+		await Promise.all(
+			task.sequences.flatMap((sequence) =>
+				sequence.steps.map(async (step) => {
+					const generation = await giselle
+						.getGeneration(step.generationId)
+						.catch(() => undefined);
+					return generation ? ([generation.id, generation] as const) : null;
+				}),
+			),
+		).then((entries) => entries.filter((e) => e !== null)),
 	);
+
+	const steps: ApiStep[] = task.sequences.map((sequence, sequenceIndex) => ({
+		id: sequence.id,
+		index: sequenceIndex,
+		title: `Step ${sequenceIndex + 1}`,
+		status: sequence.status,
+		items: sequence.steps
+			.map((step) => {
+				const generation = generationsById[step.generationId];
+				if (!generation) {
+					return null;
+				}
+				const operationNode = generation.context.operationNode;
+				if (!isOperationNode(operationNode)) {
+					return null;
+				}
+
+				if (isCompletedGeneration(generation)) {
+					return {
+						id: step.id,
+						title: step.name,
+						status: generation.status,
+						generationId: generation.id,
+						outputs: generation.outputs,
+					} satisfies ApiStepItem;
+				}
+				if (isFailedGeneration(generation)) {
+					return {
+						id: step.id,
+						title: step.name,
+						status: generation.status,
+						generationId: generation.id,
+						error: generation.error.message,
+					} satisfies ApiStepItem;
+				}
+				return {
+					id: step.id,
+					title: step.name,
+					status: generation.status,
+					generationId: generation.id,
+				} satisfies ApiStepItem;
+			})
+			.filter((itemOrNull) => itemOrNull !== null),
+	}));
+
+	const allStepItems = steps.flatMap((step) => step.items);
+	const outputs: ApiOutput[] = (task.nodeIdsConnectedToEnd ?? [])
+		.map((nodeId) => {
+			const match = allStepItems.find((item) => {
+				const generation = generationsById[item.generationId];
+				if (!generation) {
+					return false;
+				}
+				return generation.context.operationNode.id === nodeId;
+			});
+			if (!match) {
+				return null;
+			}
+			const generation = generationsById[match.generationId];
+			if (!generation || !isCompletedGeneration(generation)) {
+				return null;
+			}
+			return {
+				title: match.title,
+				generationId: generation.id,
+				outputs: generation.outputs,
+			} satisfies ApiOutput;
+		})
+		.filter((outputOrNull) => outputOrNull !== null);
 
 	return Response.json(
-		{ task, generationsById },
+		{ task, steps, outputs, generationsById },
 		{ headers: { "Cache-Control": "no-store" } },
 	);
 }
-

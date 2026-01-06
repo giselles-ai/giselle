@@ -63,6 +63,7 @@ Calls `POST /api/apps/{appId}/run`, then polls the task status API until the tas
 
 - Polls: `GET /api/apps/{appId}/tasks/{taskId}`
 - Final fetch (includes generations): `GET /api/apps/{appId}/tasks/{taskId}?includeGenerations=1`
+- Final response includes `task`, `steps`, `outputs` and `generationsById`.
 
 ## Current limitations
 
