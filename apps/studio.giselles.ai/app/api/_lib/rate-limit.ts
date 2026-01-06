@@ -12,6 +12,7 @@ type RateLimitResult = {
 };
 
 const WINDOW_SECONDS = 60;
+const WINDOW_MS = WINDOW_SECONDS * 1000;
 
 export function getRequestsPerMinuteLimit(plan: TeamPlan): number {
 	switch (plan) {
@@ -33,11 +34,12 @@ export function getRequestsPerMinuteLimit(plan: TeamPlan): number {
 }
 
 export function getWindowStart(now: Date): Date {
-	return new Date(Math.floor(now.getTime() / (WINDOW_SECONDS * 1000)) * 60_000);
+	const nowMs = now.getTime();
+	return new Date(Math.floor(nowMs / WINDOW_MS) * WINDOW_MS);
 }
 
 export function getWindowResetAt(windowStart: Date): Date {
-	return new Date(windowStart.getTime() + WINDOW_SECONDS * 1000);
+	return new Date(windowStart.getTime() + WINDOW_MS);
 }
 
 export function buildRateLimitHeaders(args: {
