@@ -5,9 +5,16 @@ import {
 	type GenerationContextInput,
 	type ParameterItem,
 } from "@giselles-ai/protocol";
+import { eq } from "drizzle-orm";
 import type { NextRequest } from "next/server";
 import * as z from "zod/v4";
 import { giselle } from "@/app/giselle";
+import { db } from "@/db";
+import { apps, teams } from "@/db/schema";
+import {
+	buildRateLimitHeaders,
+	consumeTeamRateLimit,
+} from "../../../_lib/rate-limit";
 
 const requestSchema = z.object({
 	text: z.string(),
@@ -63,21 +70,67 @@ export async function POST(
 		return new Response("Unauthorized", { status: 401 });
 	}
 
+	const [teamRecord] = await db
+		.select({
+			teamDbId: apps.teamDbId,
+			plan: teams.plan,
+		})
+		.from(apps)
+		.innerJoin(teams, eq(teams.dbId, apps.teamDbId))
+		.where(eq(apps.id, appId))
+		.limit(1);
+
+	if (!teamRecord) {
+		return new Response("App not found", { status: 404 });
+	}
+
+	const rateLimit = await consumeTeamRateLimit({
+		teamDbId: teamRecord.teamDbId,
+		plan: teamRecord.plan,
+		routeKey: "api_apps_run",
+		now: new Date(),
+	});
+
+	const rateLimitHeaders = buildRateLimitHeaders({
+		limit: rateLimit.limit,
+		remaining: rateLimit.remaining,
+		resetAt: rateLimit.resetAt,
+		retryAfterSeconds: rateLimit.allowed
+			? undefined
+			: rateLimit.retryAfterSeconds,
+	});
+
+	if (!rateLimit.allowed) {
+		return new Response("Rate limit exceeded", {
+			status: 429,
+			headers: rateLimitHeaders,
+		});
+	}
+
 	let body: unknown;
 	try {
 		body = await request.json();
 	} catch {
-		return new Response("Invalid JSON body", { status: 400 });
+		return new Response("Invalid JSON body", {
+			status: 400,
+			headers: rateLimitHeaders,
+		});
 	}
 
 	const parsed = requestSchema.safeParse(body);
 	if (!parsed.success) {
-		return new Response("Invalid request body", { status: 400 });
+		return new Response("Invalid request body", {
+			status: 400,
+			headers: rateLimitHeaders,
+		});
 	}
 
 	const app = await giselle.getApp({ appId }).catch(() => null);
 	if (!app) {
-		return new Response("App not found", { status: 404 });
+		return new Response("App not found", {
+			status: 404,
+			headers: rateLimitHeaders,
+		});
 	}
 
 	let inputs: GenerationContextInput[];
@@ -87,7 +140,10 @@ export async function POST(
 			text: parsed.data.text,
 		});
 	} catch {
-		return new Response("App has no text parameter", { status: 400 });
+		return new Response("App has no text parameter", {
+			status: 400,
+			headers: rateLimitHeaders,
+		});
 	}
 
 	const { task } = await giselle.createTask({
@@ -102,5 +158,5 @@ export async function POST(
 		generationOriginType: "api",
 	});
 
-	return Response.json({ taskId: task.id });
+	return Response.json({ taskId: task.id }, { headers: rateLimitHeaders });
 }
