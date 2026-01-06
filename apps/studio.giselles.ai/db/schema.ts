@@ -1009,6 +1009,32 @@ export const appRelations = relations(apps, ({ one, many }) => ({
 	tasks: many(tasks),
 }));
 
+export const apiRateLimitCounters = pgTable(
+	"api_rate_limit_counters",
+	{
+		teamDbId: integer("team_db_id")
+			.notNull()
+			.references(() => teams.dbId, { onDelete: "cascade" }),
+		routeKey: text("route_key").notNull(),
+		windowStart: timestamp("window_start").notNull(),
+		count: integer("count").notNull().default(0),
+		updatedAt: timestamp("updated_at")
+			.defaultNow()
+			.notNull()
+			.$onUpdate(() => new Date()),
+	},
+	(table) => [
+		primaryKey({
+			columns: [table.teamDbId, table.routeKey, table.windowStart],
+			name: "api_rate_limit_counters_pk",
+		}),
+		index("api_rate_limit_counters_team_window_idx").on(
+			table.teamDbId,
+			table.windowStart,
+		),
+	],
+);
+
 export const tasks = pgTable(
 	"tasks",
 	{
