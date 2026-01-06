@@ -83,7 +83,7 @@ describe("Giselle SDK (public Runs API)", () => {
 		expect(fetchMock).not.toHaveBeenCalled();
 	});
 
-	it("app.runAndWait() polls task status and returns final task + generations", async () => {
+	it("app.runAndWait() polls task status and returns final task result", async () => {
 		let callIndex = 0;
 		const fetchMock = vi.fn((url: unknown, init?: RequestInit) => {
 			callIndex += 1;
@@ -143,10 +143,13 @@ describe("Giselle SDK (public Runs API)", () => {
 
 				return new Response(
 					JSON.stringify({
-						task: { id: "tsk_123", status: "completed" },
-						steps: [],
-						outputs: [],
-						generationsById: { gen_1: { id: "gen_1", status: "completed" } },
+						task: {
+							id: "tsk_123",
+							workspaceId: "ws_123",
+							name: "My Task",
+							steps: [],
+							outputs: [],
+						},
 					}),
 					{
 						status: 200,
@@ -171,10 +174,13 @@ describe("Giselle SDK (public Runs API)", () => {
 				pollIntervalMs: 0,
 			}),
 		).resolves.toEqual({
-			task: { id: "tsk_123", status: "completed" },
-			steps: [],
-			outputs: [],
-			generationsById: { gen_1: { id: "gen_1", status: "completed" } },
+			task: {
+				id: "tsk_123",
+				workspaceId: "ws_123",
+				name: "My Task",
+				steps: [],
+				outputs: [],
+			},
 		});
 	});
 

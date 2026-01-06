@@ -80,20 +80,40 @@ function parseRunResponseJson(json: unknown): AppRunResult {
 
 type TaskWithStatus = { status: string } & Record<string, unknown>;
 
-type TaskStep = Record<string, unknown>;
-type TaskOutput = Record<string, unknown>;
+export type AppTaskStepItem = {
+	id: string;
+	title: string;
+	status: string;
+	generationId: string;
+	outputs?: unknown[];
+	error?: string;
+};
+
+export type AppTaskStep = {
+	title: string;
+	status: string;
+	items: AppTaskStepItem[];
+};
+
+export type AppTaskOutput = {
+	title: string;
+	generationId: string;
+	outputs: unknown[];
+};
+
+export type AppTask =
+	| TaskWithStatus
+	| {
+			id: string;
+			workspaceId: string;
+			name: string;
+			steps: AppTaskStep[];
+			outputs: AppTaskOutput[];
+			status: string;
+	  };
 
 export type AppTaskResult = {
-	task: TaskWithStatus;
-	/**
-	 * Optional task step list (only present on the final `includeGenerations=1` fetch).
-	 */
-	steps?: TaskStep[];
-	/**
-	 * Optional final outputs (only present on the final `includeGenerations=1` fetch).
-	 */
-	outputs?: TaskOutput[];
-	generationsById?: Record<string, unknown>;
+	task: AppTask;
 };
 
 function parseTaskResponseJson(json: unknown): AppTaskResult {
@@ -104,37 +124,46 @@ function parseTaskResponseJson(json: unknown): AppTaskResult {
 	if (typeof task !== "object" || task === null) {
 		throw new Error("Invalid response JSON");
 	}
+
 	const status = (task as { status?: unknown }).status;
-	if (typeof status !== "string" || status.length === 0) {
+	if (status !== undefined) {
+		if (typeof status !== "string" || status.length === 0) {
+			throw new Error("Invalid response JSON");
+		}
+		return { task: task as TaskWithStatus };
+	}
+
+	const taskId = (task as { id?: unknown }).id;
+	if (typeof taskId !== "string" || taskId.length === 0) {
+		throw new Error("Invalid response JSON");
+	}
+	const workspaceId = (task as { workspaceId?: unknown }).workspaceId;
+	if (typeof workspaceId !== "string" || workspaceId.length === 0) {
+		throw new Error("Invalid response JSON");
+	}
+	const name = (task as { name?: unknown }).name;
+	if (typeof name !== "string") {
 		throw new Error("Invalid response JSON");
 	}
 
-	const steps = (json as { steps?: unknown }).steps;
-	if (steps !== undefined && !Array.isArray(steps)) {
+	const steps = (task as { steps?: unknown }).steps;
+	if (!Array.isArray(steps)) {
+		throw new Error("Invalid response JSON");
+	}
+	const outputs = (task as { outputs?: unknown }).outputs;
+	if (!Array.isArray(outputs)) {
 		throw new Error("Invalid response JSON");
 	}
 
-	const outputs = (json as { outputs?: unknown }).outputs;
-	if (outputs !== undefined && !Array.isArray(outputs)) {
-		throw new Error("Invalid response JSON");
-	}
-
-	const generationsById = (json as { generationsById?: unknown })
-		.generationsById;
-	if (
-		generationsById !== undefined &&
-		(typeof generationsById !== "object" || generationsById === null)
-	) {
-		throw new Error("Invalid response JSON");
-	}
 	return {
-		task: task as TaskWithStatus,
-		steps: steps === undefined ? undefined : (steps as TaskStep[]),
-		outputs: outputs === undefined ? undefined : (outputs as TaskOutput[]),
-		generationsById:
-			generationsById === undefined
-				? undefined
-				: (generationsById as Record<string, unknown>),
+		task: task as {
+			id: string;
+			workspaceId: string;
+			name: string;
+			steps: AppTaskStep[];
+			outputs: AppTaskOutput[];
+			status: string;
+		},
 	};
 }
 

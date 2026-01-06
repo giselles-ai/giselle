@@ -28,8 +28,6 @@ type ApiStepItem =
 	  };
 
 type ApiStep = {
-	id: string;
-	index: number;
 	title: string;
 	status: string;
 	items: ApiStepItem[];
@@ -102,8 +100,6 @@ export async function GET(
 	);
 
 	const steps: ApiStep[] = task.sequences.map((sequence, sequenceIndex) => ({
-		id: sequence.id,
-		index: sequenceIndex,
 		title: `Step ${sequenceIndex + 1}`,
 		status: sequence.status,
 		items: sequence.steps
@@ -171,7 +167,16 @@ export async function GET(
 		.filter((outputOrNull) => outputOrNull !== null);
 
 	return Response.json(
-		{ task, steps, outputs, generationsById },
+		{
+			task: {
+				id: task.id,
+				status: task.status,
+				workspaceId: task.workspaceId,
+				name: task.name,
+				steps,
+				outputs,
+			},
+		},
 		{ headers: { "Cache-Control": "no-store" } },
 	);
 }
