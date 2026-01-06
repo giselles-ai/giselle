@@ -11,7 +11,11 @@
   <span style="font-size: 18px; color: #666; margin-left: 15px;">the AI agent studio powering product delivery</span>
 
 
-  <a href="https://www.producthunt.com/products/giselle?embed=true&amp;utm_source=badge-top-post-badge&amp;utm_medium=badge&amp;utm_campaign=badge-giselle" target="_blank" rel="noopener noreferrer"><img alt="Giselle - Build and run AI workflows. Open source. | Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=924550&amp;theme=light&amp;period=daily&amp;t=1767082208449"></a>
+  <p>
+    <a href="https://www.producthunt.com/products/giselle?embed=true&amp;utm_source=badge-top-post-badge&amp;utm_medium=badge&amp;utm_campaign=badge-giselle" target="_blank" rel="noopener noreferrer"><img alt="Giselle - Build and run AI workflows. Open source. | Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=924550&amp;theme=light&amp;period=daily&amp;t=1767082208449"></a>
+    <a href="https://www.producthunt.com/products/giselle?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-giselle" target="_blank" rel="noopener noreferrer"><img alt="Giselle - Build and run AI workflows. Open source. | Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=924550&amp;theme=light&amp;t=1767667659741"></a>
+    <a href="https://www.producthunt.com/products/giselle?embed=true&amp;utm_source=badge-top-post-badge&amp;utm_medium=badge&amp;utm_campaign=badge-giselle" target="_blank" rel="noopener noreferrer"><img alt="Giselle - Build and run AI workflows. Open source. | Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=924550&amp;theme=light&amp;period=weekly&amp;t=1767667659741"></a>
+  </p>
 
   <!-- Demo Video -->
  <img src="./docs/assets/introducing.gif" alt="Giselle Video" width="100%"> <br/>
