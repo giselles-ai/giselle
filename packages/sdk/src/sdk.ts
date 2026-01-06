@@ -78,6 +78,74 @@ function parseRunResponseJson(json: unknown): AppRunResult {
 	return { taskId };
 }
 
+// Primitive types from the API (matching @giselles-ai/protocol)
+type PrimitiveStep = {
+	id: string;
+	status: string;
+	name: string;
+	generationId: string;
+	duration: number;
+	usage: {
+		inputTokens: number;
+		outputTokens: number;
+		totalTokens: number;
+	};
+};
+
+type PrimitiveSequence = {
+	id: string;
+	steps: PrimitiveStep[];
+	status: string;
+	duration: {
+		wallClock: number;
+		totalTask: number;
+	};
+	usage: {
+		inputTokens: number;
+		outputTokens: number;
+		totalTokens: number;
+	};
+};
+
+type PrimitiveTask = {
+	id: string;
+	workspaceId: string;
+	name: string;
+	status: string;
+	sequences: PrimitiveSequence[];
+	nodeIdsConnectedToEnd?: string[];
+};
+
+type PrimitiveGenerationOutput = {
+	type: string;
+	outputId: string;
+	content?: string;
+	contents?: unknown[];
+	sources?: unknown[];
+};
+
+type PrimitiveGeneration = {
+	id: string;
+	status: string;
+	context: {
+		operationNode: {
+			id: string;
+			type: string;
+		};
+	};
+	outputs?: PrimitiveGenerationOutput[];
+	error?: {
+		name: string;
+		message: string;
+	};
+};
+
+type PrimitiveTaskResponse = {
+	task: PrimitiveTask;
+	generations?: Record<string, PrimitiveGeneration>;
+};
+
+// SDK public types (user-friendly format)
 type TaskWithStatus = { status: string } & Record<string, unknown>;
 
 export type AppTaskStepItem = {
@@ -116,6 +184,126 @@ export type AppTaskResult = {
 	task: AppTask;
 };
 
+function isOperationNode(node: { type: string }): boolean {
+	return node.type === "operation";
+}
+
+function isCompletedGeneration(
+	generation: PrimitiveGeneration,
+): generation is PrimitiveGeneration & {
+	outputs: PrimitiveGenerationOutput[];
+} {
+	return generation.status === "completed" && Array.isArray(generation.outputs);
+}
+
+function isFailedGeneration(
+	generation: PrimitiveGeneration,
+): generation is PrimitiveGeneration & {
+	error: { name: string; message: string };
+} {
+	return generation.status === "failed" && generation.error !== undefined;
+}
+
+/**
+ * Transform primitive API response to SDK-friendly format.
+ * This transformation logic was moved from the server-side route handler
+ * to keep the API primitive and let SDK handle the presentation layer.
+ */
+function transformTaskResponse(response: PrimitiveTaskResponse): AppTaskResult {
+	const { task, generations } = response;
+
+	// If no generations, return minimal task with status
+	if (!generations || Object.keys(generations).length === 0) {
+		return { task: { status: task.status } as TaskWithStatus };
+	}
+
+	const generationsById = generations;
+
+	// Transform sequences to steps
+	const steps: AppTaskStep[] = task.sequences.map((sequence, sequenceIndex) => {
+		const items: AppTaskStepItem[] = [];
+
+		for (const step of sequence.steps) {
+			const generation = generationsById[step.generationId];
+			if (!generation) {
+				continue;
+			}
+			const operationNode = generation.context.operationNode;
+			if (!isOperationNode(operationNode)) {
+				continue;
+			}
+
+			if (isCompletedGeneration(generation)) {
+				items.push({
+					id: step.id,
+					title: step.name,
+					status: generation.status,
+					generationId: generation.id,
+					outputs: generation.outputs as unknown[],
+				});
+			} else if (isFailedGeneration(generation)) {
+				items.push({
+					id: step.id,
+					title: step.name,
+					status: generation.status,
+					generationId: generation.id,
+					error: generation.error.message,
+				});
+			} else {
+				items.push({
+					id: step.id,
+					title: step.name,
+					status: generation.status,
+					generationId: generation.id,
+				});
+			}
+		}
+
+		return {
+			title: `Step ${sequenceIndex + 1}`,
+			status: sequence.status,
+			items,
+		};
+	});
+
+	// Find outputs connected to end node
+	const allStepItems = steps.flatMap((step) => step.items);
+	const outputs: AppTaskOutput[] = [];
+
+	for (const nodeId of task.nodeIdsConnectedToEnd ?? []) {
+		const match = allStepItems.find((item) => {
+			const generation = generationsById[item.generationId];
+			if (!generation) {
+				return false;
+			}
+			return generation.context.operationNode.id === nodeId;
+		});
+		if (!match) {
+			continue;
+		}
+		const generation = generationsById[match.generationId];
+		if (!generation || !isCompletedGeneration(generation)) {
+			continue;
+		}
+		outputs.push({
+			title: match.title,
+			generationId: generation.id,
+			outputs: generation.outputs as unknown[],
+		});
+	}
+
+	return {
+		task: {
+			id: task.id,
+			status: task.status,
+			workspaceId: task.workspaceId,
+			name: task.name,
+			steps,
+			outputs,
+		},
+	};
+}
+
 function parseTaskResponseJson(json: unknown): AppTaskResult {
 	if (typeof json !== "object" || json === null) {
 		throw new Error("Invalid response JSON");
@@ -125,15 +313,24 @@ function parseTaskResponseJson(json: unknown): AppTaskResult {
 		throw new Error("Invalid response JSON");
 	}
 
+	const status = (task as { status?: unknown }).status;
+	if (typeof status !== "string" || status.length === 0) {
+		throw new Error("Invalid response JSON");
+	}
+
+	// Check if this is a primitive response with generations (new format)
+	const generations = (json as { generations?: unknown }).generations;
+	if (generations !== undefined) {
+		// New primitive format: transform to SDK format
+		return transformTaskResponse(json as PrimitiveTaskResponse);
+	}
+
+	// Legacy format: check for already-transformed shape
 	const steps = (task as { steps?: unknown }).steps;
 	const outputs = (task as { outputs?: unknown }).outputs;
 
 	const hasFinalResultShape = Array.isArray(steps) && Array.isArray(outputs);
 	if (!hasFinalResultShape) {
-		const status = (task as { status?: unknown }).status;
-		if (typeof status !== "string" || status.length === 0) {
-			throw new Error("Invalid response JSON");
-		}
 		return { task: task as TaskWithStatus };
 	}
 
@@ -147,11 +344,6 @@ function parseTaskResponseJson(json: unknown): AppTaskResult {
 	}
 	const name = (task as { name?: unknown }).name;
 	if (typeof name !== "string") {
-		throw new Error("Invalid response JSON");
-	}
-
-	const status = (task as { status?: unknown }).status;
-	if (typeof status !== "string" || status.length === 0) {
 		throw new Error("Invalid response JSON");
 	}
 
