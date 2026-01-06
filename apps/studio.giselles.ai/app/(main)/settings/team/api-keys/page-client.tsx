@@ -32,7 +32,7 @@ const dummyApiKeys: ApiKey[] = [
 		secretKey: "sk-...Mm8A",
 		createdAt: new Date("2024-09-18"),
 		lastUsedAt: new Date("2024-09-18"),
-		createdBy: "外山智史",
+		createdBy: "satoshi",
 	},
 	{
 		id: "2",
@@ -41,7 +41,7 @@ const dummyApiKeys: ApiKey[] = [
 		secretKey: "sk-...eHgA",
 		createdAt: new Date("2024-08-23"),
 		lastUsedAt: new Date("2024-10-16"),
-		createdBy: "外山智史",
+		createdBy: "satoshi",
 	},
 	{
 		id: "3",
@@ -50,7 +50,7 @@ const dummyApiKeys: ApiKey[] = [
 		secretKey: "sk-...gZnP",
 		createdAt: new Date("2024-07-24"),
 		lastUsedAt: new Date("2024-08-22"),
-		createdBy: "外山智史",
+		createdBy: "satoshi",
 	},
 ];
 

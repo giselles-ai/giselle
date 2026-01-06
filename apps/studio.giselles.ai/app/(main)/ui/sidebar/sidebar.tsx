@@ -146,8 +146,8 @@ function createBaseSidebarParts(
 							{
 								id: "api-keys",
 								label: "API keys",
-								href: "/manage/api-keys",
-								activeMatchPattern: "/manage/api-keys*",
+								href: "/settings/team/api-keys",
+								activeMatchPattern: "/settings/team/api-keys*",
 							},
 						]
 					: []),
@@ -161,6 +161,7 @@ function createBaseSidebarParts(
 						"!/settings/team/integrations*",
 						"!/settings/team/vector-stores*",
 						"!/settings/team/usage*",
+						"!/settings/team/api-keys*",
 					],
 				},
 			],
