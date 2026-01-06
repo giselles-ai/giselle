@@ -8405,7 +8405,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="glob"></a>
-### glob v10.4.5
+### glob v10.5.0
 #### 
 
 ##### Paths
