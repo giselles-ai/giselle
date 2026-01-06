@@ -3,7 +3,7 @@ import { db } from "@/db";
 import type { TeamPlan } from "@/db/schema";
 import { apiRateLimitCounters } from "@/db/schema";
 
-export type RateLimitResult = {
+type RateLimitResult = {
 	allowed: boolean;
 	limit: number;
 	remaining: number;
