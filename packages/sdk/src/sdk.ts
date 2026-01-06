@@ -1,7 +1,7 @@
 import {
 	ApiError,
 	ConfigurationError,
-	NotImplementedError,
+	TimeoutError,
 	UnsupportedFeatureError,
 } from "./errors";
 
@@ -40,12 +40,18 @@ export type AppRunResult = {
 
 export type AppRunAndWaitArgs = AppRunArgs & {
 	/**
-	 * Poll interval for status checks. Not used until the status API exists.
+	 * Poll interval for status checks.
 	 */
 	pollIntervalMs?: number;
+	/**
+	 * Overall timeout for waiting task completion.
+	 */
+	timeoutMs?: number;
 };
 
 const defaultBaseUrl = "https://studio.giselles.ai";
+const defaultPollIntervalMs = 1000;
+const defaultTimeoutMs = 20 * 60 * 1000;
 
 function joinPath(baseUrl: string, path: string): string {
 	const base = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
@@ -72,10 +78,45 @@ function parseRunResponseJson(json: unknown): AppRunResult {
 	return { taskId };
 }
 
+type TaskWithStatus = { status: string } & Record<string, unknown>;
+
+export type AppTaskResult = {
+	task: TaskWithStatus;
+	generationsById?: Record<string, unknown>;
+};
+
+function parseTaskResponseJson(json: unknown): AppTaskResult {
+	if (typeof json !== "object" || json === null) {
+		throw new Error("Invalid response JSON");
+	}
+	const task = (json as { task?: unknown }).task;
+	if (typeof task !== "object" || task === null) {
+		throw new Error("Invalid response JSON");
+	}
+	const status = (task as { status?: unknown }).status;
+	if (typeof status !== "string" || status.length === 0) {
+		throw new Error("Invalid response JSON");
+	}
+	const generationsById = (json as { generationsById?: unknown }).generationsById;
+	if (
+		generationsById !== undefined &&
+		(typeof generationsById !== "object" || generationsById === null)
+	) {
+		throw new Error("Invalid response JSON");
+	}
+	return {
+		task: task as TaskWithStatus,
+		generationsById:
+			generationsById === undefined
+				? undefined
+				: (generationsById as Record<string, unknown>),
+	};
+}
+
 export default class Giselle {
 	readonly app: {
 		run: (args: AppRunArgs) => Promise<AppRunResult>;
-		runAndWait: (args: AppRunAndWaitArgs) => Promise<unknown>;
+		runAndWait: (args: AppRunAndWaitArgs) => Promise<AppTaskResult>;
 	};
 
 	readonly #fetch: typeof fetch;
@@ -143,11 +184,97 @@ export default class Giselle {
 		}
 	}
 
-	#runAppAndWait(_args: AppRunAndWaitArgs): Promise<unknown> {
-		return Promise.reject(
-			new NotImplementedError(
-				"`runAndWait` is not available yet because the public task status/results API is not implemented. Use `app.run()` for now.",
-			),
+	async #getTask(args: {
+		appId: string;
+		taskId: string;
+		includeGenerations: boolean;
+	}): Promise<AppTaskResult> {
+		if (!this.#apiKey) {
+			throw new ConfigurationError("`apiKey` is required");
+		}
+
+		const url = new URL(
+			joinPath(this.#baseUrl, `/api/apps/${args.appId}/tasks/${args.taskId}`),
 		);
+		if (args.includeGenerations) {
+			url.searchParams.set("includeGenerations", "1");
+		}
+
+		const response = await this.#fetch(url.toString(), {
+			method: "GET",
+			headers: {
+				Authorization: `Bearer ${this.#apiKey}`,
+			},
+		});
+
+		if (!response.ok) {
+			const responseText = await readResponseText(response);
+			throw new ApiError(
+				`Runs API request failed: ${response.status} ${response.statusText}`,
+				response.status,
+				responseText,
+			);
+		}
+
+		let json: unknown;
+		try {
+			json = await response.json();
+		} catch {
+			throw new ApiError(
+				"Runs API returned invalid JSON",
+				response.status,
+				await readResponseText(response),
+			);
+		}
+
+		try {
+			return parseTaskResponseJson(json);
+		} catch (e) {
+			throw new ApiError(
+				e instanceof Error ? e.message : "Runs API returned invalid JSON",
+				response.status,
+				"",
+			);
+		}
+	}
+
+	async #runAppAndWait(args: AppRunAndWaitArgs): Promise<AppTaskResult> {
+		const { taskId } = await this.#runApp(args);
+
+		const pollIntervalMs = args.pollIntervalMs ?? defaultPollIntervalMs;
+		const timeoutMs = args.timeoutMs ?? defaultTimeoutMs;
+		const deadline = Date.now() + timeoutMs;
+
+		// Poll status-only until terminal.
+		while (true) {
+			const { task } = await this.#getTask({
+				appId: args.appId,
+				taskId,
+				includeGenerations: false,
+			});
+
+			if (
+				task.status === "completed" ||
+				task.status === "failed" ||
+				task.status === "cancelled"
+			) {
+				break;
+			}
+
+			if (Date.now() >= deadline) {
+				throw new TimeoutError(
+					`Timed out waiting for task completion (taskId: ${taskId})`,
+				);
+			}
+
+			await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
+		}
+
+		// Fetch full results at the end.
+		return await this.#getTask({
+			appId: args.appId,
+			taskId,
+			includeGenerations: true,
+		});
 	}
 }

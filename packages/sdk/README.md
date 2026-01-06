@@ -59,10 +59,13 @@ Calls:
 
 ### `client.app.runAndWait(...)`
 
-Present for future compatibility, but currently **throws** because the public task status/results API is not implemented yet.
+Calls `POST /api/apps/{appId}/run`, then polls the task status API until the task finishes.
+
+- Polls: `GET /api/apps/{appId}/tasks/{taskId}`
+- Final fetch (includes generations): `GET /api/apps/{appId}/tasks/{taskId}?includeGenerations=1`
 
 ## Current limitations
 
 - **File input is not supported yet**: passing `input.file` throws an `UnsupportedFeatureError`.
-- **`runAndWait` is not implemented yet**: use `app.run()` for now, then fetch task status/results via a future public API.
+  - The Runs request body is still `{ "text": string }`.
 
