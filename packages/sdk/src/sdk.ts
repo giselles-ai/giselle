@@ -1,4 +1,15 @@
 import {
+	Generation,
+	GenerationId,
+	type GenerationOutput,
+	GenerationStatus,
+	StepId,
+	Task,
+	isCompletedGeneration,
+	isFailedGeneration,
+	isOperationNode,
+} from "@giselles-ai/protocol";
+import {
 	ApiError,
 	ConfigurationError,
 	TimeoutError,
@@ -34,9 +45,7 @@ export type AppRunArgs = {
 	input: AppRunInput;
 };
 
-export type AppRunResult = {
-	taskId: string;
-};
+export type AppRunResult = Task;
 
 export type AppRunAndWaitArgs = AppRunArgs & {
 	/**
@@ -68,49 +77,49 @@ async function readResponseText(response: Response): Promise<string> {
 }
 
 function parseRunResponseJson(json: unknown): AppRunResult {
-	if (typeof json !== "object" || json === null) {
+	const result = Task.safeParse(json);
+	if (!result.success) {
+		console.error("Zod Parse Error:", JSON.stringify(result.error, null, 2));
 		throw new Error("Invalid response JSON");
 	}
-	const taskId = (json as { taskId?: unknown }).taskId;
-	if (typeof taskId !== "string" || taskId.length === 0) {
-		throw new Error("Invalid response JSON");
-	}
-	return { taskId };
+	return result.data;
 }
 
-type TaskWithStatus = { status: string } & Record<string, unknown>;
-
 export type AppTaskStepItem = {
-	id: string;
+	id: StepId;
 	title: string;
-	status: string;
-	generationId: string;
-	outputs?: unknown[];
+	status: GenerationStatus;
+	generationId: GenerationId;
+	outputs?: GenerationOutput[];
 	error?: string;
 };
 
 export type AppTaskStep = {
 	title: string;
-	status: string;
+	status: GenerationStatus;
 	items: AppTaskStepItem[];
 };
 
 export type AppTaskOutput = {
 	title: string;
-	generationId: string;
-	outputs: unknown[];
+	generationId: GenerationId;
+	outputs: GenerationOutput[];
 };
 
-export type AppTask =
-	| TaskWithStatus
-	| {
-			id: string;
-			workspaceId: string;
-			name: string;
-			steps: AppTaskStep[];
-			outputs: AppTaskOutput[];
-			status: string;
-	  };
+export type AppTask = Omit<Task, "steps"> & {
+	/**
+	 * Steps arranged for the App view.
+	 */
+	steps: AppTaskStep[];
+	/**
+	 * Outputs connected to the end node.
+	 */
+	outputs: AppTaskOutput[];
+	/**
+	 * Original task stats (queued, inProgress, etc.)
+	 */
+	stats: Task["steps"];
+};
 
 export type AppTaskResult = {
 	task: AppTask;
@@ -120,49 +129,109 @@ function parseTaskResponseJson(json: unknown): AppTaskResult {
 	if (typeof json !== "object" || json === null) {
 		throw new Error("Invalid response JSON");
 	}
-	const task = (json as { task?: unknown }).task;
-	if (typeof task !== "object" || task === null) {
-		throw new Error("Invalid response JSON");
+
+	const rawTask = (json as { task?: unknown }).task;
+	const taskResult = Task.safeParse(rawTask);
+	if (!taskResult.success) {
+		console.error(
+			"Zod Parse Error (Task):",
+			JSON.stringify(taskResult.error, null, 2),
+		);
+		throw new Error("Invalid response JSON: task parsing failed");
+	}
+	const task = taskResult.data;
+
+	const rawGenerations = (json as { generations?: unknown }).generations;
+	let generations: Generation[] = [];
+	if (Array.isArray(rawGenerations)) {
+		generations = rawGenerations
+			.map((g) => {
+				const res = Generation.safeParse(g);
+				return res.success ? res.data : null;
+			})
+			.filter((g): g is Generation => g !== null);
 	}
 
-	const steps = (task as { steps?: unknown }).steps;
-	const outputs = (task as { outputs?: unknown }).outputs;
+	const generationsById = Object.fromEntries(
+		generations.map((g) => [g.id, g]),
+	);
 
-	const hasFinalResultShape = Array.isArray(steps) && Array.isArray(outputs);
-	if (!hasFinalResultShape) {
-		const status = (task as { status?: unknown }).status;
-		if (typeof status !== "string" || status.length === 0) {
-			throw new Error("Invalid response JSON");
-		}
-		return { task: task as TaskWithStatus };
-	}
+	const steps: AppTaskStep[] = task.sequences.map((sequence, sequenceIndex) => ({
+		title: `Step ${sequenceIndex + 1}`,
+		status: sequence.status,
+		items: sequence.steps
+			.map((step) => {
+				const generation = generationsById[step.generationId];
+				if (!generation) {
+					return null;
+				}
+				const operationNode = generation.context.operationNode;
+				if (!isOperationNode(operationNode)) {
+					return null;
+				}
 
-	const taskId = (task as { id?: unknown }).id;
-	if (typeof taskId !== "string" || taskId.length === 0) {
-		throw new Error("Invalid response JSON");
-	}
-	const workspaceId = (task as { workspaceId?: unknown }).workspaceId;
-	if (typeof workspaceId !== "string" || workspaceId.length === 0) {
-		throw new Error("Invalid response JSON");
-	}
-	const name = (task as { name?: unknown }).name;
-	if (typeof name !== "string") {
-		throw new Error("Invalid response JSON");
-	}
+				if (isCompletedGeneration(generation)) {
+					return {
+						id: step.id,
+						title: step.name,
+						status: generation.status,
+						generationId: generation.id,
+						outputs: generation.outputs,
+					};
+				}
+				if (isFailedGeneration(generation)) {
+					return {
+						id: step.id,
+						title: step.name,
+						status: generation.status,
+						generationId: generation.id,
+						error: generation.error.message,
+					};
+				}
+				return {
+					id: step.id,
+					title: step.name,
+					status: generation.status,
+					generationId: generation.id,
+				};
+			})
+			.filter((item) => item !== null) as AppTaskStepItem[],
+	}));
 
-	const status = (task as { status?: unknown }).status;
-	if (typeof status !== "string" || status.length === 0) {
-		throw new Error("Invalid response JSON");
-	}
+	const allStepItems = steps.flatMap((step) => step.items);
+	const outputs: AppTaskOutput[] = (task.nodeIdsConnectedToEnd ?? [])
+		.map((nodeId) => {
+			const match = allStepItems.find((item) => {
+				const generation = generationsById[item.generationId];
+				if (!generation) {
+					return false;
+				}
+				return generation.context.operationNode.id === nodeId;
+			});
+			if (!match) {
+				return null;
+			}
+			const generation = generationsById[match.generationId];
+			if (!generation || !isCompletedGeneration(generation)) {
+				return null;
+			}
+			return {
+				title: match.title,
+				generationId: generation.id,
+				outputs: generation.outputs,
+			};
+		})
+		.filter((item) => item !== null) as AppTaskOutput[];
+
+	// Separate original stats from the task to avoid collision with our new steps array
+	const { steps: taskStats, ...taskRest } = task;
 
 	return {
-		task: task as {
-			id: string;
-			workspaceId: string;
-			name: string;
-			steps: AppTaskStep[];
-			outputs: AppTaskOutput[];
-			status: string;
+		task: {
+			...taskRest,
+			stats: taskStats,
+			steps,
+			outputs,
 		},
 	};
 }
@@ -293,7 +362,8 @@ export default class Giselle {
 	}
 
 	async #runAppAndWait(args: AppRunAndWaitArgs): Promise<AppTaskResult> {
-		const { taskId } = await this.#runApp(args);
+		const result = await this.#runApp(args);
+		const taskId = result.id;
 
 		const pollIntervalMs = args.pollIntervalMs ?? defaultPollIntervalMs;
 		const timeoutMs = args.timeoutMs ?? defaultTimeoutMs;

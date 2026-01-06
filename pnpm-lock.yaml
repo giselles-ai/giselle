@@ -984,18 +984,6 @@ importers:
         specifier: 'catalog:'
         version: 3.2.4(@types/debug@4.1.12)(@types/node@25.0.3)(happy-dom@20.0.2)(jiti@2.6.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(lightningcss@1.30.1)(terser@5.44.1)(tsx@4.20.6)(yaml@2.7.0)
 
-  packages/sdk:
-    devDependencies:
-      '@giselles-ai/tsconfig':
-        specifier: workspace:*
-        version: link:../../tools/tsconfig
-      tsup:
-        specifier: 'catalog:'
-        version: 8.3.5(jiti@2.6.1)(postcss@8.5.6)(tsx@4.20.6)(typescript@5.7.3)(yaml@2.7.0)
-      vitest:
-        specifier: 'catalog:'
-        version: 3.2.4(@types/debug@4.1.12)(@types/node@25.0.3)(happy-dom@20.0.2)(jiti@2.6.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(lightningcss@1.30.1)(terser@5.44.1)(tsx@4.20.6)(yaml@2.7.0)
-
   packages/github-tool:
     dependencies:
       '@giselles-ai/rag':
@@ -1379,6 +1367,22 @@ importers:
       zustand:
         specifier: 'catalog:'
         version: 5.0.8(@types/react@19.2.7)(react@19.2.1)(use-sync-external-store@1.6.0(react@19.2.1))
+
+  packages/sdk:
+    dependencies:
+      '@giselles-ai/protocol':
+        specifier: workspace:*
+        version: link:../protocol
+    devDependencies:
+      '@giselles-ai/tsconfig':
+        specifier: workspace:*
+        version: link:../../tools/tsconfig
+      tsup:
+        specifier: 'catalog:'
+        version: 8.3.5(jiti@2.6.1)(postcss@8.5.6)(tsx@4.20.6)(typescript@5.7.3)(yaml@2.7.0)
+      vitest:
+        specifier: 'catalog:'
+        version: 3.2.4(@types/debug@4.1.12)(@types/node@25.0.3)(happy-dom@20.0.2)(jiti@2.6.1)(jsdom@26.1.0(bufferutil@4.0.9)(utf-8-validate@6.0.5))(lightningcss@1.30.1)(terser@5.44.1)(tsx@4.20.6)(yaml@2.7.0)
 
   packages/storage:
     dependencies:

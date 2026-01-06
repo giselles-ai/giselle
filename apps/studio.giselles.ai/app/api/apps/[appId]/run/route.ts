@@ -102,5 +102,6 @@ export async function POST(
 		generationOriginType: "api",
 	});
 
-	return Response.json({ taskId: task.id });
+	// Return the full task object
+	return Response.json(task);
 }
