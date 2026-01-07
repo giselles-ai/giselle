@@ -21,7 +21,13 @@ import {
 } from "@giselle-internal/ui/table";
 import clsx from "clsx/lite";
 import { Check, Copy, Info, Plus, Trash } from "lucide-react";
-import { useActionState, useEffect, useMemo, useRef, useState } from "react";
+import {
+	useActionState,
+	useCallback,
+	useEffect,
+	useMemo,
+	useState,
+} from "react";
 import { useFormStatus } from "react-dom";
 import { GlassButton } from "@/components/ui/glass-button";
 import type { ApiKeyListItem } from "@/lib/api-keys";
@@ -82,15 +88,26 @@ function RevokeApiKeyButton({ isDisabled }: { isDisabled: boolean }) {
 function CreateKeyModal({
 	isOpen,
 	onOpenChange,
-	onSubmit,
-	error,
+	onSuccess,
 }: {
 	isOpen: boolean;
 	onOpenChange: (open: boolean) => void;
-	onSubmit: (formData: FormData) => void;
-	error: string | null;
+	onSuccess: (token: string) => void;
 }) {
 	const [label, setLabel] = useState("");
+
+	const [createState, createAction] = useActionState<
+		CreateApiKeyActionState | undefined,
+		FormData
+	>(createApiKeyAction, undefined);
+
+	useEffect(() => {
+		if (createState?.ok) {
+			onSuccess(createState.token);
+		}
+	}, [createState, onSuccess]);
+
+	const createError = createState && !createState.ok ? createState.error : null;
 
 	// Reset form when modal closes
 	useEffect(() => {
@@ -108,7 +125,7 @@ function CreateKeyModal({
 					</DialogTitle>
 				</DialogHeader>
 
-				<form action={onSubmit} className="mt-6 space-y-6">
+				<form action={createAction} className="mt-6 space-y-6">
 					<div className="space-y-2">
 						<div className="flex items-center gap-2 text-sm text-white-800">
 							Name
@@ -124,9 +141,9 @@ function CreateKeyModal({
 						/>
 					</div>
 
-					{error && (
+					{createError && (
 						<div className="rounded-md border border-error-500/40 bg-error-500/10 px-3 py-2 text-sm text-error-200">
-							{error}
+							{createError}
 						</div>
 					)}
 
@@ -239,26 +256,31 @@ export function ApiKeysPageClient({ apiKeys }: ApiKeysPageClientProps) {
 	const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 	const [isSaveKeyModalOpen, setIsSaveKeyModalOpen] = useState(false);
 	const [lastCreatedToken, setLastCreatedToken] = useState<string | null>(null);
+	const [createModalKey, setCreateModalKey] = useState(0);
 
-	const [createState, createAction] = useActionState<
-		CreateApiKeyActionState | undefined,
-		FormData
-	>(createApiKeyAction, undefined);
 	const [revokeState, revokeAction] = useActionState<
 		RevokeApiKeyActionState | undefined,
 		FormData
 	>(revokeApiKeyAction, undefined);
 
-	useEffect(() => {
-		if (createState?.ok) {
-			setLastCreatedToken(createState.token);
-			setIsCreateModalOpen(false);
-			setIsSaveKeyModalOpen(true);
+	const handleCreateModalOpenChange = useCallback((open: boolean) => {
+		setIsCreateModalOpen(open);
+		if (!open) {
+			// Remount the modal so its local state resets between opens.
+			setCreateModalKey((key) => key + 1);
 		}
-	}, [createState]);
+	}, []);
 
-	const createError = createState && !createState.ok ? createState.error : null;
 	const revokeError = revokeState && !revokeState.ok ? revokeState.error : null;
+
+	const handleCreateSuccess = useCallback(
+		(token: string) => {
+			setLastCreatedToken(token);
+			handleCreateModalOpenChange(false);
+			setIsSaveKeyModalOpen(true);
+		},
+		[handleCreateModalOpenChange],
+	);
 
 	const normalizedKeys: NormalizedApiKey[] = useMemo(
 		() =>
@@ -390,10 +412,10 @@ export function ApiKeysPageClient({ apiKeys }: ApiKeysPageClientProps) {
 			</div>
 
 			<CreateKeyModal
+				key={createModalKey}
 				isOpen={isCreateModalOpen}
-				onOpenChange={setIsCreateModalOpen}
-				onSubmit={createAction}
-				error={createError}
+				onOpenChange={handleCreateModalOpenChange}
+				onSuccess={handleCreateSuccess}
 			/>
 
 			{lastCreatedToken && (
