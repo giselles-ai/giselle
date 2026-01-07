@@ -248,6 +248,7 @@ overrides:
   vite: 7.1.3
   jws: 4.0.1
   qs: 6.14.1
+  glob@>=11.0.0 <11.1.0: 11.1.0
 
 importers:
 
@@ -6708,8 +6709,8 @@ packages:
     resolution: {integrity: sha512-DfXN8DfhJ7NH3Oe7cFmu3NCu1wKbkReJ8TorzSAFbSKrlNaQSKfIzqYqVY8zlbs2NLBbWpRiU52GX2PbaBVNkg==}
     hasBin: true
 
-  glob@11.0.3:
-    resolution: {integrity: sha512-2Nim7dha1KVkaiF4q6Dj+ngPPMdfvLJEOpZk/jKiUAkqKebpGAWQXAq9z1xu9HKu5lWfqw/FASuccEjyznjPaA==}
+  glob@11.1.0:
+    resolution: {integrity: sha512-vuNwKSaKiqm7g0THUBu2x7ckSs3XJLXE+2ssL7/MfTGPLLcrJQ/4Uq1CjPTtO5cCIiRxqvN6Twy1qOwhL0Xjcw==}
     engines: {node: 20 || >=22}
     hasBin: true
 
@@ -14913,7 +14914,7 @@ snapshots:
       package-json-from-dist: 1.0.1
       path-scurry: 1.11.1
 
-  glob@11.0.3:
+  glob@11.1.0:
     dependencies:
       foreground-child: 3.3.1
       jackspeak: 4.1.1
@@ -16736,7 +16737,7 @@ snapshots:
       conf: 15.0.2
       debounce: 2.2.0
       esbuild: 0.25.10
-      glob: 11.0.3
+      glob: 11.1.0
       jiti: 2.4.2
       log-symbols: 7.0.1
       mime-types: 3.0.1
