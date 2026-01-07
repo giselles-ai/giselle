@@ -1,4 +1,3 @@
-import { verifyApiSecretForApp } from "@giselles-ai/giselle";
 import {
 	AppId,
 	type AppParameter,
@@ -11,6 +10,7 @@ import * as z from "zod/v4";
 import { giselle } from "@/app/giselle";
 import { db } from "@/db";
 import { apps, teams } from "@/db/schema";
+import { verifyApiSecretForTeam } from "@/lib/api-keys";
 import {
 	buildRateLimitHeaders,
 	consumeTeamRateLimit,
@@ -61,15 +61,6 @@ export async function POST(
 	}
 	const appId = appIdParse.data;
 
-	const verifyResult = await verifyApiSecretForApp({
-		context: giselle.getContext(),
-		appId,
-		authorizationHeader: request.headers.get("authorization"),
-	});
-	if (!verifyResult.ok) {
-		return new Response("Unauthorized", { status: 401 });
-	}
-
 	const [teamRecord] = await db
 		.select({
 			teamDbId: apps.teamDbId,
@@ -81,7 +72,17 @@ export async function POST(
 		.limit(1);
 
 	if (!teamRecord) {
-		return new Response("App not found", { status: 404 });
+		// Keep behavior consistent with pre-DB lookup auth checks:
+		// unauthenticated requests should not reveal whether an appId exists.
+		return new Response("Unauthorized", { status: 401 });
+	}
+
+	const verifyResult = await verifyApiSecretForTeam({
+		teamDbId: teamRecord.teamDbId,
+		authorizationHeader: request.headers.get("authorization"),
+	});
+	if (!verifyResult.ok) {
+		return new Response("Unauthorized", { status: 401 });
 	}
 
 	const rateLimit = await consumeTeamRateLimit({
