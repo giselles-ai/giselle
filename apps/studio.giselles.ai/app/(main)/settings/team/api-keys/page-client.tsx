@@ -71,6 +71,28 @@ function CreateApiKeySubmitButton() {
 	);
 }
 
+function CreateApiKeyCancelButton({
+	isSubmitting,
+	onCancel,
+}: {
+	isSubmitting: boolean;
+	onCancel: () => void;
+}) {
+	const { pending } = useFormStatus();
+	const disabled = pending || isSubmitting;
+	return (
+		<Button
+			type="button"
+			variant="filled"
+			size="large"
+			disabled={disabled}
+			onClick={onCancel}
+		>
+			Cancel
+		</Button>
+	);
+}
+
 function RevokeApiKeyButton({ isDisabled }: { isDisabled: boolean }) {
 	const { pending } = useFormStatus();
 	const disabled = isDisabled || pending;
@@ -96,6 +118,7 @@ function CreateKeyModal({
 	onSuccess: (token: string) => void;
 }) {
 	const [label, setLabel] = useState("");
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const [createState, createAction] = useActionState<
 		CreateApiKeyActionState | undefined,
@@ -114,11 +137,34 @@ function CreateKeyModal({
 	useEffect(() => {
 		if (!isOpen) {
 			setLabel("");
+			setIsSubmitting(false);
 		}
 	}, [isOpen]);
 
+	useEffect(() => {
+		if (createState && !createState.ok) {
+			setIsSubmitting(false);
+		}
+	}, [createState]);
+
+	const handleDialogOpenChange = useCallback(
+		(open: boolean) => {
+			// Prevent losing the show-once token by blocking closes while the create
+			// server action is in-flight.
+			if (!open && isSubmitting) {
+				return;
+			}
+			onOpenChange(open);
+		},
+		[isSubmitting, onOpenChange],
+	);
+
+	const handleSubmit = useCallback(() => {
+		setIsSubmitting(true);
+	}, []);
+
 	return (
-		<Dialog open={isOpen} onOpenChange={onOpenChange}>
+		<Dialog open={isOpen} onOpenChange={handleDialogOpenChange}>
 			<DialogContent variant="glass">
 				<DialogHeader>
 					<DialogTitle className="text-[20px] font-semibold text-white-900">
@@ -126,7 +172,11 @@ function CreateKeyModal({
 					</DialogTitle>
 				</DialogHeader>
 
-				<form action={createAction} className="mt-6 space-y-6">
+				<form
+					action={createAction}
+					onSubmit={handleSubmit}
+					className="mt-6 space-y-6"
+				>
 					<div className="space-y-2">
 						<div className="flex items-center gap-2 text-sm text-white-800">
 							Name
@@ -139,6 +189,7 @@ function CreateKeyModal({
 							placeholder="My Test Key"
 							className="w-full"
 							aria-label="API key name"
+							disabled={isSubmitting}
 						/>
 					</div>
 
@@ -149,11 +200,10 @@ function CreateKeyModal({
 					)}
 
 					<DialogFooter>
-						<DialogClose asChild>
-							<Button type="button" variant="filled" size="large">
-								Cancel
-							</Button>
-						</DialogClose>
+						<CreateApiKeyCancelButton
+							isSubmitting={isSubmitting}
+							onCancel={() => onOpenChange(false)}
+						/>
 						<CreateApiKeySubmitButton />
 					</DialogFooter>
 				</form>
