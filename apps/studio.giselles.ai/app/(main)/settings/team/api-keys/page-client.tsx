@@ -187,7 +187,7 @@ function SaveKeyModal({
 						<button
 							type="button"
 							onClick={handleCopy}
-							className="flex items-center gap-1.5 px-3 py-2 text-sm text-white-800 hover:bg-white-100/5 rounded-md transition-colors"
+							className="flex items-center gap-1.5 px-3 py-2 text-sm text-white-800 hover:bg-white-100/5 rounded-md transition-colors cursor-pointer w-[90px] justify-center"
 						>
 							{isCopied ? (
 								<>
