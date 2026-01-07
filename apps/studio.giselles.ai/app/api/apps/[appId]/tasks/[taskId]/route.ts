@@ -1,4 +1,3 @@
-import { verifyApiSecretForApp } from "@giselles-ai/giselle";
 import {
 	AppId,
 	type GenerationOutput,
@@ -7,8 +6,12 @@ import {
 	isOperationNode,
 	TaskId,
 } from "@giselles-ai/protocol";
+import { eq } from "drizzle-orm";
 import type { NextRequest } from "next/server";
 import { giselle } from "@/app/giselle";
+import { db } from "@/db";
+import { apps } from "@/db/schema";
+import { verifyApiSecretForTeam } from "@/lib/api-keys";
 
 type ApiStepItem =
 	| {
@@ -57,9 +60,19 @@ export async function GET(
 	}
 	const taskId = taskIdParse.data;
 
-	const verifyResult = await verifyApiSecretForApp({
-		context: giselle.getContext(),
-		appId,
+	const [appRecord] = await db
+		.select({ teamDbId: apps.teamDbId })
+		.from(apps)
+		.where(eq(apps.id, appId))
+		.limit(1);
+	if (!appRecord) {
+		// Keep behavior consistent with the run endpoint:
+		// unauthenticated requests should not reveal whether an appId exists.
+		return new Response("Unauthorized", { status: 401 });
+	}
+
+	const verifyResult = await verifyApiSecretForTeam({
+		teamDbId: appRecord.teamDbId,
 		authorizationHeader: request.headers.get("authorization"),
 	});
 	if (!verifyResult.ok) {
