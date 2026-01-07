@@ -72,7 +72,9 @@ export async function POST(
 		.limit(1);
 
 	if (!teamRecord) {
-		return new Response("App not found", { status: 404 });
+		// Keep behavior consistent with pre-DB lookup auth checks:
+		// unauthenticated requests should not reveal whether an appId exists.
+		return new Response("Unauthorized", { status: 401 });
 	}
 
 	const verifyResult = await verifyApiSecretForTeam({
