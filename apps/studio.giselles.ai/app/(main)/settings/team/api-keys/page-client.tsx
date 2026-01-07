@@ -1,5 +1,15 @@
 "use client";
 
+import { Button } from "@giselle-internal/ui/button";
+import {
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@giselle-internal/ui/dialog";
+import { Input } from "@giselle-internal/ui/input";
 import { PageHeading } from "@giselle-internal/ui/page-heading";
 import {
 	Table,
@@ -9,13 +19,13 @@ import {
 	TableHeader,
 	TableRow,
 } from "@giselle-internal/ui/table";
-import { Info, Plus, Trash } from "lucide-react";
-import { useActionState, useEffect, useMemo, useState } from "react";
+import clsx from "clsx/lite";
+import { Check, Copy, Info, Plus, Trash } from "lucide-react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
 import { GlassButton } from "@/components/ui/glass-button";
 import type { ApiKeyListItem } from "@/lib/api-keys";
 import {
-	type CreateApiKeyActionState,
 	createApiKeyAction,
 	type RevokeApiKeyActionState,
 	revokeApiKeyAction,
@@ -31,6 +41,11 @@ type NormalizedApiKey = ApiKeyListItem & {
 	revokedAt: Date | null;
 };
 
+type ModalState =
+	| { type: "closed" }
+	| { type: "creating"; key: number }
+	| { type: "showingToken"; token: string };
+
 function formatDate(date: Date | null): string {
 	if (!date) return "-";
 	return date.toLocaleDateString("en-US", {
@@ -44,15 +59,187 @@ function formatSecretPreview(args: { redactedValue: string }): string {
 	return args.redactedValue;
 }
 
-function CreateApiKeySubmitButton() {
-	const { pending } = useFormStatus();
+function CreateKeyModal({
+	isOpen,
+	onOpenChange,
+	onSuccess,
+}: {
+	isOpen: boolean;
+	onOpenChange: (open: boolean) => void;
+	onSuccess: (token: string) => void;
+}) {
+	const [label, setLabel] = useState("");
+	const [error, setError] = useState<string | null>(null);
+	const [isPending, startTransition] = useTransition();
+
+	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		const formData = new FormData(e.currentTarget);
+		setError(null);
+		startTransition(async () => {
+			const result = await createApiKeyAction(undefined, formData);
+			if (result.ok) {
+				onSuccess(result.token);
+			} else {
+				setError(result.error);
+			}
+		});
+	};
+
+	const handleDialogOpenChange = (open: boolean) => {
+		// Prevent losing the show-once token by blocking closes while the create
+		// action is in-flight.
+		if (!open && isPending) {
+			return;
+		}
+		onOpenChange(open);
+	};
+
 	return (
-		<GlassButton type="submit" disabled={pending}>
-			<span className="grid place-items-center rounded-full size-4 bg-primary-200 opacity-50">
-				<Plus className="size-3 text-background group-hover:text-background transition-colors" />
-			</span>
-			{pending ? "Creating..." : "Create secret key"}
-		</GlassButton>
+		<Dialog open={isOpen} onOpenChange={handleDialogOpenChange}>
+			<DialogContent variant="glass">
+				<DialogHeader>
+					<DialogTitle className="text-[20px] font-semibold text-white-900">
+						Create new secret key
+					</DialogTitle>
+				</DialogHeader>
+
+				<form onSubmit={handleSubmit} className="mt-6 space-y-6">
+					<div className="space-y-2">
+						<div className="flex items-center gap-2 text-sm text-white-800">
+							Name
+							<span className="text-text-muted">Optional</span>
+						</div>
+						<Input
+							name="label"
+							value={label}
+							onChange={(e) => setLabel(e.target.value)}
+							placeholder="My Test Key"
+							className="w-full"
+							aria-label="API key name"
+							disabled={isPending}
+						/>
+					</div>
+
+					{error && (
+						<div className="rounded-md border border-error-500/40 bg-error-500/10 px-3 py-2 text-sm text-error-200">
+							{error}
+						</div>
+					)}
+
+					<DialogFooter>
+						<Button
+							type="button"
+							variant="filled"
+							size="large"
+							disabled={isPending}
+							onClick={() => onOpenChange(false)}
+						>
+							Cancel
+						</Button>
+						<Button
+							type="submit"
+							variant="primary"
+							size="large"
+							disabled={isPending}
+						>
+							{isPending ? "Creating..." : "Create secret key"}
+						</Button>
+					</DialogFooter>
+				</form>
+			</DialogContent>
+		</Dialog>
+	);
+}
+
+function SaveKeyModal({
+	isOpen,
+	onOpenChange,
+	secretKey,
+}: {
+	isOpen: boolean;
+	onOpenChange: (open: boolean) => void;
+	secretKey: string;
+}) {
+	const [isCopied, setIsCopied] = useState(false);
+	const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+	useEffect(() => {
+		return () => {
+			if (copyTimeoutRef.current !== null) {
+				clearTimeout(copyTimeoutRef.current);
+				copyTimeoutRef.current = null;
+			}
+		};
+	}, []);
+
+	const handleCopy = async () => {
+		await navigator.clipboard.writeText(secretKey);
+
+		if (copyTimeoutRef.current !== null) {
+			clearTimeout(copyTimeoutRef.current);
+			copyTimeoutRef.current = null;
+		}
+
+		setIsCopied(true);
+		copyTimeoutRef.current = setTimeout(() => {
+			setIsCopied(false);
+			copyTimeoutRef.current = null;
+		}, 2000);
+	};
+
+	return (
+		<Dialog open={isOpen} onOpenChange={onOpenChange}>
+			<DialogContent variant="glass">
+				<DialogHeader>
+					<DialogTitle className="text-[20px] font-semibold text-white-900">
+						Save your key
+					</DialogTitle>
+				</DialogHeader>
+
+				<div className="mt-4 space-y-4">
+					<p className="text-sm text-text-muted">
+						Please save your secret key in a safe place since{" "}
+						<span className="text-white-900 font-medium">
+							you won't be able to view it again
+						</span>
+						. Keep it secure, as anyone with your API key can make requests on
+						your behalf. If you do lose it, you'll need to generate a new one.
+					</p>
+
+					<div className="flex items-center gap-2 p-1 rounded-lg bg-background border border-border">
+						<code className="flex-1 px-3 py-2 font-mono text-sm text-white-800 break-all">
+							{secretKey}
+						</code>
+						<button
+							type="button"
+							onClick={handleCopy}
+							className="flex items-center gap-1.5 px-3 py-2 text-sm text-white-800 hover:bg-white-100/5 rounded-md transition-colors cursor-pointer w-[90px] justify-center"
+						>
+							{isCopied ? (
+								<>
+									<Check className="size-4 text-green-400" />
+									Copied
+								</>
+							) : (
+								<>
+									<Copy className="size-4" />
+									Copy
+								</>
+							)}
+						</button>
+					</div>
+				</div>
+
+				<DialogFooter>
+					<DialogClose asChild>
+						<Button type="button" variant="primary" size="large">
+							Done
+						</Button>
+					</DialogClose>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
 	);
 }
 
@@ -72,27 +259,40 @@ function RevokeApiKeyButton({ isDisabled }: { isDisabled: boolean }) {
 }
 
 export function ApiKeysPageClient({ apiKeys }: ApiKeysPageClientProps) {
-	const [label, setLabel] = useState("");
-	const [lastCreatedToken, setLastCreatedToken] = useState<string | null>(null);
-	const [createState, createAction] = useActionState<
-		CreateApiKeyActionState | undefined,
-		FormData
-	>(createApiKeyAction, undefined);
-	const [revokeState, revokeAction] = useActionState<
-		RevokeApiKeyActionState | undefined,
-		FormData
-	>(revokeApiKeyAction, undefined);
+	const [modalState, setModalState] = useState<ModalState>({ type: "closed" });
+	const [revokeState, setRevokeState] = useState<
+		RevokeApiKeyActionState | undefined
+	>(undefined);
+	const [isRevoking, startRevokeTransition] = useTransition();
 
-	useEffect(() => {
-		if (createState?.ok) {
-			setLastCreatedToken(createState.token);
-			setLabel("");
-		}
-	}, [createState]);
+	const handleCreateClick = () => {
+		setModalState((prev) => ({
+			type: "creating",
+			key: prev.type === "creating" ? prev.key + 1 : 0,
+		}));
+	};
 
-	const error =
-		(createState && !createState.ok ? createState.error : null) ??
-		(revokeState && !revokeState.ok ? revokeState.error : null);
+	const handleCreateModalClose = () => {
+		setModalState({ type: "closed" });
+	};
+
+	const handleCreateSuccess = (token: string) => {
+		setModalState({ type: "showingToken", token });
+	};
+
+	const handleSaveModalClose = () => {
+		setModalState({ type: "closed" });
+	};
+
+	const handleRevoke = (formData: FormData) => {
+		setRevokeState(undefined);
+		startRevokeTransition(async () => {
+			const result = await revokeApiKeyAction(undefined, formData);
+			setRevokeState(result);
+		});
+	};
+
+	const revokeError = revokeState && !revokeState.ok ? revokeState.error : null;
 
 	const normalizedKeys: NormalizedApiKey[] = useMemo(
 		() =>
@@ -111,25 +311,10 @@ export function ApiKeysPageClient({ apiKeys }: ApiKeysPageClientProps) {
 				<div className="flex flex-col gap-4 mb-6">
 					<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
 						<PageHeading glow>API keys</PageHeading>
-						<form
-							action={createAction}
-							className="flex flex-col sm:flex-row gap-2 sm:items-center"
-							onSubmit={() => {
-								setLastCreatedToken(null);
-							}}
-						>
-							<label className="flex flex-col gap-1 text-xs text-text-muted">
-								Name (optional)
-								<input
-									name="label"
-									value={label}
-									onChange={(event) => setLabel(event.target.value)}
-									placeholder="local-dev key"
-									className="rounded-md bg-background px-3 py-2 text-sm border border-white-20 min-w-[220px]"
-								/>
-							</label>
-							<CreateApiKeySubmitButton />
-						</form>
+						<GlassButton type="button" onClick={handleCreateClick}>
+							<Plus className="size-4" />
+							Create new secret key
+						</GlassButton>
 					</div>
 
 					<div className="flex flex-col gap-y-2 text-text-muted text-[14px] leading-[20px] font-geist">
@@ -143,32 +328,9 @@ export function ApiKeysPageClient({ apiKeys }: ApiKeysPageClientProps) {
 						</p>
 					</div>
 
-					{lastCreatedToken && (
-						<div className="rounded-lg border border-primary-200/40 bg-primary-200/10 px-4 py-3 text-sm text-white-900">
-							<p className="font-semibold mb-2">New secret key</p>
-							<p className="mb-2">
-								This secret is shown only once. Copy and store it securely.
-							</p>
-							<div className="flex items-center gap-2">
-								<code className="px-3 py-2 rounded-md bg-background font-mono text-sm break-all">
-									{lastCreatedToken}
-								</code>
-								<button
-									type="button"
-									className="text-sm text-link-muted hover:underline"
-									onClick={() => {
-										void navigator.clipboard.writeText(lastCreatedToken);
-									}}
-								>
-									Copy
-								</button>
-							</div>
-						</div>
-					)}
-
-					{error && (
+					{revokeError && (
 						<div className="rounded-md border border-error-500/40 bg-error-500/10 px-3 py-2 text-sm text-error-200">
-							{error}
+							{revokeError}
 						</div>
 					)}
 				</div>
@@ -188,14 +350,14 @@ export function ApiKeysPageClient({ apiKeys }: ApiKeysPageClientProps) {
 									</div>
 								</TableHead>
 								<TableHead className="text-white-100">CREATED BY</TableHead>
-								<TableHead className="text-white-100 w-20"></TableHead>
+								<TableHead className="text-white-100 w-20" />
 							</TableRow>
 						</TableHeader>
 						<TableBody>
 							{normalizedKeys.length === 0 ? (
 								<TableRow>
 									<TableCell
-										colSpan={8}
+										colSpan={7}
 										className="text-center text-text-muted py-6"
 									>
 										No API keys yet. Create one to get started.
@@ -211,11 +373,12 @@ export function ApiKeysPageClient({ apiKeys }: ApiKeysPageClientProps) {
 											</TableCell>
 											<TableCell className="text-white-800">
 												<span
-													className={`px-2 py-1 text-xs rounded-full ${
+													className={clsx(
+														"px-2 py-1 text-xs rounded-full",
 														status === "Active"
 															? "bg-green-500/20 text-green-400"
-															: "bg-error-500/20 text-error-200"
-													}`}
+															: "bg-error-500/20 text-error-200",
+													)}
 												>
 													{status}
 												</span>
@@ -236,19 +399,16 @@ export function ApiKeysPageClient({ apiKeys }: ApiKeysPageClientProps) {
 											</TableCell>
 											<TableCell className="text-white-800">
 												<div className="flex items-center gap-2">
-													<form
-														action={revokeAction}
-														onSubmit={() => {
-															setLastCreatedToken(null);
-														}}
-													>
+													<form action={handleRevoke}>
 														<input
 															type="hidden"
 															name="apiKeyId"
 															value={apiKey.id}
 														/>
 														<RevokeApiKeyButton
-															isDisabled={apiKey.revokedAt !== null}
+															isDisabled={
+																apiKey.revokedAt !== null || isRevoking
+															}
 														/>
 													</form>
 												</div>
@@ -261,6 +421,27 @@ export function ApiKeysPageClient({ apiKeys }: ApiKeysPageClientProps) {
 					</Table>
 				</div>
 			</div>
+
+			{modalState.type === "creating" && (
+				<CreateKeyModal
+					key={modalState.key}
+					isOpen={true}
+					onOpenChange={(open) => {
+						if (!open) handleCreateModalClose();
+					}}
+					onSuccess={handleCreateSuccess}
+				/>
+			)}
+
+			{modalState.type === "showingToken" && (
+				<SaveKeyModal
+					isOpen={true}
+					onOpenChange={(open) => {
+						if (!open) handleSaveModalClose();
+					}}
+					secretKey={modalState.token}
+				/>
+			)}
 		</div>
 	);
 }
