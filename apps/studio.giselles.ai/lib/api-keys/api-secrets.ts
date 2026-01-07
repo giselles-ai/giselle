@@ -258,28 +258,6 @@ export async function revokeApiSecret(args: {
 	return { revoked: true };
 }
 
-export async function getCurrentApiSecretRecordForTeam(teamDbId: number) {
-	const record = await db.query.apiKeys.findFirst({
-		where: (records, { and, eq, isNull }) =>
-			and(eq(records.teamDbId, teamDbId), isNull(records.revokedAt)),
-		orderBy: (records, { desc }) => desc(records.createdAt),
-	});
-
-	if (!record) {
-		return { record: null };
-	}
-
-	return {
-		record: {
-			id: record.id,
-			redactedValue: record.redactedValue,
-			createdAt: record.createdAt ?? new Date(),
-			lastUsedAt: record.lastUsedAt ?? null,
-			revokedAt: record.revokedAt ?? null,
-		},
-	};
-}
-
 export async function verifyApiSecretForTeam(args: {
 	teamDbId: number;
 	authorizationHeader: string | null;

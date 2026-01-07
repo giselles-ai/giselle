@@ -5,7 +5,7 @@ type ParsedApiToken = {
 	secret: string;
 };
 
-export function parseApiToken(token: string): ParsedApiToken | null {
+function parseApiToken(token: string): ParsedApiToken | null {
 	const [apiKeyId, secret, ...extra] = token.split(".");
 	if (extra.length > 0) {
 		return null;
