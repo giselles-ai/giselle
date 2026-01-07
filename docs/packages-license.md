@@ -7,7 +7,7 @@
 * 66 ISC
 * 32 New BSD
 * 16 Simplified BSD
-* 6 BlueOak-1.0.0
+* 7 BlueOak-1.0.0
 * 3 MIT OR Apache-2.0
 * 3 Mozilla Public License 2.0
 * 2 MIT-0
@@ -8489,6 +8489,17 @@ BlueOak-1.0.0 permitted
 * /home/runner/work/giselle/giselle
 
 <a href="http://en.wikipedia.org/wiki/ISC_license">ISC</a> permitted
+
+
+
+<a name="glob"></a>
+### glob v11.1.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+BlueOak-1.0.0 permitted
 
 
 
