@@ -157,22 +157,13 @@ function SaveKeyModal({
 	const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	useEffect(() => {
-		// Reset copy state whenever the dialog closes or the key changes.
-		// This modal remains mounted because `lastCreatedToken` is not always cleared.
-		setIsCopied(false);
-
-		if (copyTimeoutRef.current !== null) {
-			clearTimeout(copyTimeoutRef.current);
-			copyTimeoutRef.current = null;
-		}
-
 		return () => {
 			if (copyTimeoutRef.current !== null) {
 				clearTimeout(copyTimeoutRef.current);
 				copyTimeoutRef.current = null;
 			}
 		};
-	}, [isOpen, secretKey]);
+	}, []);
 
 	const handleCopy = async () => {
 		await navigator.clipboard.writeText(secretKey);
