@@ -21,19 +21,11 @@ import {
 } from "@giselle-internal/ui/table";
 import clsx from "clsx/lite";
 import { Check, Copy, Info, Plus, Trash } from "lucide-react";
-import {
-	useActionState,
-	useCallback,
-	useEffect,
-	useMemo,
-	useRef,
-	useState,
-} from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
 import { GlassButton } from "@/components/ui/glass-button";
 import type { ApiKeyListItem } from "@/lib/api-keys";
 import {
-	type CreateApiKeyActionState,
 	createApiKeyAction,
 	type RevokeApiKeyActionState,
 	revokeApiKeyAction,
@@ -49,6 +41,11 @@ type NormalizedApiKey = ApiKeyListItem & {
 	revokedAt: Date | null;
 };
 
+type ModalState =
+	| { type: "closed" }
+	| { type: "creating"; key: number }
+	| { type: "showingToken"; token: string };
+
 function formatDate(date: Date | null): string {
 	if (!date) return "-";
 	return date.toLocaleDateString("en-US", {
@@ -62,52 +59,6 @@ function formatSecretPreview(args: { redactedValue: string }): string {
 	return args.redactedValue;
 }
 
-function CreateApiKeySubmitButton() {
-	const { pending } = useFormStatus();
-	return (
-		<Button type="submit" variant="primary" size="large" disabled={pending}>
-			{pending ? "Creating..." : "Create secret key"}
-		</Button>
-	);
-}
-
-function CreateApiKeyCancelButton({
-	isSubmitting,
-	onCancel,
-}: {
-	isSubmitting: boolean;
-	onCancel: () => void;
-}) {
-	const { pending } = useFormStatus();
-	const disabled = pending || isSubmitting;
-	return (
-		<Button
-			type="button"
-			variant="filled"
-			size="large"
-			disabled={disabled}
-			onClick={onCancel}
-		>
-			Cancel
-		</Button>
-	);
-}
-
-function RevokeApiKeyButton({ isDisabled }: { isDisabled: boolean }) {
-	const { pending } = useFormStatus();
-	const disabled = isDisabled || pending;
-	return (
-		<button
-			type="submit"
-			className="p-1.5 rounded-md text-text-muted hover:text-error-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-			disabled={disabled}
-			aria-label="Revoke API key"
-		>
-			<Trash className="size-4" />
-		</button>
-	);
-}
-
 function CreateKeyModal({
 	isOpen,
 	onOpenChange,
@@ -118,50 +69,31 @@ function CreateKeyModal({
 	onSuccess: (token: string) => void;
 }) {
 	const [label, setLabel] = useState("");
-	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+	const [isPending, startTransition] = useTransition();
 
-	const [createState, createAction] = useActionState<
-		CreateApiKeyActionState | undefined,
-		FormData
-	>(createApiKeyAction, undefined);
-
-	useEffect(() => {
-		if (createState?.ok) {
-			onSuccess(createState.token);
-		}
-	}, [createState, onSuccess]);
-
-	const createError = createState && !createState.ok ? createState.error : null;
-
-	// Reset form when modal closes
-	useEffect(() => {
-		if (!isOpen) {
-			setLabel("");
-			setIsSubmitting(false);
-		}
-	}, [isOpen]);
-
-	useEffect(() => {
-		if (createState && !createState.ok) {
-			setIsSubmitting(false);
-		}
-	}, [createState]);
-
-	const handleDialogOpenChange = useCallback(
-		(open: boolean) => {
-			// Prevent losing the show-once token by blocking closes while the create
-			// server action is in-flight.
-			if (!open && isSubmitting) {
-				return;
+	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		const formData = new FormData(e.currentTarget);
+		setError(null);
+		startTransition(async () => {
+			const result = await createApiKeyAction(undefined, formData);
+			if (result.ok) {
+				onSuccess(result.token);
+			} else {
+				setError(result.error);
 			}
-			onOpenChange(open);
-		},
-		[isSubmitting, onOpenChange],
-	);
+		});
+	};
 
-	const handleSubmit = useCallback(() => {
-		setIsSubmitting(true);
-	}, []);
+	const handleDialogOpenChange = (open: boolean) => {
+		// Prevent losing the show-once token by blocking closes while the create
+		// action is in-flight.
+		if (!open && isPending) {
+			return;
+		}
+		onOpenChange(open);
+	};
 
 	return (
 		<Dialog open={isOpen} onOpenChange={handleDialogOpenChange}>
@@ -172,11 +104,7 @@ function CreateKeyModal({
 					</DialogTitle>
 				</DialogHeader>
 
-				<form
-					action={createAction}
-					onSubmit={handleSubmit}
-					className="mt-6 space-y-6"
-				>
+				<form onSubmit={handleSubmit} className="mt-6 space-y-6">
 					<div className="space-y-2">
 						<div className="flex items-center gap-2 text-sm text-white-800">
 							Name
@@ -189,22 +117,34 @@ function CreateKeyModal({
 							placeholder="My Test Key"
 							className="w-full"
 							aria-label="API key name"
-							disabled={isSubmitting}
+							disabled={isPending}
 						/>
 					</div>
 
-					{createError && (
+					{error && (
 						<div className="rounded-md border border-error-500/40 bg-error-500/10 px-3 py-2 text-sm text-error-200">
-							{createError}
+							{error}
 						</div>
 					)}
 
 					<DialogFooter>
-						<CreateApiKeyCancelButton
-							isSubmitting={isSubmitting}
-							onCancel={() => onOpenChange(false)}
-						/>
-						<CreateApiKeySubmitButton />
+						<Button
+							type="button"
+							variant="filled"
+							size="large"
+							disabled={isPending}
+							onClick={() => onOpenChange(false)}
+						>
+							Cancel
+						</Button>
+						<Button
+							type="submit"
+							variant="primary"
+							size="large"
+							disabled={isPending}
+						>
+							{isPending ? "Creating..." : "Create secret key"}
+						</Button>
 					</DialogFooter>
 				</form>
 			</DialogContent>
@@ -303,35 +243,56 @@ function SaveKeyModal({
 	);
 }
 
+function RevokeApiKeyButton({ isDisabled }: { isDisabled: boolean }) {
+	const { pending } = useFormStatus();
+	const disabled = isDisabled || pending;
+	return (
+		<button
+			type="submit"
+			className="p-1.5 rounded-md text-text-muted hover:text-error-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+			disabled={disabled}
+			aria-label="Revoke API key"
+		>
+			<Trash className="size-4" />
+		</button>
+	);
+}
+
 export function ApiKeysPageClient({ apiKeys }: ApiKeysPageClientProps) {
-	const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-	const [isSaveKeyModalOpen, setIsSaveKeyModalOpen] = useState(false);
-	const [lastCreatedToken, setLastCreatedToken] = useState<string | null>(null);
-	const [createModalKey, setCreateModalKey] = useState(0);
+	const [modalState, setModalState] = useState<ModalState>({ type: "closed" });
+	const [revokeState, setRevokeState] = useState<
+		RevokeApiKeyActionState | undefined
+	>(undefined);
+	const [isRevoking, startRevokeTransition] = useTransition();
 
-	const [revokeState, revokeAction] = useActionState<
-		RevokeApiKeyActionState | undefined,
-		FormData
-	>(revokeApiKeyAction, undefined);
+	const handleCreateClick = () => {
+		setModalState((prev) => ({
+			type: "creating",
+			key: prev.type === "creating" ? prev.key + 1 : 0,
+		}));
+	};
 
-	const handleCreateModalOpenChange = useCallback((open: boolean) => {
-		setIsCreateModalOpen(open);
-		if (!open) {
-			// Remount the modal so its local state resets between opens.
-			setCreateModalKey((key) => key + 1);
-		}
-	}, []);
+	const handleCreateModalClose = () => {
+		setModalState({ type: "closed" });
+	};
+
+	const handleCreateSuccess = (token: string) => {
+		setModalState({ type: "showingToken", token });
+	};
+
+	const handleSaveModalClose = () => {
+		setModalState({ type: "closed" });
+	};
+
+	const handleRevoke = (formData: FormData) => {
+		setRevokeState(undefined);
+		startRevokeTransition(async () => {
+			const result = await revokeApiKeyAction(undefined, formData);
+			setRevokeState(result);
+		});
+	};
 
 	const revokeError = revokeState && !revokeState.ok ? revokeState.error : null;
-
-	const handleCreateSuccess = useCallback(
-		(token: string) => {
-			setLastCreatedToken(token);
-			handleCreateModalOpenChange(false);
-			setIsSaveKeyModalOpen(true);
-		},
-		[handleCreateModalOpenChange],
-	);
 
 	const normalizedKeys: NormalizedApiKey[] = useMemo(
 		() =>
@@ -350,10 +311,7 @@ export function ApiKeysPageClient({ apiKeys }: ApiKeysPageClientProps) {
 				<div className="flex flex-col gap-4 mb-6">
 					<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
 						<PageHeading glow>API keys</PageHeading>
-						<GlassButton
-							type="button"
-							onClick={() => setIsCreateModalOpen(true)}
-						>
+						<GlassButton type="button" onClick={handleCreateClick}>
 							<Plus className="size-4" />
 							Create new secret key
 						</GlassButton>
@@ -441,14 +399,16 @@ export function ApiKeysPageClient({ apiKeys }: ApiKeysPageClientProps) {
 											</TableCell>
 											<TableCell className="text-white-800">
 												<div className="flex items-center gap-2">
-													<form action={revokeAction}>
+													<form action={handleRevoke}>
 														<input
 															type="hidden"
 															name="apiKeyId"
 															value={apiKey.id}
 														/>
 														<RevokeApiKeyButton
-															isDisabled={apiKey.revokedAt !== null}
+															isDisabled={
+																apiKey.revokedAt !== null || isRevoking
+															}
 														/>
 													</form>
 												</div>
@@ -462,23 +422,24 @@ export function ApiKeysPageClient({ apiKeys }: ApiKeysPageClientProps) {
 				</div>
 			</div>
 
-			<CreateKeyModal
-				key={createModalKey}
-				isOpen={isCreateModalOpen}
-				onOpenChange={handleCreateModalOpenChange}
-				onSuccess={handleCreateSuccess}
-			/>
-
-			{lastCreatedToken && (
-				<SaveKeyModal
-					isOpen={isSaveKeyModalOpen}
+			{modalState.type === "creating" && (
+				<CreateKeyModal
+					key={modalState.key}
+					isOpen={true}
 					onOpenChange={(open) => {
-						setIsSaveKeyModalOpen(open);
-						if (!open) {
-							setLastCreatedToken(null);
-						}
+						if (!open) handleCreateModalClose();
 					}}
-					secretKey={lastCreatedToken}
+					onSuccess={handleCreateSuccess}
+				/>
+			)}
+
+			{modalState.type === "showingToken" && (
+				<SaveKeyModal
+					isOpen={true}
+					onOpenChange={(open) => {
+						if (!open) handleSaveModalClose();
+					}}
+					secretKey={modalState.token}
 				/>
 			)}
 		</div>
