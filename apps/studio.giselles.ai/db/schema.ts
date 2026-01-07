@@ -18,6 +18,7 @@ import type {
 	DocumentVectorStoreSourceId,
 	GitHubRepositoryIndexId,
 } from "@giselles-ai/types";
+import { createIdGenerator } from "@giselles-ai/utils";
 import { relations, sql } from "drizzle-orm";
 import {
 	boolean,
@@ -34,6 +35,7 @@ import {
 	unique,
 	uniqueIndex,
 } from "drizzle-orm/pg-core";
+import type * as z from "zod/v4";
 import type { ContentStatusMetadata } from "@/lib/vector-stores/github/types";
 import type { AgentId } from "@/services/agents/types";
 import type { TeamId } from "@/services/teams/types";
@@ -1008,6 +1010,64 @@ export const appRelations = relations(apps, ({ one, many }) => ({
 	}),
 	tasks: many(tasks),
 }));
+
+export const ApiKeyId = createIdGenerator("gsk");
+export type ApiKeyId = z.infer<typeof ApiKeyId.schema>;
+
+export type ApiSecretKdf = {
+	type: "scrypt";
+	salt: string;
+	params: {
+		n: number;
+		r: number;
+		p: number;
+		keyLen: number;
+	};
+};
+
+export const apiKeys = pgTable(
+	"api_keys",
+	{
+		dbId: serial("db_id").primaryKey(),
+		id: text("id").$type<ApiKeyId>().notNull(),
+		teamDbId: integer("team_db_id")
+			.notNull()
+			.references(() => teams.dbId, { onDelete: "cascade" }),
+		label: text("label"),
+		createdByUserDbId: integer("created_by_user_db_id").references(
+			() => users.dbId,
+		),
+		redactedValue: text("redacted_value").notNull(),
+		kdfType: text("kdf_type").$type<ApiSecretKdf["type"]>().notNull(),
+		kdfSalt: text("kdf_salt").notNull(),
+		kdfN: integer("kdf_n").notNull(),
+		kdfR: integer("kdf_r").notNull(),
+		kdfP: integer("kdf_p").notNull(),
+		kdfKeyLen: integer("kdf_key_len").notNull(),
+		secretHash: text("secret_hash").notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		lastUsedAt: timestamp("last_used_at"),
+		revokedAt: timestamp("revoked_at"),
+	},
+	(table) => [
+		uniqueIndex("api_keys_id_unique").on(table.id),
+		index("api_keys_team_db_id_idx").on(table.teamDbId),
+		index("api_keys_revoked_at_idx").on(table.revokedAt),
+	],
+);
+
+export const apiSecretRecordRelations = relations(apiKeys, ({ one }) => ({
+	team: one(teams, {
+		fields: [apiKeys.teamDbId],
+		references: [teams.dbId],
+	}),
+	creator: one(users, {
+		fields: [apiKeys.createdByUserDbId],
+		references: [users.dbId],
+	}),
+}));
+
+export type ApiSecretRecord = typeof apiKeys.$inferSelect;
 
 export const apiRateLimitCounters = pgTable(
 	"api_rate_limit_counters",

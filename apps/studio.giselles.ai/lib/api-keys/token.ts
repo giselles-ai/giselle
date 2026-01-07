@@ -1,29 +1,24 @@
-import type { ApiKeyId } from "./schema";
+import { ApiKeyId, type ApiKeyId as ApiKeyIdType } from "@/db/schema";
 
 type ParsedApiToken = {
-	apiKeyId: ApiKeyId;
+	apiKeyId: ApiKeyIdType;
 	secret: string;
 };
 
-// Token prefix:
-// - gsk = "Giselle Secret Key" (a project-specific API token namespace)
-// - Prefixing helps distinguish tokens and makes accidental cross-system usage less likely.
-const apiTokenPrefix = "gsk_";
-
 export function parseApiToken(token: string): ParsedApiToken | null {
-	if (!token.startsWith(apiTokenPrefix)) {
-		return null;
-	}
-	const rest = token.slice(apiTokenPrefix.length);
-	const [apiKeyId, secret, ...extra] = rest.split(".");
+	const [apiKeyId, secret, ...extra] = token.split(".");
 	if (extra.length > 0) {
 		return null;
 	}
 	if (!apiKeyId || !secret) {
 		return null;
 	}
+	const parsedApiKeyId = ApiKeyId.safeParse(apiKeyId);
+	if (!parsedApiKeyId.success) {
+		return null;
+	}
 	return {
-		apiKeyId: apiKeyId as ApiKeyId,
+		apiKeyId: parsedApiKeyId.data,
 		secret,
 	};
 }

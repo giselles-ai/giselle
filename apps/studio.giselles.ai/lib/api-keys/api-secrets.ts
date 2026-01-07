@@ -5,22 +5,63 @@ import {
 	timingSafeEqual,
 } from "node:crypto";
 import { performance } from "node:perf_hooks";
-import type { GiselleContext } from "@giselles-ai/giselle";
+import { and, desc, eq } from "drizzle-orm";
+import { giselle } from "@/app/giselle";
+import { db } from "@/db";
 import {
 	ApiKeyId,
 	type ApiSecretKdf,
-	ApiSecretRecord,
-	type ApiSecretRecord as ApiSecretRecordType,
-	AppForApiPublishing,
-	type AppForApiPublishing as AppForApiPublishingType,
-	type AppId,
-} from "./schema";
+	type ApiSecretRecord,
+	apiKeys,
+	users,
+} from "@/db/schema";
+import { logger } from "@/lib/logger";
 import { parseAuthorizationHeader } from "./token";
 
-type ApiSecretContext = Pick<
-	GiselleContext,
-	"storage" | "logger" | "apiSecretScrypt"
->;
+type ApiSecretScryptParams = Extract<
+	ApiSecretKdf,
+	{ type: "scrypt" }
+>["params"];
+
+type ApiSecretScryptConfig = {
+	params: ApiSecretScryptParams;
+	saltBytes: number;
+	logDuration: boolean;
+};
+
+export type ApiKeyListItem = {
+	id: ApiKeyId;
+	label: string | null;
+	redactedValue: string;
+	createdAt: Date;
+	lastUsedAt: Date | null;
+	revokedAt: Date | null;
+	createdByName: string | null;
+};
+
+function buildRedactedValue(token: string): string {
+	const prefix = token.slice(0, 6);
+	const suffix = token.slice(-3);
+	return `${prefix}...${suffix}`;
+}
+
+const defaultApiSecretScryptParams: ApiSecretScryptParams = {
+	n: 16384,
+	r: 8,
+	p: 1,
+	keyLen: 32,
+};
+
+const defaultApiSecretScryptSaltBytes = 16;
+
+function getApiSecretScryptConfig(): ApiSecretScryptConfig {
+	const config = giselle.getContext().apiSecretScrypt;
+	return {
+		params: config?.params ?? defaultApiSecretScryptParams,
+		saltBytes: config?.saltBytes ?? defaultApiSecretScryptSaltBytes,
+		logDuration: config?.logDuration ?? false,
+	};
+}
 
 async function scryptAsync(
 	password: string,
@@ -40,14 +81,13 @@ async function scryptAsync(
 }
 
 function randomSecretBytes(): Buffer {
-	// 32 bytes of entropy is enough for a long-lived bearer token secret.
 	return randomBytes(32);
 }
 
 async function computeScryptHash(args: {
 	secret: string;
 	saltBase64: string;
-	params: Extract<ApiSecretKdf, { type: "scrypt" }>["params"];
+	params: ApiSecretScryptParams;
 }): Promise<string> {
 	const salt = Buffer.from(args.saltBase64, "base64");
 	const derived = await scryptAsync(args.secret, salt, args.params.keyLen, {
@@ -65,37 +105,17 @@ function constantTimeEqualBase64(aBase64: string, bBase64: string): boolean {
 	return timingSafeEqual(a, b);
 }
 
-const defaultApiSecretScryptParams = {
-	n: 16384,
-	r: 8,
-	p: 1,
-	keyLen: 32,
-} satisfies Extract<ApiSecretKdf, { type: "scrypt" }>["params"];
-
-const defaultApiSecretScryptSaltBytes = 16;
-
-function getApiSecretScryptParams(
-	context: ApiSecretContext,
-): Extract<ApiSecretKdf, { type: "scrypt" }>["params"] {
-	return context.apiSecretScrypt?.params ?? defaultApiSecretScryptParams;
-}
-
-function getApiSecretScryptSaltBytes(context: ApiSecretContext): number {
-	return context.apiSecretScrypt?.saltBytes ?? defaultApiSecretScryptSaltBytes;
-}
-
 async function computeScryptHashWithOptionalLogging(args: {
-	context: ApiSecretContext;
 	purpose: "create" | "verify";
 	secret: string;
 	saltBase64: string;
-	params: Extract<ApiSecretKdf, { type: "scrypt" }>["params"];
+	config: ApiSecretScryptConfig;
 }): Promise<string> {
-	if (!args.context.apiSecretScrypt?.logDuration) {
+	if (!args.config.logDuration) {
 		return await computeScryptHash({
 			secret: args.secret,
 			saltBase64: args.saltBase64,
-			params: args.params,
+			params: args.config.params,
 		});
 	}
 
@@ -103,17 +123,17 @@ async function computeScryptHashWithOptionalLogging(args: {
 	const secretHash = await computeScryptHash({
 		secret: args.secret,
 		saltBase64: args.saltBase64,
-		params: args.params,
+		params: args.config.params,
 	});
 	const durationMs = performance.now() - start;
 
-	args.context.logger.debug(
+	logger.debug(
 		{
 			purpose: args.purpose,
-			n: args.params.n,
-			r: args.params.r,
-			p: args.params.p,
-			keyLen: args.params.keyLen,
+			n: args.config.params.n,
+			r: args.config.params.r,
+			p: args.config.params.p,
+			keyLen: args.config.params.keyLen,
 			saltBytes: Buffer.from(args.saltBase64, "base64").length,
 			durationMs,
 		},
@@ -123,190 +143,148 @@ async function computeScryptHashWithOptionalLogging(args: {
 	return secretHash;
 }
 
-function appPath(appId: AppId) {
-	return `apps/${appId}.json` as const;
+function buildScryptParamsFromRecord(
+	record: ApiSecretRecord,
+): ApiSecretScryptParams {
+	return {
+		n: record.kdfN,
+		r: record.kdfR,
+		p: record.kdfP,
+		keyLen: record.kdfKeyLen,
+	};
 }
 
-function apiSecretPath(apiKeyId: ApiKeyId) {
-	return `api-secrets/${apiKeyId}.json` as const;
+function toListItem(
+	record: ApiSecretRecord,
+	createdByName: string | null,
+): ApiKeyListItem {
+	return {
+		id: record.id,
+		label: record.label ?? null,
+		redactedValue: record.redactedValue,
+		createdAt: record.createdAt ?? new Date(),
+		lastUsedAt: record.lastUsedAt ?? null,
+		revokedAt: record.revokedAt ?? null,
+		createdByName,
+	};
 }
 
-async function getAppOrThrow(
-	context: ApiSecretContext,
-	appId: AppId,
-): Promise<AppForApiPublishingType> {
-	return await context.storage.getJson({
-		path: appPath(appId),
-		schema: AppForApiPublishing,
-	});
-}
+export async function listApiSecretRecordsForTeam(teamDbId: number) {
+	const rows = await db
+		.select({
+			record: apiKeys,
+			createdByName: users.displayName,
+		})
+		.from(apiKeys)
+		.leftJoin(users, eq(apiKeys.createdByUserDbId, users.dbId))
+		.where(eq(apiKeys.teamDbId, teamDbId))
+		.orderBy(desc(apiKeys.createdAt));
 
-async function getApiSecretRecord(
-	context: ApiSecretContext,
-	apiKeyId: ApiKeyId,
-): Promise<ApiSecretRecordType> {
-	return await context.storage.getJson({
-		path: apiSecretPath(apiKeyId),
-		schema: ApiSecretRecord,
-	});
-}
-
-async function setApiSecretRecord(
-	context: ApiSecretContext,
-	record: ApiSecretRecordType,
-): Promise<void> {
-	await context.storage.setJson({
-		path: apiSecretPath(record.id),
-		schema: ApiSecretRecord,
-		data: record,
-	});
+	return rows.map((row) => toListItem(row.record, row.createdByName));
 }
 
 export async function createApiSecret(args: {
-	context: ApiSecretContext;
-	appId: AppId;
+	teamDbId: number;
+	createdByUserDbId: number;
+	label?: string | null;
 }) {
-	const app = await getAppOrThrow(args.context, args.appId);
+	const config = getApiSecretScryptConfig();
 
 	const apiKeyId = ApiKeyId.generate();
 	const secret = randomSecretBytes().toString("base64url");
-	const params = getApiSecretScryptParams(args.context);
-	const saltBase64 = randomBytes(
-		getApiSecretScryptSaltBytes(args.context),
-	).toString("base64");
+	const saltBase64 = randomBytes(config.saltBytes).toString("base64");
 	const secretHash = await computeScryptHashWithOptionalLogging({
-		context: args.context,
 		purpose: "create",
 		secret,
 		saltBase64,
-		params,
+		config,
 	});
+	const token = `${apiKeyId}.${secret}` as const;
+	const redactedValue = buildRedactedValue(token);
 
-	const record: ApiSecretRecordType = {
-		id: apiKeyId,
-		appId: args.appId,
-		kdf: {
-			type: "scrypt",
-			salt: saltBase64,
-			params,
-		},
-		secretHash,
-		createdAt: Date.now(),
-	};
+	const [inserted] = await db
+		.insert(apiKeys)
+		.values({
+			id: apiKeyId,
+			teamDbId: args.teamDbId,
+			label: args.label ?? null,
+			createdByUserDbId: args.createdByUserDbId,
+			redactedValue,
+			kdfType: "scrypt",
+			kdfSalt: saltBase64,
+			kdfN: config.params.n,
+			kdfR: config.params.r,
+			kdfP: config.params.p,
+			kdfKeyLen: config.params.keyLen,
+			secretHash,
+		})
+		.returning();
 
-	// single-active: revoke previous key if present
-	const previousKeyId = app.apiPublishing?.apiKeyId;
-	if (previousKeyId) {
-		try {
-			const prev = await getApiSecretRecord(args.context, previousKeyId);
-			if (!prev.revokedAt) {
-				await setApiSecretRecord(args.context, {
-					...prev,
-					revokedAt: Date.now(),
-				});
-			}
-		} catch {
-			// best-effort: do not fail key creation if the old record is missing
-		}
-	}
-
-	await setApiSecretRecord(args.context, record);
-
-	const nextApp = {
-		...app,
-		apiPublishing: {
-			isEnabled: true,
-			apiKeyId,
-		},
-	};
-
-	await args.context.storage.setJson({
-		path: appPath(app.id),
-		schema: AppForApiPublishing,
-		data: nextApp,
-	});
+	const record = toListItem(inserted, null);
 
 	return {
-		token: `gsk_${apiKeyId}.${secret}` as const,
-		record: {
-			id: record.id,
-			createdAt: record.createdAt,
-			revokedAt: record.revokedAt,
-			lastUsedAt: record.lastUsedAt,
-		},
-		app: nextApp,
+		token,
+		record,
 	};
 }
 
 export async function revokeApiSecret(args: {
-	context: ApiSecretContext;
-	appId: AppId;
+	apiKeyId: ApiKeyId;
+	teamDbId: number;
 }) {
-	const app = await getAppOrThrow(args.context, args.appId);
-	const apiKeyId = app.apiPublishing?.apiKeyId;
-	if (!apiKeyId) {
-		return { app };
+	const [existing] = await db
+		.select({
+			record: apiKeys,
+		})
+		.from(apiKeys)
+		.where(
+			and(eq(apiKeys.id, args.apiKeyId), eq(apiKeys.teamDbId, args.teamDbId)),
+		)
+		.limit(1);
+
+	if (!existing) {
+		return { revoked: false };
 	}
 
-	try {
-		const record = await getApiSecretRecord(args.context, apiKeyId);
-		if (!record.revokedAt) {
-			await setApiSecretRecord(args.context, {
-				...record,
-				revokedAt: Date.now(),
-			});
-		}
-	} catch {
-		// ignore missing record
+	if (existing.record.revokedAt) {
+		return { revoked: false };
 	}
 
-	const nextApp = {
-		...app,
-		apiPublishing: {
-			isEnabled: false,
-			apiKeyId: undefined,
-		},
-	};
+	await db
+		.update(apiKeys)
+		.set({ revokedAt: new Date() })
+		.where(eq(apiKeys.id, args.apiKeyId));
 
-	await args.context.storage.setJson({
-		path: appPath(app.id),
-		schema: AppForApiPublishing,
-		data: nextApp,
+	return { revoked: true };
+}
+
+export async function getCurrentApiSecretRecordForTeam(teamDbId: number) {
+	const record = await db.query.apiKeys.findFirst({
+		where: (records, { and, eq, isNull }) =>
+			and(eq(records.teamDbId, teamDbId), isNull(records.revokedAt)),
+		orderBy: (records, { desc }) => desc(records.createdAt),
 	});
 
-	return { app: nextApp };
-}
-
-export async function getCurrentApiSecretRecordForApp(args: {
-	context: ApiSecretContext;
-	appId: AppId;
-}) {
-	const app = await getAppOrThrow(args.context, args.appId);
-	const apiKeyId = app.apiPublishing?.apiKeyId;
-	if (!apiKeyId) {
+	if (!record) {
 		return { record: null };
 	}
-	try {
-		const record = await getApiSecretRecord(args.context, apiKeyId);
-		return {
-			record: {
-				id: record.id,
-				createdAt: record.createdAt,
-				lastUsedAt: record.lastUsedAt,
-				revokedAt: record.revokedAt,
-			},
-		};
-	} catch {
-		return { record: null };
-	}
+
+	return {
+		record: {
+			id: record.id,
+			redactedValue: record.redactedValue,
+			createdAt: record.createdAt ?? new Date(),
+			lastUsedAt: record.lastUsedAt ?? null,
+			revokedAt: record.revokedAt ?? null,
+		},
+	};
 }
 
-export async function verifyApiSecretForApp(args: {
-	context: ApiSecretContext;
-	appId: AppId;
+export async function verifyApiSecretForTeam(args: {
+	teamDbId: number;
 	authorizationHeader: string | null;
 }): Promise<
-	| { ok: true; apiKeyId: ApiKeyId; record: ApiSecretRecordType }
+	| { ok: true; apiKeyId: ApiKeyId; record: ApiSecretRecord }
 	| { ok: false; reason: "missing" | "invalid" | "revoked" | "mismatch" }
 > {
 	const parsed = parseAuthorizationHeader(args.authorizationHeader);
@@ -317,48 +295,55 @@ export async function verifyApiSecretForApp(args: {
 		};
 	}
 
-	const apiKeyIdParse = ApiKeyId.safeParse(parsed.apiKeyId);
-	if (!apiKeyIdParse.success) {
-		return { ok: false, reason: "invalid" };
-	}
-	const apiKeyId = apiKeyIdParse.data;
-
-	let record: ApiSecretRecordType;
-	try {
-		record = await getApiSecretRecord(args.context, apiKeyId);
-	} catch {
+	const apiKeyId = ApiKeyId.safeParse(parsed.apiKeyId);
+	if (!apiKeyId.success) {
 		return { ok: false, reason: "invalid" };
 	}
 
-	if (record.appId !== args.appId) {
+	const record = await db.query.apiKeys.findFirst({
+		where: (records, { eq }) => eq(records.id, apiKeyId.data),
+	});
+
+	if (!record) {
+		return { ok: false, reason: "invalid" };
+	}
+
+	if (record.teamDbId !== args.teamDbId) {
 		return { ok: false, reason: "mismatch" };
 	}
+
 	if (record.revokedAt) {
 		return { ok: false, reason: "revoked" };
 	}
 
+	if (record.kdfType !== "scrypt") {
+		return { ok: false, reason: "invalid" };
+	}
+
+	const config = getApiSecretScryptConfig();
 	const computed = await computeScryptHashWithOptionalLogging({
-		context: args.context,
 		purpose: "verify",
 		secret: parsed.secret,
-		saltBase64: record.kdf.salt,
-		params: record.kdf.params,
+		saltBase64: record.kdfSalt,
+		config: {
+			...config,
+			params: buildScryptParamsFromRecord(record),
+		},
 	});
 
 	if (!constantTimeEqualBase64(computed, record.secretHash)) {
 		return { ok: false, reason: "invalid" };
 	}
 
-	// Best-effort lastUsedAt update
 	try {
-		const latest = await getApiSecretRecord(args.context, record.id);
-		await setApiSecretRecord(args.context, {
-			...latest,
-			lastUsedAt: Date.now(),
-		});
-	} catch {
-		// ignore
+		const now = new Date();
+		await db
+			.update(apiKeys)
+			.set({ lastUsedAt: now })
+			.where(eq(apiKeys.id, record.id));
+	} catch (error) {
+		logger.warn({ error }, "failed to update api secret lastUsedAt");
 	}
 
-	return { ok: true, apiKeyId, record };
+	return { ok: true, apiKeyId: apiKeyId.data, record };
 }

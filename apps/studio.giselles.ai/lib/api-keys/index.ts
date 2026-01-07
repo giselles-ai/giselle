@@ -1,15 +1,9 @@
 export {
+	type ApiKeyListItem,
 	createApiSecret,
-	getCurrentApiSecretRecordForApp,
+	getCurrentApiSecretRecordForTeam,
+	listApiSecretRecordsForTeam,
 	revokeApiSecret,
-	verifyApiSecretForApp,
+	verifyApiSecretForTeam,
 } from "./api-secrets";
-export {
-	ApiKeyId,
-	ApiPublishingSettings,
-	ApiSecretKdf,
-	ApiSecretRecord,
-	AppForApiPublishing,
-	AppId,
-} from "./schema";
 export { parseApiToken, parseAuthorizationHeader } from "./token";
