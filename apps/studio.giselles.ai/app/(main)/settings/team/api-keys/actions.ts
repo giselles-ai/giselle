@@ -7,7 +7,7 @@ import { createApiSecret, revokeApiSecret } from "@/lib/api-keys";
 import { getCurrentUser } from "@/lib/get-current-user";
 import { fetchCurrentTeam } from "@/services/teams";
 
-export type CreateApiKeyActionState =
+type CreateApiKeyActionState =
 	| { ok: true; token: string }
 	| { ok: false; error: string };
 
