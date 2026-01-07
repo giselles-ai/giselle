@@ -21,7 +21,7 @@ import {
 } from "@giselle-internal/ui/table";
 import clsx from "clsx/lite";
 import { Check, Copy, Info, Plus, Trash } from "lucide-react";
-import { useActionState, useEffect, useMemo, useState } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { GlassButton } from "@/components/ui/glass-button";
 import type { ApiKeyListItem } from "@/lib/api-keys";
@@ -154,11 +154,39 @@ function SaveKeyModal({
 	secretKey: string;
 }) {
 	const [isCopied, setIsCopied] = useState(false);
+	const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+	useEffect(() => {
+		// Reset copy state whenever the dialog closes or the key changes.
+		// This modal remains mounted because `lastCreatedToken` is not always cleared.
+		setIsCopied(false);
+
+		if (copyTimeoutRef.current !== null) {
+			clearTimeout(copyTimeoutRef.current);
+			copyTimeoutRef.current = null;
+		}
+
+		return () => {
+			if (copyTimeoutRef.current !== null) {
+				clearTimeout(copyTimeoutRef.current);
+				copyTimeoutRef.current = null;
+			}
+		};
+	}, [isOpen, secretKey]);
 
 	const handleCopy = async () => {
 		await navigator.clipboard.writeText(secretKey);
+
+		if (copyTimeoutRef.current !== null) {
+			clearTimeout(copyTimeoutRef.current);
+			copyTimeoutRef.current = null;
+		}
+
 		setIsCopied(true);
-		setTimeout(() => setIsCopied(false), 2000);
+		copyTimeoutRef.current = setTimeout(() => {
+			setIsCopied(false);
+			copyTimeoutRef.current = null;
+		}, 2000);
 	};
 
 	return (
@@ -380,7 +408,12 @@ export function ApiKeysPageClient({ apiKeys }: ApiKeysPageClientProps) {
 			{lastCreatedToken && (
 				<SaveKeyModal
 					isOpen={isSaveKeyModalOpen}
-					onOpenChange={setIsSaveKeyModalOpen}
+					onOpenChange={(open) => {
+						setIsSaveKeyModalOpen(open);
+						if (!open) {
+							setLastCreatedToken(null);
+						}
+					}}
 					secretKey={lastCreatedToken}
 				/>
 			)}
