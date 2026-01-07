@@ -1,5 +1,15 @@
 "use client";
 
+import { Button } from "@giselle-internal/ui/button";
+import {
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@giselle-internal/ui/dialog";
+import { Input } from "@giselle-internal/ui/input";
 import { PageHeading } from "@giselle-internal/ui/page-heading";
 import {
 	Table,
@@ -9,7 +19,8 @@ import {
 	TableHeader,
 	TableRow,
 } from "@giselle-internal/ui/table";
-import { Info, Plus, Trash } from "lucide-react";
+import clsx from "clsx/lite";
+import { Check, Copy, Info, Plus, Trash } from "lucide-react";
 import { useActionState, useEffect, useMemo, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { GlassButton } from "@/components/ui/glass-button";
@@ -47,12 +58,9 @@ function formatSecretPreview(args: { redactedValue: string }): string {
 function CreateApiKeySubmitButton() {
 	const { pending } = useFormStatus();
 	return (
-		<GlassButton type="submit" disabled={pending}>
-			<span className="grid place-items-center rounded-full size-4 bg-primary-200 opacity-50">
-				<Plus className="size-3 text-background group-hover:text-background transition-colors" />
-			</span>
+		<Button type="submit" variant="primary" size="large" disabled={pending}>
 			{pending ? "Creating..." : "Create secret key"}
-		</GlassButton>
+		</Button>
 	);
 }
 
@@ -71,9 +79,148 @@ function RevokeApiKeyButton({ isDisabled }: { isDisabled: boolean }) {
 	);
 }
 
-export function ApiKeysPageClient({ apiKeys }: ApiKeysPageClientProps) {
+function CreateKeyModal({
+	isOpen,
+	onOpenChange,
+	onSubmit,
+	error,
+}: {
+	isOpen: boolean;
+	onOpenChange: (open: boolean) => void;
+	onSubmit: (formData: FormData) => void;
+	error: string | null;
+}) {
 	const [label, setLabel] = useState("");
+
+	// Reset form when modal closes
+	useEffect(() => {
+		if (!isOpen) {
+			setLabel("");
+		}
+	}, [isOpen]);
+
+	return (
+		<Dialog open={isOpen} onOpenChange={onOpenChange}>
+			<DialogContent variant="glass">
+				<DialogHeader>
+					<DialogTitle className="text-[20px] font-semibold text-white-900">
+						Create new secret key
+					</DialogTitle>
+				</DialogHeader>
+
+				<form action={onSubmit} className="mt-6 space-y-6">
+					<div className="space-y-2">
+						<div className="flex items-center gap-2 text-sm text-white-800">
+							Name
+							<span className="text-text-muted">Optional</span>
+						</div>
+						<Input
+							name="label"
+							value={label}
+							onChange={(e) => setLabel(e.target.value)}
+							placeholder="My Test Key"
+							className="w-full"
+							aria-label="API key name"
+						/>
+					</div>
+
+					{error && (
+						<div className="rounded-md border border-error-500/40 bg-error-500/10 px-3 py-2 text-sm text-error-200">
+							{error}
+						</div>
+					)}
+
+					<DialogFooter>
+						<DialogClose asChild>
+							<Button type="button" variant="filled" size="large">
+								Cancel
+							</Button>
+						</DialogClose>
+						<CreateApiKeySubmitButton />
+					</DialogFooter>
+				</form>
+			</DialogContent>
+		</Dialog>
+	);
+}
+
+function SaveKeyModal({
+	isOpen,
+	onOpenChange,
+	secretKey,
+}: {
+	isOpen: boolean;
+	onOpenChange: (open: boolean) => void;
+	secretKey: string;
+}) {
+	const [isCopied, setIsCopied] = useState(false);
+
+	const handleCopy = async () => {
+		await navigator.clipboard.writeText(secretKey);
+		setIsCopied(true);
+		setTimeout(() => setIsCopied(false), 2000);
+	};
+
+	return (
+		<Dialog open={isOpen} onOpenChange={onOpenChange}>
+			<DialogContent variant="glass">
+				<DialogHeader>
+					<DialogTitle className="text-[20px] font-semibold text-white-900">
+						Save your key
+					</DialogTitle>
+				</DialogHeader>
+
+				<div className="mt-4 space-y-4">
+					<p className="text-sm text-text-muted">
+						Please save your secret key in a safe place since{" "}
+						<span className="text-white-900 font-medium">
+							you won't be able to view it again
+						</span>
+						. Keep it secure, as anyone with your API key can make requests on
+						your behalf. If you do lose it, you'll need to generate a new one.
+					</p>
+
+					<div className="flex items-center gap-2 p-1 rounded-lg bg-background border border-border">
+						<code className="flex-1 px-3 py-2 font-mono text-sm text-white-800 break-all">
+							{secretKey}
+						</code>
+						<button
+							type="button"
+							onClick={handleCopy}
+							className="flex items-center gap-1.5 px-3 py-2 text-sm text-white-800 hover:bg-white-100/5 rounded-md transition-colors"
+						>
+							{isCopied ? (
+								<>
+									<Check className="size-4 text-green-400" />
+									Copied
+								</>
+							) : (
+								<>
+									<Copy className="size-4" />
+									Copy
+								</>
+							)}
+						</button>
+					</div>
+				</div>
+
+				<DialogFooter>
+					<DialogClose asChild>
+						<Button type="button" variant="primary" size="large">
+							Done
+						</Button>
+					</DialogClose>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
+	);
+}
+
+export function ApiKeysPageClient({ apiKeys }: ApiKeysPageClientProps) {
+	const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+	const [isSaveKeyModalOpen, setIsSaveKeyModalOpen] = useState(false);
 	const [lastCreatedToken, setLastCreatedToken] = useState<string | null>(null);
+
 	const [createState, createAction] = useActionState<
 		CreateApiKeyActionState | undefined,
 		FormData
@@ -86,13 +233,13 @@ export function ApiKeysPageClient({ apiKeys }: ApiKeysPageClientProps) {
 	useEffect(() => {
 		if (createState?.ok) {
 			setLastCreatedToken(createState.token);
-			setLabel("");
+			setIsCreateModalOpen(false);
+			setIsSaveKeyModalOpen(true);
 		}
 	}, [createState]);
 
-	const error =
-		(createState && !createState.ok ? createState.error : null) ??
-		(revokeState && !revokeState.ok ? revokeState.error : null);
+	const createError = createState && !createState.ok ? createState.error : null;
+	const revokeError = revokeState && !revokeState.ok ? revokeState.error : null;
 
 	const normalizedKeys: NormalizedApiKey[] = useMemo(
 		() =>
@@ -111,25 +258,13 @@ export function ApiKeysPageClient({ apiKeys }: ApiKeysPageClientProps) {
 				<div className="flex flex-col gap-4 mb-6">
 					<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
 						<PageHeading glow>API keys</PageHeading>
-						<form
-							action={createAction}
-							className="flex flex-col sm:flex-row gap-2 sm:items-center"
-							onSubmit={() => {
-								setLastCreatedToken(null);
-							}}
+						<GlassButton
+							type="button"
+							onClick={() => setIsCreateModalOpen(true)}
 						>
-							<label className="flex flex-col gap-1 text-xs text-text-muted">
-								Name (optional)
-								<input
-									name="label"
-									value={label}
-									onChange={(event) => setLabel(event.target.value)}
-									placeholder="local-dev key"
-									className="rounded-md bg-background px-3 py-2 text-sm border border-white-20 min-w-[220px]"
-								/>
-							</label>
-							<CreateApiKeySubmitButton />
-						</form>
+							<Plus className="size-4" />
+							Create new secret key
+						</GlassButton>
 					</div>
 
 					<div className="flex flex-col gap-y-2 text-text-muted text-[14px] leading-[20px] font-geist">
@@ -143,32 +278,9 @@ export function ApiKeysPageClient({ apiKeys }: ApiKeysPageClientProps) {
 						</p>
 					</div>
 
-					{lastCreatedToken && (
-						<div className="rounded-lg border border-primary-200/40 bg-primary-200/10 px-4 py-3 text-sm text-white-900">
-							<p className="font-semibold mb-2">New secret key</p>
-							<p className="mb-2">
-								This secret is shown only once. Copy and store it securely.
-							</p>
-							<div className="flex items-center gap-2">
-								<code className="px-3 py-2 rounded-md bg-background font-mono text-sm break-all">
-									{lastCreatedToken}
-								</code>
-								<button
-									type="button"
-									className="text-sm text-link-muted hover:underline"
-									onClick={() => {
-										void navigator.clipboard.writeText(lastCreatedToken);
-									}}
-								>
-									Copy
-								</button>
-							</div>
-						</div>
-					)}
-
-					{error && (
+					{revokeError && (
 						<div className="rounded-md border border-error-500/40 bg-error-500/10 px-3 py-2 text-sm text-error-200">
-							{error}
+							{revokeError}
 						</div>
 					)}
 				</div>
@@ -188,14 +300,14 @@ export function ApiKeysPageClient({ apiKeys }: ApiKeysPageClientProps) {
 									</div>
 								</TableHead>
 								<TableHead className="text-white-100">CREATED BY</TableHead>
-								<TableHead className="text-white-100 w-20"></TableHead>
+								<TableHead className="text-white-100 w-20" />
 							</TableRow>
 						</TableHeader>
 						<TableBody>
 							{normalizedKeys.length === 0 ? (
 								<TableRow>
 									<TableCell
-										colSpan={8}
+										colSpan={7}
 										className="text-center text-text-muted py-6"
 									>
 										No API keys yet. Create one to get started.
@@ -211,11 +323,12 @@ export function ApiKeysPageClient({ apiKeys }: ApiKeysPageClientProps) {
 											</TableCell>
 											<TableCell className="text-white-800">
 												<span
-													className={`px-2 py-1 text-xs rounded-full ${
+													className={clsx(
+														"px-2 py-1 text-xs rounded-full",
 														status === "Active"
 															? "bg-green-500/20 text-green-400"
-															: "bg-error-500/20 text-error-200"
-													}`}
+															: "bg-error-500/20 text-error-200",
+													)}
 												>
 													{status}
 												</span>
@@ -236,12 +349,7 @@ export function ApiKeysPageClient({ apiKeys }: ApiKeysPageClientProps) {
 											</TableCell>
 											<TableCell className="text-white-800">
 												<div className="flex items-center gap-2">
-													<form
-														action={revokeAction}
-														onSubmit={() => {
-															setLastCreatedToken(null);
-														}}
-													>
+													<form action={revokeAction}>
 														<input
 															type="hidden"
 															name="apiKeyId"
@@ -261,6 +369,21 @@ export function ApiKeysPageClient({ apiKeys }: ApiKeysPageClientProps) {
 					</Table>
 				</div>
 			</div>
+
+			<CreateKeyModal
+				isOpen={isCreateModalOpen}
+				onOpenChange={setIsCreateModalOpen}
+				onSubmit={createAction}
+				error={createError}
+			/>
+
+			{lastCreatedToken && (
+				<SaveKeyModal
+					isOpen={isSaveKeyModalOpen}
+					onOpenChange={setIsSaveKeyModalOpen}
+					secretKey={lastCreatedToken}
+				/>
+			)}
 		</div>
 	);
 }
