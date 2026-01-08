@@ -119,7 +119,7 @@ export async function acceptInvitation(token: string) {
 
 	const invitationTeamDbId = await db.transaction(async (tx) => {
 		const invitation = await fetchInvitationToken(token, tx, true);
-		if (!invitation) {
+		if (!invitation || invitation.expiredAt < new Date()) {
 			throw new JoinError("expired");
 		}
 		if (user.email !== invitation.invitedEmail) {
