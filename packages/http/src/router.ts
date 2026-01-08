@@ -473,30 +473,6 @@ export const jsonRoutes = {
 				return JsonResponse.json({ app });
 			},
 		}),
-	createApiSecret: (giselle: Giselle) =>
-		createHandler({
-			input: giselle.createApiSecret.inputSchema,
-			handler: async ({ input }) => {
-				const result = await giselle.createApiSecret(input);
-				return JsonResponse.json(result);
-			},
-		}),
-	revokeApiSecret: (giselle: Giselle) =>
-		createHandler({
-			input: giselle.revokeApiSecret.inputSchema,
-			handler: async ({ input }) => {
-				const result = await giselle.revokeApiSecret(input);
-				return JsonResponse.json(result);
-			},
-		}),
-	getCurrentApiSecretRecordForApp: (giselle: Giselle) =>
-		createHandler({
-			input: giselle.getCurrentApiSecretRecordForApp.inputSchema,
-			handler: async ({ input }) => {
-				const result = await giselle.getCurrentApiSecretRecordForApp(input);
-				return JsonResponse.json(result);
-			},
-		}),
 } as const;
 
 // Export the types at module level

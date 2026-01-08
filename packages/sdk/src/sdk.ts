@@ -12,7 +12,7 @@ export type GiselleOptions = {
 	 */
 	baseUrl?: string;
 	/**
-	 * Secret key token (e.g. "gsk_xxx.yyy"). Sent as `Authorization: Bearer <token>`.
+	 * Secret key token (format: "<apiKeyId>.<secret>"). Sent as `Authorization: Bearer <token>`.
 	 */
 	apiKey?: string;
 	/**
