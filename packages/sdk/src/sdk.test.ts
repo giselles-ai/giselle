@@ -13,7 +13,7 @@ describe("Giselle SDK (public Runs API)", () => {
 			expect(init?.method).toBe("POST");
 			const headersInit = init?.headers;
 			const headers = new Headers(headersInit);
-			expect(headers.get("Authorization")).toBe("Bearer gsk_test.secret");
+			expect(headers.get("Authorization")).toBe("Bearer apk_test.secret");
 			expect(headers.get("Content-Type")).toBe("application/json");
 			expect(init?.body).toBe(JSON.stringify({ text: "hello" }));
 
@@ -25,7 +25,7 @@ describe("Giselle SDK (public Runs API)", () => {
 
 		const client = new Giselle({
 			baseUrl: "https://example.com",
-			apiKey: "gsk_test.secret",
+			apiKey: "apk_test.secret",
 			fetch: fetchMock as unknown as typeof fetch,
 		});
 
@@ -46,7 +46,7 @@ describe("Giselle SDK (public Runs API)", () => {
 		});
 
 		const client = new Giselle({
-			apiKey: "gsk_test.secret",
+			apiKey: "apk_test.secret",
 			fetch: fetchMock as unknown as typeof fetch,
 		});
 
@@ -70,7 +70,7 @@ describe("Giselle SDK (public Runs API)", () => {
 		const fetchMock = vi.fn();
 		const client = new Giselle({
 			baseUrl: "https://example.com",
-			apiKey: "gsk_test.secret",
+			apiKey: "apk_test.secret",
 			fetch: fetchMock as unknown as typeof fetch,
 		});
 
@@ -92,7 +92,7 @@ describe("Giselle SDK (public Runs API)", () => {
 			if (callIndex === 1) {
 				expect(url).toBe("https://example.com/api/apps/app-xxxxx/run");
 				expect(init?.method).toBe("POST");
-				expect(headers.get("Authorization")).toBe("Bearer gsk_test.secret");
+				expect(headers.get("Authorization")).toBe("Bearer apk_test.secret");
 				expect(headers.get("Content-Type")).toBe("application/json");
 				expect(init?.body).toBe(JSON.stringify({ text: "hello" }));
 
@@ -107,7 +107,7 @@ describe("Giselle SDK (public Runs API)", () => {
 					"https://example.com/api/apps/app-xxxxx/tasks/tsk_123",
 				);
 				expect(init?.method).toBe("GET");
-				expect(headers.get("Authorization")).toBe("Bearer gsk_test.secret");
+				expect(headers.get("Authorization")).toBe("Bearer apk_test.secret");
 
 				return new Response(
 					JSON.stringify({ task: { id: "tsk_123", status: "inProgress" } }),
@@ -123,7 +123,7 @@ describe("Giselle SDK (public Runs API)", () => {
 					"https://example.com/api/apps/app-xxxxx/tasks/tsk_123",
 				);
 				expect(init?.method).toBe("GET");
-				expect(headers.get("Authorization")).toBe("Bearer gsk_test.secret");
+				expect(headers.get("Authorization")).toBe("Bearer apk_test.secret");
 
 				return new Response(
 					JSON.stringify({ task: { id: "tsk_123", status: "completed" } }),
@@ -139,7 +139,7 @@ describe("Giselle SDK (public Runs API)", () => {
 					"https://example.com/api/apps/app-xxxxx/tasks/tsk_123?includeGenerations=1",
 				);
 				expect(init?.method).toBe("GET");
-				expect(headers.get("Authorization")).toBe("Bearer gsk_test.secret");
+				expect(headers.get("Authorization")).toBe("Bearer apk_test.secret");
 
 				return new Response(
 					JSON.stringify({
@@ -164,7 +164,7 @@ describe("Giselle SDK (public Runs API)", () => {
 
 		const client = new Giselle({
 			baseUrl: "https://example.com",
-			apiKey: "gsk_test.secret",
+			apiKey: "apk_test.secret",
 			fetch: fetchMock as unknown as typeof fetch,
 		});
 
@@ -208,7 +208,7 @@ describe("Giselle SDK (public Runs API)", () => {
 
 		const client = new Giselle({
 			baseUrl: "https://example.com",
-			apiKey: "gsk_test.secret",
+			apiKey: "apk_test.secret",
 			fetch: fetchMock as unknown as typeof fetch,
 		});
 

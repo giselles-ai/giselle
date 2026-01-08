@@ -18,7 +18,7 @@ This SDK is intended for **server-side usage** (Node.js / server runtimes). Do n
 import Giselle from "@giselles-ai/sdk";
 
 const client = new Giselle({
-  // Secret key token (e.g. "gsk_xxx.yyy")
+  // Secret key token (format: "<apiKeyId>.<secret>")
   apiKey: process.env.GISELLE_API_KEY,
 });
 
