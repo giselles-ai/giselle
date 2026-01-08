@@ -101,6 +101,13 @@ export default async function ({
 
 					await giselle.updateWorkspace(workspace);
 				}}
+				getWorkspaceAction={async ({workspaceId}) => {
+					"use server";
+
+					// authorization if required
+
+					return await giselle.getWorkspace(workspaceId);
+				}}
 			/>
 		</Suspense>
 	);

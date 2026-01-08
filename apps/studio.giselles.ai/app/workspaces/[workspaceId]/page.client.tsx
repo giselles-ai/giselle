@@ -6,7 +6,7 @@ import {
 } from "@giselle-internal/workflow-designer-ui";
 import type { Integration } from "@giselles-ai/giselle";
 import type { Trigger, Workspace } from "@giselles-ai/protocol";
-import { useGiselle, WorkspaceProvider } from "@giselles-ai/react";
+import { GiselleClient, useGiselle, WorkspaceProvider } from "@giselles-ai/react";
 import { use } from "react";
 import type { LoaderData } from "./data-loader";
 
@@ -16,6 +16,7 @@ interface Props {
 	triggerUpdateAction: (trigger: Trigger) => Promise<void>;
 	workspaceSaveAction: (workspace: Workspace) => Promise<void>;
 	workspaceNameUpdateAction: (name: string) => Promise<void>;
+	getWorkspaceAction: (...input: Parameters<GiselleClient['getWorkspace']>) => ReturnType<GiselleClient['getWorkspace']>
 }
 export function Page({
 	dataLoader,
@@ -23,13 +24,15 @@ export function Page({
 	triggerUpdateAction: flowTriggerUpdateAction,
 	workspaceNameUpdateAction,
 	workspaceSaveAction,
+	getWorkspaceAction
 }: Props) {
 	const data = use(dataLoader);
-	const client = useGiselle();
 
 	return (
 		<AppDesignerProvider
-			giselleClient={client}
+      giselleClient={{
+        getWorkspace: getWorkspaceAction
+			}}
 			llmProviders={data.llmProviders}
 			save={workspaceSaveAction}
 			initialWorkspace={data.data}
