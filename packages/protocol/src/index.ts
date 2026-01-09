@@ -1,6 +1,7 @@
 export * from "./api-publishing";
 export * from "./app";
 export * from "./connection";
+export * from "./data-store";
 export * from "./embedding";
 export * from "./generation";
 export * from "./integrations";
