@@ -1,7 +1,6 @@
 "use client";
 
 import type { Generation } from "@giselles-ai/protocol";
-import { useGiselle } from "@giselles-ai/react";
 import type { UIMessage } from "ai";
 import { ChevronRightIcon } from "lucide-react";
 import { Accordion } from "radix-ui";
@@ -333,7 +332,6 @@ function Spinner() {
 }
 
 export function GenerationView({ generation }: { generation: Generation }) {
-	const client = useGiselle();
 	const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
 	// Handle ESC key to close lightbox
@@ -397,17 +395,21 @@ export function GenerationView({ generation }: { generation: Generation }) {
 							style={{ height: `${THUMB_HEIGHT.sm}px` }}
 						>
 							{output.contents.map((content) => (
+								// Generated images are served by the Giselle HTTP handler.
+								// `content.pathname` is stored as `/generations/...`, so we prefix it here.
+								// This avoids putting transport details (basePath) on `GiselleClient`.
+								// If/when we move this endpoint, update the prefix accordingly.
 								<ImageCard
 									key={content.filename}
-									src={`${client.basePath}${content.pathname}`}
+									src={`/api/giselle${content.pathname}`}
 									onDownload={() => {
 										const link = document.createElement("a");
-										link.href = `${client.basePath}${content.pathname}`;
+										link.href = `/api/giselle${content.pathname}`;
 										link.download = content.filename;
 										link.click();
 									}}
 									onZoom={() =>
-										setLightboxImage(`${client.basePath}${content.pathname}`)
+										setLightboxImage(`/api/giselle${content.pathname}`)
 									}
 								/>
 							))}

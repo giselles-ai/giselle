@@ -9,7 +9,6 @@ import type { Trigger, Workspace } from "@giselles-ai/protocol";
 import {
 	type GiselleClient,
 	GiselleClientProvider,
-	useGiselle,
 	WorkspaceProvider,
 } from "@giselles-ai/react";
 import { use, useMemo } from "react";
@@ -31,9 +30,12 @@ export function Page({
 	workspaceSaveAction,
 }: Props) {
 	const data = use(dataLoader);
-	const client = useGiselle();
 	const mappedClient = useMemo(() => {
 		return {
+			// bootstrap
+			createWorkspace: internalApi.createWorkspace,
+			createSampleWorkspaces: internalApi.createSampleWorkspaces,
+
 			// workspaces
 			getWorkspace: internalApi.getWorkspace,
 			updateWorkspace: internalApi.updateWorkspace,
@@ -68,8 +70,10 @@ export function Page({
 			reconfigureGitHubTrigger: internalApi.reconfigureGitHubTrigger,
 			executeAction: internalApi.executeAction,
 			executeQuery: internalApi.executeQuery,
+			getGitHubRepositoryFullname: internalApi.getGitHubRepositoryFullname,
 
 			// files
+			uploadFile: internalApi.uploadFile,
 			removeFile: internalApi.removeFile,
 			copyFile: internalApi.copyFile,
 			getFileText: internalApi.getFileText,

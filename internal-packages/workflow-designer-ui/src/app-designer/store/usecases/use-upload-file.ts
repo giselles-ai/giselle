@@ -59,12 +59,12 @@ export function useUploadFile() {
 				updateFileStatus(node.id, fileContents);
 
 				try {
-					await client.uploadFile({
-						workspaceId,
-						file,
-						fileId: uploadingFileData.id,
-						fileName: name,
-					});
+					const formData = new FormData();
+					formData.append("workspaceId", workspaceId);
+					formData.append("fileId", uploadingFileData.id);
+					formData.append("fileName", name);
+					formData.append("file", file);
+					await client.uploadFile(formData);
 
 					const uploadedFileData = createUploadedFileData(
 						uploadingFileData,

@@ -9,7 +9,7 @@ import {
 	type ParameterItem,
 	type UploadedFileData,
 } from "@giselles-ai/protocol";
-import { APICallError, useGiselle } from "@giselles-ai/react";
+import { APICallError, useHttpGiselle } from "@giselles-ai/react";
 import { PlayIcon } from "lucide-react";
 import {
 	createElement,
@@ -140,7 +140,7 @@ export function useStageInput({
 	}) => void;
 	isRunning: boolean;
 }) {
-	const client = useGiselle();
+	const client = useHttpGiselle();
 	const { toast } = useToasts();
 
 	const selectedApp = useMemo(() => {
@@ -318,12 +318,12 @@ export function useStageInput({
 
 			for (const { file, uploading, workspaceId } of uploads) {
 				try {
-					await client.uploadFile({
-						workspaceId,
-						file,
-						fileId: uploading.id,
-						fileName: uploading.name,
-					});
+					const formData = new FormData();
+					formData.append("workspaceId", workspaceId);
+					formData.append("fileId", uploading.id);
+					formData.append("fileName", uploading.name);
+					formData.append("file", file);
+					await client.uploadFile(formData);
 					const uploaded = createUploadedFileData(uploading, Date.now());
 					setAttachedFiles((current) => {
 						return current.map((entry) =>

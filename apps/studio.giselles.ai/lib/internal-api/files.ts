@@ -1,7 +1,32 @@
 "use server";
 
-import type { FileId, WorkspaceId } from "@giselles-ai/protocol";
+import { FileId, WorkspaceId } from "@giselles-ai/protocol";
 import { giselle } from "@/app/giselle";
+
+export async function uploadFile(formData: FormData) {
+	const file = formData.get("file");
+	const workspaceIdRaw = formData.get("workspaceId");
+	const fileIdRaw = formData.get("fileId");
+	const fileNameRaw = formData.get("fileName");
+
+	if (!(file instanceof File)) {
+		throw new Error("uploadFile: missing file");
+	}
+	if (typeof workspaceIdRaw !== "string") {
+		throw new Error("uploadFile: missing workspaceId");
+	}
+	if (typeof fileIdRaw !== "string") {
+		throw new Error("uploadFile: missing fileId");
+	}
+	if (typeof fileNameRaw !== "string") {
+		throw new Error("uploadFile: missing fileName");
+	}
+
+	const workspaceId = WorkspaceId.parse(workspaceIdRaw);
+	const fileId = FileId.parse(fileIdRaw);
+
+	await giselle.uploadFile(file, workspaceId, fileId, fileNameRaw);
+}
 
 export async function removeFile(input: {
 	workspaceId: WorkspaceId;
@@ -40,6 +65,5 @@ export async function addWebPage(
 	return await giselle.addWebPage(input);
 }
 
-// Note: uploadFile is intentionally not migrated yet because client-side calls
-// currently pass a `File` object through JSON→FormData fetch. We'll migrate it
-// when we decide the preferred Server Action form-data approach.
+// Note: Server Actions file serialization is handled by Next.js. If we hit
+// runtime serialization issues, we can switch this API to accept `FormData`.

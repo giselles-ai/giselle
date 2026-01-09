@@ -2,7 +2,7 @@
 
 import { AppIcon } from "@giselle-internal/ui/app-icon";
 import type { Trigger } from "@giselles-ai/protocol";
-import { useGiselle } from "@giselles-ai/react";
+import { useHttpGiselle } from "@giselles-ai/react";
 import { X } from "lucide-react";
 import {
 	useActionState,
@@ -40,7 +40,7 @@ export function RunModal({
 		flowTrigger: Trigger;
 		workspaceName: string;
 	} | null>(null);
-	const client = useGiselle();
+	const client = useHttpGiselle();
 	const [isLoading, setIsLoading] = useState(false);
 	const [validationErrors, setValidationErrors] = useState<
 		Record<string, string>
@@ -80,12 +80,12 @@ export function RunModal({
 				const parameterItems = await toParameterItems(inputs, values, {
 					workspaceId: flowTriggerData.flowTrigger.workspaceId,
 					uploadFile: async ({ workspaceId, file, fileId, fileName }) => {
-						await client.uploadFile({
-							workspaceId,
-							file,
-							fileId,
-							fileName,
-						});
+						const formData = new FormData();
+						formData.append("workspaceId", workspaceId);
+						formData.append("fileId", fileId);
+						formData.append("fileName", fileName);
+						formData.append("file", file);
+						await client.uploadFile(formData);
 					},
 				});
 

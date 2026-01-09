@@ -38,3 +38,9 @@ export async function executeAction(input: { generation: QueuedGeneration }) {
 export async function executeQuery(input: { generation: QueuedGeneration }) {
 	await giselle.executeQuery(input.generation);
 }
+
+export async function getGitHubRepositoryFullname(
+	input: Parameters<typeof giselle.getGitHubRepositoryFullname>[0],
+) {
+	return { fullname: await giselle.getGitHubRepositoryFullname(input) };
+}

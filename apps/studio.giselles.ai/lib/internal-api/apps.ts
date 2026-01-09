@@ -4,7 +4,8 @@ import type { AppId } from "@giselles-ai/protocol";
 import { giselle } from "@/app/giselle";
 
 export async function getApp(input: { appId: AppId }) {
-	return await giselle.getApp(input);
+	const app = await giselle.getApp(input);
+	return { app };
 }
 
 export async function saveApp(input: Parameters<typeof giselle.saveApp>[0]) {
