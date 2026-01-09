@@ -6,6 +6,8 @@ import type {
 } from "@giselles-ai/github-tool";
 import type {
 	AppId,
+	DataStoreConfig,
+	DataStoreId,
 	EmbeddingDimensions,
 	EmbeddingProfileId,
 	NodeId,
@@ -1063,5 +1065,31 @@ export const taskRelations = relations(tasks, ({ one }) => ({
 	app: one(apps, {
 		fields: [tasks.appDbId],
 		references: [apps.dbId],
+	}),
+}));
+
+export const dataStores = pgTable(
+	"data_stores",
+	{
+		id: text("id").$type<DataStoreId>().notNull().unique(),
+		dbId: serial("db_id").primaryKey(),
+		teamDbId: integer("team_db_id")
+			.notNull()
+			.references(() => teams.dbId, { onDelete: "cascade" }),
+		name: text("name").notNull(),
+		configJson: jsonb("config_json").$type<DataStoreConfig>().notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		updatedAt: timestamp("updated_at")
+			.defaultNow()
+			.notNull()
+			.$onUpdate(() => new Date()),
+	},
+	(table) => [index("data_stores_team_db_id_idx").on(table.teamDbId)],
+);
+
+export const dataStoreRelations = relations(dataStores, ({ one }) => ({
+	team: one(teams, {
+		fields: [dataStores.teamDbId],
+		references: [teams.dbId],
 	}),
 }));
