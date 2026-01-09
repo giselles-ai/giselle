@@ -6,6 +6,7 @@ import {
 	aiGatewayFlag,
 	aiGatewayUnsupportedModelsFlag,
 	apiPublishingFlag,
+	dataStoreFlag,
 	generateContentNodeFlag,
 	googleUrlContextFlag,
 	layoutV3Flag,
@@ -64,6 +65,7 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 	const generateContentNode = await generateContentNodeFlag();
 	const privatePreviewTools = await privatePreviewToolsFlag();
 	const apiPublishing = await apiPublishingFlag();
+	const dataStore = await dataStoreFlag();
 	const [teamGitHubRepositoryIndexes, officialGitHubRepositoryIndexes] =
 		await Promise.all([
 			getGitHubRepositoryIndexes(workspaceTeam.dbId),
@@ -129,6 +131,7 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 			generateContentNode,
 			privatePreviewTools,
 			apiPublishing,
+			dataStore,
 		},
 		llmProviders,
 	};

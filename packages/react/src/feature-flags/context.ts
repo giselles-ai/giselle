@@ -10,6 +10,7 @@ export interface FeatureFlagContextValue {
 	generateContentNode: boolean;
 	privatePreviewTools: boolean;
 	apiPublishing: boolean;
+	dataStore: boolean;
 }
 export const FeatureFlagContext = createContext<
 	FeatureFlagContextValue | undefined
