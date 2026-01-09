@@ -85,23 +85,18 @@ function ImageGenerationRunner({ generation }: { generation: Generation }) {
 		addStopHandler,
 	} = useGenerationRunnerSystem();
 	const client = useGiselle();
-	const abortControllerRef = useRef<AbortController | null>(null);
 
 	const stop = useCallback(() => {
-		if (abortControllerRef.current) {
-			abortControllerRef.current.abort();
-			abortControllerRef.current = null;
-		}
-	}, []);
+		// Server Actions can't receive AbortSignal. Best-effort cancellation uses the
+		// explicit cancel API instead of aborting the transport layer.
+		void client.cancelGeneration({ generationId: generation.id });
+	}, [client, generation.id]);
 
 	useOnce(() => {
 		if (!isQueuedGeneration(generation)) {
 			return;
 		}
 		addStopHandler(generation.id, stop);
-
-		const abortController = new AbortController();
-		abortControllerRef.current = abortController;
 
 		client
 			.setGeneration({
@@ -111,22 +106,11 @@ function ImageGenerationRunner({ generation }: { generation: Generation }) {
 				updateGenerationStatusToRunning(generation.id);
 
 				try {
-					await client.generateImage(
-						{
-							generation,
-						},
-						{ signal: abortController.signal },
-					);
+					await client.generateImage({
+						generation,
+					});
 					updateGenerationStatusToComplete(generation.id);
 				} catch (error) {
-					if (
-						error instanceof DOMException &&
-						error.name === "AbortError" &&
-						abortController.signal.aborted
-					) {
-						return;
-					}
-
 					console.error("Failed to generate image:", error);
 					updateGenerationStatusToFailure(generation.id);
 				}
@@ -135,9 +119,7 @@ function ImageGenerationRunner({ generation }: { generation: Generation }) {
 				console.error("Failed to set generation:", error);
 				updateGenerationStatusToFailure(generation.id);
 			})
-			.finally(() => {
-				abortControllerRef.current = null;
-			});
+			.finally(() => {});
 	});
 	return null;
 }

@@ -1,3 +1,5 @@
+"use client";
+
 import type {
 	FormDataRouteHandlers,
 	FormDataRouteHandlersInput,
@@ -7,7 +9,13 @@ import type {
 	JsonRouteHandlersInput,
 	JsonRoutePath,
 } from "@giselles-ai/http";
-import { useCallback, useMemo } from "react";
+import {
+	createContext,
+	createElement,
+	useCallback,
+	useContext,
+	useMemo,
+} from "react";
 import type * as z from "zod/v4";
 
 import { APICallError } from "./errors/api-call-error";
@@ -20,6 +28,8 @@ export type GiselleRequestOptions = {
 	signal?: AbortSignal;
 	keepalive?: boolean;
 };
+
+const responseReturnPaths = new Set<string>(["streamTask"]);
 
 /**
  * Converts JSON object to FormData
@@ -46,42 +56,59 @@ function transformJsonToFormData(json: Record<string, unknown>): FormData {
 /**
  * Extract response data type from API handler return types
  */
-type ExtractResponseData<T> = T extends JsonResponse<infer U>
-	? U
-	: T extends Promise<infer U>
+type ExtractResponseData<T> = T extends Promise<infer U>
+	? ExtractResponseData<U>
+	: T extends JsonResponse<infer U>
 		? U
-		: T;
+		: T extends Response
+			? undefined
+			: T;
 
 /**
  * GiselleClient type definition
  * Provides autocomplete and type checking for all API endpoints
  */
 export type GiselleClient = {
-	[K in JsonRoutePath | FormDataRoutePath]: K extends JsonRoutePath
-		? JsonRouteHandlersInput[K] extends z.ZodType<unknown>
-			? (
-					input: z.infer<JsonRouteHandlersInput[K]>,
-					options?: GiselleRequestOptions,
-				) => Promise<
-					ExtractResponseData<Awaited<ReturnType<JsonRouteHandlers[K]>>>
-				>
-			: () => Promise<
-					ExtractResponseData<Awaited<ReturnType<JsonRouteHandlers[K]>>>
-				>
-		: K extends FormDataRoutePath
-			? FormDataRouteHandlersInput[K] extends z.ZodType<unknown>
+	[K in JsonRoutePath | FormDataRoutePath]: K extends "streamTask"
+		? (
+				input: z.infer<JsonRouteHandlersInput[K]>,
+				options?: GiselleRequestOptions,
+			) => Promise<Response>
+		: K extends JsonRoutePath
+			? JsonRouteHandlersInput[K] extends z.ZodType<unknown>
 				? (
-						input: z.infer<FormDataRouteHandlersInput[K]>,
+						input: z.infer<JsonRouteHandlersInput[K]>,
+						options?: GiselleRequestOptions,
 					) => Promise<
-						ExtractResponseData<Awaited<ReturnType<FormDataRouteHandlers[K]>>>
+						ExtractResponseData<Awaited<ReturnType<JsonRouteHandlers[K]>>>
 					>
 				: () => Promise<
-						ExtractResponseData<Awaited<ReturnType<FormDataRouteHandlers[K]>>>
+						ExtractResponseData<Awaited<ReturnType<JsonRouteHandlers[K]>>>
 					>
-			: never;
+			: K extends FormDataRoutePath
+				? FormDataRouteHandlersInput[K] extends z.ZodType<unknown>
+					? (
+							input: z.infer<FormDataRouteHandlersInput[K]>,
+						) => Promise<
+							ExtractResponseData<Awaited<ReturnType<FormDataRouteHandlers[K]>>>
+						>
+					: () => Promise<
+							ExtractResponseData<Awaited<ReturnType<FormDataRouteHandlers[K]>>>
+						>
+				: never;
 } & {
 	basePath: string;
 };
+
+const GiselleClientContext = createContext<GiselleClient | null>(null);
+
+export function GiselleClientProvider({
+	children,
+	value,
+}: React.PropsWithChildren<{ value: GiselleClient }>) {
+	// Avoid JSX in a .ts module.
+	return createElement(GiselleClientContext.Provider, { value }, children);
+}
 
 /**
  * Custom hook that provides a type-safe client for the Giselle API
@@ -90,7 +117,10 @@ export type GiselleClient = {
  * @returns A client object with methods for each Giselle operation
  */
 export function useGiselle(options?: FetchOptions): GiselleClient {
-	const basePath = options?.basePath ?? "/api/giselle";
+	const injectedClient = useContext(GiselleClientContext);
+
+	const basePath =
+		injectedClient?.basePath ?? options?.basePath ?? "/api/giselle";
 
 	// Function to make API requests
 	const makeRequest = useCallback(
@@ -132,7 +162,10 @@ export function useGiselle(options?: FetchOptions): GiselleClient {
 				return await response.json();
 			}
 
-			return response;
+			if (responseReturnPaths.has(path)) {
+				return response;
+			}
+			return;
 		},
 		[basePath],
 	);
@@ -171,5 +204,5 @@ export function useGiselle(options?: FetchOptions): GiselleClient {
 		return proxyClient as GiselleClient;
 	}, [makeRequest, basePath]);
 
-	return client;
+	return injectedClient ?? client;
 }
