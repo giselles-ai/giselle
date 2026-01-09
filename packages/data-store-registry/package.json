@@ -24,8 +24,5 @@
 	},
 	"peerDependencies": {
 		"zod": "catalog:"
-	},
-	"dependencies": {
-		"@giselles-ai/utils": "workspace:*"
 	}
 }
