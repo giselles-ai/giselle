@@ -13,6 +13,7 @@ import { AlertCircle, Check, Loader2, Paperclip, X } from "lucide-react";
 import Image from "next/image";
 import type React from "react";
 import { useEffect, useState } from "react";
+import basePath from "../../basePath";
 
 interface FileAttachmentsProps {
 	files: FileData[];
@@ -155,17 +156,14 @@ function getFileUrl(
 ): string {
 	// Generate file path for stage type
 	const path = `workspaces/${workspaceId}/files/${file.id}/${file.id}`;
-	// Ensure basePath ends with / and path doesn't start with /
-	const normalizedBasePath = basePath.endsWith("/") ? basePath : `${basePath}/`;
 	const normalizedPath = path.startsWith("/") ? path.slice(1) : path;
-	return `${normalizedBasePath}${normalizedPath}`;
+	return `${basePath}/${normalizedPath}`;
 }
 
 export function FileAttachments({
 	files,
 	onRemoveFile,
 	workspaceId,
-	basePath,
 	localPreviews,
 	onImageLoad,
 }: FileAttachmentsProps) {
@@ -202,7 +200,7 @@ export function FileAttachments({
 							const localPreview = localPreviews?.get(file.id);
 							let imageUrl: string | null = null;
 
-							if (isUploaded && workspaceId && basePath) {
+							if (isUploaded && workspaceId) {
 								imageUrl = getFileUrl(file, workspaceId, basePath);
 							} else if (localPreview) {
 								imageUrl = localPreview;

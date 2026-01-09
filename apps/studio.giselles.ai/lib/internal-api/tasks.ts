@@ -28,7 +28,9 @@ export async function getTaskGenerationIndexes(input: { taskId: TaskId }) {
 }
 
 export async function getWorkspaceTasks(input: { workspaceId: WorkspaceId }) {
-	const tasks = await giselle.getWorkspaceTasks(input.workspaceId);
+	const tasks = await giselle.getWorkspaceTasks({
+		workspaceId: input.workspaceId,
+	});
 	return { tasks };
 }
 

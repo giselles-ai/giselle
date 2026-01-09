@@ -491,7 +491,6 @@ export function useStageInput({
 
 	return useMemo(
 		() => ({
-			basePath: client.basePath,
 			appOptions,
 			selectedApp,
 			setSelectedAppId,
@@ -522,7 +521,6 @@ export function useStageInput({
 			handleSubmit: submitInputs,
 		}),
 		[
-			client.basePath,
 			appOptions,
 			selectedApp,
 			setSelectedAppId,
