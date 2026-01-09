@@ -252,3 +252,23 @@ export const apiPublishingFlag = flag<boolean>({
 	],
 	defaultValue: false,
 });
+
+export const dataStoreFlag = flag<boolean>({
+	key: "data-store",
+	async decide() {
+		if (process.env.NODE_ENV === "development") {
+			return takeLocalEnv("DATA_STORE_FLAG");
+		}
+		const edgeConfig = await get(`flag__${this.key}`);
+		if (edgeConfig === undefined) {
+			return false;
+		}
+		return edgeConfig === true || edgeConfig === "true";
+	},
+	description: "Enable Data Store and Data Query nodes",
+	options: [
+		{ value: false, label: "disable" },
+		{ value: true, label: "Enable" },
+	],
+	defaultValue: false,
+});
