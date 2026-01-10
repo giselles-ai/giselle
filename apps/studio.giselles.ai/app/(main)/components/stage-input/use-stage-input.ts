@@ -318,12 +318,12 @@ export function useStageInput({
 
 			for (const { file, uploading, workspaceId } of uploads) {
 				try {
-					await client.uploadFile({
-						workspaceId,
-						file,
-						fileId: uploading.id,
-						fileName: uploading.name,
-					});
+					const formData = new FormData();
+					formData.append("workspaceId", workspaceId);
+					formData.append("fileId", uploading.id);
+					formData.append("fileName", uploading.name);
+					formData.append("file", file);
+					await client.uploadFile(formData);
 					const uploaded = createUploadedFileData(uploading, Date.now());
 					setAttachedFiles((current) => {
 						return current.map((entry) =>
@@ -491,7 +491,6 @@ export function useStageInput({
 
 	return useMemo(
 		() => ({
-			basePath: client.basePath,
 			appOptions,
 			selectedApp,
 			setSelectedAppId,
@@ -522,7 +521,6 @@ export function useStageInput({
 			handleSubmit: submitInputs,
 		}),
 		[
-			client.basePath,
 			appOptions,
 			selectedApp,
 			setSelectedAppId,

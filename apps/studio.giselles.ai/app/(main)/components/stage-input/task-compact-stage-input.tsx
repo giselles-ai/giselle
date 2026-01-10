@@ -22,7 +22,6 @@ export function TaskCompactStageInput({
 	isRunning: boolean;
 }) {
 	const {
-		basePath,
 		appOptions,
 		textareaRef,
 		fileInputRef,
@@ -136,7 +135,6 @@ export function TaskCompactStageInput({
 						files={attachedFiles}
 						onRemoveFile={handleRemoveFile}
 						workspaceId={selectedApp?.workspaceId}
-						basePath={basePath}
 						localPreviews={localPreviews}
 						onImageLoad={handleImageLoad}
 					/>
