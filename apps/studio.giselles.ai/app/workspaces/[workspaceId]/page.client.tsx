@@ -6,13 +6,9 @@ import {
 } from "@giselle-internal/workflow-designer-ui";
 import type { Integration } from "@giselles-ai/giselle";
 import type { Trigger, Workspace } from "@giselles-ai/protocol";
-import {
-	type GiselleClient,
-	GiselleClientProvider,
-	WorkspaceProvider,
-} from "@giselles-ai/react";
+import { GiselleClientProvider, WorkspaceProvider } from "@giselles-ai/react";
 import { use, useMemo } from "react";
-import * as internalApi from "@/lib/internal-api";
+import { createInternalGiselleClient } from "@/lib/internal-api/create-giselle-client";
 import type { LoaderData } from "./data-loader";
 
 interface Props {
@@ -30,66 +26,14 @@ export function Page({
 	workspaceSaveAction,
 }: Props) {
 	const data = use(dataLoader);
-	const mappedClient = useMemo(() => {
-		return {
-			// bootstrap
-			createWorkspace: internalApi.createWorkspace,
-			createSampleWorkspaces: internalApi.createSampleWorkspaces,
-
-			// workspaces
-			getWorkspace: internalApi.getWorkspace,
-			updateWorkspace: internalApi.updateWorkspace,
-
-			// apps
-			getApp: internalApi.getApp,
-			saveApp: internalApi.saveApp,
-			deleteApp: internalApi.deleteApp,
-
-			// tasks
-			createTask: internalApi.createTask,
-			startTask: internalApi.startTask,
-			getWorkspaceInprogressTask: internalApi.getWorkspaceInprogressTask,
-			getTaskGenerationIndexes: internalApi.getTaskGenerationIndexes,
-			getWorkspaceTasks: internalApi.getWorkspaceTasks,
-
-			// generations
-			getGeneration: internalApi.getGeneration,
-			getNodeGenerations: internalApi.getNodeGenerations,
-			cancelGeneration: internalApi.cancelGeneration,
-			setGeneration: internalApi.setGeneration,
-			generateImage: internalApi.generateImage,
-			startContentGeneration: internalApi.startContentGeneration,
-			getGenerationMessageChunks: internalApi.getGenerationMessageChunks,
-			generateContent: internalApi.generateContent,
-
-			// triggers + ops
-			resolveTrigger: internalApi.resolveTrigger,
-			configureTrigger: internalApi.configureTrigger,
-			getTrigger: internalApi.getTrigger,
-			setTrigger: internalApi.setTrigger,
-			reconfigureGitHubTrigger: internalApi.reconfigureGitHubTrigger,
-			executeAction: internalApi.executeAction,
-			executeQuery: internalApi.executeQuery,
-			getGitHubRepositoryFullname: internalApi.getGitHubRepositoryFullname,
-
-			// files
-			uploadFile: internalApi.uploadFile,
-			removeFile: internalApi.removeFile,
-			copyFile: internalApi.copyFile,
-			getFileText: internalApi.getFileText,
-			addWebPage: internalApi.addWebPage,
-
-			// secrets
-			addSecret: internalApi.addSecret,
-			deleteSecret: internalApi.deleteSecret,
-			getWorkspaceSecrets: internalApi.getWorkspaceSecrets,
-		};
+	const client = useMemo(() => {
+		return createInternalGiselleClient();
 	}, []);
 
 	return (
-		<GiselleClientProvider value={mappedClient as GiselleClient}>
+		<GiselleClientProvider value={client}>
 			<AppDesignerProvider
-				giselleClient={mappedClient as GiselleClient}
+				giselleClient={client}
 				llmProviders={data.llmProviders}
 				save={workspaceSaveAction}
 				initialWorkspace={data.data}

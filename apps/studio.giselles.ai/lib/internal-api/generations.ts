@@ -9,7 +9,6 @@ import type {
 	RunningGeneration,
 } from "@giselles-ai/protocol";
 import { giselle } from "@/app/giselle";
-import { logger } from "../logger";
 
 export async function getGeneration(input: { generationId: GenerationId }) {
 	return await giselle.getGeneration(input.generationId);

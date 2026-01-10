@@ -2,7 +2,7 @@
 
 import { AppIcon } from "@giselle-internal/ui/app-icon";
 import type { Trigger } from "@giselles-ai/protocol";
-import { useHttpGiselle } from "@giselles-ai/react";
+import { useGiselle } from "@giselles-ai/react";
 import { X } from "lucide-react";
 import {
 	useActionState,
@@ -40,7 +40,7 @@ export function RunModal({
 		flowTrigger: Trigger;
 		workspaceName: string;
 	} | null>(null);
-	const client = useHttpGiselle();
+	const client = useGiselle();
 	const [isLoading, setIsLoading] = useState(false);
 	const [validationErrors, setValidationErrors] = useState<
 		Record<string, string>

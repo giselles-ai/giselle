@@ -9,7 +9,7 @@ import {
 	type ParameterItem,
 	type UploadedFileData,
 } from "@giselles-ai/protocol";
-import { APICallError, useHttpGiselle } from "@giselles-ai/react";
+import { APICallError, useGiselle } from "@giselles-ai/react";
 import { PlayIcon } from "lucide-react";
 import {
 	createElement,
@@ -140,7 +140,7 @@ export function useStageInput({
 	}) => void;
 	isRunning: boolean;
 }) {
-	const client = useHttpGiselle();
+	const client = useGiselle();
 	const { toast } = useToasts();
 
 	const selectedApp = useMemo(() => {

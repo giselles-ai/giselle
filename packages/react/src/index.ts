@@ -11,6 +11,5 @@ export * from "./telemetry";
 export * from "./trigger";
 export * from "./usage-limits";
 export * from "./use-giselle";
-export * from "./use-http-giselle";
 export * from "./vector-store";
 export * from "./workspace";
