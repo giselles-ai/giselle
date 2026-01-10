@@ -3,7 +3,6 @@
 import type {
 	CreateTaskInputs,
 	StartTaskInputs,
-	TaskExecutorOptions,
 } from "@giselles-ai/giselle";
 import type { TaskId, WorkspaceId } from "@giselles-ai/protocol";
 import { giselle } from "@/app/giselle";
@@ -32,25 +31,4 @@ export async function getWorkspaceTasks(input: { workspaceId: WorkspaceId }) {
 		workspaceId: input.workspaceId,
 	});
 	return { tasks };
-}
-
-export async function createAndStartTask(
-	input: Omit<
-		CreateTaskInputs,
-		"generationOriginType" | "workspace" | "workspaceId"
-	> &
-		Omit<
-			TaskExecutorOptions,
-			| "task"
-			| "applyPatches"
-			| "generationAdapter"
-			| "onTaskStart"
-			| "onTaskComplete"
-			| "startGeneration"
-		> & {
-			workspaceId: WorkspaceId;
-			generationOriginType: StartTaskInputs["generationOriginType"];
-		},
-) {
-	await giselle.createAndStartTask(input);
 }

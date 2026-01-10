@@ -30,7 +30,6 @@
 	},
 	"dependencies": {
 		"@giselles-ai/giselle": "workspace:*",
-		"@giselles-ai/http": "workspace:*",
 		"@giselles-ai/language-model": "workspace:^",
 		"@giselles-ai/stream": "workspace:*",
 		"ai": "catalog:",
