@@ -1,9 +1,6 @@
 "use server";
 
-import type {
-	CreateTaskInputs,
-	StartTaskInputs,
-} from "@giselles-ai/giselle";
+import type { CreateTaskInputs, StartTaskInputs } from "@giselles-ai/giselle";
 import type { TaskId, WorkspaceId } from "@giselles-ai/protocol";
 import { giselle } from "@/app/giselle";
 
