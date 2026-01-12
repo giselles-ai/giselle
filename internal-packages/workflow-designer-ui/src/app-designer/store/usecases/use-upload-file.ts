@@ -6,12 +6,43 @@ import {
 	type FileNode,
 	isFileNode,
 } from "@giselles-ai/protocol";
-import { APICallError } from "@giselles-ai/react";
 import { useCallback } from "react";
 import { useAppDesignerStoreApi } from "../app-designer-provider";
 import { useGiselle } from "../giselle-client-provider";
 import { useAppDesignerStore } from "../hooks";
 import { useUpdateFileStatus } from "./use-update-file-status";
+
+/**
+ * Hard limit to upload file since Vercel Serverless Functions have a 4.5MB body size limit.
+ * @see internal-packages/workflow-designer-ui/src/editor/properties-panel/file-node-properties-panel/file-panel.tsx
+ */
+const MAX_UPLOAD_SIZE_BYTES = 1024 * 1024 * 4.5;
+
+function formatFileSize(size: number): string {
+	const units = ["B", "KB", "MB", "GB", "TB"];
+	let formattedSize = size;
+	let i = 0;
+	while (formattedSize >= 1024 && i < units.length - 1) {
+		formattedSize /= 1024;
+		i++;
+	}
+	return `${formattedSize} ${units[i]}`;
+}
+
+function getFileSizeExceededMessage(maxSizeBytes: number) {
+	return `File size exceeds the limit. Please upload a file smaller than ${formatFileSize(maxSizeBytes)}.`;
+}
+
+function isLikelyOversizeErrorMessage(message: string) {
+	const m = message.toLowerCase();
+	return (
+		m.includes("413") ||
+		m.includes("payload too large") ||
+		m.includes("bodySizeLimit".toLowerCase()) ||
+		m.includes("request body") ||
+		m.includes("body size")
+	);
+}
 
 export function useUploadFile() {
 	const client = useGiselle();
@@ -58,6 +89,21 @@ export function useUploadFile() {
 				fileContents = [...fileContents, uploadingFileData];
 				updateFileStatus(node.id, fileContents);
 
+				if (file.size > MAX_UPLOAD_SIZE_BYTES) {
+					const message = getFileSizeExceededMessage(MAX_UPLOAD_SIZE_BYTES);
+					options?.onError?.(message);
+					const failedFileData = createFailedFileData(
+						uploadingFileData,
+						message,
+					);
+					fileContents = [
+						...getCurrentFiles().filter((f) => f.id !== failedFileData.id),
+						failedFileData,
+					];
+					updateFileStatus(node.id, fileContents);
+					continue;
+				}
+
 				try {
 					const formData = new FormData();
 					formData.append("workspaceId", workspaceId);
@@ -75,12 +121,11 @@ export function useUploadFile() {
 						uploadedFileData,
 					];
 				} catch (error) {
-					const message = APICallError.isInstance(error)
-						? error.statusCode === 413
-							? "filesize too large"
-							: error.message
-						: error instanceof Error
-							? error.message || "upload failed"
+					const message =
+						error instanceof Error
+							? isLikelyOversizeErrorMessage(error.message)
+								? getFileSizeExceededMessage(MAX_UPLOAD_SIZE_BYTES)
+								: error.message || "upload failed"
 							: "upload failed";
 					options?.onError?.(message);
 

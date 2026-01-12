@@ -3,6 +3,27 @@
 import { FileId, WorkspaceId } from "@giselles-ai/protocol";
 import { giselle } from "@/app/giselle";
 
+/**
+ * Hard limit to upload file since Vercel Serverless Functions have a 4.5MB body size limit.
+ * @see internal-packages/workflow-designer-ui/src/editor/properties-panel/file-node-properties-panel/file-panel.tsx
+ */
+const MAX_UPLOAD_SIZE_BYTES = 1024 * 1024 * 4.5;
+
+function formatFileSize(size: number): string {
+	const units = ["B", "KB", "MB", "GB", "TB"];
+	let formattedSize = size;
+	let i = 0;
+	while (formattedSize >= 1024 && i < units.length - 1) {
+		formattedSize /= 1024;
+		i++;
+	}
+	return `${formattedSize} ${units[i]}`;
+}
+
+function getFileSizeExceededMessage(maxSizeBytes: number) {
+	return `File size exceeds the limit. Please upload a file smaller than ${formatFileSize(maxSizeBytes)}.`;
+}
+
 export async function uploadFile(formData: FormData) {
 	const file = formData.get("file");
 	const workspaceIdRaw = formData.get("workspaceId");
@@ -11,6 +32,9 @@ export async function uploadFile(formData: FormData) {
 
 	if (!(file instanceof File)) {
 		throw new Error("uploadFile: missing file");
+	}
+	if (file.size > MAX_UPLOAD_SIZE_BYTES) {
+		throw new Error(getFileSizeExceededMessage(MAX_UPLOAD_SIZE_BYTES));
 	}
 	if (typeof workspaceIdRaw !== "string") {
 		throw new Error("uploadFile: missing workspaceId");
