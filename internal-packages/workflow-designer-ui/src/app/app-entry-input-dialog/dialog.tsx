@@ -143,12 +143,12 @@ export function AppEntryInputDialog({
 								size: file.size,
 							});
 
-							await client.uploadFile({
-								workspaceId: data.app.workspaceId,
-								file,
-								fileId: uploadingFileData.id,
-								fileName: file.name,
-							});
+							const formData = new FormData();
+							formData.append("workspaceId", data.app.workspaceId);
+							formData.append("fileId", uploadingFileData.id);
+							formData.append("fileName", file.name);
+							formData.append("file", file);
+							await client.uploadFile(formData);
 
 							uploadedFiles.push(
 								createUploadedFileData(uploadingFileData, Date.now()),

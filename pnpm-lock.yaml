@@ -1329,9 +1329,6 @@ importers:
       '@giselles-ai/giselle':
         specifier: workspace:*
         version: link:../giselle
-      '@giselles-ai/http':
-        specifier: workspace:*
-        version: link:../http
       '@giselles-ai/language-model':
         specifier: workspace:^
         version: link:../language-model

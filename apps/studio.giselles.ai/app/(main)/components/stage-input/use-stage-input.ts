@@ -42,14 +42,51 @@ const IMAGE_FILE_EXTENSIONS = new Set([
 	"heif",
 ]);
 
+/**
+ * Hard limit to upload file since Vercel Serverless Functions have a 4.5MB body size limit.
+ * @see internal-packages/workflow-designer-ui/src/editor/properties-panel/file-node-properties-panel/file-panel.tsx
+ */
+const MAX_UPLOAD_SIZE_BYTES = 1024 * 1024 * 4.5;
+
+function formatFileSize(size: number): string {
+	const units = ["B", "KB", "MB", "GB", "TB"];
+	let formattedSize = size;
+	let i = 0;
+	while (formattedSize >= 1024 && i < units.length - 1) {
+		formattedSize /= 1024;
+		i++;
+	}
+	return `${formattedSize} ${units[i]}`;
+}
+
+function getFileSizeExceededMessage(maxSizeBytes: number) {
+	return `File size exceeds the limit. Please upload a file smaller than ${formatFileSize(maxSizeBytes)}.`;
+}
+
+function isLikelyOversizeErrorMessage(message: string) {
+	const m = message.toLowerCase();
+	return (
+		m.includes("413") ||
+		m.includes("payload too large") ||
+		m.includes("bodySizeLimit".toLowerCase()) ||
+		m.includes("request body") ||
+		m.includes("body size")
+	);
+}
+
 function getUploadErrorMessage(error: unknown) {
+	const oversizeMessage = getFileSizeExceededMessage(MAX_UPLOAD_SIZE_BYTES);
+
 	if (APICallError.isInstance(error)) {
 		if (error.statusCode === 413) {
-			return "File size is too large.";
+			return oversizeMessage;
 		}
 		return error.message || "Upload failed";
 	}
 	if (error instanceof Error) {
+		if (isLikelyOversizeErrorMessage(error.message)) {
+			return oversizeMessage;
+		}
 		return error.message || "Upload failed";
 	}
 	return "Upload failed";
@@ -317,13 +354,28 @@ export function useStageInput({
 			});
 
 			for (const { file, uploading, workspaceId } of uploads) {
-				try {
-					await client.uploadFile({
-						workspaceId,
-						file,
-						fileId: uploading.id,
-						fileName: uploading.name,
+				if (file.size > MAX_UPLOAD_SIZE_BYTES) {
+					const message = getFileSizeExceededMessage(MAX_UPLOAD_SIZE_BYTES);
+					toast(`Upload failed: ${message}`, {
+						type: "error",
+						preserve: false,
 					});
+					const failed = createFailedFileData(uploading, message);
+					setAttachedFiles((current) => {
+						return current.map((entry) =>
+							entry.id === failed.id ? failed : entry,
+						);
+					});
+					continue;
+				}
+
+				try {
+					const formData = new FormData();
+					formData.append("workspaceId", workspaceId);
+					formData.append("fileId", uploading.id);
+					formData.append("fileName", uploading.name);
+					formData.append("file", file);
+					await client.uploadFile(formData);
 					const uploaded = createUploadedFileData(uploading, Date.now());
 					setAttachedFiles((current) => {
 						return current.map((entry) =>
@@ -491,7 +543,6 @@ export function useStageInput({
 
 	return useMemo(
 		() => ({
-			basePath: client.basePath,
 			appOptions,
 			selectedApp,
 			setSelectedAppId,
@@ -522,7 +573,6 @@ export function useStageInput({
 			handleSubmit: submitInputs,
 		}),
 		[
-			client.basePath,
 			appOptions,
 			selectedApp,
 			setSelectedAppId,

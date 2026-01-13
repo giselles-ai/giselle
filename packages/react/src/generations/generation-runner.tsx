@@ -85,23 +85,20 @@ function ImageGenerationRunner({ generation }: { generation: Generation }) {
 		addStopHandler,
 	} = useGenerationRunnerSystem();
 	const client = useGiselle();
-	const abortControllerRef = useRef<AbortController | null>(null);
+	const stopRequestedRef = useRef(false);
 
 	const stop = useCallback(() => {
-		if (abortControllerRef.current) {
-			abortControllerRef.current.abort();
-			abortControllerRef.current = null;
-		}
-	}, []);
+		// Server Actions can't receive AbortSignal. Best-effort cancellation uses the
+		// explicit cancel API instead of aborting the transport layer.
+		stopRequestedRef.current = true;
+		void client.cancelGeneration({ generationId: generation.id });
+	}, [client, generation.id]);
 
 	useOnce(() => {
 		if (!isQueuedGeneration(generation)) {
 			return;
 		}
 		addStopHandler(generation.id, stop);
-
-		const abortController = new AbortController();
-		abortControllerRef.current = abortController;
 
 		client
 			.setGeneration({
@@ -111,33 +108,41 @@ function ImageGenerationRunner({ generation }: { generation: Generation }) {
 				updateGenerationStatusToRunning(generation.id);
 
 				try {
-					await client.generateImage(
-						{
-							generation,
-						},
-						{ signal: abortController.signal },
-					);
-					updateGenerationStatusToComplete(generation.id);
-				} catch (error) {
-					if (
-						error instanceof DOMException &&
-						error.name === "AbortError" &&
-						abortController.signal.aborted
-					) {
+					await client.generateImage({
+						generation,
+					});
+					if (stopRequestedRef.current) {
+						// If the user requested stop, `stopGenerationRunner()` already set
+						// the local state to `cancelled`. Avoid overwriting it with
+						// `completed` due to this async chain finishing after cancellation.
 						return;
 					}
-
+					updateGenerationStatusToComplete(generation.id);
+				} catch (error) {
+					if (stopRequestedRef.current) {
+						// If the user requested stop, cancellation may surface as a
+						// transport/Server Action error. In that case we treat it as
+						// intentional and avoid turning `cancelled` into `failed`.
+						//
+						// TODO: Prefer making server-side cancellation a first-class outcome
+						// (i.e. not throwing an error) so we can avoid surfacing noise in
+						// logs/telemetry for intentional user cancellations.
+						return;
+					}
 					console.error("Failed to generate image:", error);
 					updateGenerationStatusToFailure(generation.id);
 				}
 			})
 			.catch((error) => {
+				if (stopRequestedRef.current) {
+					// Same reasoning as above: don't let late failures overwrite an
+					// intentional cancellation.
+					return;
+				}
 				console.error("Failed to set generation:", error);
 				updateGenerationStatusToFailure(generation.id);
 			})
-			.finally(() => {
-				abortControllerRef.current = null;
-			});
+			.finally(() => {});
 	});
 	return null;
 }

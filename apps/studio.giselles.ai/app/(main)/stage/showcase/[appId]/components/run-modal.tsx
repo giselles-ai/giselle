@@ -80,12 +80,12 @@ export function RunModal({
 				const parameterItems = await toParameterItems(inputs, values, {
 					workspaceId: flowTriggerData.flowTrigger.workspaceId,
 					uploadFile: async ({ workspaceId, file, fileId, fileName }) => {
-						await client.uploadFile({
-							workspaceId,
-							file,
-							fileId,
-							fileName,
-						});
+						const formData = new FormData();
+						formData.append("workspaceId", workspaceId);
+						formData.append("fileId", fileId);
+						formData.append("fileName", fileName);
+						formData.append("file", file);
+						await client.uploadFile(formData);
 					},
 				});
 

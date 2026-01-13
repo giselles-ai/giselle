@@ -25,7 +25,6 @@ export function PlaygroundStageInput({
 	shouldAutoFocus?: boolean;
 }) {
 	const {
-		basePath,
 		appOptions,
 		textareaRef,
 		fileInputRef,
@@ -142,7 +141,6 @@ export function PlaygroundStageInput({
 						files={attachedFiles}
 						onRemoveFile={handleRemoveFile}
 						workspaceId={selectedApp?.workspaceId}
-						basePath={basePath}
 						localPreviews={localPreviews}
 						onImageLoad={handleImageLoad}
 					/>
