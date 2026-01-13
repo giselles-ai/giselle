@@ -30,6 +30,7 @@
 	"dependencies": {
 		"@ai-sdk/provider": "catalog:",
 		"@giselles-ai/action-registry": "workspace:*",
+		"@giselles-ai/data-store-registry": "workspace:*",
 		"@giselles-ai/language-model": "workspace:^",
 		"@giselles-ai/language-model-registry": "workspace:*",
 		"@giselles-ai/trigger-registry": "workspace:*",

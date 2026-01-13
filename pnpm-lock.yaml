@@ -1231,6 +1231,9 @@ importers:
       '@giselles-ai/action-registry':
         specifier: workspace:*
         version: link:../action-registry
+      '@giselles-ai/data-store-registry':
+        specifier: workspace:*
+        version: link:../data-store-registry
       '@giselles-ai/language-model':
         specifier: workspace:^
         version: link:../language-model
