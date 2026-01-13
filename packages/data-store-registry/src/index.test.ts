@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
-	getDataStoreProviderDefinition,
+	getProviderDefinition,
 	isDataStoreProvider,
-	parseDataStoreConfiguration,
+	parseConfiguration,
 } from "./index";
 
 describe("isDataStoreProvider", () => {
@@ -24,9 +24,9 @@ describe("isDataStoreProvider", () => {
 	});
 });
 
-describe("getDataStoreProviderDefinition", () => {
+describe("getProviderDefinition", () => {
 	it("should return definition for valid provider", () => {
-		const def = getDataStoreProviderDefinition("postgres");
+		const def = getProviderDefinition("postgres");
 
 		expect(def.provider).toBe("postgres");
 		expect(def.label).toBe("PostgreSQL");
@@ -34,20 +34,20 @@ describe("getDataStoreProviderDefinition", () => {
 	});
 
 	it("should throw for unknown provider", () => {
-		expect(() => getDataStoreProviderDefinition("mysql" as "postgres")).toThrow(
+		expect(() => getProviderDefinition("mysql" as "postgres")).toThrow(
 			"Unknown data store provider: mysql",
 		);
 	});
 });
 
-describe("parseDataStoreConfiguration", () => {
+describe("parseConfiguration", () => {
 	describe("with postgres provider", () => {
 		it("should parse valid configuration", () => {
 			const config = {
 				connectionStringSecretId: "secret_123",
 			};
 
-			const result = parseDataStoreConfiguration("postgres", config);
+			const result = parseConfiguration("postgres", config);
 
 			expect(result.connectionStringSecretId).toBe("secret_123");
 		});
@@ -55,7 +55,7 @@ describe("parseDataStoreConfiguration", () => {
 		it("should throw when connectionStringSecretId is missing", () => {
 			const config = {};
 
-			expect(() => parseDataStoreConfiguration("postgres", config)).toThrow();
+			expect(() => parseConfiguration("postgres", config)).toThrow();
 		});
 
 		it("should throw when connectionStringSecretId is empty", () => {
@@ -63,7 +63,7 @@ describe("parseDataStoreConfiguration", () => {
 				connectionStringSecretId: "",
 			};
 
-			expect(() => parseDataStoreConfiguration("postgres", config)).toThrow();
+			expect(() => parseConfiguration("postgres", config)).toThrow();
 		});
 
 		it("should throw when connectionStringSecretId is not a string", () => {
@@ -71,7 +71,7 @@ describe("parseDataStoreConfiguration", () => {
 				connectionStringSecretId: 123,
 			};
 
-			expect(() => parseDataStoreConfiguration("postgres", config)).toThrow();
+			expect(() => parseConfiguration("postgres", config)).toThrow();
 		});
 
 		it("should ignore unknown keys", () => {
@@ -80,7 +80,7 @@ describe("parseDataStoreConfiguration", () => {
 				unknownKey: "should be ignored",
 			};
 
-			const result = parseDataStoreConfiguration("postgres", config);
+			const result = parseConfiguration("postgres", config);
 
 			expect(result.connectionStringSecretId).toBe("secret_123");
 			expect("unknownKey" in result).toBe(false);

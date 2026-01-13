@@ -18,17 +18,17 @@ export function isDataStoreProvider(v: unknown): v is DataStoreProvider {
 	return typeof v === "string" && (dataStoreProviders as string[]).includes(v);
 }
 
-export function getDataStoreProviderDefinition(provider: DataStoreProvider) {
+export function getProviderDefinition(provider: DataStoreProvider) {
 	const def = dataStoreRegistry.find((x) => x.provider === provider);
 	if (!def) throw new Error(`Unknown data store provider: ${provider}`);
 	return def;
 }
 
-export function parseDataStoreConfiguration(
+export function parseConfiguration(
 	provider: DataStoreProvider,
 	unknownConfig: unknown,
 ) {
-	const def = getDataStoreProviderDefinition(provider);
+	const def = getProviderDefinition(provider);
 	const parsed = def.configurationSchema.safeParse(unknownConfig);
 	if (!parsed.success) throw parsed.error;
 	return parsed.data;
