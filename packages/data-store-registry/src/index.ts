@@ -15,7 +15,7 @@ export type DataStoreProvider = (typeof dataStoreRegistry)[number]["provider"];
 const dataStoreProviders = dataStoreRegistry.map((x) => x.provider);
 
 export function isDataStoreProvider(v: unknown): v is DataStoreProvider {
-	return dataStoreProviders.includes(v as DataStoreProvider);
+	return typeof v === "string" && (dataStoreProviders as string[]).includes(v);
 }
 
 export function getDataStoreProviderDefinition(provider: DataStoreProvider) {
