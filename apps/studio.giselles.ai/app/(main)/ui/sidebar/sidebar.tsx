@@ -6,7 +6,9 @@ import {
 } from "lucide-react";
 import type { IconName } from "lucide-react/dynamic";
 import { Accordion } from "radix-ui";
-import { apiPublishingFlag, stageFlag, stageV2Flag } from "../../../../flags";
+import { fetchCurrentTeam } from "@/services/teams";
+import { isInternalPlan } from "@/services/teams/utils";
+import { stageFlag, stageV2Flag } from "../../../../flags";
 import { CreateAppButton } from "./create-app-button";
 import { SidebarLink } from "./sidebar-link";
 
@@ -170,8 +172,12 @@ function createBaseSidebarParts(
 }
 
 export async function Sidebar() {
-	const [isStageEnabled, isStageV2Enabled, isApiPublishingEnabled] =
-		await Promise.all([stageFlag(), stageV2Flag(), apiPublishingFlag()]);
+	const [isStageEnabled, isStageV2Enabled, team] = await Promise.all([
+		stageFlag(),
+		stageV2Flag(),
+		fetchCurrentTeam(),
+	]);
+	const isApiPublishingEnabled = isInternalPlan(team);
 	const baseSidebarParts = createBaseSidebarParts(isApiPublishingEnabled);
 	const sidebarParts = isStageEnabled
 		? [createStagePart(isStageV2Enabled), ...baseSidebarParts]

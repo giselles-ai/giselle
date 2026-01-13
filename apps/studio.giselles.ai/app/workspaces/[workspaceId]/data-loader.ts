@@ -5,7 +5,6 @@ import { db } from "@/db";
 import {
 	aiGatewayFlag,
 	aiGatewayUnsupportedModelsFlag,
-	apiPublishingFlag,
 	dataStoreFlag,
 	generateContentNodeFlag,
 	googleUrlContextFlag,
@@ -64,7 +63,6 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 	const data = await giselle.getWorkspace(workspaceId);
 	const generateContentNode = await generateContentNodeFlag();
 	const privatePreviewTools = await privatePreviewToolsFlag();
-	const apiPublishing = await apiPublishingFlag();
 	const dataStore = await dataStoreFlag();
 	const [teamGitHubRepositoryIndexes, officialGitHubRepositoryIndexes] =
 		await Promise.all([
@@ -130,7 +128,6 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 			googleUrlContext,
 			generateContentNode,
 			privatePreviewTools,
-			apiPublishing,
 			dataStore,
 		},
 		llmProviders,

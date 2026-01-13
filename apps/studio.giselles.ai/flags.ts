@@ -233,26 +233,6 @@ export const privatePreviewToolsFlag = flag<boolean>({
 	defaultValue: false,
 });
 
-export const apiPublishingFlag = flag<boolean>({
-	key: "api-publishing",
-	async decide() {
-		if (process.env.NODE_ENV === "development") {
-			return takeLocalEnv("API_PUBLISHING_FLAG");
-		}
-		const edgeConfig = await get(`flag__${this.key}`);
-		if (edgeConfig === undefined) {
-			return false;
-		}
-		return edgeConfig === true || edgeConfig === "true";
-	},
-	description: "Enable API publishing settings in App Entry Node",
-	options: [
-		{ value: false, label: "disable" },
-		{ value: true, label: "Enable" },
-	],
-	defaultValue: false,
-});
-
 export const dataStoreFlag = flag<boolean>({
 	key: "data-store",
 	async decide() {

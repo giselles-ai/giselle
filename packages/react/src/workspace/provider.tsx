@@ -50,7 +50,6 @@ export function WorkspaceProvider({
 				googleUrlContext: featureFlag?.googleUrlContext ?? false,
 				generateContentNode: featureFlag?.generateContentNode ?? false,
 				privatePreviewTools: featureFlag?.privatePreviewTools ?? false,
-				apiPublishing: featureFlag?.apiPublishing ?? false,
 				dataStore: featureFlag?.dataStore ?? false,
 			}}
 		>
