@@ -214,6 +214,7 @@ export const teams = pgTable("teams", {
 export const teamRelations = relations(teams, ({ many }) => ({
 	apps: many(apps),
 	tasks: many(tasks),
+	dataStores: many(dataStores),
 }));
 
 export type UserId = `usr_${string}`;
@@ -935,6 +936,13 @@ export const dataStores = pgTable(
 	},
 	(table) => [index("data_stores_team_db_id_idx").on(table.teamDbId)],
 );
+
+export const dataStoreRelations = relations(dataStores, ({ one }) => ({
+	team: one(teams, {
+		fields: [dataStores.teamDbId],
+		references: [teams.dbId],
+	}),
+}));
 
 export const flowTriggers = pgTable(
 	"flow_triggers",
