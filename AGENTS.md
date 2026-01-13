@@ -35,7 +35,6 @@ Giselle uses a **Turborepo monorepo** with pnpm workspaces, organized into four 
 ```
 /workspace
 ├── apps/                    # Deployable applications
-│   ├── playground/          # Self-hosted version (experimental)
 │   ├── studio.giselles.ai/  # Giselle Cloud (production)
 │   └── ui.giselles.ai/      # UI component showcase
 ├── packages/                # Published SDK packages (@giselles-ai/*)
@@ -107,12 +106,10 @@ pnpm build-sdk      # Build SDK packages (required before running apps)
 
 ```sh
 # Development
-pnpm dev                     # Start playground (self-hosted version)
 pnpm dev:studio.giselles.ai  # Start Giselle Cloud
 
 # Build
 pnpm build-sdk               # Build SDK packages
-pnpm -F playground build     # Build playground app
 pnpm -F studio.giselles.ai build  # Build Giselle Cloud
 
 # Quality Checks

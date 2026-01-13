@@ -9,7 +9,6 @@
 		"check-types": "turbo check-types",
 		"format": "biome check --write .",
 		"clean": "turbo clean",
-		"dev": "turbo dev --filter playground",
 		"dev:studio.giselles.ai": "NODE_NO_WARNINGS=1 turbo dev --filter studio.giselles.ai",
 		"changeset": "changeset",
 		"version": "changeset version",
