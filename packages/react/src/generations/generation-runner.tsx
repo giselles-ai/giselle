@@ -85,10 +85,12 @@ function ImageGenerationRunner({ generation }: { generation: Generation }) {
 		addStopHandler,
 	} = useGenerationRunnerSystem();
 	const client = useGiselle();
+	const stopRequestedRef = useRef(false);
 
 	const stop = useCallback(() => {
 		// Server Actions can't receive AbortSignal. Best-effort cancellation uses the
 		// explicit cancel API instead of aborting the transport layer.
+		stopRequestedRef.current = true;
 		void client.cancelGeneration({ generationId: generation.id });
 	}, [client, generation.id]);
 
@@ -109,13 +111,34 @@ function ImageGenerationRunner({ generation }: { generation: Generation }) {
 					await client.generateImage({
 						generation,
 					});
+					if (stopRequestedRef.current) {
+						// If the user requested stop, `stopGenerationRunner()` already set
+						// the local state to `cancelled`. Avoid overwriting it with
+						// `completed` due to this async chain finishing after cancellation.
+						return;
+					}
 					updateGenerationStatusToComplete(generation.id);
 				} catch (error) {
+					if (stopRequestedRef.current) {
+						// If the user requested stop, cancellation may surface as a
+						// transport/Server Action error. In that case we treat it as
+						// intentional and avoid turning `cancelled` into `failed`.
+						//
+						// TODO: Prefer making server-side cancellation a first-class outcome
+						// (i.e. not throwing an error) so we can avoid surfacing noise in
+						// logs/telemetry for intentional user cancellations.
+						return;
+					}
 					console.error("Failed to generate image:", error);
 					updateGenerationStatusToFailure(generation.id);
 				}
 			})
 			.catch((error) => {
+				if (stopRequestedRef.current) {
+					// Same reasoning as above: don't let late failures overwrite an
+					// intentional cancellation.
+					return;
+				}
 				console.error("Failed to set generation:", error);
 				updateGenerationStatusToFailure(generation.id);
 			})
