@@ -8,7 +8,8 @@
 	"scripts": {
 		"build": "tsup",
 		"check-types": "tsc --noEmit",
-		"format": "biome format --write ."
+		"format": "biome format --write .",
+		"test": "vitest run"
 	},
 	"exports": {
 		"./package.json": "./package.json",
@@ -20,7 +21,8 @@
 	},
 	"devDependencies": {
 		"@giselles-ai/tsconfig": "workspace:*",
-		"tsup": "catalog:"
+		"tsup": "catalog:",
+		"vitest": "catalog:"
 	},
 	"peerDependencies": {
 		"zod": "catalog:"
