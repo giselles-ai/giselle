@@ -51,6 +51,7 @@ export function WorkspaceProvider({
 				generateContentNode: featureFlag?.generateContentNode ?? false,
 				privatePreviewTools: featureFlag?.privatePreviewTools ?? false,
 				dataStore: featureFlag?.dataStore ?? false,
+				sdkAvailability: featureFlag?.sdkAvailability ?? false,
 			}}
 		>
 			<TelemetryProvider settings={telemetry}>
