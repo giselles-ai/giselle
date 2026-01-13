@@ -9,9 +9,6 @@ Please note we have a [code of conduct](CODE_OF_CONDUCT.md), please follow it in
 Giselle has both a Cloud version and a Self-hosting version, which can be found in the following directories:
 
 - Cloud: [apps/studio.giselles.ai/](apps/studio.giselles.ai/)
-- Self-hosting: [apps/playground/](apps/playground/)
-
-External contributors may find it easier to contribute to the Self-hosting version. Please follow the [Getting Started](apps/playground#getting-started) guide.
 
 ## Issues and feature requests
 

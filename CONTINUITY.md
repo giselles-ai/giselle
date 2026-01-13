@@ -61,7 +61,6 @@ Add a public Runs SDK package (`@giselles-ai/sdk`) under `packages/` to call `PO
   - Added `apiPublishing` to `FeatureFlagContextValue` in `packages/react/src/feature-flags/context.ts`.
   - Added to `WorkspaceProvider` in `packages/react/src/workspace/provider.tsx`.
   - Added to data-loader in `apps/studio.giselles.ai/app/workspaces/[workspaceId]/data-loader.ts`.
-  - Added to playground in `apps/playground/app/workspaces/[workspaceId]/page.client.tsx`.
   - Used flag in `app-entry-configured-view.tsx` to conditionally render API publishing section.
 - Started implementing API publishing key management schemas in `packages/protocol` (`api-publishing/api-secret.ts`).
 - Added protocol exports for API publishing and extended `App` schema with `apiPublishing` (non-secret settings).
