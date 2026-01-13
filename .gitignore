@@ -51,3 +51,5 @@ app/fonts/
 .reports/*.json
 
 /worktrees/
+
+.mise.toml
