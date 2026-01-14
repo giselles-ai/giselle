@@ -7,6 +7,8 @@ import {
 	StartTaskInputs,
 } from "@giselles-ai/giselle";
 import {
+	DataStore,
+	DataStoreId,
 	FetchingWebPage,
 	FileId,
 	Generation,
@@ -470,6 +472,48 @@ export const jsonRoutes = {
 			handler: async ({ input }) => {
 				const app = await giselle.getApp(input);
 				return JsonResponse.json({ app });
+			},
+		}),
+	createDataStore: (giselle: Giselle) =>
+		createHandler({
+			input: z.object({
+				provider: DataStore.shape.provider,
+				configuration: DataStore.shape.configuration,
+			}),
+			handler: async ({ input }) => {
+				const dataStore = await giselle.createDataStore(input);
+				return JsonResponse.json({ dataStore });
+			},
+		}),
+	getDataStore: (giselle: Giselle) =>
+		createHandler({
+			input: z.object({
+				dataStoreId: DataStoreId.schema,
+			}),
+			handler: async ({ input }) => {
+				const dataStore = await giselle.getDataStore(input);
+				return JsonResponse.json({ dataStore });
+			},
+		}),
+	updateDataStore: (giselle: Giselle) =>
+		createHandler({
+			input: z.object({
+				dataStoreId: DataStoreId.schema,
+				configuration: DataStore.shape.configuration,
+			}),
+			handler: async ({ input }) => {
+				await giselle.updateDataStore(input);
+				return new Response(null, { status: 204 });
+			},
+		}),
+	deleteDataStore: (giselle: Giselle) =>
+		createHandler({
+			input: z.object({
+				dataStoreId: DataStoreId.schema,
+			}),
+			handler: async ({ input }) => {
+				await giselle.deleteDataStore(input);
+				return new Response(null, { status: 204 });
 			},
 		}),
 } as const;
