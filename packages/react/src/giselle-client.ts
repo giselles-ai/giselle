@@ -125,10 +125,7 @@ export interface GiselleClient {
 	addSecret(
 		input: Parameters<Giselle["addSecret"]>[0],
 	): Promise<{ secret: Awaited<ReturnType<Giselle["addSecret"]>> }>;
-	deleteSecret(input: {
-		workspaceId: WorkspaceId;
-		secretId: SecretId;
-	}): Promise<void>;
+	deleteSecret(input: { secretId: SecretId }): Promise<void>;
 	getWorkspaceSecrets(
 		input: Parameters<Giselle["getWorkspaceSecrets"]>[0],
 	): Promise<{ secrets: Awaited<ReturnType<Giselle["getWorkspaceSecrets"]>> }>;
