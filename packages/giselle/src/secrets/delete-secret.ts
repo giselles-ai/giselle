@@ -22,7 +22,7 @@ export async function deleteSecret({
 	});
 	await context.storage.remove(path);
 
-	// Skip workspace index cleanup if no workspaceId (data stores secret)
+	// Skip workspace index cleanup if no workspaceId (global secret)
 	if (!secret.workspaceId) {
 		return;
 	}

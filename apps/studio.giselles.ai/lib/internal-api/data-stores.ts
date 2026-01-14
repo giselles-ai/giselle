@@ -17,11 +17,11 @@ export async function getDataStore(
 export async function updateDataStore(
 	input: Parameters<typeof giselle.updateDataStore>[0],
 ) {
-	await giselle.updateDataStore(input);
+	return { dataStore: await giselle.updateDataStore(input) };
 }
 
 export async function deleteDataStore(
 	input: Parameters<typeof giselle.deleteDataStore>[0],
 ) {
-	await giselle.deleteDataStore(input);
+	return { dataStore: await giselle.deleteDataStore(input) };
 }

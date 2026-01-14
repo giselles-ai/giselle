@@ -136,10 +136,10 @@ export interface GiselleClient {
 	getDataStore(input: Parameters<Giselle["getDataStore"]>[0]): Promise<{
 		dataStore: Awaited<ReturnType<Giselle["getDataStore"]>>;
 	}>;
-	updateDataStore(
-		input: Parameters<Giselle["updateDataStore"]>[0],
-	): Promise<void>;
-	deleteDataStore(
-		input: Parameters<Giselle["deleteDataStore"]>[0],
-	): Promise<void>;
+	updateDataStore(input: Parameters<Giselle["updateDataStore"]>[0]): Promise<{
+		dataStore: Awaited<ReturnType<Giselle["updateDataStore"]>>;
+	}>;
+	deleteDataStore(input: Parameters<Giselle["deleteDataStore"]>[0]): Promise<{
+		dataStore: Awaited<ReturnType<Giselle["deleteDataStore"]>>;
+	}>;
 }

@@ -11,12 +11,12 @@ export async function updateDataStore({
 	context: GiselleContext;
 	dataStoreId: DataStoreId;
 	configuration: Partial<DataStore["configuration"]>;
-}): Promise<DataStore | null> {
+}): Promise<DataStore> {
 	const path = dataStorePath(dataStoreId);
 
 	const exists = await context.storage.exists(path);
 	if (!exists) {
-		return null;
+		throw new Error(`DataStore not found: ${dataStoreId}`);
 	}
 
 	const existingDataStore = await context.storage.getJson({

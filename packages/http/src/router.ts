@@ -502,8 +502,8 @@ export const jsonRoutes = {
 				configuration: DataStore.shape.configuration,
 			}),
 			handler: async ({ input }) => {
-				await giselle.updateDataStore(input);
-				return new Response(null, { status: 204 });
+				const dataStore = await giselle.updateDataStore(input);
+				return JsonResponse.json({ dataStore });
 			},
 		}),
 	deleteDataStore: (giselle: Giselle) =>
@@ -512,8 +512,8 @@ export const jsonRoutes = {
 				dataStoreId: DataStoreId.schema,
 			}),
 			handler: async ({ input }) => {
-				await giselle.deleteDataStore(input);
-				return new Response(null, { status: 204 });
+				const dataStore = await giselle.deleteDataStore(input);
+				return JsonResponse.json({ dataStore });
 			},
 		}),
 } as const;
