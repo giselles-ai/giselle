@@ -31,6 +31,8 @@ const config: KnipConfig = {
 				"require-in-the-middle",
 				"@react-email/preview-server",
 				"pino-pretty",
+				"prettier",
+				"shiki",
 			],
 		},
 		"apps/ui.giselles.ai": {
