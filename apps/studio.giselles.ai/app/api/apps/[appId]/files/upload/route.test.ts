@@ -216,11 +216,22 @@ describe("POST /api/apps/[appId]/files/upload", () => {
 			}),
 		});
 
-		expect(giselle.uploadFile).toHaveBeenCalledWith(
-			file,
-			workspaceId,
-			json.file.id,
-			"custom-name.txt",
-		);
+		expect(giselle.uploadFile).toHaveBeenCalledTimes(1);
+		const [
+			uploadedFile,
+			uploadedWorkspaceId,
+			uploadedFileId,
+			uploadedFileName,
+		] = vi.mocked(giselle.uploadFile).mock.calls[0];
+
+		// `request.formData()` may produce a new `File` instance, so we assert on stable properties.
+		expect(uploadedFile).toBeInstanceOf(File);
+		expect(uploadedFile.name).toBe("hello.txt");
+		expect(uploadedFile.type).toBe("text/plain");
+		expect(uploadedFile.size).toBe(file.size);
+
+		expect(uploadedWorkspaceId).toBe(workspaceId);
+		expect(uploadedFileId).toBe(json.file.id);
+		expect(uploadedFileName).toBe("custom-name.txt");
 	});
 });
