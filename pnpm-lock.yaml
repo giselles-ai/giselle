@@ -299,6 +299,9 @@ importers:
       '@giselle-internal/workflow-designer-ui':
         specifier: workspace:*
         version: link:../../internal-packages/workflow-designer-ui
+      '@giselles-ai/data-store-registry':
+        specifier: workspace:*
+        version: link:../../packages/data-store-registry
       '@giselles-ai/document-preprocessor':
         specifier: workspace:*
         version: link:../../packages/document-preprocessor
