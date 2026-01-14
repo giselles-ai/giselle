@@ -287,6 +287,9 @@ importers:
       '@giselle-internal/workflow-designer-ui':
         specifier: workspace:*
         version: link:../../internal-packages/workflow-designer-ui
+      '@giselles-ai/data-store-registry':
+        specifier: workspace:*
+        version: link:../../packages/data-store-registry
       '@giselles-ai/document-preprocessor':
         specifier: workspace:*
         version: link:../../packages/document-preprocessor
@@ -834,6 +837,9 @@ importers:
       '@giselles-ai/action-registry':
         specifier: workspace:*
         version: link:../action-registry
+      '@giselles-ai/data-store-registry':
+        specifier: workspace:*
+        version: link:../data-store-registry
       '@giselles-ai/github-tool':
         specifier: workspace:^
         version: link:../github-tool
