@@ -38,6 +38,39 @@ main()
 	});
 ```
 
+### Upload a file
+
+Assuming `receipt.pdf` exists in the current directory:
+
+```ts
+import { File } from "node:buffer";
+import { readFile } from "node:fs/promises";
+import Giselle from "@giselles-ai/sdk";
+
+const client = new Giselle({
+	apiKey: process.env.GISELLE_API_KEY,
+});
+
+async function main() {
+	const bytes = await readFile("./receipt.pdf");
+	const file = new File([bytes], "receipt.pdf", { type: "application/pdf" });
+
+	const { file: uploadedFile } = await client.files.upload({
+		appId: "app-xxxxx",
+		file,
+	});
+
+	return uploadedFile.id;
+}
+
+main()
+	.then((fileId) => console.log(fileId))
+	.catch((error) => {
+		console.error(error);
+		process.exitCode = 1;
+	});
+```
+
 ## API
 
 ### `new Giselle(options?)`
