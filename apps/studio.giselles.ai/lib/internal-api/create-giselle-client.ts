@@ -56,5 +56,11 @@ export function createInternalGiselleClient(): GiselleClient {
 		addSecret: internalApi.addSecret,
 		deleteSecret: internalApi.deleteSecret,
 		getWorkspaceSecrets: internalApi.getWorkspaceSecrets,
+
+		// data stores
+		createDataStore: internalApi.createDataStore,
+		getDataStore: internalApi.getDataStore,
+		updateDataStore: internalApi.updateDataStore,
+		deleteDataStore: internalApi.deleteDataStore,
 	};
 }

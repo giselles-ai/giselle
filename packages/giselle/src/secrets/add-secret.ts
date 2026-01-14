@@ -18,7 +18,7 @@ export async function addSecret({
 	context: GiselleContext;
 	label: string;
 	value: string;
-	workspaceId: WorkspaceId;
+	workspaceId?: WorkspaceId;
 	tags?: string[];
 }) {
 	const encryptedValue = await context.vault.encrypt(value);
@@ -32,18 +32,27 @@ export async function addSecret({
 		tags,
 	};
 
-	await Promise.all([
-		context.storage.setJson({
+	if (workspaceId) {
+		await Promise.all([
+			context.storage.setJson({
+				path: secretPath(secret.id),
+				data: secret,
+				schema: Secret,
+			}),
+			addWorkspaceIndexItem({
+				context,
+				indexPath: workspaceSecretIndexPath(workspaceId),
+				item: secret,
+				itemSchema: SecretIndex,
+			}),
+		]);
+	} else {
+		await context.storage.setJson({
 			path: secretPath(secret.id),
 			data: secret,
 			schema: Secret,
-		}),
-		addWorkspaceIndexItem({
-			context,
-			indexPath: workspaceSecretIndexPath(workspaceId),
-			item: secret,
-			itemSchema: SecretIndex,
-		}),
-	]);
+		});
+	}
+
 	return secret;
 }

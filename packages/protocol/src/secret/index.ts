@@ -10,7 +10,7 @@ export const Secret = z.object({
 	label: z.string(),
 	value: z.string(),
 	createdAt: z.number(),
-	workspaceId: WorkspaceId.schema,
+	workspaceId: WorkspaceId.schema.optional(),
 	tags: z.array(z.string()).optional(),
 });
 

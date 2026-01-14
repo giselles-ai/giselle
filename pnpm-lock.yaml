@@ -831,6 +831,9 @@ importers:
       '@giselles-ai/action-registry':
         specifier: workspace:*
         version: link:../action-registry
+      '@giselles-ai/data-store-registry':
+        specifier: workspace:*
+        version: link:../data-store-registry
       '@giselles-ai/github-tool':
         specifier: workspace:^
         version: link:../github-tool
