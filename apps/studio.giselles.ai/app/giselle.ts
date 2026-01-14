@@ -28,7 +28,7 @@ import {
 } from "../lib/vector-stores/github";
 import type { generateContentJob } from "../trigger/generate-content-job";
 
-const storage = experimental_supabaseStorageDriver({
+export const storage = experimental_supabaseStorageDriver({
 	endpoint: process.env.SUPABASE_STORAGE_URL ?? "",
 	region: process.env.SUPABASE_STORAGE_REGION ?? "",
 	accessKeyId: process.env.SUPABASE_STORAGE_ACCESS_KEY_ID ?? "",

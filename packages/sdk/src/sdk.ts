@@ -23,10 +23,15 @@ export type GiselleOptions = {
 
 export type AppRunInput = {
 	text: string;
-	/**
-	 * Reserved for future file support. Currently rejected.
-	 */
-	file?: string;
+	file?:
+		| {
+				fileId: string;
+		  }
+		| {
+				base64: string;
+				name: string;
+				type: string;
+		  };
 };
 
 export type AppRunArgs = {
@@ -80,6 +85,22 @@ export type UploadFileResult = {
 const defaultBaseUrl = "https://studio.giselles.ai";
 const defaultPollIntervalMs = 1000;
 const defaultTimeoutMs = 20 * 60 * 1000;
+const maxInlineFileDecodedBytes = 1024 * 1024 * 3;
+
+function estimateDecodedBytesFromBase64(base64: string): number {
+	const clean = base64.replace(/\s+/g, "");
+	if (clean.length === 0) {
+		return 0;
+	}
+	if (clean.length % 4 !== 0) {
+		throw new Error("Invalid base64");
+	}
+	if (!/^[A-Za-z0-9+/]+={0,2}$/.test(clean)) {
+		throw new Error("Invalid base64");
+	}
+	const padding = clean.endsWith("==") ? 2 : clean.endsWith("=") ? 1 : 0;
+	return (clean.length / 4) * 3 - padding;
+}
 
 function joinPath(baseUrl: string, path: string): string {
 	const base = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
@@ -258,10 +279,19 @@ export default class Giselle {
 		if (!this.#apiKey) {
 			throw new ConfigurationError("`apiKey` is required");
 		}
-		if (args.input.file !== undefined) {
-			throw new UnsupportedFeatureError(
-				"`input.file` is not supported yet. Only `{ text: string }` is accepted by the current Runs API.",
-			);
+
+		if (args.input.file && "base64" in args.input.file) {
+			let decodedBytes: number;
+			try {
+				decodedBytes = estimateDecodedBytesFromBase64(args.input.file.base64);
+			} catch {
+				throw new UnsupportedFeatureError("Invalid base64 file payload");
+			}
+			if (decodedBytes > maxInlineFileDecodedBytes) {
+				throw new UnsupportedFeatureError(
+					"Inline file payload is too large (max 3MB)",
+				);
+			}
 		}
 
 		const url = joinPath(this.#baseUrl, `/api/apps/${args.appId}/run`);
@@ -271,7 +301,10 @@ export default class Giselle {
 				Authorization: `Bearer ${this.#apiKey}`,
 				"Content-Type": "application/json",
 			},
-			body: JSON.stringify({ text: args.input.text }),
+			body: JSON.stringify({
+				text: args.input.text,
+				file: args.input.file,
+			}),
 		});
 
 		if (!response.ok) {
