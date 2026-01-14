@@ -9,7 +9,6 @@ import type {
 	NodeGenerationIndex,
 	NodeId,
 	QueuedGeneration,
-	SecretId,
 	Task,
 	Workspace,
 	WorkspaceId,
@@ -125,8 +124,22 @@ export interface GiselleClient {
 	addSecret(
 		input: Parameters<Giselle["addSecret"]>[0],
 	): Promise<{ secret: Awaited<ReturnType<Giselle["addSecret"]>> }>;
-	deleteSecret(input: { secretId: SecretId }): Promise<void>;
+	deleteSecret(input: Parameters<Giselle["deleteSecret"]>[0]): Promise<void>;
 	getWorkspaceSecrets(
 		input: Parameters<Giselle["getWorkspaceSecrets"]>[0],
 	): Promise<{ secrets: Awaited<ReturnType<Giselle["getWorkspaceSecrets"]>> }>;
+
+	// data stores
+	createDataStore(input: Parameters<Giselle["createDataStore"]>[0]): Promise<{
+		dataStore: Awaited<ReturnType<Giselle["createDataStore"]>>;
+	}>;
+	getDataStore(input: Parameters<Giselle["getDataStore"]>[0]): Promise<{
+		dataStore: Awaited<ReturnType<Giselle["getDataStore"]>>;
+	}>;
+	updateDataStore(
+		input: Parameters<Giselle["updateDataStore"]>[0],
+	): Promise<void>;
+	deleteDataStore(
+		input: Parameters<Giselle["deleteDataStore"]>[0],
+	): Promise<void>;
 }
