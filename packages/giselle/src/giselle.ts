@@ -1,7 +1,4 @@
-import type {
-	DataStoreProvider,
-	InferDataStoreConfig,
-} from "@giselles-ai/data-store-registry";
+import type { DataStoreProvider } from "@giselles-ai/data-store-registry";
 import { type GiselleLogger, noopLogger } from "@giselles-ai/logger";
 import {
 	type DataStore,
@@ -434,9 +431,9 @@ export function Giselle(config: GiselleConfig) {
 		getApp: bindGiselleFunction(getApp, context),
 
 		// Data Store CRUD
-		async createDataStore<T extends DataStoreProvider>(args: {
-			provider: T;
-			configuration: InferDataStoreConfig<T>;
+		async createDataStore(args: {
+			provider: DataStoreProvider;
+			configuration: DataStore["configuration"];
 		}) {
 			return await createDataStore({ ...args, context });
 		},

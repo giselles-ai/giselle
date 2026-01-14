@@ -1,20 +1,19 @@
 import {
 	type DataStoreProvider,
-	type InferDataStoreConfig,
 	parseConfiguration,
 } from "@giselles-ai/data-store-registry";
 import { DataStore, DataStoreId } from "@giselles-ai/protocol";
 import type { GiselleContext } from "../types";
 import { dataStorePath } from "./paths";
 
-export async function createDataStore<T extends DataStoreProvider>({
+export async function createDataStore({
 	context,
 	provider,
 	configuration,
 }: {
 	context: GiselleContext;
-	provider: T;
-	configuration: InferDataStoreConfig<T>;
+	provider: DataStoreProvider;
+	configuration: DataStore["configuration"];
 }): Promise<DataStore> {
 	const validatedConfiguration = parseConfiguration(provider, configuration);
 	const dataStoreId = DataStoreId.generate();

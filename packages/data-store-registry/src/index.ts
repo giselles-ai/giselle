@@ -10,16 +10,7 @@ export const dataStoreRegistry = [
 	},
 ] as const;
 
-type DataStoreRegistryEntry = (typeof dataStoreRegistry)[number];
-type DataStoreConfigMap = {
-	[E in DataStoreRegistryEntry as E["provider"]]: z.infer<
-		E["configurationSchema"]
-	>;
-};
-
 export type DataStoreProvider = (typeof dataStoreRegistry)[number]["provider"];
-export type InferDataStoreConfig<T extends DataStoreProvider> =
-	DataStoreConfigMap[T];
 
 const dataStoreProviders = dataStoreRegistry.map((x) => x.provider);
 
