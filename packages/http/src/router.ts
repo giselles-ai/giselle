@@ -314,7 +314,7 @@ export const jsonRoutes = {
 	addSecret: (giselle: Giselle) =>
 		createHandler({
 			input: z.object({
-				workspaceId: WorkspaceId.schema,
+				workspaceId: WorkspaceId.schema.optional(),
 				label: z.string(),
 				value: z.string(),
 				tags: z.array(z.string()).optional(),
