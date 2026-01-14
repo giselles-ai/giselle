@@ -10,7 +10,7 @@ export async function updateDataStore({
 }: {
 	context: GiselleContext;
 	dataStoreId: DataStoreId;
-	configuration: Partial<DataStore["configuration"]>;
+	configuration: DataStore["configuration"];
 }): Promise<DataStore> {
 	const path = dataStorePath(dataStoreId);
 
