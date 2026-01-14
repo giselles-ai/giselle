@@ -2,7 +2,6 @@
 
 import { redirect } from "next/navigation";
 import { isValidReturnUrl } from "@/app/(auth)/lib";
-import { stageFlag } from "@/flags";
 import { type AuthError, createAuthError, createClient } from "@/lib/supabase";
 
 export async function login(
@@ -32,8 +31,7 @@ export async function login(
 		return createAuthError(error);
 	}
 
-	const isStageEnabled = await stageFlag();
-	const fallbackUrl = isStageEnabled ? "/playground" : "/workspaces";
+	const fallbackUrl = "/playground";
 
 	// Validate returnUrl to prevent open redirect attacks
 	const validReturnUrl = isValidReturnUrl(returnUrlEntry)
