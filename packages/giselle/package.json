@@ -38,6 +38,7 @@
 		"@ai-sdk/openai": "catalog:",
 		"@ai-sdk/provider": "catalog:",
 		"@giselles-ai/action-registry": "workspace:*",
+		"@giselles-ai/data-store-registry": "workspace:*",
 		"@giselles-ai/github-tool": "workspace:^",
 		"@giselles-ai/language-model": "workspace:^",
 		"@giselles-ai/language-model-registry": "workspace:*",
