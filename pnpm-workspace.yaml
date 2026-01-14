@@ -101,6 +101,7 @@ catalog:
   zustand: 5.0.8
   streamdown: 1.6.10
   import-in-the-middle: 2.0.2
+  require-in-the-middle: 8.0.1
 
 minimumReleaseAge: 1440
 # Use minimumReleaseAgeExclude temporarily for emergency security vulnerability fixes
