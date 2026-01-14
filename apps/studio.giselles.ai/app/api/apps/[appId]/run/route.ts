@@ -1,13 +1,19 @@
 import {
 	AppId,
 	type AppParameter,
+	createUploadedFileData,
+	createUploadingFileData,
+	FileId,
 	type GenerationContextInput,
 	type ParameterItem,
+	UploadedFileData,
+	type UploadedFileData as UploadedFileDataType,
+	type WorkspaceId,
 } from "@giselles-ai/protocol";
 import { eq } from "drizzle-orm";
 import type { NextRequest } from "next/server";
 import * as z from "zod/v4";
-import { giselle } from "@/app/giselle";
+import { giselle, storage } from "@/app/giselle";
 import { db } from "@/db";
 import { apps, teams } from "@/db/schema";
 import { verifyApiSecretForTeam } from "@/lib/api-keys";
@@ -16,13 +22,40 @@ import {
 	consumeTeamRateLimit,
 } from "../../../_lib/rate-limit";
 
+const MAX_INLINE_FILE_DECODED_BYTES = 1024 * 1024 * 3;
+
+function fileMetadataPath(args: { workspaceId: WorkspaceId; fileId: FileId }) {
+	return `workspaces/${args.workspaceId}/files/${args.fileId}/metadata.json`;
+}
+
 const requestSchema = z.object({
 	text: z.string(),
+	file: z
+		.union([
+			z
+				.object({
+					fileId: FileId.schema,
+				})
+				.strict(),
+			z
+				.object({
+					base64: z.string(),
+					name: z.string().min(1),
+					type: z.string().min(1),
+				})
+				.strict(),
+		])
+		.optional(),
 });
 
-function buildInputsFromText(args: {
+async function buildInputs(args: {
 	appParameters: AppParameter[];
 	text: string;
+	file:
+		| { fileId: FileId }
+		| { base64: string; name: string; type: string }
+		| undefined;
+	workspaceId: WorkspaceId;
 }): GenerationContextInput[] {
 	const multilineTextParam = args.appParameters.find(
 		(p) => p.type === "multiline-text",
@@ -41,6 +74,76 @@ function buildInputsFromText(args: {
 			value: args.text,
 		},
 	];
+
+	if (args.file !== undefined) {
+		const filesParam = args.appParameters.find((p) => p.type === "files");
+		if (!filesParam) {
+			throw new Error("App has no files parameter");
+		}
+
+		let uploadedFile: UploadedFileDataType;
+		if ("fileId" in args.file) {
+			const fileId = args.file.fileId;
+			const metadataFilePath = fileMetadataPath({
+				workspaceId: args.workspaceId,
+				fileId,
+			});
+			const exists = await storage.exists(metadataFilePath);
+			if (!exists) {
+				throw new Error("File metadata not found. Please re-upload the file.");
+			}
+			const metadataBlob = await storage.getBlob(
+				fileMetadataPath({
+					workspaceId: args.workspaceId,
+					fileId,
+				}),
+			);
+			let metadataJson: unknown;
+			try {
+				metadataJson = JSON.parse(
+					Buffer.from(metadataBlob as Uint8Array).toString("utf-8"),
+				);
+			} catch {
+				throw new Error("Invalid file metadata. Please re-upload the file.");
+			}
+
+			const parsed = UploadedFileData.safeParse(metadataJson);
+			if (!parsed.success || parsed.data.id !== fileId) {
+				throw new Error("Invalid file metadata. Please re-upload the file.");
+			}
+			uploadedFile = parsed.data;
+		} else {
+			let bytes: Buffer;
+			try {
+				bytes = Buffer.from(args.file.base64, "base64");
+			} catch {
+				throw new Error("Invalid base64 file payload");
+			}
+			if (bytes.byteLength > MAX_INLINE_FILE_DECODED_BYTES) {
+				throw new Error("Inline file payload is too large (max 3MB)");
+			}
+
+			const uploading = createUploadingFileData({
+				name: args.file.name,
+				type: args.file.type,
+				size: bytes.byteLength,
+			});
+			const file = new File([bytes], args.file.name, { type: args.file.type });
+			await giselle.uploadFile(
+				file,
+				args.workspaceId,
+				uploading.id,
+				args.file.name,
+			);
+			uploadedFile = createUploadedFileData(uploading, Date.now());
+		}
+
+		items.push({
+			name: filesParam.id,
+			type: "files",
+			value: [uploadedFile],
+		});
+	}
 
 	return [
 		{
@@ -136,12 +239,18 @@ export async function POST(
 
 	let inputs: GenerationContextInput[];
 	try {
-		inputs = buildInputsFromText({
+		inputs = await buildInputs({
 			appParameters: app.parameters,
 			text: parsed.data.text,
+			file: parsed.data.file,
+			workspaceId: app.workspaceId,
 		});
-	} catch {
-		return new Response("App has no text parameter", {
+	} catch (error) {
+		const message =
+			error instanceof Error && error.message.length > 0
+				? error.message
+				: "Invalid request body";
+		return new Response(message, {
 			status: 400,
 			headers: rateLimitHeaders,
 		});

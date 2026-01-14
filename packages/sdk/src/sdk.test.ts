@@ -34,6 +34,111 @@ describe("Giselle SDK (public Runs API)", () => {
 		).resolves.toEqual({ taskId: "tsk_123" });
 	});
 
+	it("app.run() sends file reference input.file={fileId}", async () => {
+		const fetchMock = vi.fn((url: unknown, init?: RequestInit) => {
+			expect(url).toBe("https://example.com/api/apps/app-xxxxx/run");
+			expect(init?.method).toBe("POST");
+			const headers = new Headers(init?.headers);
+			expect(headers.get("Authorization")).toBe("Bearer apk_test.secret");
+			expect(headers.get("Content-Type")).toBe("application/json");
+			expect(init?.body).toBe(
+				JSON.stringify({ text: "hello", file: { fileId: "fl_123" } }),
+			);
+
+			return new Response(JSON.stringify({ taskId: "tsk_123" }), {
+				status: 200,
+				headers: { "Content-Type": "application/json" },
+			});
+		});
+
+		const client = new Giselle({
+			baseUrl: "https://example.com",
+			apiKey: "apk_test.secret",
+			fetch: fetchMock as unknown as typeof fetch,
+		});
+
+		await expect(
+			client.app.run({
+				appId: "app-xxxxx",
+				input: { text: "hello", file: { fileId: "fl_123" } },
+			}),
+		).resolves.toEqual({ taskId: "tsk_123" });
+	});
+
+	it("app.run() sends inline base64 file input", async () => {
+		const fetchMock = vi.fn((url: unknown, init?: RequestInit) => {
+			expect(url).toBe("https://example.com/api/apps/app-xxxxx/run");
+			expect(init?.method).toBe("POST");
+			const headers = new Headers(init?.headers);
+			expect(headers.get("Authorization")).toBe("Bearer apk_test.secret");
+			expect(headers.get("Content-Type")).toBe("application/json");
+			expect(init?.body).toBe(
+				JSON.stringify({
+					text: "hello",
+					file: {
+						base64: "aGVsbG8=",
+						name: "hello.txt",
+						type: "text/plain",
+					},
+				}),
+			);
+
+			return new Response(JSON.stringify({ taskId: "tsk_123" }), {
+				status: 200,
+				headers: { "Content-Type": "application/json" },
+			});
+		});
+
+		const client = new Giselle({
+			baseUrl: "https://example.com",
+			apiKey: "apk_test.secret",
+			fetch: fetchMock as unknown as typeof fetch,
+		});
+
+		await expect(
+			client.app.run({
+				appId: "app-xxxxx",
+				input: {
+					text: "hello",
+					file: {
+						base64: "aGVsbG8=",
+						name: "hello.txt",
+						type: "text/plain",
+					},
+				},
+			}),
+		).resolves.toEqual({ taskId: "tsk_123" });
+	});
+
+	it("app.run() rejects inline base64 file larger than 3MB (decoded)", async () => {
+		const fetchMock = vi.fn();
+		const client = new Giselle({
+			baseUrl: "https://example.com",
+			apiKey: "apk_test.secret",
+			fetch: fetchMock as unknown as typeof fetch,
+		});
+
+		const maxDecodedBytes = 1024 * 1024 * 3;
+		let len = Math.ceil(((maxDecodedBytes + 1) * 4) / 3);
+		len += (4 - (len % 4)) % 4;
+		const overLimitBase64 = "A".repeat(len);
+
+		await expect(
+			client.app.run({
+				appId: "app-xxxxx",
+				input: {
+					text: "hello",
+					file: {
+						base64: overLimitBase64,
+						name: "big.bin",
+						type: "application/octet-stream",
+					},
+				},
+			}),
+		).rejects.toBeInstanceOf(UnsupportedFeatureError);
+		expect(fetchMock).not.toHaveBeenCalled();
+	});
+
 	it("defaults baseUrl to https://studio.giselles.ai", async () => {
 		const fetchMock = vi.fn((url: unknown) => {
 			expect(url).toBe("https://studio.giselles.ai/api/apps/app-xxxxx/run");
@@ -64,23 +169,6 @@ describe("Giselle SDK (public Runs API)", () => {
 		await expect(
 			client.app.run({ appId: "app-xxxxx", input: { text: "hello" } }),
 		).rejects.toBeInstanceOf(ConfigurationError);
-	});
-
-	it("app.run() rejects input.file (not supported yet)", async () => {
-		const fetchMock = vi.fn();
-		const client = new Giselle({
-			baseUrl: "https://example.com",
-			apiKey: "apk_test.secret",
-			fetch: fetchMock as unknown as typeof fetch,
-		});
-
-		await expect(
-			client.app.run({
-				appId: "app-xxxxx",
-				input: { text: "hello", file: "base64..." },
-			}),
-		).rejects.toBeInstanceOf(UnsupportedFeatureError);
-		expect(fetchMock).not.toHaveBeenCalled();
 	});
 
 	it("app.runAndWait() polls task status and returns final task result", async () => {

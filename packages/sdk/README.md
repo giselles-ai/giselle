@@ -87,7 +87,7 @@ main()
 Calls:
 
 - `POST /api/apps/{appId}/run`
-- Body: `{ "text": string }`
+- Body: `{ "text": string, "file"?: { "fileId": string } | { "base64": string, "name": string, "type": string } }`
 - Returns: `{ taskId: string }`
 
 ### `client.app.runAndWait(...)`
@@ -110,6 +110,6 @@ Calls:
 
 ## Current limitations
 
-- **File input is not supported yet**: passing `input.file` throws an `UnsupportedFeatureError`.
-  - The Runs request body is still `{ "text": string }`.
+- **Inline base64 file size limit**: `input.file.base64` must decode to **<= 3MB**.
+- **File reference requires metadata**: if you pass `input.file = { fileId }` for a file uploaded before metadata was persisted, the Runs API will return a `400` prompting you to re-upload.
 
