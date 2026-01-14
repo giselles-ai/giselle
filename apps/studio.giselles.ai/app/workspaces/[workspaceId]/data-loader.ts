@@ -5,7 +5,6 @@ import { db } from "@/db";
 import {
 	aiGatewayFlag,
 	aiGatewayUnsupportedModelsFlag,
-	apiPublishingFlag,
 	dataStoreFlag,
 	generateContentNodeFlag,
 	googleUrlContextFlag,
@@ -27,6 +26,7 @@ import { getGitHubIntegrationState } from "@/packages/lib/github";
 import { getUsageLimitsForTeam } from "@/packages/lib/usage-limits";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchWorkspaceTeam, isMemberOfTeam } from "@/services/teams";
+import { isInternalPlan } from "@/services/teams/utils";
 
 export async function dataLoader(workspaceId: WorkspaceId) {
 	logger.debug("Loading workspace");
@@ -54,6 +54,7 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 		return notFound();
 	}
 
+	const sdkAvailability = isInternalPlan(workspaceTeam);
 	const usageLimits = await getUsageLimitsForTeam(workspaceTeam);
 	const webSearchAction = await webSearchActionFlag();
 	const layoutV3 = await layoutV3Flag();
@@ -64,7 +65,6 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 	const data = await giselle.getWorkspace(workspaceId);
 	const generateContentNode = await generateContentNodeFlag();
 	const privatePreviewTools = await privatePreviewToolsFlag();
-	const apiPublishing = await apiPublishingFlag();
 	const dataStore = await dataStoreFlag();
 	const [teamGitHubRepositoryIndexes, officialGitHubRepositoryIndexes] =
 		await Promise.all([
@@ -130,8 +130,8 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 			googleUrlContext,
 			generateContentNode,
 			privatePreviewTools,
-			apiPublishing,
 			dataStore,
+			sdkAvailability,
 		},
 		llmProviders,
 	};

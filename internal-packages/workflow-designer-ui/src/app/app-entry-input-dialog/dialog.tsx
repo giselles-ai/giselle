@@ -9,7 +9,7 @@ import {
 	type GenerationContextInput,
 	type UploadedFileData,
 } from "@giselles-ai/protocol";
-import { useGiselle } from "@giselles-ai/react";
+import { useFeatureFlag, useGiselle } from "@giselles-ai/react";
 import { clsx } from "clsx/lite";
 import {
 	LoaderIcon,
@@ -41,6 +41,7 @@ export function AppEntryInputDialog({
 	node: AppEntryNode;
 }) {
 	const client = useGiselle();
+	const { sdkAvailability } = useFeatureFlag();
 	const { isLoading, data } = useSWR(
 		node.content.status === "configured"
 			? { namespace: "getApp", appId: node.content.appId }
@@ -54,8 +55,8 @@ export function AppEntryInputDialog({
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const apiSampleCode = useMemo(
-		() => (data?.app ? generateApiSampleCode(data.app) : ""),
-		[data?.app],
+		() => (data?.app && sdkAvailability ? generateApiSampleCode(data.app) : ""),
+		[data?.app, sdkAvailability],
 	);
 
 	const handleSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
@@ -247,7 +248,7 @@ export function AppEntryInputDialog({
 				<TabsList className="mb-[14px]">
 					<TabsTrigger value="workspace">Workspace</TabsTrigger>
 					<TabsTrigger value="playground">Playground</TabsTrigger>
-					<TabsTrigger value="code">Code</TabsTrigger>
+					{sdkAvailability && <TabsTrigger value="code">Code</TabsTrigger>}
 				</TabsList>
 
 				<TabsContent value="workspace" className="flex-1 overflow-y-auto">
@@ -384,33 +385,35 @@ export function AppEntryInputDialog({
 					</div>
 				</TabsContent>
 
-				<TabsContent value="code" className="flex-1 overflow-y-auto">
-					<div className="flex flex-col gap-[16px] text-inverse">
-						<div className="flex flex-col gap-[8px]">
-							<p className="text-[14px] text-inverse">
-								You can use the following code to start integrating current app
-								into your application.
-							</p>
-							<p className="text-[14px] text-inverse">
-								Your API key can be found{" "}
-								<Link
-									href="/settings/team/api-keys"
-									target="_blank"
-									rel="noopener noreferrer"
-									className="text-blue-400 hover:text-blue-300 underline"
-								>
-									here
-								</Link>
-								. Use environment variables or a secret-management tool to
-								inject it into your application.
-							</p>
-						</div>
+				{sdkAvailability && (
+					<TabsContent value="code" className="flex-1 overflow-y-auto">
+						<div className="flex flex-col gap-[16px] text-inverse">
+							<div className="flex flex-col gap-[8px]">
+								<p className="text-[14px] text-inverse">
+									You can use the following code to start integrating current
+									app into your application.
+								</p>
+								<p className="text-[14px] text-inverse">
+									Your API key can be found{" "}
+									<Link
+										href="/settings/team/api-keys"
+										target="_blank"
+										rel="noopener noreferrer"
+										className="text-blue-400 hover:text-blue-300 underline"
+									>
+										here
+									</Link>
+									. Use environment variables or a secret-management tool to
+									inject it into your application.
+								</p>
+							</div>
 
-						<Streamdown className="markdown-renderer">
-							{apiSampleCode}
-						</Streamdown>
-					</div>
-				</TabsContent>
+							<Streamdown className="markdown-renderer">
+								{apiSampleCode}
+							</Streamdown>
+						</div>
+					</TabsContent>
+				)}
 			</Tabs>
 		</div>
 	);
