@@ -99,9 +99,11 @@ catalog:
   vitest: 3.2.4
   zod: 4.1.12
   zustand: 5.0.8
-  streamdown: 1.6.10
+  streamdown: 2.0.1
   import-in-the-middle: 2.0.2
   require-in-the-middle: 8.0.1
+  prettier: 3.7.4
+  shiki: 3.21.0
 
 minimumReleaseAge: 1440
 # Use minimumReleaseAgeExclude temporarily for emergency security vulnerability fixes
