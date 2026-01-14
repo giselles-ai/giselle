@@ -6,6 +6,7 @@ import type {
 } from "@giselles-ai/github-tool";
 import type {
 	AppId,
+	DataStoreId,
 	EmbeddingDimensions,
 	EmbeddingProfileId,
 	NodeId,
@@ -213,6 +214,7 @@ export const teams = pgTable("teams", {
 export const teamRelations = relations(teams, ({ many }) => ({
 	apps: many(apps),
 	tasks: many(tasks),
+	dataStores: many(dataStores),
 }));
 
 export type UserId = `usr_${string}`;
@@ -916,6 +918,31 @@ export const githubRepositoryIssueEmbeddings = pgTable(
 		),
 	],
 );
+
+export const dataStores = pgTable(
+	"data_stores",
+	{
+		id: text("id").$type<DataStoreId>().notNull().unique(),
+		dbId: serial("db_id").primaryKey(),
+		teamDbId: integer("team_db_id")
+			.notNull()
+			.references(() => teams.dbId, { onDelete: "cascade" }),
+		name: text("name").notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		updatedAt: timestamp("updated_at")
+			.defaultNow()
+			.notNull()
+			.$onUpdate(() => new Date()),
+	},
+	(table) => [index("data_stores_team_db_id_idx").on(table.teamDbId)],
+);
+
+export const dataStoreRelations = relations(dataStores, ({ one }) => ({
+	team: one(teams, {
+		fields: [dataStores.teamDbId],
+		references: [teams.dbId],
+	}),
+}));
 
 export const flowTriggers = pgTable(
 	"flow_triggers",

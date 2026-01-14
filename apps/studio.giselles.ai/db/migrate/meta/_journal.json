@@ -540,6 +540,13 @@
       "when": 1767750537769,
       "tag": "0076_natural_omega_flight",
       "breakpoints": true
+    },
+    {
+      "idx": 77,
+      "version": "7",
+      "when": 1768273634864,
+      "tag": "0077_curvy_rawhide_kid",
+      "breakpoints": true
     }
   ]
 }
