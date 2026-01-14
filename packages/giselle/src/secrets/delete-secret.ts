@@ -22,6 +22,11 @@ export async function deleteSecret({
 	});
 	await context.storage.remove(path);
 
+	// Skip workspace index cleanup if no workspaceId (data stores secret)
+	if (!secret.workspaceId) {
+		return;
+	}
+
 	const indexPath = workspaceSecretIndexPath(secret.workspaceId);
 	const hasIndex = await context.storage.exists(indexPath);
 	if (!hasIndex) {
