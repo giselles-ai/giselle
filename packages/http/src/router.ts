@@ -363,7 +363,6 @@ export const jsonRoutes = {
 	deleteSecret: (giselle: Giselle) =>
 		createHandler({
 			input: z.object({
-				workspaceId: WorkspaceId.schema,
 				secretId: SecretId.schema,
 			}),
 			handler: async ({ input }) => {

@@ -6,12 +6,10 @@ import {
 import { useCallback } from "react";
 import { useAppDesignerStoreApi } from "../app-designer-provider";
 import { useGiselle } from "../giselle-client-provider";
-import { useAppDesignerStore } from "../hooks";
 import { useUpdateNodeDataContent } from "./use-update-node-data-content";
 
 export function useDeleteSecretAndCleanupNodes() {
 	const client = useGiselle();
-	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
 	const store = useAppDesignerStoreApi();
 	const updateNodeDataContent = useUpdateNodeDataContent();
 
@@ -42,10 +40,9 @@ export function useDeleteSecretAndCleanupNodes() {
 			}
 
 			await client.deleteSecret({
-				workspaceId,
 				secretId,
 			});
 		},
-		[client, store, updateNodeDataContent, workspaceId],
+		[client, store, updateNodeDataContent],
 	);
 }
