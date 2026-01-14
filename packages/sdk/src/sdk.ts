@@ -49,6 +49,34 @@ export type AppRunAndWaitArgs = AppRunArgs & {
 	timeoutMs?: number;
 };
 
+export type UploadedFileData = {
+	id: string;
+	name: string;
+	type: string;
+	size: number;
+	status: "uploaded";
+	uploadedAt: number;
+	providerOptions?: {
+		openai?: {
+			fileId: string;
+		};
+	};
+};
+
+export type UploadFileArgs = {
+	appId: string;
+	file: File;
+	/**
+	 * Optional override for the stored file name.
+	 * Defaults to `file.name`.
+	 */
+	fileName?: string;
+};
+
+export type UploadFileResult = {
+	file: UploadedFileData;
+};
+
 const defaultBaseUrl = "https://studio.giselles.ai";
 const defaultPollIntervalMs = 1000;
 const defaultTimeoutMs = 20 * 60 * 1000;
@@ -76,6 +104,38 @@ function parseRunResponseJson(json: unknown): AppRunResult {
 		throw new Error("Invalid response JSON");
 	}
 	return { taskId };
+}
+
+function parseUploadFileResponseJson(json: unknown): UploadFileResult {
+	if (typeof json !== "object" || json === null) {
+		throw new Error("Invalid response JSON");
+	}
+	const file = (json as { file?: unknown }).file;
+	if (typeof file !== "object" || file === null) {
+		throw new Error("Invalid response JSON");
+	}
+	const uploaded = file as Partial<UploadedFileData>;
+
+	if (typeof uploaded.id !== "string" || uploaded.id.length === 0) {
+		throw new Error("Invalid response JSON");
+	}
+	if (typeof uploaded.name !== "string") {
+		throw new Error("Invalid response JSON");
+	}
+	if (typeof uploaded.type !== "string") {
+		throw new Error("Invalid response JSON");
+	}
+	if (typeof uploaded.size !== "number") {
+		throw new Error("Invalid response JSON");
+	}
+	if (uploaded.status !== "uploaded") {
+		throw new Error("Invalid response JSON");
+	}
+	if (typeof uploaded.uploadedAt !== "number") {
+		throw new Error("Invalid response JSON");
+	}
+
+	return { file: uploaded as UploadedFileData };
 }
 
 type TaskWithStatus = { status: string } & Record<string, unknown>;
@@ -172,6 +232,9 @@ export default class Giselle {
 		run: (args: AppRunArgs) => Promise<AppRunResult>;
 		runAndWait: (args: AppRunAndWaitArgs) => Promise<AppTaskResult>;
 	};
+	readonly files: {
+		upload: (args: UploadFileArgs) => Promise<UploadFileResult>;
+	};
 
 	readonly #fetch: typeof fetch;
 	readonly #baseUrl: string;
@@ -185,6 +248,9 @@ export default class Giselle {
 		this.app = {
 			run: (args) => this.#runApp(args),
 			runAndWait: (args) => this.#runAppAndWait(args),
+		};
+		this.files = {
+			upload: (args) => this.#uploadFile(args),
 		};
 	}
 
@@ -232,6 +298,57 @@ export default class Giselle {
 		} catch (e) {
 			throw new ApiError(
 				e instanceof Error ? e.message : "Runs API returned invalid JSON",
+				response.status,
+				"",
+			);
+		}
+	}
+
+	async #uploadFile(args: UploadFileArgs): Promise<UploadFileResult> {
+		if (!this.#apiKey) {
+			throw new ConfigurationError("`apiKey` is required");
+		}
+
+		const url = joinPath(this.#baseUrl, `/api/apps/${args.appId}/files/upload`);
+		const formData = new FormData();
+		formData.append("file", args.file);
+		if (args.fileName !== undefined) {
+			formData.append("fileName", args.fileName);
+		}
+
+		const response = await this.#fetch(url, {
+			method: "POST",
+			headers: {
+				Authorization: `Bearer ${this.#apiKey}`,
+			},
+			body: formData,
+		});
+
+		if (!response.ok) {
+			const responseText = await readResponseText(response);
+			throw new ApiError(
+				`Files API request failed: ${response.status} ${response.statusText}`,
+				response.status,
+				responseText,
+			);
+		}
+
+		let json: unknown;
+		try {
+			json = await response.json();
+		} catch {
+			throw new ApiError(
+				"Files API returned invalid JSON",
+				response.status,
+				await readResponseText(response),
+			);
+		}
+
+		try {
+			return parseUploadFileResponseJson(json);
+		} catch (e) {
+			throw new ApiError(
+				e instanceof Error ? e.message : "Files API returned invalid JSON",
 				response.status,
 				"",
 			);
