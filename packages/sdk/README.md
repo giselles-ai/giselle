@@ -65,6 +65,16 @@ Calls `POST /api/apps/{appId}/run`, then polls the task status API until the tas
 - Final fetch (includes generations): `GET /api/apps/{appId}/tasks/{taskId}?includeGenerations=1`
 - Final response includes `task`, `steps`, `outputs` and `generationsById`.
 
+### `client.files.upload({ appId, file, fileName? })`
+
+Uploads a file to the App’s workspace (so it can later be referenced by `fileId` when file input support lands).
+
+Calls:
+
+- `POST /api/apps/{appId}/files/upload`
+- Body: `multipart/form-data` (`file`, optional `fileName`)
+- Returns: `{ file: UploadedFileData }`
+
 ## Current limitations
 
 - **File input is not supported yet**: passing `input.file` throws an `UnsupportedFeatureError`.

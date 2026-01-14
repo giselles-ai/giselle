@@ -224,4 +224,58 @@ describe("Giselle SDK (public Runs API)", () => {
 			}),
 		).rejects.toBeInstanceOf(TimeoutError);
 	});
+
+	it("files.upload() calls POST /api/apps/{appId}/files/upload and returns UploadedFileData", async () => {
+		const fetchMock = vi.fn((url: unknown, init?: RequestInit) => {
+			expect(url).toBe("https://example.com/api/apps/app-xxxxx/files/upload");
+			expect(init?.method).toBe("POST");
+			const headers = new Headers(init?.headers);
+			expect(headers.get("Authorization")).toBe("Bearer apk_test.secret");
+			expect(headers.get("Content-Type")).toBeNull();
+
+			expect(init?.body).toBeInstanceOf(FormData);
+			const body = init?.body as FormData;
+			expect(body.get("file")).toBeInstanceOf(File);
+			expect(body.get("fileName")).toBe("custom-name.txt");
+
+			return new Response(
+				JSON.stringify({
+					file: {
+						id: "fl_123",
+						name: "custom-name.txt",
+						type: "text/plain",
+						size: 5,
+						status: "uploaded",
+						uploadedAt: 1234567890,
+					},
+				}),
+				{ status: 200, headers: { "Content-Type": "application/json" } },
+			);
+		});
+
+		const client = new Giselle({
+			baseUrl: "https://example.com",
+			apiKey: "apk_test.secret",
+			fetch: fetchMock as unknown as typeof fetch,
+		});
+
+		const file = new File(["hello"], "hello.txt", { type: "text/plain" });
+
+		await expect(
+			client.files.upload({
+				appId: "app-xxxxx",
+				file,
+				fileName: "custom-name.txt",
+			}),
+		).resolves.toEqual({
+			file: {
+				id: "fl_123",
+				name: "custom-name.txt",
+				type: "text/plain",
+				size: 5,
+				status: "uploaded",
+				uploadedAt: 1234567890,
+			},
+		});
+	});
 });
