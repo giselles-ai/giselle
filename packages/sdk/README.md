@@ -38,6 +38,39 @@ main()
 	});
 ```
 
+### Upload a file
+
+Assuming `receipt.pdf` exists in the current directory:
+
+```ts
+import { File } from "node:buffer";
+import { readFile } from "node:fs/promises";
+import Giselle from "@giselles-ai/sdk";
+
+const client = new Giselle({
+	apiKey: process.env.GISELLE_API_KEY,
+});
+
+async function main() {
+	const bytes = await readFile("./receipt.pdf");
+	const file = new File([bytes], "receipt.pdf", { type: "application/pdf" });
+
+	const { file: uploadedFile } = await client.files.upload({
+		appId: "app-xxxxx",
+		file,
+	});
+
+	return uploadedFile.id;
+}
+
+main()
+	.then((fileId) => console.log(fileId))
+	.catch((error) => {
+		console.error(error);
+		process.exitCode = 1;
+	});
+```
+
 ## API
 
 ### `new Giselle(options?)`
@@ -64,6 +97,16 @@ Calls `POST /api/apps/{appId}/run`, then polls the task status API until the tas
 - Polls: `GET /api/apps/{appId}/tasks/{taskId}`
 - Final fetch (includes generations): `GET /api/apps/{appId}/tasks/{taskId}?includeGenerations=1`
 - Final response includes `task`, `steps`, `outputs` and `generationsById`.
+
+### `client.files.upload({ appId, file, fileName? })`
+
+Uploads a file to the App’s workspace (so it can later be referenced by `fileId` when file input support lands).
+
+Calls:
+
+- `POST /api/apps/{appId}/files/upload`
+- Body: `multipart/form-data` (`file`, optional `fileName`)
+- Returns: `{ file: UploadedFileData }`
 
 ## Current limitations
 
