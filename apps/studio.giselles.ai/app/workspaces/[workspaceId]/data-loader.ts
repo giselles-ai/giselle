@@ -10,7 +10,6 @@ import {
 	googleUrlContextFlag,
 	layoutV3Flag,
 	privatePreviewToolsFlag,
-	stageFlag,
 	webSearchActionFlag,
 } from "@/flags";
 import { logger } from "@/lib/logger";
@@ -58,7 +57,7 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 	const usageLimits = await getUsageLimitsForTeam(workspaceTeam);
 	const webSearchAction = await webSearchActionFlag();
 	const layoutV3 = await layoutV3Flag();
-	const stage = await stageFlag();
+	const stage = true;
 	const aiGateway = await aiGatewayFlag();
 	const aiGatewayUnsupportedModels = await aiGatewayUnsupportedModelsFlag();
 	const googleUrlContext = await googleUrlContextFlag();

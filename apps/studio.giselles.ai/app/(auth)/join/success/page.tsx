@@ -1,10 +1,8 @@
 import Link from "next/link";
-import { stageFlag } from "@/flags";
 import { AuthButton } from "../../components/auth-button";
 
-export default async function Page() {
-	const isStageEnabled = await stageFlag();
-	const redirectTo = isStageEnabled ? "/playground" : "/workspaces";
+export default function Page() {
+	const redirectTo = "/playground";
 
 	return (
 		<div className="min-h-screen flex items-center justify-center p-4">
