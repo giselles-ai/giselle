@@ -10,6 +10,7 @@ import {
 	type UploadedFileData as UploadedFileDataType,
 	type WorkspaceId,
 } from "@giselles-ai/protocol";
+import { Buffer } from "node:buffer";
 import { eq } from "drizzle-orm";
 import type { NextRequest } from "next/server";
 import * as z from "zod/v4";
@@ -56,7 +57,7 @@ async function buildInputs(args: {
 		| { base64: string; name: string; type: string }
 		| undefined;
 	workspaceId: WorkspaceId;
-}): GenerationContextInput[] {
+}): Promise<GenerationContextInput[]> {
 	const multilineTextParam = args.appParameters.find(
 		(p) => p.type === "multiline-text",
 	);

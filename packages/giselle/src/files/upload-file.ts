@@ -3,6 +3,7 @@ import type {
 	UploadedFileData,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
+import { Buffer } from "node:buffer";
 import type { GiselleStorage } from "@giselles-ai/storage";
 import { filePath } from "./utils";
 
