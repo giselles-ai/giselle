@@ -1,4 +1,3 @@
-import { Button } from "../../components/button";
 import {
 	Dialog,
 	DialogClose,
@@ -10,6 +9,7 @@ import {
 } from "@giselle-internal/ui/dialog";
 import { X } from "lucide-react";
 import { useState, useTransition } from "react";
+import { Button } from "../../components/button";
 import { deleteDataStore } from "./actions";
 import type { DataStoreListItem } from "./types";
 

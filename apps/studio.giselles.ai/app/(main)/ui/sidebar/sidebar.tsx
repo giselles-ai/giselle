@@ -8,7 +8,7 @@ import type { IconName } from "lucide-react/dynamic";
 import { Accordion } from "radix-ui";
 import { fetchCurrentTeam } from "@/services/teams";
 import { isInternalPlan } from "@/services/teams/utils";
-import { stageV2Flag } from "../../../../flags";
+import { dataStoreFlag, stageV2Flag } from "../../../../flags";
 import { CreateAppButton } from "./create-app-button";
 import { SidebarLink } from "./sidebar-link";
 
@@ -96,6 +96,7 @@ function createStagePart(isStageV2Enabled: boolean): SidebarPart {
 
 function createBaseSidebarParts(
 	isApiPublishingEnabled: boolean,
+	isDataStoreEnabled: boolean,
 ): SidebarPart[] {
 	return [
 		{
@@ -122,12 +123,16 @@ function createBaseSidebarParts(
 					href: "/settings/team/vector-stores",
 					activeMatchPattern: "/settings/team/vector-stores*",
 				},
-				{
-					id: "data-stores",
-					label: "Data Stores",
-					href: "/settings/team/data-stores",
-					activeMatchPattern: "/settings/team/data-stores*",
-				},
+				...(isDataStoreEnabled
+					? [
+							{
+								id: "data-stores",
+								label: "Data Stores",
+								href: "/settings/team/data-stores",
+								activeMatchPattern: "/settings/team/data-stores*",
+							},
+						]
+					: []),
 			],
 		},
 		{ type: "divider", id: "divider1" },
@@ -168,7 +173,7 @@ function createBaseSidebarParts(
 						"!/settings/team/members*",
 						"!/settings/team/integrations*",
 						"!/settings/team/vector-stores*",
-						"!/settings/team/data-stores*",
+						...(isDataStoreEnabled ? ["!/settings/team/data-stores*"] : []),
 						"!/settings/team/usage*",
 						"!/settings/team/api-keys*",
 					],
@@ -179,12 +184,16 @@ function createBaseSidebarParts(
 }
 
 export async function Sidebar() {
-	const [isStageV2Enabled, team] = await Promise.all([
+	const [isStageV2Enabled, isDataStoreEnabled, team] = await Promise.all([
 		stageV2Flag(),
+		dataStoreFlag(),
 		fetchCurrentTeam(),
 	]);
 	const isApiPublishingEnabled = isInternalPlan(team);
-	const baseSidebarParts = createBaseSidebarParts(isApiPublishingEnabled);
+	const baseSidebarParts = createBaseSidebarParts(
+		isApiPublishingEnabled,
+		isDataStoreEnabled,
+	);
 	const sidebarParts = [createStagePart(isStageV2Enabled), ...baseSidebarParts];
 
 	return (
