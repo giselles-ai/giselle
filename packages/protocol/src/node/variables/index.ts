@@ -1,4 +1,3 @@
-import type { DataStoreProvider } from "@giselles-ai/data-store-registry";
 import * as z from "zod/v4";
 import { NodeBase, NodeReferenceBase } from "../base";
 import { DataStoreContent, DataStoreContentReference } from "./data-store";
@@ -118,21 +117,9 @@ export const DataStoreNode = VariableNode.extend({
 });
 export type DataStoreNode = z.infer<typeof DataStoreNode>;
 
-export function isDataStoreNode<
-	TDataStoreProvider extends DataStoreProvider = DataStoreProvider,
->(
-	args: unknown,
-	provider?: TDataStoreProvider,
-): args is TDataStoreProvider extends DataStoreProvider
-	? DataStoreNode & {
-			content: { provider: TDataStoreProvider };
-		}
-	: DataStoreNode {
+export function isDataStoreNode(args: unknown): args is DataStoreNode {
 	const result = DataStoreNode.safeParse(args);
-	return (
-		result.success &&
-		(provider === undefined || result.data.content.provider === provider)
-	);
+	return result.success;
 }
 
 const VariableNodeContentReference = z.discriminatedUnion("type", [

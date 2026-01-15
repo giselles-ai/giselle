@@ -1,7 +1,3 @@
-import {
-	type DataStoreProvider,
-	isDataStoreProvider,
-} from "@giselles-ai/data-store-registry";
 import * as z from "zod/v4";
 import { DataStoreId } from "../../data-store";
 
@@ -18,7 +14,6 @@ export type DataStoreState = z.infer<typeof DataStoreState>;
 
 export const DataStoreContent = z.object({
 	type: z.literal("dataStore"),
-	provider: z.custom<DataStoreProvider>((v) => isDataStoreProvider(v)),
 	state: DataStoreState,
 });
 export type DataStoreContent = z.infer<typeof DataStoreContent>;
