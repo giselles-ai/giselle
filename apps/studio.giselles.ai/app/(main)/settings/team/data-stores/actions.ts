@@ -112,12 +112,6 @@ export async function updateDataStore(
 				existingDataStore.configuration,
 			);
 
-			// Delete old secret
-			const parseResult = SecretId.safeParse(config.connectionStringSecretId);
-			if (parseResult.success) {
-				await giselle.deleteSecret({ secretId: parseResult.data });
-			}
-
 			const newSecret = await giselle.addSecret({
 				label: `Data Store: ${trimmedName}`,
 				value: trimmedConnectionString,
@@ -130,6 +124,15 @@ export async function updateDataStore(
 					connectionStringSecretId: newSecret.id,
 				},
 			});
+
+			const parseResult = SecretId.safeParse(config.connectionStringSecretId);
+			if (parseResult.success) {
+				await giselle
+					.deleteSecret({ secretId: parseResult.data })
+					.catch((e) => {
+						console.error("Failed to delete old secret:", e);
+					});
+			}
 		}
 
 		await db
