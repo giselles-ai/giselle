@@ -116,6 +116,36 @@ export const openai = {
 		},
 		url: "https://platform.openai.com/docs/models/gpt-5.1-codex",
 	}),
+	"openai/gpt-5.2-codex": defineLanguageModel({
+		provider: openaiProvider,
+		id: "openai/gpt-5.2-codex",
+		name: "GPT-5.2 Codex",
+		description:
+			"GPT-5.2-Codex is specifically designed for use in Codex and agentic coding tasks in Codex-like environments.",
+		contextWindow: 400_000,
+		maxOutputTokens: 128_000,
+		knowledgeCutoff: new Date(2025, 7, 31).getTime(),
+		pricing: {
+			input: definePricing(1.75),
+			output: definePricing(14.0),
+		},
+		requiredTier: "pro",
+		configurationOptions: {
+			reasoningEffort: {
+				description: reasoningEffortDescription,
+				schema: z.enum(["low", "medium", "high", "xhigh"]),
+			},
+			textVerbosity: {
+				description: textVerbosityDescription,
+				schema: z.enum(["medium"]),
+			},
+		},
+		defaultConfiguration: {
+			reasoningEffort: "medium",
+			textVerbosity: "medium",
+		},
+		url: "https://platform.openai.com/docs/models/gpt-5.2-codex",
+	}),
 
 	"openai/gpt-5": defineLanguageModel({
 		provider: openaiProvider,

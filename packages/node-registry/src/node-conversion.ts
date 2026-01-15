@@ -49,6 +49,8 @@ function convertTextGenerationLanguageModelIdToContentGenerationLanguageModelId(
 			return "google/gemini-2.5-pro";
 		case "gpt-5.2":
 			return "openai/gpt-5.2";
+		case "gpt-5.2-codex":
+			return "openai/gpt-5.2-codex";
 		case "gpt-5.1-thinking":
 			return "openai/gpt-5.1-thinking";
 		case "gpt-5":
@@ -95,6 +97,8 @@ function convertContentGenerationLanguageModelIdToTextGenerationLanguageModelId(
 			return "gemini-2.5-pro";
 		case "openai/gpt-5.2":
 			return "gpt-5.2";
+		case "openai/gpt-5.2-codex":
+			return "gpt-5.2-codex";
 		case "openai/gpt-5.1-thinking":
 			return "gpt-5.1-thinking";
 		case "openai/gpt-5":
