@@ -384,6 +384,50 @@ describe("Giselle SDK (public Runs API)", () => {
 			entryNodeId: "nd-AAAAAAAAAAAAAAAA",
 			workspaceId: "wrks-AAAAAAAAAAAAAAAA",
 		};
+		const appName = "Demo workspace";
+		const fetchMock = vi.fn((url: unknown, init?: RequestInit) => {
+			expect(url).toBe("https://example.com/api/apps");
+			expect(init?.method).toBe("GET");
+			const headers = new Headers(init?.headers);
+			expect(headers.get("Authorization")).toBe("Bearer apk_test.secret");
+
+			return new Response(
+				JSON.stringify({ apps: [{ ...app, workspaceName: appName }] }),
+				{
+					status: 200,
+					headers: { "Content-Type": "application/json" },
+				},
+			);
+		});
+
+		const client = new Giselle({
+			baseUrl: "https://example.com",
+			apiKey: "apk_test.secret",
+			fetch: fetchMock as unknown as typeof fetch,
+		});
+
+		await expect(client.apps.list()).resolves.toEqual({
+			apps: [{ ...app, name: appName }],
+		});
+	});
+
+	it("apps.list() falls back to Untitled when name is missing", async () => {
+		const app = {
+			id: "app-BBBBBBBBBBBBBBBB",
+			version: "v1",
+			state: "disconnected",
+			description: "Demo app",
+			parameters: [
+				{
+					id: "appprm-BBBBBBBBBBBBBBBB",
+					name: "Input",
+					type: "text",
+					required: true,
+				},
+			],
+			entryNodeId: "nd-BBBBBBBBBBBBBBBB",
+			workspaceId: "wrks-BBBBBBBBBBBBBBBB",
+		};
 		const fetchMock = vi.fn((url: unknown, init?: RequestInit) => {
 			expect(url).toBe("https://example.com/api/apps");
 			expect(init?.method).toBe("GET");
@@ -402,7 +446,9 @@ describe("Giselle SDK (public Runs API)", () => {
 			fetch: fetchMock as unknown as typeof fetch,
 		});
 
-		await expect(client.apps.list()).resolves.toEqual({ apps: [app] });
+		await expect(client.apps.list()).resolves.toEqual({
+			apps: [{ ...app, name: "Untitled" }],
+		});
 	});
 
 	it("apps.list() throws if apiKey is missing", async () => {

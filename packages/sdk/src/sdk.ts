@@ -83,8 +83,12 @@ export type UploadFileResult = {
 	file: UploadedFileData;
 };
 
+export type AppListItem = AppType & {
+	name: string;
+};
+
 export type AppListResult = {
-	apps: AppType[];
+	apps: AppListItem[];
 };
 
 const defaultBaseUrl = "https://studio.giselles.ai";
@@ -164,6 +168,30 @@ function parseUploadFileResponseJson(json: unknown): UploadFileResult {
 	return { file: uploaded as UploadedFileData };
 }
 
+function resolveAppName(source: unknown): string | undefined {
+	if (typeof source !== "object" || source === null) {
+		return undefined;
+	}
+	const record = source as Record<string, unknown>;
+	const name = record.name;
+	if (typeof name === "string" && name.length > 0) {
+		return name;
+	}
+	const workspaceName = record.workspaceName;
+	if (typeof workspaceName === "string" && workspaceName.length > 0) {
+		return workspaceName;
+	}
+	const workspace = record.workspace;
+	if (typeof workspace === "object" && workspace !== null) {
+		const workspaceRecord = workspace as Record<string, unknown>;
+		const nestedName = workspaceRecord.name;
+		if (typeof nestedName === "string" && nestedName.length > 0) {
+			return nestedName;
+		}
+	}
+	return undefined;
+}
+
 function parseAppsListResponseJson(json: unknown): AppListResult {
 	if (typeof json !== "object" || json === null) {
 		throw new Error("Invalid response JSON");
@@ -172,13 +200,20 @@ function parseAppsListResponseJson(json: unknown): AppListResult {
 	if (!Array.isArray(apps)) {
 		throw new Error("Invalid response JSON");
 	}
-	const parsedApps: AppType[] = [];
+	const parsedApps: AppListItem[] = [];
 	for (const app of apps) {
-		const parsed = AppSchema.safeParse(app);
+		const appRecord =
+			typeof app === "object" && app !== null
+				? (app as Record<string, unknown>)
+				: null;
+		const appPayload = appRecord?.app ?? app;
+		const parsed = AppSchema.safeParse(appPayload);
 		if (!parsed.success) {
 			throw new Error("Invalid response JSON");
 		}
-		parsedApps.push(parsed.data);
+		const name =
+			resolveAppName(appRecord) ?? resolveAppName(appPayload) ?? "Untitled";
+		parsedApps.push({ ...parsed.data, name });
 	}
 	return { apps: parsedApps };
 }

@@ -115,13 +115,13 @@ Lists all Apps belonging to the authenticated team.
 Calls:
 
 - `GET /api/apps`
-- Returns: `{ apps: App[] }`
+- Returns: `{ apps: (App & { name: string })[] }`
 
 Example:
 
 ```ts
 const { apps } = await client.apps.list();
-console.log(apps.map((app) => app.id));
+console.log(apps.map((app) => `${app.name} (${app.id})`));
 ```
 
 
