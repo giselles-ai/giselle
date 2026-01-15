@@ -40,9 +40,8 @@ export async function createDataStore(
 		return { success: false, error: "Connection string is required" };
 	}
 
-	let secret: Awaited<ReturnType<typeof giselle.addSecret>> | undefined;
 	try {
-		const [team, createdSecret] = await Promise.all([
+		const [team, secret] = await Promise.all([
 			fetchCurrentTeam(),
 			giselle.addSecret({
 				label: `Data Store: ${trimmedName}`,
@@ -50,7 +49,6 @@ export async function createDataStore(
 				tags: ["data-store"],
 			}),
 		]);
-		secret = createdSecret;
 
 		const dataStore = await giselle.createDataStore({
 			provider: "postgres",
@@ -69,11 +67,6 @@ export async function createDataStore(
 		return { success: true };
 	} catch (error) {
 		console.error("Failed to create data store:", error);
-		if (secret) {
-			await giselle.deleteSecret({ secretId: secret.id }).catch((e) => {
-				console.error("Failed to cleanup orphaned secret:", e);
-			});
-		}
 		return {
 			success: false,
 			error: "Failed to create data store. Please try again.",
@@ -91,7 +84,6 @@ export async function updateDataStore(
 		return { success: false, error: "Name is required" };
 	}
 
-	let newSecret: Awaited<ReturnType<typeof giselle.addSecret>> | undefined;
 	try {
 		const team = await fetchCurrentTeam();
 
@@ -120,7 +112,7 @@ export async function updateDataStore(
 				existingDataStore.configuration,
 			);
 
-			newSecret = await giselle.addSecret({
+			const newSecret = await giselle.addSecret({
 				label: `Data Store: ${trimmedName}`,
 				value: trimmedConnectionString,
 				tags: ["data-store"],
@@ -148,11 +140,6 @@ export async function updateDataStore(
 		return { success: true };
 	} catch (error) {
 		console.error("Failed to update data store:", error);
-		if (newSecret) {
-			await giselle.deleteSecret({ secretId: newSecret.id }).catch((e) => {
-				console.error("Failed to cleanup orphaned secret:", e);
-			});
-		}
 		return {
 			success: false,
 			error: "Failed to update data store. Please try again.",
