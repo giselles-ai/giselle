@@ -5,6 +5,8 @@ import {
 import { after } from "next/server";
 import { giselle, githubWebhookCallbacks } from "@/app/giselle";
 
+export const maxDuration = 800;
+
 export async function POST(request: Request) {
 	try {
 		await verifyRequest({
