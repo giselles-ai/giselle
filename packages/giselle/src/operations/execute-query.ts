@@ -182,6 +182,8 @@ async function resolveQuery(
 				return generationOutput.content;
 			case "query-result":
 				return queryResultToText(generationOutput);
+			case "data-query-result":
+				throw new Error("Not implemented");
 			default: {
 				const _exhaustiveCheck: never = generationOutput;
 				throw new Error(
@@ -237,6 +239,8 @@ async function resolveQuery(
 			}
 			case "file":
 			case "webPage":
+			case "dataQuery":
+			case "dataStore":
 			case "github":
 			case "imageGeneration":
 				throw new Error("Not implemented");

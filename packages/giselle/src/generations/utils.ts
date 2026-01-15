@@ -84,6 +84,7 @@ export async function buildMessageObject({
 				appEntryResolver,
 			);
 		}
+		case "dataQuery":
 		case "end":
 		case "action":
 		case "trigger":
@@ -217,6 +218,8 @@ async function buildGenerationMessageForTextGeneration({
 				}
 				break;
 
+			case "dataQuery":
+			case "dataStore":
 			case "github":
 			case "imageGeneration":
 			case "vectorStore":
@@ -635,6 +638,10 @@ async function buildGenerationMessageForImageGeneration(
 				break;
 			}
 
+			case "dataQuery":
+			case "dataStore":
+				throw new Error("Not implemented");
+
 			case "github":
 			case "vectorStore":
 			case "end":
@@ -1043,6 +1050,10 @@ async function buildGenerationMessageForContentGeneration({
 				}
 				break;
 			}
+
+			case "dataQuery":
+			case "dataStore":
+				throw new Error("Not implemented");
 
 			case "query":
 			case "trigger":
