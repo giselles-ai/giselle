@@ -2,7 +2,7 @@
 
 import { EmptyState } from "@giselle-internal/ui/empty-state";
 import { PageHeading } from "@giselle-internal/ui/page-heading";
-import { Database, Pencil, Plus, Trash } from "lucide-react";
+import { Pencil, Plus, Trash } from "lucide-react";
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { GlassButton } from "@/components/ui/glass-button";
@@ -81,9 +81,8 @@ export function DataStoresPageClient({
 				) : (
 					<div className="text-center py-16 bg-surface rounded-lg">
 						<EmptyState
-							icon={<Database className="size-8" />}
 							title="No data stores yet"
-							description="Add a PostgreSQL data store to get started."
+							description='Please create a data store using the "New Data Store" button.'
 						/>
 					</div>
 				)}
@@ -134,8 +133,8 @@ type DataStoreItemProps = {
 function DataStoreItem({ dataStore, onEdit, onDelete }: DataStoreItemProps) {
 	return (
 		<GlassCard className="group" paddingClassName="px-[24px] py-[16px]">
-			<div className="flex items-center justify-between gap-4">
-				<div className="flex-1 min-w-0">
+			<div className="flex items-start justify-between gap-4 mb-4">
+				<div>
 					<h5 className="text-inverse font-medium text-[16px] leading-[22.4px] font-sans">
 						{dataStore.name}
 					</h5>

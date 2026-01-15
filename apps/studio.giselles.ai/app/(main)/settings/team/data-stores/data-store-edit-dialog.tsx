@@ -1,7 +1,8 @@
-import { Button } from "@giselle-internal/ui/button";
+import { Button } from "../../components/button";
 import {
 	Dialog,
 	DialogContent,
+	DialogDescription,
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
@@ -62,6 +63,9 @@ export function DataStoreEditDialog({
 					<DialogTitle className="text-[20px] font-semibold text-white-900">
 						Edit Data Store
 					</DialogTitle>
+					<DialogDescription className="font-geist mt-2 text-[14px] text-text-muted">
+						Update the name and connection string for this data store.
+					</DialogDescription>
 				</DialogHeader>
 
 				<form onSubmit={handleSubmit} className="mt-6 space-y-6">
@@ -118,23 +122,19 @@ export function DataStoreEditDialog({
 					)}
 
 					<DialogFooter>
-						<Button
-							type="button"
-							variant="filled"
-							size="large"
-							disabled={isPending}
-							onClick={() => onOpenChange(false)}
-						>
-							Cancel
-						</Button>
-						<Button
-							type="submit"
-							variant="primary"
-							size="large"
-							disabled={isPending}
-						>
-							{isPending ? "Saving..." : "Save Changes"}
-						</Button>
+						<div className="mt-6 flex justify-end gap-x-3">
+							<Button
+								type="button"
+								variant="link"
+								disabled={isPending}
+								onClick={() => onOpenChange(false)}
+							>
+								Cancel
+							</Button>
+							<Button type="submit" variant="primary" disabled={isPending}>
+								{isPending ? "Processing..." : "Save"}
+							</Button>
+						</div>
 					</DialogFooter>
 				</form>
 			</DialogContent>
