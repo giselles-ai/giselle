@@ -401,16 +401,14 @@ export function GenerationView({ generation }: { generation: Generation }) {
 								// If/when we move this endpoint, update the prefix accordingly.
 								<ImageCard
 									key={content.filename}
-									src={`/api/giselle${content.pathname}`}
+									src={`/api${content.pathname}`}
 									onDownload={() => {
 										const link = document.createElement("a");
-										link.href = `/api/giselle${content.pathname}`;
+										link.href = `/api${content.pathname}`;
 										link.download = content.filename;
 										link.click();
 									}}
-									onZoom={() =>
-										setLightboxImage(`/api/giselle${content.pathname}`)
-									}
+									onZoom={() => setLightboxImage(`/api${content.pathname}`)}
 								/>
 							))}
 						</div>
