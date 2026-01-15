@@ -87,7 +87,6 @@ export async function updateDataStore(
 	try {
 		const team = await fetchCurrentTeam();
 
-		// Check if the data store exists and belongs to the team
 		const [existingStore] = await db
 			.select({ id: dataStores.id })
 			.from(dataStores)
@@ -155,7 +154,6 @@ export async function deleteDataStore(
 	try {
 		const team = await fetchCurrentTeam();
 
-		// Check if the data store exists and belongs to the team
 		const [existingStore] = await db
 			.select({ dbId: dataStores.dbId })
 			.from(dataStores)
@@ -168,7 +166,6 @@ export async function deleteDataStore(
 			return { success: false, error: "Data store not found" };
 		}
 
-		// Get data store config via Engine API
 		const existingDataStore = await giselle.getDataStore({ dataStoreId });
 		if (existingDataStore) {
 			// Delete the secret
@@ -181,11 +178,9 @@ export async function deleteDataStore(
 				await giselle.deleteSecret({ secretId: parseResult.data });
 			}
 
-			// Delete the data store config via Engine API
 			await giselle.deleteDataStore({ dataStoreId });
 		}
 
-		// Delete from database
 		await db.delete(dataStores).where(eq(dataStores.id, dataStoreId));
 
 		revalidatePath("/settings/team/data-stores");
