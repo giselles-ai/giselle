@@ -108,7 +108,7 @@ Calls:
 - Body: `multipart/form-data` (`file`, optional `fileName`)
 - Returns: `{ file: UploadedFileData }`
 
-### `client.apps.list()` *(coming soon)*
+### `client.apps.list()`
 
 Lists all Apps belonging to the authenticated team.
 
@@ -116,6 +116,13 @@ Calls:
 
 - `GET /api/apps`
 - Returns: `{ apps: App[] }`
+
+Example:
+
+```ts
+const { apps } = await client.apps.list();
+console.log(apps.map((app) => app.id));
+```
 
 
 

@@ -19,7 +19,7 @@ console.log(taskId);
 
 ### Tasks
 
-- [ ] Implement `client.apps.list` to call `GET /api/apps` and return `{ apps: App[] }` (see [README](../../packages/sdk/README.md))
+- [x] Implement `client.apps.list` to call `GET /api/apps` and return `{ apps: App[] }` (see [README](../../packages/sdk/README.md))
 - [ ] In `studio.giselles.ai/tasks`, make it clear when a task execution originated from the public API (SDK).
 
 ### Done

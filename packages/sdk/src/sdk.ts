@@ -1,3 +1,4 @@
+import { App as AppSchema, type App as AppType } from "@giselles-ai/protocol";
 import {
 	ApiError,
 	ConfigurationError,
@@ -82,6 +83,10 @@ export type UploadFileResult = {
 	file: UploadedFileData;
 };
 
+export type AppListResult = {
+	apps: AppType[];
+};
+
 const defaultBaseUrl = "https://studio.giselles.ai";
 const defaultPollIntervalMs = 1000;
 const defaultTimeoutMs = 20 * 60 * 1000;
@@ -157,6 +162,25 @@ function parseUploadFileResponseJson(json: unknown): UploadFileResult {
 	}
 
 	return { file: uploaded as UploadedFileData };
+}
+
+function parseAppsListResponseJson(json: unknown): AppListResult {
+	if (typeof json !== "object" || json === null) {
+		throw new Error("Invalid response JSON");
+	}
+	const apps = (json as { apps?: unknown }).apps;
+	if (!Array.isArray(apps)) {
+		throw new Error("Invalid response JSON");
+	}
+	const parsedApps: AppType[] = [];
+	for (const app of apps) {
+		const parsed = AppSchema.safeParse(app);
+		if (!parsed.success) {
+			throw new Error("Invalid response JSON");
+		}
+		parsedApps.push(parsed.data);
+	}
+	return { apps: parsedApps };
 }
 
 type TaskWithStatus = { status: string } & Record<string, unknown>;
@@ -253,6 +277,9 @@ export default class Giselle {
 		run: (args: AppRunArgs) => Promise<AppRunResult>;
 		runAndWait: (args: AppRunAndWaitArgs) => Promise<AppTaskResult>;
 	};
+	readonly apps: {
+		list: () => Promise<AppListResult>;
+	};
 	readonly files: {
 		upload: (args: UploadFileArgs) => Promise<UploadFileResult>;
 	};
@@ -269,6 +296,9 @@ export default class Giselle {
 		this.app = {
 			run: (args) => this.#runApp(args),
 			runAndWait: (args) => this.#runAppAndWait(args),
+		};
+		this.apps = {
+			list: () => this.#listApps(),
 		};
 		this.files = {
 			upload: (args) => this.#uploadFile(args),
@@ -382,6 +412,50 @@ export default class Giselle {
 		} catch (e) {
 			throw new ApiError(
 				e instanceof Error ? e.message : "Files API returned invalid JSON",
+				response.status,
+				"",
+			);
+		}
+	}
+
+	async #listApps(): Promise<AppListResult> {
+		if (!this.#apiKey) {
+			throw new ConfigurationError("`apiKey` is required");
+		}
+
+		const url = joinPath(this.#baseUrl, "/api/apps");
+		const response = await this.#fetch(url, {
+			method: "GET",
+			headers: {
+				Authorization: `Bearer ${this.#apiKey}`,
+			},
+		});
+
+		if (!response.ok) {
+			const responseText = await readResponseText(response);
+			throw new ApiError(
+				`Apps API request failed: ${response.status} ${response.statusText}`,
+				response.status,
+				responseText,
+			);
+		}
+
+		let json: unknown;
+		try {
+			json = await response.json();
+		} catch {
+			throw new ApiError(
+				"Apps API returned invalid JSON",
+				response.status,
+				await readResponseText(response),
+			);
+		}
+
+		try {
+			return parseAppsListResponseJson(json);
+		} catch (e) {
+			throw new ApiError(
+				e instanceof Error ? e.message : "Apps API returned invalid JSON",
 				response.status,
 				"",
 			);
