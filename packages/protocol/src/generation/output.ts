@@ -2,6 +2,7 @@ import type { LanguageModelV2Source } from "@ai-sdk/provider";
 import { createIdGenerator } from "@giselles-ai/utils";
 import type { ProviderMetadata } from "ai";
 import * as z from "zod/v4";
+import { DataStoreId } from "../data-store";
 import {
 	DocumentVectorStoreSource,
 	GitHubVectorStoreSource,
@@ -88,12 +89,29 @@ export const QueryResultOutput = GenerationOutputBase.extend({
 	content: QueryResult.array(),
 });
 
+const DataQueryResult = z.object({
+	type: z.literal("data-query"),
+	dataStoreId: DataStoreId.schema,
+	rows: z.array(z.record(z.string(), z.unknown())),
+	rowCount: z.number(),
+	query: z.string(),
+});
+export type DataQueryResult = z.infer<typeof DataQueryResult>;
+
+export const DataQueryResultOutputType = z.literal("data-query-result");
+export const DataQueryResultOutput = GenerationOutputBase.extend({
+	type: DataQueryResultOutputType,
+	content: DataQueryResult,
+});
+export type DataQueryResultOutput = z.infer<typeof DataQueryResultOutput>;
+
 export const GenerationOutput = z.discriminatedUnion("type", [
 	GeneratedTextContentOutput,
 	GeneratedImageContentOutput,
 	ReasoningOutput,
 	SourceOutput,
 	QueryResultOutput,
+	DataQueryResultOutput,
 ]);
 export type GenerationOutput = z.infer<typeof GenerationOutput>;
 
