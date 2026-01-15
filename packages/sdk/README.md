@@ -108,8 +108,18 @@ Calls:
 - Body: `multipart/form-data` (`file`, optional `fileName`)
 - Returns: `{ file: UploadedFileData }`
 
+### `client.apps.list()` *(coming soon)*
+
+Lists all Apps belonging to the authenticated team.
+
+Calls:
+
+- `GET /api/apps`
+- Returns: `{ apps: App[] }`
+
+
+
 ## Current limitations
 
 - **Inline base64 file size limit**: `input.file.base64` must decode to **<= 3MB**.
 - **File reference requires metadata**: if you pass `input.file = { fileId }` for a file uploaded before metadata was persisted, the Runs API will return a `400` prompting you to re-upload.
-
