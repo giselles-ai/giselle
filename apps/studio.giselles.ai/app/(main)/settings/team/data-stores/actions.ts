@@ -170,15 +170,19 @@ export async function deleteDataStore(
 
 		const existingDataStore = await giselle.getDataStore({ dataStoreId });
 		if (existingDataStore) {
-			const config = parseConfiguration(
-				existingDataStore.provider,
-				existingDataStore.configuration,
-			);
-			const secretId = SecretId.parse(config.connectionStringSecretId);
-			await Promise.all([
-				giselle.deleteDataStore({ dataStoreId }),
-				giselle.deleteSecret({ secretId }),
-			]);
+			try {
+				const config = parseConfiguration(
+					existingDataStore.provider,
+					existingDataStore.configuration,
+				);
+				const secretId = SecretId.parse(config.connectionStringSecretId);
+				await Promise.all([
+					giselle.deleteDataStore({ dataStoreId }),
+					giselle.deleteSecret({ secretId }),
+				]);
+			} catch (e) {
+				console.error("Failed to cleanup giselle resources:", e);
+			}
 		}
 
 		revalidatePath("/settings/team/data-stores");
