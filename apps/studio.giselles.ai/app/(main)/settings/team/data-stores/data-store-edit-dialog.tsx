@@ -70,14 +70,16 @@ export function DataStoreEditDialog({
 
 				<form onSubmit={handleSubmit} className="mt-6 space-y-6">
 					<div className="space-y-2">
-						<div className="text-sm text-white-800">Name</div>
+						<label htmlFor="name" className="text-sm text-white-800">
+							Name
+						</label>
 						<Input
+							id="name"
 							name="name"
 							value={name}
 							onChange={(e) => setName(e.target.value)}
 							placeholder="Production Database"
 							className="w-full"
-							aria-label="Data store name"
 							disabled={isPending}
 							required
 						/>
@@ -97,14 +99,20 @@ export function DataStoreEditDialog({
 
 						{updateConnection && (
 							<div className="space-y-2">
+								<label
+									htmlFor="connectionString"
+									className="text-sm text-white-800"
+								>
+									Connection String
+								</label>
 								<Input
+									id="connectionString"
 									name="connectionString"
 									type="password"
 									value={connectionString}
 									onChange={(e) => setConnectionString(e.target.value)}
 									placeholder="postgresql://user:password@host:5432/database"
 									className="w-full font-mono text-sm"
-									aria-label="PostgreSQL connection string"
 									disabled={isPending}
 									required={updateConnection}
 								/>
