@@ -165,20 +165,21 @@ export async function deleteDataStore(
 			return { success: false, error: "Data store not found" };
 		}
 
+		// Delete DB record first to make it invisible from UI
+		await db.delete(dataStores).where(eq(dataStores.id, dataStoreId));
+
 		const existingDataStore = await giselle.getDataStore({ dataStoreId });
 		if (existingDataStore) {
-			// Delete the secret
 			const config = parseConfiguration(
 				existingDataStore.provider,
 				existingDataStore.configuration,
 			);
 			const secretId = SecretId.parse(config.connectionStringSecretId);
-			await giselle.deleteSecret({ secretId });
-
-			await giselle.deleteDataStore({ dataStoreId });
+			await Promise.all([
+				giselle.deleteDataStore({ dataStoreId }),
+				giselle.deleteSecret({ secretId }),
+			]);
 		}
-
-		await db.delete(dataStores).where(eq(dataStores.id, dataStoreId));
 
 		revalidatePath("/settings/team/data-stores");
 		return { success: true };
