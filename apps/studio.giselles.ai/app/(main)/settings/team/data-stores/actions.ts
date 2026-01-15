@@ -99,8 +99,11 @@ export async function updateDataStore(
 			return { success: false, error: "Data store not found" };
 		}
 
-		if (connectionString && connectionString.trim().length > 0) {
+		if (connectionString) {
 			const trimmedConnectionString = connectionString.trim();
+			if (trimmedConnectionString.length === 0) {
+				return { success: false, error: "Connection string is required" };
+			}
 
 			const existingDataStore = await giselle.getDataStore({ dataStoreId });
 			if (!existingDataStore) {
