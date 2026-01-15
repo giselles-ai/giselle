@@ -28,7 +28,7 @@ export async function addSecret({
 		label,
 		value: encryptedValue,
 		createdAt: Date.now(),
-		workspaceId,
+		...(workspaceId ? { workspaceId } : {}),
 		tags,
 	};
 
