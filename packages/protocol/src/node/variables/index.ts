@@ -1,4 +1,4 @@
-import { type DataStoreProvider } from "@giselles-ai/data-store-registry";
+import type { DataStoreProvider } from "@giselles-ai/data-store-registry";
 import * as z from "zod/v4";
 import { NodeBase, NodeReferenceBase } from "../base";
 import { DataStoreContent, DataStoreContentReference } from "./data-store";
