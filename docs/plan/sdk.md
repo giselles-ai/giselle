@@ -19,11 +19,12 @@ console.log(taskId);
 
 ### Tasks
 
-- [x] Add file input support to `client.app.runAndWait()` via **either** a `fileId` (from the upload API) **or** an inline base64 file payload (with a size limit).
+- [x] Implement `client.apps.list` to call `GET /api/apps` and return `{ apps: App[] }` (see [README](../../packages/sdk/README.md))
 - [ ] In `studio.giselles.ai/tasks`, make it clear when a task execution originated from the public API (SDK).
 
 ### Done
 
+- [x] Add file input support to `client.app.runAndWait()` via **either** a `fileId` (from the upload API) **or** an inline base64 file payload (with a size limit).
 - [x] Add file upload support to the SDK.
 - [x] Implement `client.app.run()` to call `POST /api/apps/{appId}/run` and return `{ taskId }`.
 - [x] Implement `client.app.runAndWait()` by polling `GET /api/apps/{appId}/tasks/{taskId}` until the task reaches a terminal status.
