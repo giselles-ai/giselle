@@ -1,5 +1,7 @@
+import { type DataStoreProvider } from "@giselles-ai/data-store-registry";
 import * as z from "zod/v4";
 import { NodeBase, NodeReferenceBase } from "../base";
+import { DataStoreContent, DataStoreContentReference } from "./data-store";
 import { FileContent, FileContentReference } from "./file";
 import { GitHubContent, GitHubContentReference } from "./github";
 import { TextContent, TextContentReference } from "./text";
@@ -9,6 +11,7 @@ import {
 } from "./vector-store";
 import { WebPageContent, WebPageContentReference } from "./web-page";
 
+export * from "./data-store";
 export * from "./file";
 export * from "./github";
 export * from "./text";
@@ -21,6 +24,7 @@ const VariableNodeContent = z.discriminatedUnion("type", [
 	GitHubContent,
 	VectorStoreContent,
 	WebPageContent,
+	DataStoreContent,
 ]);
 
 export const VariableNode = NodeBase.extend({
@@ -38,6 +42,7 @@ export const VariableNodeLike = NodeBase.extend({
 			GitHubContent.shape.type,
 			VectorStoreContent.shape.type,
 			WebPageContent.shape.type,
+			DataStoreContent.shape.type,
 		]),
 	}),
 });
@@ -108,12 +113,35 @@ export function isVectorStoreNode<
 	);
 }
 
+export const DataStoreNode = VariableNode.extend({
+	content: DataStoreContent,
+});
+export type DataStoreNode = z.infer<typeof DataStoreNode>;
+
+export function isDataStoreNode<
+	TDataStoreProvider extends DataStoreProvider = DataStoreProvider,
+>(
+	args: unknown,
+	provider?: TDataStoreProvider,
+): args is TDataStoreProvider extends DataStoreProvider
+	? DataStoreNode & {
+			content: { provider: TDataStoreProvider };
+		}
+	: DataStoreNode {
+	const result = DataStoreNode.safeParse(args);
+	return (
+		result.success &&
+		(provider === undefined || result.data.content.provider === provider)
+	);
+}
+
 const VariableNodeContentReference = z.discriminatedUnion("type", [
 	FileContentReference,
 	TextContentReference,
 	GitHubContentReference,
 	VectorStoreContentReference,
 	WebPageContentReference,
+	DataStoreContentReference,
 ]);
 
 export const VariableNodeReference = NodeReferenceBase.extend({
