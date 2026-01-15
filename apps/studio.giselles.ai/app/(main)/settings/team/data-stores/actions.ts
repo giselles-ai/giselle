@@ -132,14 +132,10 @@ export async function updateDataStore(
 				},
 			});
 
-			const parseResult = SecretId.safeParse(config.connectionStringSecretId);
-			if (parseResult.success) {
-				await giselle
-					.deleteSecret({ secretId: parseResult.data })
-					.catch((e) => {
-						console.error("Failed to delete old secret:", e);
-					});
-			}
+			const oldSecretId = SecretId.parse(config.connectionStringSecretId);
+			await giselle.deleteSecret({ secretId: oldSecretId }).catch((e) => {
+				console.error("Failed to delete old secret:", e);
+			});
 		}
 
 		await db
@@ -183,10 +179,8 @@ export async function deleteDataStore(
 				existingDataStore.provider,
 				existingDataStore.configuration,
 			);
-			const parseResult = SecretId.safeParse(config.connectionStringSecretId);
-			if (parseResult.success) {
-				await giselle.deleteSecret({ secretId: parseResult.data });
-			}
+			const secretId = SecretId.parse(config.connectionStringSecretId);
+			await giselle.deleteSecret({ secretId });
 
 			await giselle.deleteDataStore({ dataStoreId });
 		}
