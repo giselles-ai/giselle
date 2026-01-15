@@ -2,6 +2,7 @@ import { Button } from "@giselle-internal/ui/button";
 import {
 	Dialog,
 	DialogContent,
+	DialogDescription,
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
@@ -52,35 +53,45 @@ export function DataStoreCreateDialog({
 			<DialogContent variant="glass">
 				<DialogHeader>
 					<DialogTitle className="text-[20px] font-semibold text-white-900">
-						Add Data Store
+						New Data Store
 					</DialogTitle>
+					<DialogDescription className="font-geist mt-2 text-[14px] text-text-muted">
+						Add a PostgreSQL database connection to use it in Data Store Nodes.
+					</DialogDescription>
 				</DialogHeader>
 
 				<form onSubmit={handleSubmit} className="mt-6 space-y-6">
 					<div className="space-y-2">
-						<div className="text-sm text-white-800">Name</div>
+						<label htmlFor="name" className="text-sm text-white-800">
+							Name
+						</label>
 						<Input
+							id="name"
 							name="name"
 							value={name}
 							onChange={(e) => setName(e.target.value)}
 							placeholder="Production Database"
 							className="w-full"
-							aria-label="Data store name"
 							disabled={isPending}
 							required
 						/>
 					</div>
 
 					<div className="space-y-2">
-						<div className="text-sm text-white-800">Connection String</div>
+						<label
+							htmlFor="connectionString"
+							className="text-sm text-white-800"
+						>
+							Connection String
+						</label>
 						<Input
+							id="connectionString"
 							name="connectionString"
 							type="password"
 							value={connectionString}
 							onChange={(e) => setConnectionString(e.target.value)}
 							placeholder="postgresql://user:password@host:5432/database"
 							className="w-full font-mono text-sm"
-							aria-label="PostgreSQL connection string"
 							disabled={isPending}
 							required
 						/>
@@ -111,7 +122,7 @@ export function DataStoreCreateDialog({
 							size="large"
 							disabled={isPending}
 						>
-							{isPending ? "Adding..." : "Add Data Store"}
+							{isPending ? "Creating..." : "Create"}
 						</Button>
 					</DialogFooter>
 				</form>

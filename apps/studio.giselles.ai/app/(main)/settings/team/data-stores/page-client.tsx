@@ -1,6 +1,7 @@
 "use client";
 
 import { EmptyState } from "@giselle-internal/ui/empty-state";
+import { PageHeading } from "@giselle-internal/ui/page-heading";
 import { Database, Pencil, Plus, Trash } from "lucide-react";
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
@@ -49,10 +50,13 @@ export function DataStoresPageClient({
 
 	return (
 		<div className="flex flex-col gap-[24px]">
-			<div className="flex justify-end">
+			<div className="flex justify-between items-center">
+				<PageHeading as="h1" glow>
+					Data Stores
+				</PageHeading>
 				<GlassButton type="button" onClick={handleCreateClick}>
 					<Plus className="size-4" />
-					Add Data Store
+					New Data Store
 				</GlassButton>
 			</div>
 

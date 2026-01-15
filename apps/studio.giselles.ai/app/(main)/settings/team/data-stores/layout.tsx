@@ -1,4 +1,3 @@
-import { PageHeading } from "@giselle-internal/ui/page-heading";
 import type { ReactNode } from "react";
 
 export default function DataStoresLayout({
@@ -9,11 +8,6 @@ export default function DataStoresLayout({
 	return (
 		<div className="h-full bg-bg -mx-[40px] -my-[24px]">
 			<div className="w-full min-h-[calc(100vh-64px)] p-[24px] flex flex-col gap-y-3">
-				<div className="flex justify-between items-center">
-					<PageHeading as="h1" glow>
-						Data Stores
-					</PageHeading>
-				</div>
 				{children}
 			</div>
 		</div>

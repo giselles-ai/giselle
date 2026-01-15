@@ -1,4 +1,4 @@
-import { Button } from "@giselle-internal/ui/button";
+import { Button } from "../../components/button";
 import {
 	Dialog,
 	DialogClose,
@@ -75,8 +75,7 @@ export function DataStoreDeleteDialog({
 				<DialogFooter>
 					<div className="mt-6 flex justify-end gap-x-3">
 						<Button
-							variant="filled"
-							size="large"
+							variant="link"
 							onClick={() => onOpenChange(false)}
 							disabled={isPending}
 						>
@@ -84,11 +83,10 @@ export function DataStoreDeleteDialog({
 						</Button>
 						<Button
 							variant="destructive"
-							size="large"
 							onClick={handleConfirmDelete}
 							disabled={isPending}
 						>
-							{isPending ? "Deleting..." : "Delete"}
+							{isPending ? "Processing..." : "Delete"}
 						</Button>
 					</div>
 				</DialogFooter>
