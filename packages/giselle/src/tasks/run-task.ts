@@ -108,6 +108,9 @@ async function executeStep(args: {
 			case "query":
 				await executeQuery(args);
 				break;
+			case "dataQuery":
+				// TODO: implement executeDataQuery
+				break;
 			case "appEntry":
 				break;
 			case "end":
