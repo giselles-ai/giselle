@@ -1,9 +1,10 @@
 "use client";
 
+import type { DataStoreId } from "@giselles-ai/protocol";
 import { createContext, useContext } from "react";
 
 export interface DataStoreItem {
-	id: string;
+	id: DataStoreId;
 	name: string;
 }
 
