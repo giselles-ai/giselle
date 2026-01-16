@@ -90,15 +90,13 @@ function useVariant(node: NodeLike) {
 		const isGithubTrigger = isTriggerNode(node, "github");
 
 		const isFillIcon =
-			isText ||
-			isFile ||
-			isWebPage ||
-			isGithub ||
-			isVectorStore ||
-			isDataStore ||
-			isAction;
+			isText || isFile || isWebPage || isGithub || isVectorStore || isAction;
 		const isStrokeIcon =
-			isTextGeneration || isImageGeneration || isTrigger || isQuery;
+			isTextGeneration ||
+			isImageGeneration ||
+			isTrigger ||
+			isQuery ||
+			isDataStore;
 
 		const isDarkIconText =
 			isText || isFile || isWebPage || isQuery || isDataStore;
@@ -400,7 +398,7 @@ export function NodeComponent({
 								v.isGithubTrigger && "fill-current",
 								v.isAction && "fill-current",
 								v.isQuery && "stroke-current fill-none",
-								v.isDataStore && "fill-current",
+								v.isDataStore && "stroke-current fill-none",
 								v.isGithub && "fill-current",
 								v.isText && "text-background",
 								v.isFile && "text-background",
