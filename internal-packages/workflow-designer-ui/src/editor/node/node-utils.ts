@@ -1,5 +1,6 @@
 import {
 	isActionNode,
+	isDataStoreNode,
 	isImageGenerationNode,
 	isTextGenerationNode,
 	isTriggerNode,
@@ -47,6 +48,9 @@ export function nodeRequiresSetup(node: NodeLike): boolean {
 			default:
 				return false;
 		}
+	}
+	if (isDataStoreNode(node)) {
+		return node.content.state.status !== "configured";
 	}
 	return false;
 }
