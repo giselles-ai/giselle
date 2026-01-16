@@ -1,6 +1,7 @@
 import {
 	type ActionNode,
 	type AppEntryNode,
+	isDataStoreNode,
 	type QueryNode,
 	type TextGenerationNode,
 	type TriggerNode,
@@ -44,6 +45,10 @@ export function useConnectedOutputs(node: TextGenerationNode) {
 				(output) => output.id === connection.outputId,
 			);
 			if (output === undefined) {
+				continue;
+			}
+			// Skip Data Store "source" output - it's only for Data Query connections
+			if (isDataStoreNode(outputNode) && output.accessor === "source") {
 				continue;
 			}
 			const inputNode = nodes.find(
