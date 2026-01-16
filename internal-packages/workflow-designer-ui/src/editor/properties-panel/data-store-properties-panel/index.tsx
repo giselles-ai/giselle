@@ -101,9 +101,8 @@ function DataStorePropertiesContent({ node }: { node: DataStoreNode }) {
 							label: store.name,
 						}))}
 						value={selectedStoreId ?? ""}
-						onValueChange={
-							dataStores.length > 0 ? handleSelectStore : undefined
-						}
+						onValueChange={handleSelectStore}
+						disabled={dataStores.length === 0}
 						placeholder="Select a data store"
 						triggerClassName={
 							dataStores.length === 0
