@@ -20,6 +20,7 @@ import {
  * Returns the available reasoning effort options for the given OpenAI model.
  *
  * GPT-5.2 and GPT-5.1-thinking support: none/low/medium/high/xhigh
+ * GPT-5.2-codex supports: low/medium/high/xhigh
  * GPT-5.1-codex supports: low/medium/high
  * Older models (gpt-5, gpt-5-mini, gpt-5-nano) support: minimal/low/medium/high
  *
@@ -29,6 +30,9 @@ function getReasoningEffortOptions(modelId: string): readonly string[] {
 	if (modelId === "gpt-5.2" || modelId === "gpt-5.1-thinking") {
 		return ["none", "low", "medium", "high", "xhigh"] as const;
 	}
+	if (modelId === "gpt-5.2-codex") {
+		return ["low", "medium", "high", "xhigh"] as const;
+	}
 	if (modelId === "gpt-5.1-codex") {
 		return ["low", "medium", "high"] as const;
 	}
@@ -37,10 +41,10 @@ function getReasoningEffortOptions(modelId: string): readonly string[] {
 
 /**
  * Returns the available textVerbosity options for the given OpenAI model.
- * GPT-5.1-codex only supports verbosity: medium.
+ * Codex models only support verbosity: medium.
  */
 function getTextVerbosityOptions(modelId: string): readonly string[] {
-	if (modelId === "gpt-5.1-codex") {
+	if (modelId === "gpt-5.1-codex" || modelId === "gpt-5.2-codex") {
 		return ["medium"] as const;
 	}
 	return ["low", "medium", "high"] as const;
