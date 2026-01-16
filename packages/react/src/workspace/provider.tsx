@@ -40,7 +40,7 @@ export function WorkspaceProvider({
 	telemetry?: TelemetrySettings;
 	featureFlag?: FeatureFlagContextValue;
 	vectorStore?: VectorStoreContextValue;
-	dataStore?: { stores: Array<{ id: string; name: string }> };
+	dataStore?: DataStoreContextValue;
 	trigger?: TriggerContextValue;
 	generationTimeout?: number;
 }) {
@@ -65,16 +65,7 @@ export function WorkspaceProvider({
 					<UsageLimitsProvider limits={usageLimits}>
 						<IntegrationProvider {...integration}>
 							<VectorStoreContext value={vectorStore}>
-								<DataStoreContext
-									value={
-										dataStore
-											? {
-													dataStores: dataStore.stores,
-													settingPath: "/settings/team/data-stores",
-												}
-											: undefined
-									}
-								>
+								<DataStoreContext value={dataStore}>
 									<ZustandBridgeGenerationProvider timeout={generationTimeout}>
 										{children}
 									</ZustandBridgeGenerationProvider>
