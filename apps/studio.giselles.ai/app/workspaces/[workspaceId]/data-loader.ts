@@ -1,5 +1,5 @@
 import type { WorkspaceId } from "@giselles-ai/protocol";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { giselle } from "@/app/giselle";
 import { dataStores, db } from "@/db";
@@ -97,7 +97,7 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 				})
 				.from(dataStores)
 				.where(eq(dataStores.teamDbId, workspaceTeam.dbId))
-				.orderBy(dataStores.createdAt),
+				.orderBy(desc(dataStores.createdAt)),
 		]);
 
 	// Merge stores with isOfficial flag, deduplicating official stores already in team stores

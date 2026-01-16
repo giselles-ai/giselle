@@ -154,7 +154,7 @@ export function useConnectedSources(node: ImageGenerationNode) {
 							break;
 						case "vectorStore":
 						case "github":
-							throw new Error("vectore store can not be connected");
+							throw new Error("vector store can not be connected");
 						case "dataStore":
 							// Skip Data Store "source" output - it's only for Data Query connections
 							if (output.accessor === "source") {
