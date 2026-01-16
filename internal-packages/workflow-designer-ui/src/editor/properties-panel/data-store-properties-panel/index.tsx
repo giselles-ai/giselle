@@ -68,18 +68,7 @@ function DataStorePropertiesContent({ node }: { node: DataStoreNode }) {
 	const handleSelectStore = useCallback(
 		(storeId: string) => {
 			setSelectedStoreId(storeId);
-			const store = dataStores.find((candidate) => candidate.id === storeId);
-
-			const updatedOutputs = [...node.outputs];
-			if (updatedOutputs[0]) {
-				updatedOutputs[0] = {
-					...updatedOutputs[0],
-					label: store ? store.name : updatedOutputs[0].label,
-				};
-			}
-
 			updateNodeData(node, {
-				outputs: updatedOutputs,
 				content: {
 					...node.content,
 					state: {
@@ -89,7 +78,7 @@ function DataStorePropertiesContent({ node }: { node: DataStoreNode }) {
 				},
 			});
 		},
-		[dataStores, node, updateNodeData],
+		[node, updateNodeData],
 	);
 
 	const isConfiguredButMissingStore = useMemo(() => {
