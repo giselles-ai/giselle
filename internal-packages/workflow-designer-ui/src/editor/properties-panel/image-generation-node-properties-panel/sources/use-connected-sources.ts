@@ -126,6 +126,9 @@ export function useConnectedSources(node: ImageGenerationNode) {
 						case "end":
 							// End Node has no Output so do nothing
 							break;
+						case "dataQuery":
+							// TODO: implement dataQuery
+							break;
 						default: {
 							const _exhaustiveCheck: never = outputNode.content.type;
 							throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
@@ -158,6 +161,9 @@ export function useConnectedSources(node: ImageGenerationNode) {
 						case "vectorStore":
 						case "github":
 							throw new Error("vectore store can not be connected");
+						case "dataStore":
+							// TODO: implement dataStore
+							break;
 						default: {
 							const _exhaustiveCheck: never = outputNode.content.type;
 							throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);

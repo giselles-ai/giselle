@@ -38,6 +38,9 @@ export function GenerationRunner({ generation }: { generation: Generation }) {
 			return <ActionRunner generation={generation} />;
 		case "query":
 			return <QueryRunner generation={generation} />;
+		case "dataQuery":
+			// TODO: implement DataQueryRunner
+			return null;
 		case "appEntry": {
 			console.warn(
 				"start node runner was created. This is unintended behavior as start nodes do not require a runner.",

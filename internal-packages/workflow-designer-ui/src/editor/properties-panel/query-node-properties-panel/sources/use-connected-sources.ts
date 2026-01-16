@@ -105,6 +105,9 @@ export function useConnectedSources(node: QueryNode) {
 						case "end":
 							// End Node has no Output so do nothing
 							break;
+						case "dataQuery":
+							// TODO: implement dataQuery
+							break;
 						default: {
 							const _exhaustiveCheck: never = outputNode.content.type;
 							throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
@@ -130,6 +133,9 @@ export function useConnectedSources(node: QueryNode) {
 							break;
 						case "file":
 						case "webPage":
+							break;
+						case "dataStore":
+							// TODO: implement dataStore
 							break;
 						default: {
 							const _exhaustiveCheck: never = outputNode.content.type;

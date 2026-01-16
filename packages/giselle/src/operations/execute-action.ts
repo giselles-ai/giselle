@@ -159,6 +159,7 @@ async function resolveActionInputs(args: {
 						break;
 					}
 					case "file":
+					case "dataStore":
 					case "webPage":
 					case "github":
 					case "vectorStore":
