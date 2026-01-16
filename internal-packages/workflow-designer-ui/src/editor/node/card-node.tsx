@@ -100,7 +100,8 @@ function useVariant(node: NodeLike) {
 		const isStrokeIcon =
 			isTextGeneration || isImageGeneration || isTrigger || isQuery;
 
-		const isDarkIconText = isText || isFile || isWebPage || isQuery;
+		const isDarkIconText =
+			isText || isFile || isWebPage || isQuery || isDataStore;
 		const isLightIconText =
 			isTextGeneration ||
 			isImageGeneration ||
