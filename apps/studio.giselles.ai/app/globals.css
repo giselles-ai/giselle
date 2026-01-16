@@ -115,6 +115,12 @@
 	--color-vector-store-node-1: var(--color-node-vector-store-primary);
 	--color-vector-store-node-2: var(--color-node-vector-store-secondary);
 
+	--color-data-store-node-1: var(--color-node-data-store-primary);
+	--color-data-store-node-2: var(--color-node-data-store-secondary);
+
+	--color-data-query-node-1: var(--color-node-data-query-primary);
+	--color-data-query-node-2: var(--color-node-data-query-secondary);
+
 	--color-end-node-1: var(--color-blue-400);
 	--color-end-node-2: var(--color-blue-800);
 
