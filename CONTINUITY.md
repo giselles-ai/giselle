@@ -6,7 +6,7 @@ This file is a **low-churn, batched snapshot** (“as of <date>”) of the repo�
 Recent, detailed intent logs live in `.continuity/` (per-branch ledgers). Periodically summarize `.continuity/*` into this file.
 
 ## Goal
-Add a public Runs SDK package (`@giselles-ai/sdk`) under `packages/` to call `POST /api/apps/{appId}/run` and expose `client.app.run()` (and a stubbed `runAndWait()`).
+Add a public Runs SDK package (`@giselles-ai/sdk`) under `packages/` to call `POST /api/apps/{appId}/run` and expose `client.apps.run()` (and a stubbed `runAndWait()`).
 
 ## Constraints/Assumptions
 - Adhere to `AGENTS.md` and `CLAUDE.md`.

@@ -23,7 +23,7 @@ const client = new Giselle({
 });
 
 async function main() {
-	const { taskId } = await client.app.run({
+	const { taskId } = await client.apps.run({
 		appId: "app-xxxxx",
 		input: { text: "hello" },
 	});
@@ -82,7 +82,7 @@ main()
 - `fetch?: typeof fetch`
   - Optional. Useful for tests and nonstandard runtimes.
 
-### `client.app.run({ appId, input })`
+### `client.apps.run({ appId, input })`
 
 Calls:
 
@@ -90,7 +90,7 @@ Calls:
 - Body: `{ "text": string, "file"?: { "fileId": string } | { "base64": string, "name": string, "type": string } }`
 - Returns: `{ taskId: string }`
 
-### `client.app.runAndWait(...)`
+### `client.apps.runAndWait(...)`
 
 Calls `POST /api/apps/{appId}/run`, then polls the task status API until the task finishes.
 
