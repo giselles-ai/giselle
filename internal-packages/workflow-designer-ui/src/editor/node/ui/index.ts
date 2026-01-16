@@ -1,3 +1,4 @@
+export * from "./data-store-node-info";
 export * from "./document-node-info";
 export * from "./github-node-info";
 export * from "./github-repository-badge";
