@@ -10,13 +10,17 @@ export interface DataStoreItem {
 
 export interface DataStoreContextValue {
 	dataStores: DataStoreItem[];
-	settingPath?: string;
+	settingPath: string;
 }
 
 export const DataStoreContext = createContext<
 	DataStoreContextValue | undefined
 >(undefined);
 
-export function useDataStore(): DataStoreContextValue | undefined {
-	return useContext(DataStoreContext);
+export function useDataStore(): DataStoreContextValue {
+	const context = useContext(DataStoreContext);
+	if (context === undefined) {
+		throw new Error("useDataStore must be used within a DataStoreProvider");
+	}
+	return context;
 }

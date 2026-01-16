@@ -36,9 +36,7 @@ export function DataStoreNodePropertiesPanel({
 
 function DataStorePropertiesContent({ node }: { node: DataStoreNode }) {
 	const updateNodeData = useUpdateNodeData();
-	const dataStoreContext = useDataStore();
-	const settingPath = dataStoreContext?.settingPath;
-	const dataStores = dataStoreContext?.dataStores ?? [];
+	const { dataStores, settingPath } = useDataStore();
 
 	const state = node.content.state;
 	const selectedStoreId =
@@ -66,19 +64,6 @@ function DataStorePropertiesContent({ node }: { node: DataStoreNode }) {
 	const isConfiguredButMissingStore =
 		selectedStoreId &&
 		!dataStores.some((store) => store.id === selectedStoreId);
-
-	if (!dataStoreContext) {
-		return (
-			<div className="flex flex-col gap-3 p-4 text-inverse">
-				<span>Data stores are not available for this workspace.</span>
-				{settingPath && (
-					<Link href={settingPath} className="text-inverse underline">
-						Set Up Data Store
-					</Link>
-				)}
-			</div>
-		);
-	}
 
 	return (
 		<div className="flex flex-col gap-[16px] p-0">
@@ -128,18 +113,16 @@ function DataStorePropertiesContent({ node }: { node: DataStoreNode }) {
 				</div>
 			)}
 
-			{settingPath && (
-				<div className="flex justify-end pt-[8px]">
-					<Link
-						href={settingPath}
-						target="_blank"
-						rel="noopener noreferrer"
-						className="text-[14px] text-inverse underline hover:text-inverse"
-					>
-						Manage Data Stores
-					</Link>
-				</div>
-			)}
+			<div className="flex justify-end pt-[8px]">
+				<Link
+					href={settingPath}
+					target="_blank"
+					rel="noopener noreferrer"
+					className="text-[14px] text-inverse underline hover:text-inverse"
+				>
+					Manage Data Stores
+				</Link>
+			</div>
 		</div>
 	);
 }
