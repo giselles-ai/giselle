@@ -1,3 +1,4 @@
+import { defaultName } from "@giselles-ai/node-registry";
 import { type DataQueryNode, isDataStoreNode } from "@giselles-ai/protocol";
 import type { UIConnection } from "@giselles-ai/react";
 import { TextEditor } from "@giselles-ai/text-editor/react-internal";
@@ -25,6 +26,12 @@ export function DataQueryPanel({ node }: { node: DataQueryNode }) {
 			.map((c) => {
 				const sourceNode = nodes.find((n) => n.id === c.outputNode.id);
 				if (sourceNode && isDataStoreNode(sourceNode)) {
+					const output = sourceNode.outputs.find((o) => o.id === c.outputId);
+					// Data Store has two outputs: "schema" (for Text Generation prompts) and "source" (for Data Query).
+					// Skip the "schema" connection here since this is the Data Query panel.
+					if (output?.accessor === "schema") {
+						return null;
+					}
 					return { node: sourceNode, connection: c };
 				}
 				return null;
@@ -86,7 +93,7 @@ export function DataQueryPanel({ node }: { node: DataQueryNode }) {
 						{hasDataStoreConnections ? (
 							<ul className="flex flex-wrap gap-[8px] m-0 p-0 list-none">
 								{connectedDataStores.map((dataStore) => {
-									const name = dataStore.node.name ?? "Data Store";
+									const name = defaultName(dataStore.node);
 									const status =
 										dataStore.node.content.state.status === "configured"
 											? "Connected"
