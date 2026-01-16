@@ -4,6 +4,12 @@
 
 As an open source product, we will only provide security patches for the latest major version. Older versions will not receive retroactive security patches.
 
+## Bug Bounty Program
+
+Giselle does not currently operate a bug bounty program. We do not offer monetary rewards for vulnerability reports.
+
+We appreciate responsible disclosure and will acknowledge contributors in our release notes (with permission), but submitting a report does not guarantee or imply any monetary compensation.
+
 ## Reporting Security Issues
 
 ### case1: Report via Email
@@ -41,6 +47,25 @@ To ensure the security of our project, we are committed the following best pract
 2. **Review and audit code**: Periodically review and audit the codebase for potential security issues.
 3. **Use secure coding practices**: Follow best practices for secure coding to minimize vulnerabilities.
 4. **Stay informed**: Keep up to date with the latest security news and advisories related to the technologies used in this project.
+
+## Out of Scope
+
+The following items are generally considered out of scope:
+
+- Missing or misconfigured DMARC/SPF/DKIM records
+- Missing security headers (unless directly exploitable)
+- Disclosure of software versions
+- Reports from automated tools without demonstrated impact
+- Social engineering attacks
+- Denial of service attacks
+
+## Responsible Disclosure Guidelines
+
+We kindly ask reporters to:
+
+- Allow reasonable time for us to investigate and address the issue before public disclosure
+- Avoid ultimatum-style deadlines or threats of public disclosure as a negotiation tactic
+- Provide sufficient technical details (reproduction steps, PoC, headers, etc.) to validate the issue
 
 ## Contact
 
