@@ -28,7 +28,8 @@ export function DataStoreNodeInfo({
 		return <RequiresSetupBadge />;
 	}
 
-	const store = dataStores.find((s) => s.id === node.content.state.dataStoreId);
+	const { dataStoreId } = node.content.state;
+	const store = dataStores.find((s) => s.id === dataStoreId);
 
 	if (!store) {
 		return <RequiresSetupBadge />;
