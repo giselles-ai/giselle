@@ -1,18 +1,21 @@
-import type {
-	ActionNode,
-	AppEntryNode,
-	Connection,
-	ContentGenerationNode,
-	FileNode,
-	ImageGenerationNode,
-	NodeBase,
-	Output,
-	QueryNode,
-	TextGenerationNode,
-	TextNode,
-	TriggerNode,
-	VariableNode,
-	WebPageNode,
+import {
+	type ActionNode,
+	type AppEntryNode,
+	type Connection,
+	type ContentGenerationNode,
+	type DataQueryNode,
+	type DataStoreNode,
+	type FileNode,
+	type ImageGenerationNode,
+	isDataStoreNode,
+	type NodeBase,
+	type Output,
+	type QueryNode,
+	type TextGenerationNode,
+	type TextNode,
+	type TriggerNode,
+	type VariableNode,
+	type WebPageNode,
 } from "@giselles-ai/protocol";
 import type { UIConnection } from "@giselles-ai/react";
 import { useMemo } from "react";
@@ -40,6 +43,7 @@ export function useConnectedSources(node: ImageGenerationNode) {
 			[];
 		const connectedVariableSources: ConnectedSource<VariableNode>[] = [];
 		const connectedQuerySources: ConnectedSource<QueryNode>[] = [];
+		const connectedDataQuerySources: ConnectedSource<DataQueryNode>[] = [];
 		const connectedTriggerSources: ConnectedSource<TriggerNode>[] = [];
 		const connectedActionSources: ConnectedSource<ActionNode>[] = [];
 		const connectedAppEntrySources: ConnectedSource<AppEntryNode>[] = [];
@@ -55,6 +59,10 @@ export function useConnectedSources(node: ImageGenerationNode) {
 				(output) => output.id === connection.outputId,
 			);
 			if (output === undefined) {
+				continue;
+			}
+			// Skip Data Store "source" output - it's only for Data Query connections
+			if (isDataStoreNode(outputNode) && output.accessor === "source") {
 				continue;
 			}
 			const input = node.inputs.find(
@@ -127,7 +135,11 @@ export function useConnectedSources(node: ImageGenerationNode) {
 							// End Node have no Output here
 							break;
 						case "dataQuery":
-							// TODO: implement dataQuery
+							connectedDataQuerySources.push({
+								output,
+								node: outputNode as DataQueryNode,
+								connection,
+							});
 							break;
 						default: {
 							const _exhaustiveCheck: never = outputNode.content.type;
@@ -162,7 +174,11 @@ export function useConnectedSources(node: ImageGenerationNode) {
 						case "github":
 							throw new Error("vectore store can not be connected");
 						case "dataStore":
-							// TODO: implement dataStore
+							connectedVariableSources.push({
+								output,
+								node: outputNode as DataStoreNode,
+								connection,
+							});
 							break;
 						default: {
 							const _exhaustiveCheck: never = outputNode.content.type;
@@ -182,6 +198,7 @@ export function useConnectedSources(node: ImageGenerationNode) {
 				...connectedGeneratedTextSources,
 				...connectedVariableSources,
 				...connectedQuerySources,
+				...connectedDataQuerySources,
 				...connectedGeneratedImageSources,
 				...connectedTriggerSources,
 				...connectedActionSources,
@@ -190,6 +207,7 @@ export function useConnectedSources(node: ImageGenerationNode) {
 			generationImage: connectedGeneratedImageSources,
 			variable: connectedVariableSources,
 			query: connectedQuerySources,
+			dataQuery: connectedDataQuerySources,
 			trigger: connectedTriggerSources,
 			action: connectedActionSources,
 			connections: uiConnections,
