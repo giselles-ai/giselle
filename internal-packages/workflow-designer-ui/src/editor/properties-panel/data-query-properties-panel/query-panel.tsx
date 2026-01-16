@@ -80,14 +80,14 @@ export function DataQueryPanel({ node }: { node: DataQueryNode }) {
 				key={JSON.stringify(
 					connectedInputsWithoutDataStore.map((c) => c.outputNode.id),
 				)}
-				placeholder="Enter your SQL query here... (e.g., SELECT * FROM users LIMIT 10)"
+				placeholder="Write your query here... Use @ to reference other nodes"
 				value={node.content.query}
 				onValueChange={(value) => {
 					updateNodeDataContent(node, { query: value });
 				}}
 				connections={connectedInputsWithoutDataStore}
 				showToolbar={false}
-				editorClassName="bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] border-0 !pt-[12px] !pr-[12px] !pb-[12px] !pl-[12px] rounded-[8px] min-h-[180px] font-mono"
+				editorClassName="bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] border-0 !pt-[12px] !pr-[12px] !pb-[12px] !pl-[12px] rounded-[8px] min-h-[180px]"
 				header={
 					<div className="flex flex-col gap-[8px]">
 						{hasDataStoreConnections ? (
@@ -97,7 +97,7 @@ export function DataQueryPanel({ node }: { node: DataQueryNode }) {
 									const status =
 										dataStore.node.content.state.status === "configured"
 											? "Connected"
-											: "Not configured";
+											: "Requires setup";
 
 									return (
 										<li
@@ -145,7 +145,7 @@ export function DataQueryPanel({ node }: { node: DataQueryNode }) {
 								colorClassName="text-link-muted"
 								className="text-[12px]"
 							>
-								No data store connected • Connect a Data Store node
+								No data sources connected • Connect a Data Store node
 							</SettingDetail>
 						)}
 					</div>
