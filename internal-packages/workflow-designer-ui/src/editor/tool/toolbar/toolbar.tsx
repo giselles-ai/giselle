@@ -205,7 +205,7 @@ export function Toolbar() {
 		/>
 	);
 
-	const { stage } = useFeatureFlag();
+	const { stage, dataStore: dataStoreFlag } = useFeatureFlag();
 
 	return (
 		<div
@@ -523,14 +523,16 @@ export function Toolbar() {
 													<GitHubIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">GitHub Vector Store</p>
 												</ToggleGroup.Item>
-												<ToggleGroup.Item
-													value="dataStore"
-													data-tool
-													className="hover:bg-[rgba(222,233,242,0.10)]"
-												>
-													<DataStoreIcon className="w-[20px] h-[20px]" />
-													<p className="text-[14px]">Data Store</p>
-												</ToggleGroup.Item>
+												{dataStoreFlag && (
+													<ToggleGroup.Item
+														value="dataStore"
+														data-tool
+														className="hover:bg-[rgba(222,233,242,0.10)]"
+													>
+														<DataStoreIcon className="w-[20px] h-[20px]" />
+														<p className="text-[14px]">Data Store</p>
+													</ToggleGroup.Item>
+												)}
 											</ToggleGroup.Root>
 
 											<p className="text-[#505D7B] text-[12px] font-medium leading-[170%] mt-[8px] mb-[4px] px-[8px]">
