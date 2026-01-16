@@ -64,6 +64,13 @@ export function Page({
 							isOfficial: store.isOfficial,
 						})),
 					}}
+					dataStore={{
+						dataStores: data.teamDataStores.map((store) => ({
+							id: store.id,
+							name: store.name,
+						})),
+						settingPath: "/settings/team/data-stores",
+					}}
 					usageLimits={data.usageLimits}
 					telemetry={{
 						metadata: {
