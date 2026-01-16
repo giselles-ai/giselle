@@ -9,7 +9,7 @@ const client = new Giselle({
   apiKey: process.env.GISELLE_API_KEY,
 });
 
-const { taskId } = await client.app.run({
+const { taskId } = await client.apps.run({
   appId: "app-VC4zxzcdSrO0tGDY",
   input: { text: "your input here" },
 });
@@ -24,10 +24,10 @@ console.log(taskId);
 
 ### Done
 
-- [x] Add file input support to `client.app.runAndWait()` via **either** a `fileId` (from the upload API) **or** an inline base64 file payload (with a size limit).
+- [x] Add file input support to `client.apps.runAndWait()` via **either** a `fileId` (from the upload API) **or** an inline base64 file payload (with a size limit).
 - [x] Add file upload support to the SDK.
-- [x] Implement `client.app.run()` to call `POST /api/apps/{appId}/run` and return `{ taskId }`.
-- [x] Implement `client.app.runAndWait()` by polling `GET /api/apps/{appId}/tasks/{taskId}` until the task reaches a terminal status.
+- [x] Implement `client.apps.run()` to call `POST /api/apps/{appId}/run` and return `{ taskId }`.
+- [x] Implement `client.apps.runAndWait()` by polling `GET /api/apps/{appId}/tasks/{taskId}` until the task reaches a terminal status.
 - [x] On completion, fetch the final task result via `GET /api/apps/{appId}/tasks/{taskId}?includeGenerations=1` and return `{ steps, outputs }`.
 - [x] Align Runs/Tasks authentication for Team secret keys (use `Authorization: Bearer <apiKeyId>.<secret>`; no token prefix).
 - [x] Add SDK tests (mocked `fetch`) and document usage in `packages/sdk/README.md`.

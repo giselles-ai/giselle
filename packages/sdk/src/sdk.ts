@@ -308,11 +308,9 @@ function parseTaskResponseJson(json: unknown): AppTaskResult {
 }
 
 export default class Giselle {
-	readonly app: {
+	readonly apps: {
 		run: (args: AppRunArgs) => Promise<AppRunResult>;
 		runAndWait: (args: AppRunAndWaitArgs) => Promise<AppTaskResult>;
-	};
-	readonly apps: {
 		list: () => Promise<AppListResult>;
 	};
 	readonly files: {
@@ -328,11 +326,9 @@ export default class Giselle {
 		this.#baseUrl = options.baseUrl ?? defaultBaseUrl;
 		this.#apiKey = options.apiKey;
 
-		this.app = {
+		this.apps = {
 			run: (args) => this.#runApp(args),
 			runAndWait: (args) => this.#runAppAndWait(args),
-		};
-		this.apps = {
 			list: () => this.#listApps(),
 		};
 		this.files = {

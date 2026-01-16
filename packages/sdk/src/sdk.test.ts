@@ -30,7 +30,7 @@ describe("Giselle SDK (public Runs API)", () => {
 		});
 
 		await expect(
-			client.app.run({ appId: "app-xxxxx", input: { text: "hello" } }),
+			client.apps.run({ appId: "app-xxxxx", input: { text: "hello" } }),
 		).resolves.toEqual({ taskId: "tsk_123" });
 	});
 
@@ -58,7 +58,7 @@ describe("Giselle SDK (public Runs API)", () => {
 		});
 
 		await expect(
-			client.app.run({
+			client.apps.run({
 				appId: "app-xxxxx",
 				input: { text: "hello", file: { fileId: "fl_123" } },
 			}),
@@ -96,7 +96,7 @@ describe("Giselle SDK (public Runs API)", () => {
 		});
 
 		await expect(
-			client.app.run({
+			client.apps.run({
 				appId: "app-xxxxx",
 				input: {
 					text: "hello",
@@ -124,7 +124,7 @@ describe("Giselle SDK (public Runs API)", () => {
 		const overLimitBase64 = "A".repeat(len);
 
 		await expect(
-			client.app.run({
+			client.apps.run({
 				appId: "app-xxxxx",
 				input: {
 					text: "hello",
@@ -156,7 +156,7 @@ describe("Giselle SDK (public Runs API)", () => {
 		});
 
 		await expect(
-			client.app.run({ appId: "app-xxxxx", input: { text: "hello" } }),
+			client.apps.run({ appId: "app-xxxxx", input: { text: "hello" } }),
 		).resolves.toEqual({ taskId: "tsk_123" });
 	});
 
@@ -167,7 +167,7 @@ describe("Giselle SDK (public Runs API)", () => {
 		});
 
 		await expect(
-			client.app.run({ appId: "app-xxxxx", input: { text: "hello" } }),
+			client.apps.run({ appId: "app-xxxxx", input: { text: "hello" } }),
 		).rejects.toBeInstanceOf(ConfigurationError);
 	});
 
@@ -257,7 +257,7 @@ describe("Giselle SDK (public Runs API)", () => {
 		});
 
 		await expect(
-			client.app.runAndWait({
+			client.apps.runAndWait({
 				appId: "app-xxxxx",
 				input: { text: "hello" },
 				pollIntervalMs: 0,
@@ -304,7 +304,7 @@ describe("Giselle SDK (public Runs API)", () => {
 		// We can't easily time-travel Date.now() without mocking timers, so we just assert the error type
 		// by making the fetch throw after a couple of polls.
 		await expect(
-			client.app.runAndWait({
+			client.apps.runAndWait({
 				appId: "app-xxxxx",
 				input: { text: "hello" },
 				pollIntervalMs: 0,

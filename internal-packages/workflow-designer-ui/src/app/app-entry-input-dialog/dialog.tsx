@@ -427,7 +427,7 @@ const client = new Giselle({
   apiKey: process.env.GISELLE_API_KEY,
 });
 
-const { taskId } = await client.app.run({
+const { taskId } = await client.apps.run({
   appId: "${app.id}",
   input: { text: "your input here" },
 });
