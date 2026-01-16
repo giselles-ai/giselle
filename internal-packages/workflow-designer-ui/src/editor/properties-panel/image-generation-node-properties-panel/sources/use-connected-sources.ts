@@ -3,6 +3,7 @@ import type {
 	AppEntryNode,
 	Connection,
 	ContentGenerationNode,
+	DataStoreNode,
 	FileNode,
 	ImageGenerationNode,
 	NodeBase,
@@ -63,13 +64,6 @@ export function useConnectedSources(node: ImageGenerationNode) {
 			if (input === undefined) {
 				continue;
 			}
-			uiConnections.push({
-				id: connection.id,
-				output,
-				outputNode,
-				input,
-				inputNode: node,
-			});
 
 			switch (outputNode.type) {
 				case "operation":
@@ -162,7 +156,15 @@ export function useConnectedSources(node: ImageGenerationNode) {
 						case "github":
 							throw new Error("vectore store can not be connected");
 						case "dataStore":
-							// TODO: implement dataStore
+							// Skip Data Store "source" output - it's only for Data Query connections
+							if (output.accessor === "source") {
+								continue;
+							}
+							connectedVariableSources.push({
+								output,
+								node: outputNode as DataStoreNode,
+								connection,
+							});
 							break;
 						default: {
 							const _exhaustiveCheck: never = outputNode.content.type;
@@ -175,6 +177,14 @@ export function useConnectedSources(node: ImageGenerationNode) {
 					throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
 				}
 			}
+
+			uiConnections.push({
+				id: connection.id,
+				output,
+				outputNode,
+				input,
+				inputNode: node,
+			});
 		}
 
 		return {
