@@ -21,7 +21,7 @@ import { EditableText } from "../../ui/editable-text";
 import { Tooltip } from "../../ui/tooltip";
 import { NodeGenerationStatusBadge } from "./node-generation-status-badge";
 import { nodeRequiresSetup, useNodeGenerationStatus } from "./node-utils";
-import { DocumentNodeInfo, GitHubNodeInfo } from "./ui";
+import { DataStoreNodeInfo, DocumentNodeInfo, GitHubNodeInfo } from "./ui";
 import { GitHubTriggerStatusBadge } from "./ui/github-trigger/status-badge";
 
 export function CardXyFlowNode({ id, selected }: NodeProps) {
@@ -347,6 +347,9 @@ export function NodeComponent({
 					!borderGradientStyle &&
 						v.isQuery &&
 						"from-query-node-1/30 via-query-node-1/50 to-query-node-1",
+					!borderGradientStyle &&
+						v.isDataStore &&
+						"from-data-store-node-1/30 via-data-store-node-1/50 to-data-store-node-1",
 				)}
 				style={borderGradientStyle}
 			/>
@@ -454,6 +457,7 @@ export function NodeComponent({
 					</div>
 				</div>
 			</div>
+			<DataStoreNodeInfo node={node} />
 			<DocumentNodeInfo node={node} />
 			<GitHubNodeInfo node={node} />
 			{!preview && (
