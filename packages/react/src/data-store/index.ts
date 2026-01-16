@@ -1,6 +1,6 @@
 export {
 	DataStoreContext,
-	useDataStore,
 	type DataStoreContextValue,
 	type DataStoreItem,
+	useDataStore,
 } from "./context";

@@ -1,6 +1,6 @@
 import { Select } from "@giselle-internal/ui/select";
 import { DataStoreId, type DataStoreNode } from "@giselles-ai/protocol";
-import { type DataStoreContextValue, useDataStore } from "@giselles-ai/react";
+import { useDataStore } from "@giselles-ai/react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDeleteNode, useUpdateNodeData } from "../../../app-designer";
@@ -10,11 +10,6 @@ import {
 	PropertiesPanelContent,
 	PropertiesPanelRoot,
 } from "../ui/properties-panel";
-
-interface DataStoreItem {
-	id: string;
-	name: string;
-}
 
 export function DataStoreNodePropertiesPanel({
 	node,
