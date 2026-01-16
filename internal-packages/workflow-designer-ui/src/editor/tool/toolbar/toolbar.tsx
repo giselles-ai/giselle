@@ -91,7 +91,12 @@ export function Toolbar() {
 		llmProviders: s.llmProviders,
 		nodes: s.nodes,
 	}));
-	const { aiGatewayUnsupportedModels, generateContentNode } = useFeatureFlag();
+	const {
+		aiGatewayUnsupportedModels,
+		generateContentNode,
+		stage,
+		dataStore: dataStoreFlag,
+	} = useFeatureFlag();
 	const hasAppRequestNode = useMemo(
 		() => nodes.some((node) => node.content.type === "appEntry"),
 		[nodes],
@@ -204,8 +209,6 @@ export function Toolbar() {
 			onMouseLeave={handleModelLeave}
 		/>
 	);
-
-	const { stage, dataStore: dataStoreFlag } = useFeatureFlag();
 
 	return (
 		<div
