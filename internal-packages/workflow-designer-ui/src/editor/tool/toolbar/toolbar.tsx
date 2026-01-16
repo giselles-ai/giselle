@@ -12,6 +12,8 @@ import {
 	createActionNode,
 	createAppEntryNode,
 	createContentGenerationNode,
+	createDataQueryNode,
+	createDataStoreNode,
 	createDocumentVectorStoreNode,
 	createFileNode,
 	createGitHubVectorStoreNode,
@@ -33,6 +35,8 @@ import {
 import { Popover, ToggleGroup } from "radix-ui";
 import { useEffect, useMemo, useState } from "react";
 import { useAppDesignerStore } from "../../../app-designer";
+import { DataQueryIcon } from "../../../icons/node/data-query-icon";
+import { DataStoreIcon } from "../../../icons/node/data-store-icon";
 import { DocumentVectorStoreIcon } from "../../../icons/node/document-vector-store-icon";
 import { Tooltip } from "../../../ui/tooltip";
 import { isToolAction } from "../types";
@@ -500,6 +504,8 @@ export function Toolbar() {
 														setSelectedTool(
 															addNodeTool(createDocumentVectorStoreNode()),
 														);
+													} else if (sourceType === "dataStore") {
+														setSelectedTool(addNodeTool(createDataStoreNode()));
 													}
 												}}
 											>
@@ -519,6 +525,14 @@ export function Toolbar() {
 													<GitHubIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">GitHub Vector Store</p>
 												</ToggleGroup.Item>
+												<ToggleGroup.Item
+													value="dataStore"
+													data-tool
+													className="hover:bg-[rgba(222,233,242,0.10)]"
+												>
+													<DataStoreIcon className="w-[20px] h-[20px]" />
+													<p className="text-[14px]">Data Store</p>
+												</ToggleGroup.Item>
 											</ToggleGroup.Root>
 
 											<p className="text-[#505D7B] text-[12px] font-medium leading-[170%] mt-[8px] mb-[4px] px-[8px]">
@@ -537,6 +551,11 @@ export function Toolbar() {
 														case "query":
 															setSelectedTool(addNodeTool(createQueryNode()));
 															break;
+														case "dataQuery":
+															setSelectedTool(
+																addNodeTool(createDataQueryNode()),
+															);
+															break;
 													}
 												}}
 											>
@@ -547,6 +566,14 @@ export function Toolbar() {
 												>
 													<DatabaseZapIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">Vector Query</p>
+												</ToggleGroup.Item>
+												<ToggleGroup.Item
+													value="dataQuery"
+													data-tool
+													className="hover:bg-[rgba(222,233,242,0.10)]"
+												>
+													<DataQueryIcon className="w-[20px] h-[20px]" />
+													<p className="text-[14px]">Data Query</p>
 												</ToggleGroup.Item>
 											</ToggleGroup.Root>
 										</div>
