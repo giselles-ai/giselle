@@ -5,6 +5,9 @@ import {
 } from "@giselles-ai/language-model";
 import {
 	isAppEntryNode,
+	isContentGenerationNode,
+	isDataQueryNode,
+	isDataStoreNode,
 	isEndNode,
 	isFileNode,
 	isImageGenerationNode,
@@ -180,6 +183,25 @@ export function isSupportedConnection(
 		return {
 			canConnect: false,
 			message: "Vector store node can only be connected to query node",
+		};
+	}
+
+	// Data store node can only be connected to data query, text generation, image generation, or content generation node
+	if (isDataStoreNode(outputNode)) {
+		if (
+			isDataQueryNode(inputNode) ||
+			isTextGenerationNode(inputNode) ||
+			isImageGenerationNode(inputNode) ||
+			isContentGenerationNode(inputNode)
+		) {
+			return {
+				canConnect: true,
+			};
+		}
+		return {
+			canConnect: false,
+			message:
+				"Data store node can only be connected to data query or generation nodes",
 		};
 	}
 
