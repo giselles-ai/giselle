@@ -78,6 +78,8 @@ function getNodeIconBackground(node: NodeLike): string {
 				return "bg-action-node-1";
 			case "query":
 				return "bg-query-node-1";
+			case "dataQuery":
+				return "bg-data-query-node-1";
 			case "end":
 				return STAGE_NODE_BG_CLASS_SOLID;
 			case "dataQuery":
@@ -101,6 +103,8 @@ function getNodeIconBackground(node: NodeLike): string {
 				return "bg-github-node-1";
 			case "webPage":
 				return "bg-webPage-node-1";
+			case "dataStore":
+				return "bg-data-store-node-1";
 			default:
 				return "bg-bg-900";
 		}
