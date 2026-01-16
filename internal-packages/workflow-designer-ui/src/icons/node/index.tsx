@@ -203,9 +203,6 @@ export function NodeIcon({
 					return <PlayIcon {...props} data-content-type-icon />;
 				case "end":
 					return <FlagIcon {...props} data-content-type-icon />;
-				case "dataQuery":
-					// TODO: implement dataQuery icon
-					return <DatabaseZapIcon {...props} data-content-type-icon />;
 				default: {
 					const _exhaustiveCheck: never = node.content.type;
 					throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);

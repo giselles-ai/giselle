@@ -108,8 +108,7 @@ export function useConnectedOutputs(node: TextGenerationNode) {
 							});
 							break;
 						case "end":
-						case "dataQuery":
-							// End Node and DataQuery Node are handled elsewhere
+							// End Node are handled elsewhere
 							break;
 						case "dataQuery":
 							// TODO: implement dataQuery

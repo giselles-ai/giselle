@@ -82,9 +82,6 @@ function getNodeIconBackground(node: NodeLike): string {
 				return "bg-data-query-node-1";
 			case "end":
 				return STAGE_NODE_BG_CLASS_SOLID;
-			case "dataQuery":
-				// TODO: implement dataQuery
-				return "bg-bg-900";
 			default: {
 				const _exhaustiveCheck: never = node.content.type;
 				throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
