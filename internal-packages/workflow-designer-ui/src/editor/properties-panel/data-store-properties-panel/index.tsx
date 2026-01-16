@@ -120,7 +120,7 @@ function DataStorePropertiesContent({ node }: { node: DataStoreNode }) {
 					rel="noopener noreferrer"
 					className="text-[14px] text-inverse underline hover:text-inverse"
 				>
-					Manage Data Stores
+					Set Up Data Store
 				</Link>
 			</div>
 		</div>
