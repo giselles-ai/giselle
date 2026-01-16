@@ -2,7 +2,7 @@ import { Select } from "@giselle-internal/ui/select";
 import { DataStoreId, type DataStoreNode } from "@giselles-ai/protocol";
 import { useDataStore } from "@giselles-ai/react";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback } from "react";
 import { useDeleteNode, useUpdateNodeData } from "../../../app-designer";
 import { TriangleAlert } from "../../../icons";
 import { NodePanelHeader } from "../ui/node-panel-header";
@@ -41,27 +41,15 @@ function DataStorePropertiesContent({ node }: { node: DataStoreNode }) {
 	const dataStores = dataStoreContext?.dataStores ?? [];
 
 	const state = node.content.state;
-	const configuredState = state.status === "configured" ? state : undefined;
+	const selectedStoreId =
+		state.status === "configured" ? state.dataStoreId : undefined;
 
-	const [selectedStoreId, setSelectedStoreId] = useState<string | undefined>(
-		configuredState?.dataStoreId,
+	const selectedStore = dataStores.find(
+		(store) => store.id === selectedStoreId,
 	);
-
-	useEffect(() => {
-		if (state.status === "configured") {
-			setSelectedStoreId(state.dataStoreId);
-		} else {
-			setSelectedStoreId(undefined);
-		}
-	}, [state]);
-
-	const selectedStore = useMemo(() => {
-		return dataStores.find((store) => store.id === selectedStoreId);
-	}, [dataStores, selectedStoreId]);
 
 	const handleSelectStore = useCallback(
 		(storeId: string) => {
-			setSelectedStoreId(storeId);
 			updateNodeData(node, {
 				content: {
 					...node.content,
@@ -75,12 +63,9 @@ function DataStorePropertiesContent({ node }: { node: DataStoreNode }) {
 		[node, updateNodeData],
 	);
 
-	const isConfiguredButMissingStore = useMemo(() => {
-		if (!configuredState) return false;
-		return !dataStores.some(
-			(store) => store.id === configuredState.dataStoreId,
-		);
-	}, [configuredState, dataStores]);
+	const isConfiguredButMissingStore =
+		selectedStoreId &&
+		!dataStores.some((store) => store.id === selectedStoreId);
 
 	if (!dataStoreContext) {
 		return (
@@ -100,13 +85,13 @@ function DataStorePropertiesContent({ node }: { node: DataStoreNode }) {
 			<div className="space-y-[12px]">
 				<div className="space-y-[4px]">
 					<p className="text-[14px] text-inverse">Data Store</p>
-					{isConfiguredButMissingStore && configuredState && (
+					{isConfiguredButMissingStore && (
 						<div className="flex items-center gap-[6px] text-error-900 text-[13px]">
 							<TriangleAlert className="size-[16px]" />
 							<span>
 								The selected data store "
-								<span className="font-mono">{configuredState.dataStoreId}</span>
-								" is no longer available. Please choose another store.
+								<span className="font-mono">{selectedStoreId}</span>" is no
+								longer available. Please choose another store.
 							</span>
 						</div>
 					)}
@@ -122,7 +107,7 @@ function DataStorePropertiesContent({ node }: { node: DataStoreNode }) {
 						placeholder="Select a data store"
 						triggerClassName={
 							dataStores.length === 0
-								? "opacity-40 pointer-events-none"
+								? "opacity-40 cursor-not-allowed"
 								: undefined
 						}
 					/>
