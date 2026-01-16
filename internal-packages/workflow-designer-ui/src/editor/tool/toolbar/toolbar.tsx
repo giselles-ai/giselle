@@ -12,6 +12,7 @@ import {
 	createActionNode,
 	createAppEntryNode,
 	createContentGenerationNode,
+	createDataStoreNode,
 	createDocumentVectorStoreNode,
 	createFileNode,
 	createGitHubVectorStoreNode,
@@ -33,6 +34,7 @@ import {
 import { Popover, ToggleGroup } from "radix-ui";
 import { useEffect, useMemo, useState } from "react";
 import { useAppDesignerStore } from "../../../app-designer";
+import { DataStoreIcon } from "../../../icons/node/data-store-icon";
 import { DocumentVectorStoreIcon } from "../../../icons/node/document-vector-store-icon";
 import { Tooltip } from "../../../ui/tooltip";
 import { isToolAction } from "../types";
@@ -500,6 +502,8 @@ export function Toolbar() {
 														setSelectedTool(
 															addNodeTool(createDocumentVectorStoreNode()),
 														);
+													} else if (sourceType === "dataStore") {
+														setSelectedTool(addNodeTool(createDataStoreNode()));
 													}
 												}}
 											>
@@ -518,6 +522,14 @@ export function Toolbar() {
 												>
 													<GitHubIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">GitHub Vector Store</p>
+												</ToggleGroup.Item>
+												<ToggleGroup.Item
+													value="dataStore"
+													data-tool
+													className="hover:bg-[rgba(222,233,242,0.10)]"
+												>
+													<DataStoreIcon className="w-[20px] h-[20px]" />
+													<p className="text-[14px]">Data Store</p>
 												</ToggleGroup.Item>
 											</ToggleGroup.Root>
 
