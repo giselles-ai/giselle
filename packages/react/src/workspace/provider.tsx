@@ -3,6 +3,10 @@
 import type { TelemetrySettings, UsageLimits } from "@giselles-ai/giselle";
 import type { ReactNode } from "react";
 import {
+	DataStoreContext,
+	type DataStoreContextValue,
+} from "../data-store/context";
+import {
 	FeatureFlagContext,
 	type FeatureFlagContextValue,
 } from "../feature-flags";
@@ -26,6 +30,7 @@ export function WorkspaceProvider({
 	telemetry,
 	featureFlag,
 	vectorStore,
+	dataStore,
 	trigger,
 	generationTimeout,
 }: {
@@ -35,6 +40,7 @@ export function WorkspaceProvider({
 	telemetry?: TelemetrySettings;
 	featureFlag?: FeatureFlagContextValue;
 	vectorStore?: VectorStoreContextValue;
+	dataStore?: { stores: Array<{ id: string; name: string }> };
 	trigger?: TriggerContextValue;
 	generationTimeout?: number;
 }) {
@@ -59,9 +65,20 @@ export function WorkspaceProvider({
 					<UsageLimitsProvider limits={usageLimits}>
 						<IntegrationProvider {...integration}>
 							<VectorStoreContext value={vectorStore}>
-								<ZustandBridgeGenerationProvider timeout={generationTimeout}>
-									{children}
-								</ZustandBridgeGenerationProvider>
+								<DataStoreContext
+									value={
+										dataStore
+											? {
+													dataStores: dataStore.stores,
+													settingPath: "/settings/team/data-stores",
+												}
+											: undefined
+									}
+								>
+									<ZustandBridgeGenerationProvider timeout={generationTimeout}>
+										{children}
+									</ZustandBridgeGenerationProvider>
+								</DataStoreContext>
 							</VectorStoreContext>
 						</IntegrationProvider>
 					</UsageLimitsProvider>

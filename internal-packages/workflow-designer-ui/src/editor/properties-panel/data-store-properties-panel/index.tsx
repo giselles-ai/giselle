@@ -41,10 +41,9 @@ export function DataStoreNodePropertiesPanel({
 
 function DataStorePropertiesContent({ node }: { node: DataStoreNode }) {
 	const updateNodeData = useUpdateNodeData();
-	const dataStoreContext = useDataStore() as DataStoreContextValue | undefined;
+	const dataStoreContext = useDataStore();
 	const settingPath = dataStoreContext?.settingPath;
-	const dataStores = (dataStoreContext?.dataStores ?? []) as DataStoreItem[];
-	const isLoading = dataStoreContext?.isLoading ?? false;
+	const dataStores = dataStoreContext?.dataStores ?? [];
 
 	const state = node.content.state;
 	const configuredState = state.status === "configured" ? state : undefined;
@@ -123,22 +122,18 @@ function DataStorePropertiesContent({ node }: { node: DataStoreNode }) {
 						}))}
 						value={selectedStoreId ?? ""}
 						onValueChange={
-							!isLoading && dataStores.length > 0
-								? handleSelectStore
-								: undefined
+							dataStores.length > 0 ? handleSelectStore : undefined
 						}
-						placeholder={
-							isLoading ? "Loading stores..." : "Select a data store"
-						}
+						placeholder="Select a data store"
 						triggerClassName={
-							isLoading || dataStores.length === 0
+							dataStores.length === 0
 								? "opacity-40 pointer-events-none"
 								: undefined
 						}
 					/>
 				</div>
 
-				{!isLoading && dataStores.length === 0 && (
+				{dataStores.length === 0 && (
 					<div className="rounded-md border border-dashed border-border/15 bg-surface/10 px-4 py-6 text-sm text-inverse">
 						No data stores available. Create one from settings to use it here.
 					</div>

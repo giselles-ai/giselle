@@ -65,6 +65,9 @@ export function Page({
 						})),
 					}}
 					usageLimits={data.usageLimits}
+					dataStore={{
+						stores: data.teamDataStores,
+					}}
 					telemetry={{
 						metadata: {
 							teamPlan: data.workspaceTeam.plan,
