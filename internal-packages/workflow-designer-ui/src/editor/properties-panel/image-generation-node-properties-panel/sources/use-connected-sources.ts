@@ -124,7 +124,8 @@ export function useConnectedSources(node: ImageGenerationNode) {
 							});
 							break;
 						case "end":
-							// End Node has no Output so do nothing
+						case "dataQuery":
+							// End Node and DataQuery Node have no Output here
 							break;
 						case "dataQuery":
 							// TODO: implement dataQuery
@@ -160,6 +161,7 @@ export function useConnectedSources(node: ImageGenerationNode) {
 							break;
 						case "vectorStore":
 						case "github":
+						case "dataStore":
 							throw new Error("vectore store can not be connected");
 						case "dataStore":
 							// TODO: implement dataStore
