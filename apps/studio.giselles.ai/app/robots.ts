@@ -6,7 +6,6 @@ const disallowedPaths: string[] = [
 	"/auth/connect/",
 	"/password_reset/confirm",
 	"/webhooks/",
-	"/api/giselle/",
 	"/api/generations/",
 	"/api/vector-stores/",
 ];
