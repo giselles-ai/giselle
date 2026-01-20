@@ -12,6 +12,7 @@ import {
 	createActionNode,
 	createAppEntryNode,
 	createContentGenerationNode,
+	createDataQueryNode,
 	createDataStoreNode,
 	createDocumentVectorStoreNode,
 	createFileNode,
@@ -34,6 +35,7 @@ import {
 import { Popover, ToggleGroup } from "radix-ui";
 import { useEffect, useMemo, useState } from "react";
 import { useAppDesignerStore } from "../../../app-designer";
+import { DataQueryIcon } from "../../../icons/node/data-query-icon";
 import { DataStoreIcon } from "../../../icons/node/data-store-icon";
 import { DocumentVectorStoreIcon } from "../../../icons/node/document-vector-store-icon";
 import { Tooltip } from "../../../ui/tooltip";
@@ -554,6 +556,11 @@ export function Toolbar() {
 														case "query":
 															setSelectedTool(addNodeTool(createQueryNode()));
 															break;
+														case "dataQuery":
+															setSelectedTool(
+																addNodeTool(createDataQueryNode()),
+															);
+															break;
 													}
 												}}
 											>
@@ -565,6 +572,16 @@ export function Toolbar() {
 													<DatabaseZapIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">Vector Query</p>
 												</ToggleGroup.Item>
+												{dataStoreFlag && (
+													<ToggleGroup.Item
+														value="dataQuery"
+														data-tool
+														className="hover:bg-[rgba(222,233,242,0.10)]"
+													>
+														<DataQueryIcon className="w-[20px] h-[20px]" />
+														<p className="text-[14px]">Data Query</p>
+													</ToggleGroup.Item>
+												)}
 											</ToggleGroup.Root>
 										</div>
 									</Popover.Content>
