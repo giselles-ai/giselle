@@ -131,7 +131,6 @@ export function useConnectedSources(node: QueryNode) {
 							break;
 						case "file":
 						case "webPage":
-							break;
 						case "dataStore":
 							break;
 						default: {
