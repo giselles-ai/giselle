@@ -3,6 +3,7 @@ import type { DataQueryNode } from "@giselles-ai/protocol";
 import { TextEditor } from "@giselles-ai/text-editor/react-internal";
 import { X } from "lucide-react";
 import {
+	useAppDesignerStore,
 	useRemoveConnectionAndInput,
 	useUpdateNodeDataContent,
 } from "../../../app-designer";
@@ -13,6 +14,7 @@ import { useConnectedSources } from "./sources";
 export function DataQueryPanel({ node }: { node: DataQueryNode }) {
 	const updateNodeDataContent = useUpdateNodeDataContent();
 	const removeConnectionAndInput = useRemoveConnectionAndInput();
+	const allConnections = useAppDesignerStore((s) => s.connections);
 	const { dataStore: connectedDataStores, connections } =
 		useConnectedSources(node);
 
@@ -70,7 +72,15 @@ export function DataQueryPanel({ node }: { node: DataQueryNode }) {
 												type="button"
 												aria-label={`Disconnect ${name}`}
 												onClick={() => {
-													removeConnectionAndInput(dataStore.connection.id);
+													// Remove all connections from the same DataStore node (including schema)
+													const connectionsToRemove = allConnections.filter(
+														(c) =>
+															c.inputNode.id === node.id &&
+															c.outputNode.id === dataStore.node.id,
+													);
+													for (const conn of connectionsToRemove) {
+														removeConnectionAndInput(conn.id);
+													}
 												}}
 												className="absolute top-[6px] right-[6px] size-[22px] rounded-full flex items-center justify-center text-link-muted hover:text-inverse hover:bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_20%,transparent)] transition-colors"
 												title="Remove data source"
