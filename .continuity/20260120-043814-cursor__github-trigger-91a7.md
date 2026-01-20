@@ -39,6 +39,7 @@ This section is intentionally stable: do not overwrite it when updating the ledg
 - Committed and pushed changes to `cursor/github-trigger-91a7`.
 - Added missing `name` prop to Toggle to satisfy type check.
 - Committed and pushed CI fix to `cursor/github-trigger-91a7`.
+- Confirmed reactions remain unconditional (not tied to the comment toggle).
 
 ## Now
 
