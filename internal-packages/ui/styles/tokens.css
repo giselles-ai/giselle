@@ -108,4 +108,6 @@
 	--color-node-vector-store-secondary: hsl(76, 100%, 35%);
 	--color-node-data-store-primary: hsl(32, 95%, 55%);
 	--color-node-data-store-secondary: hsl(32, 95%, 42%);
+	--color-node-data-query-primary: hsl(280, 87%, 55%);
+	--color-node-data-query-secondary: hsl(280, 87%, 42%);
 }
