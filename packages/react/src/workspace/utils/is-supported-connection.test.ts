@@ -502,6 +502,50 @@ describe("isSupportedConnection", () => {
 		});
 	});
 
+	describe("Data query node output restrictions", () => {
+		test("should allow connection from DataQueryNode to TextGenerationNode", () => {
+			const outputNode = createDataQueryNode(NodeId.generate());
+			const inputNode = createTextGenerationNode(NodeId.generate());
+
+			const result = isSupportedConnection(outputNode, inputNode);
+			expect(result.canConnect).toBe(true);
+		});
+
+		test("should allow connection from DataQueryNode to ImageGenerationNode", () => {
+			const outputNode = createDataQueryNode(NodeId.generate());
+			const inputNode = createImageGenerationNode(NodeId.generate());
+
+			const result = isSupportedConnection(outputNode, inputNode);
+			expect(result.canConnect).toBe(true);
+		});
+
+		test("should reject connection from DataQueryNode to ActionNode", () => {
+			const outputNode = createDataQueryNode(NodeId.generate());
+			const inputNode = createActionNode(NodeId.generate());
+
+			const result = isSupportedConnection(outputNode, inputNode);
+			expect(result.canConnect).toBe(false);
+			if (!result.canConnect) {
+				expect(result.message).toBe(
+					"Data query node can only be connected to text generation or image generation",
+				);
+			}
+		});
+
+		test("should reject connection from DataQueryNode to QueryNode", () => {
+			const outputNode = createDataQueryNode(NodeId.generate());
+			const inputNode = createQueryNode(NodeId.generate());
+
+			const result = isSupportedConnection(outputNode, inputNode);
+			expect(result.canConnect).toBe(false);
+			if (!result.canConnect) {
+				expect(result.message).toBe(
+					"Data query node can only be connected to text generation or image generation",
+				);
+			}
+		});
+	});
+
 	describe("Valid connections", () => {
 		test("should allow valid connection between compatible nodes", () => {
 			const outputNode = createTextGenerationNode(NodeId.generate());

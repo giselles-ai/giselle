@@ -216,6 +216,17 @@ export function isSupportedConnection(
 		}
 	}
 
+	// data query can only be connected to text generation or image generation
+	if (isDataQueryNode(outputNode)) {
+		if (!isTextGenerationNode(inputNode) && !isImageGenerationNode(inputNode)) {
+			return {
+				canConnect: false,
+				message:
+					"Data query node can only be connected to text generation or image generation",
+			};
+		}
+	}
+
 	return {
 		canConnect: true,
 	};
