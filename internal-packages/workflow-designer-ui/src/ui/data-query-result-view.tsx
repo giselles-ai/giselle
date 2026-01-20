@@ -120,7 +120,7 @@ function getDataQueryResults(generation: Generation): DataQueryResult[] {
 	const results: DataQueryResult[] = [];
 	for (const output of generation.outputs) {
 		if (output.type === "data-query-result") {
-			results.push(output.content as DataQueryResult);
+			results.push(output.content);
 		}
 	}
 
