@@ -15,20 +15,23 @@ import {
 
 function getNodeIconColor(node: NodeLike): string {
 	if (node.type === "operation") {
-		// handle out-of-union runtime type safely without widening types
-		if (`${node.content.type}` === "vectorStore") {
-			return "text-background";
-		}
 		switch (node.content.type) {
 			case "textGeneration":
+			case "contentGeneration":
 			case "imageGeneration":
 			case "action":
+			case "dataQuery":
 				return "text-inverse";
 			case "trigger":
 			case "query":
 				return "text-background";
-			default:
+			case "appEntry":
+			case "end":
 				return "text-inverse";
+			default: {
+				const _exhaustiveCheck: never = node.content.type;
+				throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
+			}
 		}
 	}
 	if (node.type === "variable") {
@@ -40,9 +43,12 @@ function getNodeIconColor(node: NodeLike): string {
 			case "text":
 			case "file":
 			case "webPage":
+			case "dataStore":
 				return "text-background";
-			default:
-				return "text-inverse";
+			default: {
+				const _exhaustiveCheck: never = node.content.type;
+				throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
+			}
 		}
 	}
 	return "text-inverse";
@@ -81,8 +87,7 @@ function getNodeIconBackground(node: NodeLike): string {
 			case "end":
 				return STAGE_NODE_BG_CLASS_SOLID;
 			case "dataQuery":
-				// TODO: implement dataQuery
-				return "bg-bg-900";
+				return "bg-data-query-node-1";
 			default: {
 				const _exhaustiveCheck: never = node.content.type;
 				throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
@@ -101,8 +106,12 @@ function getNodeIconBackground(node: NodeLike): string {
 				return "bg-github-node-1";
 			case "webPage":
 				return "bg-webPage-node-1";
-			default:
-				return "bg-bg-900";
+			case "dataStore":
+				return "bg-data-store-node-1";
+			default: {
+				const _exhaustiveCheck: never = node.content.type;
+				throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
+			}
 		}
 	}
 	return "bg-bg-900";
