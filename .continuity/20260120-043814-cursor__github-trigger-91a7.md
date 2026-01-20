@@ -35,10 +35,11 @@ This section is intentionally stable: do not overwrite it when updating the ledg
 - Guarded in-progress comment creation in GitHub event handlers.
 - Preserved the flag on GitHub trigger reconfiguration and defaulted on setup.
 - Updated GitHub trigger tests for the new config field.
+- Committed and pushed changes to `cursor/github-trigger-91a7`.
 
 ## Now
 
-- Commit and push changes.
+- Ready for review.
 
 ## Next
 
