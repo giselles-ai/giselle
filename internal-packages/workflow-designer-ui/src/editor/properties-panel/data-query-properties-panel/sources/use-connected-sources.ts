@@ -31,7 +31,7 @@ export function useConnectedSources(node: DataQueryNode) {
 			(connection) => connection.inputNode.id === node.id,
 		);
 
-		const connectedDatastoreSources: ConnectedSource<DataStoreNode>[] = [];
+		const connectedDataStoreSources: ConnectedSource<DataStoreNode>[] = [];
 		const connectedActionSources: ConnectedSource<ActionNode>[] = [];
 		const connectedTriggerSources: ConnectedSource<TriggerNode>[] = [];
 		const connectedAppEntrySources: ConnectedSource<AppEntryNode>[] = [];
@@ -117,7 +117,7 @@ export function useConnectedSources(node: DataQueryNode) {
 							if (output.accessor === "schema") {
 								continue;
 							}
-							connectedDatastoreSources.push({
+							connectedDataStoreSources.push({
 								output,
 								node: outputNode as DataStoreNode,
 								connection,
@@ -158,14 +158,14 @@ export function useConnectedSources(node: DataQueryNode) {
 
 		return {
 			all: [
-				...connectedDatastoreSources,
+				...connectedDataStoreSources,
 				...connectedGeneratedSources,
 				...connectedVariableSources,
 				...connectedActionSources,
 				...connectedTriggerSources,
 				...connectedAppEntrySources,
 			],
-			datastore: connectedDatastoreSources,
+			dataStore: connectedDataStoreSources,
 			generation: connectedGeneratedSources,
 			variable: connectedVariableSources,
 			action: connectedActionSources,

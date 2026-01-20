@@ -13,7 +13,7 @@ import { useConnectedSources } from "./sources";
 export function DataQueryPanel({ node }: { node: DataQueryNode }) {
 	const updateNodeDataContent = useUpdateNodeDataContent();
 	const removeConnectionAndInput = useRemoveConnectionAndInput();
-	const { datastore: connectedDataStores, connections } =
+	const { dataStore: connectedDataStores, connections } =
 		useConnectedSources(node);
 
 	const hasDataStoreConnections = connectedDataStores.length > 0;
