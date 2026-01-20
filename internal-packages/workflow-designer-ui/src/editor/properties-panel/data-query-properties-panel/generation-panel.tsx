@@ -41,7 +41,7 @@ export function DataQueryGenerationPanel({ node }: { node: DataQueryNode }) {
 					{(currentGeneration.status === "created" ||
 						currentGeneration.status === "queued" ||
 						currentGeneration.status === "running") && (
-						<p data-header-text>Generating...</p>
+						<p data-header-text>Running query...</p>
 					)}
 					{currentGeneration.status === "completed" && (
 						<p data-header-text>Result</p>
