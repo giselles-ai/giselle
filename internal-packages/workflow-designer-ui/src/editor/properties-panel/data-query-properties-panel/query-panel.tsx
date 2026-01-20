@@ -1,91 +1,33 @@
 import { defaultName } from "@giselles-ai/node-registry";
-import { type DataQueryNode, isDataStoreNode } from "@giselles-ai/protocol";
-import type { UIConnection } from "@giselles-ai/react";
+import type { DataQueryNode } from "@giselles-ai/protocol";
 import { TextEditor } from "@giselles-ai/text-editor/react-internal";
 import { X } from "lucide-react";
-import { useMemo } from "react";
 import {
-	useAppDesignerStore,
 	useRemoveConnectionAndInput,
 	useUpdateNodeDataContent,
 } from "../../../app-designer";
 import { DataStoreIcon } from "../../../icons/node/data-store-icon";
 import { SettingDetail } from "../ui/setting-label";
+import { useConnectedSources } from "./sources";
 
 export function DataQueryPanel({ node }: { node: DataQueryNode }) {
 	const updateNodeDataContent = useUpdateNodeDataContent();
 	const removeConnectionAndInput = useRemoveConnectionAndInput();
-	const connections = useAppDesignerStore((s) => s.connections);
-	const nodes = useAppDesignerStore((s) => s.nodes);
-
-	const connectedDataStores = useMemo(() => {
-		const incomingConnections = connections.filter(
-			(c) => c.inputNode.id === node.id,
-		);
-		return incomingConnections
-			.map((c) => {
-				const sourceNode = nodes.find((n) => n.id === c.outputNode.id);
-				if (sourceNode && isDataStoreNode(sourceNode)) {
-					const output = sourceNode.outputs.find((o) => o.id === c.outputId);
-					// Data Store has two outputs: "schema" (for Text Generation prompts) and "source" (for Data Query).
-					// Skip the "schema" connection here since this is the Data Query panel.
-					if (output?.accessor === "schema") {
-						return null;
-					}
-					return { node: sourceNode, connection: c };
-				}
-				return null;
-			})
-			.filter((n) => n !== null);
-	}, [connections, node.id, nodes]);
-
-	const connectedInputsWithoutDataStore = useMemo(() => {
-		const incomingConnections = connections.filter(
-			(c) => c.inputNode.id === node.id,
-		);
-		const uiConnections: UIConnection[] = [];
-		for (const c of incomingConnections) {
-			const outputNode = nodes.find((n) => n.id === c.outputNode.id);
-			if (!outputNode || isDataStoreNode(outputNode)) {
-				continue;
-			}
-			const output = outputNode.outputs.find((o) => o.id === c.outputId);
-			if (!output) {
-				continue;
-			}
-			const inputNode = nodes.find((n) => n.id === c.inputNode.id);
-			if (!inputNode) {
-				continue;
-			}
-			const input = inputNode.inputs.find((i) => i.id === c.inputId);
-			if (!input) {
-				continue;
-			}
-			uiConnections.push({
-				id: c.id,
-				outputNode,
-				output,
-				inputNode,
-				input,
-			});
-		}
-		return uiConnections;
-	}, [connections, node.id, nodes]);
+	const { datastore: connectedDataStores, connections } =
+		useConnectedSources(node);
 
 	const hasDataStoreConnections = connectedDataStores.length > 0;
 
 	return (
 		<div className="flex flex-col gap-[12px]">
 			<TextEditor
-				key={JSON.stringify(
-					connectedInputsWithoutDataStore.map((c) => c.outputNode.id),
-				)}
+				key={JSON.stringify(connections.map((c) => c.outputNode.id))}
 				placeholder="Write your query here... Use @ to reference other nodes"
 				value={node.content.query}
 				onValueChange={(value) => {
 					updateNodeDataContent(node, { query: value });
 				}}
-				connections={connectedInputsWithoutDataStore}
+				connections={connections}
 				showToolbar={false}
 				editorClassName="bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] border-0 !pt-[12px] !pr-[12px] !pb-[12px] !pl-[12px] rounded-[8px] min-h-[180px]"
 				header={

@@ -1,6 +1,7 @@
 import {
 	type ActionNode,
 	type AppEntryNode,
+	type DataQueryNode,
 	isDataStoreNode,
 	type QueryNode,
 	type TextGenerationNode,
@@ -29,6 +30,8 @@ export function useConnectedOutputs(node: TextGenerationNode) {
 		const connectedVariableInputs: ConnectedOutputWithDetails<VariableNode>[] =
 			[];
 		const connectedQueryInputs: ConnectedOutputWithDetails<QueryNode>[] = [];
+		const connectedDataQueryInputs: ConnectedOutputWithDetails<DataQueryNode>[] =
+			[];
 		const connectedAppEntryInputs: ConnectedOutputWithDetails<AppEntryNode>[] =
 			[];
 
@@ -116,7 +119,11 @@ export function useConnectedOutputs(node: TextGenerationNode) {
 							// End Node has no Output so do nothing
 							break;
 						case "dataQuery":
-							// TODO: implement dataQuery
+							connectedDataQueryInputs.push({
+								...output,
+								node: outputNode as DataQueryNode,
+								connection,
+							});
 							break;
 						default: {
 							const _exhaustiveCheck: never = outputNode.content.type;
@@ -145,6 +152,7 @@ export function useConnectedOutputs(node: TextGenerationNode) {
 				...connectedActionInputs,
 				...connectedVariableInputs,
 				...connectedQueryInputs,
+				...connectedDataQueryInputs,
 				...connectedAppEntryInputs,
 			],
 			generation: connectedGeneratedInputs,
@@ -152,6 +160,7 @@ export function useConnectedOutputs(node: TextGenerationNode) {
 			action: connectedActionInputs,
 			trigger: connectedTriggerInputs,
 			query: connectedQueryInputs,
+			dataQuery: connectedDataQueryInputs,
 			appEntry: connectedAppEntryInputs,
 			connections: uiConnections,
 		};

@@ -1,17 +1,25 @@
 import type {
 	ActionNode,
 	AppEntryNode,
+	Connection,
 	ContentGenerationNode,
 	DataQueryNode,
 	DataStoreNode,
+	NodeBase,
+	Output,
 	TextGenerationNode,
+	TextNode,
 	TriggerNode,
-	VariableNode,
 } from "@giselles-ai/protocol";
 import type { UIConnection } from "@giselles-ai/react";
 import { useMemo } from "react";
 import { useAppDesignerStore } from "../../../../app-designer";
-import type { ConnectedSource, DatastoreNode } from "./types";
+
+type ConnectedSource<T extends NodeBase> = {
+	output: Output;
+	node: T;
+	connection: Connection;
+};
 
 export function useConnectedSources(node: DataQueryNode) {
 	const { nodes, connections } = useAppDesignerStore((s) => ({
@@ -23,16 +31,16 @@ export function useConnectedSources(node: DataQueryNode) {
 			(connection) => connection.inputNode.id === node.id,
 		);
 
-		const connectedDatastoreSources: ConnectedSource<DatastoreNode>[] = [];
+		const connectedDatastoreSources: ConnectedSource<DataStoreNode>[] = [];
 		const connectedActionSources: ConnectedSource<ActionNode>[] = [];
 		const connectedTriggerSources: ConnectedSource<TriggerNode>[] = [];
 		const connectedAppEntrySources: ConnectedSource<AppEntryNode>[] = [];
 		const connectedGeneratedSources: ConnectedSource<
 			TextGenerationNode | ContentGenerationNode
 		>[] = [];
-		const connectedVariableSources: ConnectedSource<VariableNode>[] = [];
-
+		const connectedVariableSources: ConnectedSource<TextNode>[] = [];
 		const uiConnections: UIConnection[] = [];
+
 		for (const connection of connectionsToThisNode) {
 			const outputNode = nodes.find((n) => n.id === connection.outputNode.id);
 			if (outputNode === undefined) {
@@ -50,13 +58,6 @@ export function useConnectedSources(node: DataQueryNode) {
 			if (input === undefined) {
 				continue;
 			}
-			uiConnections.push({
-				id: connection.id,
-				output,
-				outputNode,
-				input,
-				inputNode: node,
-			});
 
 			switch (outputNode.type) {
 				case "operation":
@@ -112,9 +113,9 @@ export function useConnectedSources(node: DataQueryNode) {
 				case "variable":
 					switch (outputNode.content.type) {
 						case "dataStore":
-							// Skip "schema" output - it's only for Text Generation prompts
+							// Skip "schema" output - it's only for Text/Image Generation prompts
 							if (output.accessor === "schema") {
-								break;
+								continue;
 							}
 							connectedDatastoreSources.push({
 								output,
@@ -122,17 +123,17 @@ export function useConnectedSources(node: DataQueryNode) {
 								connection,
 							});
 							break;
-						case "github":
 						case "text":
 							connectedVariableSources.push({
 								output,
-								node: outputNode as VariableNode,
+								node: outputNode as TextNode,
 								connection,
 							});
 							break;
+						case "vectorStore":
+						case "github":
 						case "file":
 						case "webPage":
-						case "vectorStore":
 							break;
 						default: {
 							const _exhaustiveCheck: never = outputNode.content.type;
@@ -145,6 +146,14 @@ export function useConnectedSources(node: DataQueryNode) {
 					throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
 				}
 			}
+
+			uiConnections.push({
+				id: connection.id,
+				output,
+				outputNode,
+				input,
+				inputNode: node,
+			});
 		}
 
 		return {
