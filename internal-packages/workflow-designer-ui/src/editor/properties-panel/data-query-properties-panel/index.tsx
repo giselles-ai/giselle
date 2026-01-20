@@ -1,5 +1,5 @@
 import { useToasts } from "@giselle-internal/ui/toast";
-import { type DataQueryNode, Node } from "@giselles-ai/protocol";
+import type { DataQueryNode } from "@giselles-ai/protocol";
 import { useNodeGenerations } from "@giselles-ai/react";
 import {
 	isJsonContent,
@@ -21,6 +21,7 @@ import { NodePanelHeader } from "../ui/node-panel-header";
 import { SettingLabel } from "../ui/setting-label";
 import { DataQueryGenerationPanel } from "./generation-panel";
 import { DataQueryPanel } from "./query-panel";
+import { useConnectedSources } from "./sources";
 
 export function DataQueryNodePropertiesPanel({
 	node,
@@ -29,7 +30,6 @@ export function DataQueryNodePropertiesPanel({
 }) {
 	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
 	const connections = useAppDesignerStore((s) => s.connections);
-	const nodes = useAppDesignerStore((s) => s.nodes);
 	const updateNodeData = useUpdateNodeData();
 	const deleteNode = useDeleteNode();
 	const { createAndStartGenerationRunner, isGenerating, stopGenerationRunner } =
@@ -38,6 +38,7 @@ export function DataQueryNodePropertiesPanel({
 			origin: { type: "studio", workspaceId },
 		});
 	const { error } = useToasts();
+	const { all: connectedSources } = useConnectedSources(node);
 
 	const query = useMemo(() => {
 		const rawQuery = node.content.query.trim();
@@ -46,19 +47,6 @@ export function DataQueryNodePropertiesPanel({
 		}
 		return rawQuery;
 	}, [node.content.query]);
-
-	const connectedSources = useMemo(() => {
-		const incomingConnections = connections.filter(
-			(c) => c.inputNode.id === node.id,
-		);
-		return incomingConnections
-			.map((c) => nodes.find((n) => n.id === c.outputNode.id))
-			.filter((n) => {
-				const result = Node.safeParse(n);
-				return result.success;
-			})
-			.map((n) => Node.parse(n));
-	}, [connections, node.id, nodes]);
 
 	useKeyboardShortcuts({
 		onGenerate: () => {
@@ -79,7 +67,7 @@ export function DataQueryNodePropertiesPanel({
 				workspaceId,
 			},
 			operationNode: node,
-			sourceNodes: connectedSources,
+			sourceNodes: connectedSources.map((source) => source.node),
 			connections: connections.filter(
 				(connection) => connection.inputNode.id === node.id,
 			),
