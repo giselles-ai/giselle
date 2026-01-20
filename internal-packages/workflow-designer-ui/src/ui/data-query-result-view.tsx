@@ -1,4 +1,4 @@
-import type { Generation } from "@giselles-ai/protocol";
+import type { DataQueryResult, Generation } from "@giselles-ai/protocol";
 import { ChevronDownIcon, ChevronRightIcon } from "lucide-react";
 import { useState } from "react";
 import { WilliIcon } from "../icons";
@@ -110,14 +110,6 @@ export function DataQueryResultView({
 			)}
 		</div>
 	);
-}
-
-interface DataQueryResult {
-	type: "data-query";
-	dataStoreId: string;
-	rows: Array<Record<string, unknown>>;
-	rowCount: number;
-	query: string;
 }
 
 function getDataQueryResults(generation: Generation): DataQueryResult[] {
