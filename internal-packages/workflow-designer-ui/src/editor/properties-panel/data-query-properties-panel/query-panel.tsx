@@ -23,7 +23,6 @@ export function DataQueryPanel({ node }: { node: DataQueryNode }) {
 	return (
 		<div className="flex flex-col gap-[12px]">
 			<TextEditor
-				key={JSON.stringify(connections.map((c) => c.outputNode.id))}
 				placeholder="Write your query here... Use @ to reference other nodes"
 				value={node.content.query}
 				onValueChange={(value) => {
