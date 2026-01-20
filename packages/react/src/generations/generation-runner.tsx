@@ -39,8 +39,7 @@ export function GenerationRunner({ generation }: { generation: Generation }) {
 		case "query":
 			return <QueryRunner generation={generation} />;
 		case "dataQuery":
-			// TODO: implement DataQueryRunner
-			return null;
+			return <DataQueryRunner generation={generation} />;
 		case "appEntry": {
 			console.warn(
 				"start node runner was created. This is unintended behavior as start nodes do not require a runner.",
@@ -241,6 +240,46 @@ function QueryRunner({ generation }: { generation: Generation }) {
 					})
 					.catch((error) => {
 						console.error("Query execution failed:", error);
+						updateGenerationStatusToFailure(generation.id);
+					});
+			})
+			.catch((error) => {
+				console.error("Failed to set generation:", error);
+				updateGenerationStatusToFailure(generation.id);
+			});
+	});
+	return null;
+}
+
+function DataQueryRunner({ generation }: { generation: Generation }) {
+	const {
+		updateGenerationStatusToComplete,
+		updateGenerationStatusToRunning,
+		updateGenerationStatusToFailure,
+		addStopHandler,
+	} = useGenerationRunnerSystem();
+	const client = useGiselle();
+	const stop = () => {};
+	useOnce(() => {
+		if (!isQueuedGeneration(generation)) {
+			return;
+		}
+		addStopHandler(generation.id, stop);
+		client
+			.setGeneration({
+				generation,
+			})
+			.then(() => {
+				updateGenerationStatusToRunning(generation.id);
+				client
+					.executeDataQuery({
+						generation,
+					})
+					.then(() => {
+						updateGenerationStatusToComplete(generation.id);
+					})
+					.catch((error) => {
+						console.error("Data query execution failed:", error);
 						updateGenerationStatusToFailure(generation.id);
 					});
 			})
