@@ -336,6 +336,7 @@ export function GitHubTriggerConfiguredView({
 						Post a progress comment to GitHub while this workflow runs.
 					</p>
 					<Toggle
+						name="in-progress-comment"
 						checked={isInProgressCommentEnabled}
 						onCheckedChange={handleInProgressCommentToggle}
 					/>

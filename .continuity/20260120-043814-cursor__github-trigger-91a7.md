@@ -27,6 +27,7 @@ This section is intentionally stable: do not overwrite it when updating the ledg
 ## State
 
 - Toggle UI and config flag added; event handler now respects the flag.
+- CI type error fixed by supplying Toggle name prop.
 
 ## Done
 
@@ -36,10 +37,11 @@ This section is intentionally stable: do not overwrite it when updating the ledg
 - Preserved the flag on GitHub trigger reconfiguration and defaulted on setup.
 - Updated GitHub trigger tests for the new config field.
 - Committed and pushed changes to `cursor/github-trigger-91a7`.
+- Added missing `name` prop to Toggle to satisfy type check.
 
 ## Now
 
-- Ready for review.
+- Commit and push CI fix.
 
 ## Next
 
