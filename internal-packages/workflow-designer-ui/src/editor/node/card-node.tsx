@@ -78,6 +78,7 @@ function useVariant(node: NodeLike) {
 		const isTrigger = node.content.type === "trigger";
 		const isAction = node.content.type === "action";
 		const isQuery = node.content.type === "query";
+		const isDataQuery = node.content.type === "dataQuery";
 
 		const isVectorStoreGithub =
 			isVectorStore &&
@@ -96,10 +97,11 @@ function useVariant(node: NodeLike) {
 			isImageGeneration ||
 			isTrigger ||
 			isQuery ||
-			isDataStore;
+			isDataStore ||
+			isDataQuery;
 
 		const isDarkIconText =
-			isText || isFile || isWebPage || isQuery || isDataStore;
+			isText || isFile || isWebPage || isQuery || isDataStore || isDataQuery;
 		const isLightIconText =
 			isTextGeneration ||
 			isImageGeneration ||
@@ -121,6 +123,7 @@ function useVariant(node: NodeLike) {
 			isTrigger,
 			isAction,
 			isQuery,
+			isDataQuery,
 			isVectorStoreGithub,
 			isVectorStoreDocument,
 			isGithubTrigger,
@@ -176,6 +179,7 @@ export function NodeComponent({
 		isTrigger: boolean;
 		isAction: boolean;
 		isQuery: boolean;
+		isDataQuery: boolean;
 		isVectorStoreGithub: boolean;
 		isVectorStoreDocument: boolean;
 		isGithubTrigger: boolean;
@@ -203,6 +207,7 @@ export function NodeComponent({
 			if (variant.isTrigger) return "var(--color-trigger-node-1)";
 			if (variant.isAction) return "var(--color-action-node-1)";
 			if (variant.isQuery) return "var(--color-query-node-1)";
+			if (variant.isDataQuery) return "var(--color-data-query-node-1)";
 			return undefined;
 		},
 		[],
@@ -267,6 +272,7 @@ export function NodeComponent({
 				selected && v.isAction && "shadow-action-node-1",
 				selected && v.isQuery && "shadow-query-node-1",
 				selected && v.isDataStore && "shadow-data-store-node-1",
+				selected && v.isDataQuery && "shadow-data-query-node-1",
 				selected && "shadow-[0px_0px_20px_1px_rgba(0,_0,_0,_0.4)]",
 				selected &&
 					v.isTrigger &&
@@ -284,6 +290,7 @@ export function NodeComponent({
 				highlighted && v.isAction && "shadow-action-node-1",
 				highlighted && v.isQuery && "shadow-query-node-1",
 				highlighted && v.isDataStore && "shadow-data-store-node-1",
+				highlighted && v.isDataQuery && "shadow-data-query-node-1",
 				highlighted && "shadow-[0px_0px_20px_1px_rgba(0,_0,_0,_0.4)]",
 				highlighted &&
 					v.isTrigger &&
@@ -350,6 +357,9 @@ export function NodeComponent({
 					!borderGradientStyle &&
 						v.isDataStore &&
 						"from-data-store-node-1/30 via-data-store-node-1/50 to-data-store-node-1",
+					!borderGradientStyle &&
+						v.isDataQuery &&
+						"from-data-query-node-1/30 via-data-query-node-1/50 to-data-query-node-1",
 				)}
 				style={borderGradientStyle}
 			/>
@@ -380,6 +390,7 @@ export function NodeComponent({
 							v.isAction && "bg-action-node-1",
 							v.isQuery && "bg-query-node-1",
 							v.isDataStore && "bg-data-store-node-1",
+							v.isDataQuery && "bg-data-query-node-1",
 						)}
 					>
 						<NodeIcon
@@ -402,6 +413,7 @@ export function NodeComponent({
 								v.isAction && "fill-current",
 								v.isQuery && "stroke-current fill-none",
 								v.isDataStore && "stroke-current fill-none",
+								v.isDataQuery && "stroke-current fill-none",
 								v.isGithub && "fill-current",
 								v.isText && "text-background",
 								v.isFile && "text-background",
@@ -416,6 +428,7 @@ export function NodeComponent({
 								v.isAction && "text-inverse",
 								v.isQuery && "text-background",
 								v.isDataStore && "text-background",
+								v.isDataQuery && "text-background",
 							)}
 						/>
 					</div>
@@ -508,6 +521,8 @@ function InputOutput({
 										"!border-action-node-1 group-data-[state=connected]:!bg-action-node-1",
 									v.isQuery &&
 										"!border-query-node-1 group-data-[state=connected]:!bg-query-node-1",
+									v.isDataQuery &&
+										"!border-data-query-node-1 group-data-[state=connected]:!bg-data-query-node-1",
 								)}
 							/>
 							<div
@@ -561,6 +576,8 @@ function InputOutput({
 								"!border-query-node-1 group-data-[state=connected]:!bg-query-node-1 group-data-[state=connected]:!border-query-node-1",
 							v.isDataStore &&
 								"!border-data-store-node-1 group-data-[state=connected]:!bg-data-store-node-1 group-data-[state=connected]:!border-data-store-node-1",
+							v.isDataQuery &&
+								"!border-data-query-node-1 group-data-[state=connected]:!bg-data-query-node-1 group-data-[state=connected]:!border-data-query-node-1",
 						)}
 					/>
 					<div

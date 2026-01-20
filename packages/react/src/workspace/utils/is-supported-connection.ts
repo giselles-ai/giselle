@@ -216,6 +216,40 @@ export function isSupportedConnection(
 		}
 	}
 
+	// data query can only be connected to text generation, image generation, or content generation
+	if (isDataQueryNode(outputNode)) {
+		if (
+			!isTextGenerationNode(inputNode) &&
+			!isImageGenerationNode(inputNode) &&
+			!isContentGenerationNode(inputNode)
+		) {
+			return {
+				canConnect: false,
+				message:
+					"Data query node can only be connected to text generation, image generation, or content generation",
+			};
+		}
+	}
+
+	// data query node can only receive inputs from data store, text, trigger, action, app entry, or generation nodes
+	if (isDataQueryNode(inputNode)) {
+		const allowedOutputTypes = [
+			"dataStore",
+			"text",
+			"trigger",
+			"action",
+			"appEntry",
+			"textGeneration",
+			"contentGeneration",
+		];
+		if (!allowedOutputTypes.includes(outputNode.content.type)) {
+			return {
+				canConnect: false,
+				message: "This node is not supported as an input for Data Query",
+			};
+		}
+	}
+
 	return {
 		canConnect: true,
 	};

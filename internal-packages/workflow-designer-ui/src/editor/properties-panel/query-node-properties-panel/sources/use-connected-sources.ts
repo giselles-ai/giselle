@@ -101,12 +101,10 @@ export function useConnectedSources(node: QueryNode) {
 							break;
 						case "imageGeneration":
 						case "query":
+						case "dataQuery":
 							break;
 						case "end":
 							// End Node has no Output so do nothing
-							break;
-						case "dataQuery":
-							// TODO: implement dataQuery
 							break;
 						default: {
 							const _exhaustiveCheck: never = outputNode.content.type;
@@ -133,9 +131,7 @@ export function useConnectedSources(node: QueryNode) {
 							break;
 						case "file":
 						case "webPage":
-							break;
 						case "dataStore":
-							// TODO: implement dataStore
 							break;
 						default: {
 							const _exhaustiveCheck: never = outputNode.content.type;

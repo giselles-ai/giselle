@@ -25,6 +25,7 @@ import { RecraftIcon } from "../recraft";
 import { StableDiffusionIcon } from "../stable-diffusion";
 import { TextFileIcon } from "../text-file";
 import { WebPageFileIcon } from "../web-page-file";
+import { DataQueryIcon } from "./data-query-icon";
 import { DataStoreIcon } from "./data-store-icon";
 import { DocumentVectorStoreIcon } from "./document-vector-store-icon";
 
@@ -196,13 +197,12 @@ export function NodeIcon({
 				}
 				case "query":
 					return <DatabaseZapIcon {...props} data-content-type-icon />;
+				case "dataQuery":
+					return <DataQueryIcon {...props} data-content-type-icon />;
 				case "appEntry":
 					return <PlayIcon {...props} data-content-type-icon />;
 				case "end":
 					return <FlagIcon {...props} data-content-type-icon />;
-				case "dataQuery":
-					// TODO: implement dataQuery icon
-					return <DatabaseZapIcon {...props} data-content-type-icon />;
 				default: {
 					const _exhaustiveCheck: never = node.content.type;
 					throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);

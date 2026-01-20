@@ -111,6 +111,11 @@ export function useNodeContext(node: ContentGenerationNode) {
 			outputId: OutputId;
 			label: string;
 		}> = [];
+		const dataQueryNodes: Array<{
+			outputNode: NodeLike;
+			outputId: OutputId;
+			label: string;
+		}> = [];
 		const otherNodes: Array<{
 			outputNode: NodeLike;
 			outputId: OutputId;
@@ -167,6 +172,9 @@ export function useNodeContext(node: ContentGenerationNode) {
 							break;
 						case "query":
 							queryNodes.push(item);
+							break;
+						case "dataQuery":
+							dataQueryNodes.push(item);
 							break;
 						default:
 							otherNodes.push(item);
@@ -225,6 +233,16 @@ export function useNodeContext(node: ContentGenerationNode) {
 				groupId: "query",
 				groupLabel: "Query",
 				items: queryNodes.map((item) => ({
+					value: `${item.outputNode.id}:${item.outputId}`,
+					label: item.label,
+				})),
+			});
+		}
+		if (dataQueryNodes.length > 0) {
+			groups.push({
+				groupId: "dataQuery",
+				groupLabel: "Data Query",
+				items: dataQueryNodes.map((item) => ({
 					value: `${item.outputNode.id}:${item.outputId}`,
 					label: item.label,
 				})),

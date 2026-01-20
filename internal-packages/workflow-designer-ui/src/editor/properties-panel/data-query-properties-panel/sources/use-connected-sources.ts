@@ -5,16 +5,11 @@ import type {
 	ContentGenerationNode,
 	DataQueryNode,
 	DataStoreNode,
-	FileNode,
-	ImageGenerationNode,
 	NodeBase,
 	Output,
-	QueryNode,
 	TextGenerationNode,
 	TextNode,
 	TriggerNode,
-	VariableNode,
-	WebPageNode,
 } from "@giselles-ai/protocol";
 import type { UIConnection } from "@giselles-ai/react";
 import { useMemo } from "react";
@@ -26,7 +21,7 @@ type ConnectedSource<T extends NodeBase> = {
 	connection: Connection;
 };
 
-export function useConnectedSources(node: ImageGenerationNode) {
+export function useConnectedSources(node: DataQueryNode) {
 	const { nodes, connections } = useAppDesignerStore((s) => ({
 		nodes: s.nodes,
 		connections: s.connections,
@@ -35,22 +30,19 @@ export function useConnectedSources(node: ImageGenerationNode) {
 		const connectionsToThisNode = connections.filter(
 			(connection) => connection.inputNode.id === node.id,
 		);
-		const connectedGeneratedTextSources: ConnectedSource<
+
+		const connectedDataStoreSources: ConnectedSource<DataStoreNode>[] = [];
+		const connectedActionSources: ConnectedSource<ActionNode>[] = [];
+		const connectedTriggerSources: ConnectedSource<TriggerNode>[] = [];
+		const connectedAppEntrySources: ConnectedSource<AppEntryNode>[] = [];
+		const connectedGeneratedSources: ConnectedSource<
 			TextGenerationNode | ContentGenerationNode
 		>[] = [];
-		const connectedGeneratedImageSources: ConnectedSource<ImageGenerationNode>[] =
-			[];
-		const connectedVariableSources: ConnectedSource<VariableNode>[] = [];
-		const connectedQuerySources: ConnectedSource<QueryNode>[] = [];
-		const connectedDataQuerySources: ConnectedSource<DataQueryNode>[] = [];
-		const connectedTriggerSources: ConnectedSource<TriggerNode>[] = [];
-		const connectedActionSources: ConnectedSource<ActionNode>[] = [];
-		const connectedAppEntrySources: ConnectedSource<AppEntryNode>[] = [];
+		const connectedVariableSources: ConnectedSource<TextNode>[] = [];
 		const uiConnections: UIConnection[] = [];
+
 		for (const connection of connectionsToThisNode) {
-			const outputNode = nodes.find(
-				(node) => node.id === connection.outputNode.id,
-			);
+			const outputNode = nodes.find((n) => n.id === connection.outputNode.id);
 			if (outputNode === undefined) {
 				continue;
 			}
@@ -71,37 +63,16 @@ export function useConnectedSources(node: ImageGenerationNode) {
 				case "operation":
 					switch (outputNode.content.type) {
 						case "textGeneration":
-							connectedGeneratedTextSources.push({
+							connectedGeneratedSources.push({
 								output,
 								node: outputNode as TextGenerationNode,
 								connection,
 							});
 							break;
 						case "contentGeneration":
-							connectedGeneratedTextSources.push({
+							connectedGeneratedSources.push({
 								output,
 								node: outputNode as ContentGenerationNode,
-								connection,
-							});
-							break;
-						case "query":
-							connectedQuerySources.push({
-								output,
-								node: outputNode as QueryNode,
-								connection,
-							});
-							break;
-						case "trigger":
-							connectedTriggerSources.push({
-								output,
-								node: outputNode as TriggerNode,
-								connection,
-							});
-							break;
-						case "imageGeneration":
-							connectedGeneratedImageSources.push({
-								output,
-								node: outputNode as ImageGenerationNode,
 								connection,
 							});
 							break;
@@ -112,6 +83,13 @@ export function useConnectedSources(node: ImageGenerationNode) {
 								connection,
 							});
 							break;
+						case "trigger":
+							connectedTriggerSources.push({
+								output,
+								node: outputNode as TriggerNode,
+								connection,
+							});
+							break;
 						case "appEntry":
 							connectedAppEntrySources.push({
 								output,
@@ -119,15 +97,12 @@ export function useConnectedSources(node: ImageGenerationNode) {
 								connection,
 							});
 							break;
+						case "imageGeneration":
+						case "query":
+						case "dataQuery":
+							break;
 						case "end":
 							// End Node has no Output so do nothing
-							break;
-						case "dataQuery":
-							connectedDataQuerySources.push({
-								output,
-								node: outputNode as DataQueryNode,
-								connection,
-							});
 							break;
 						default: {
 							const _exhaustiveCheck: never = outputNode.content.type;
@@ -137,10 +112,14 @@ export function useConnectedSources(node: ImageGenerationNode) {
 					break;
 				case "variable":
 					switch (outputNode.content.type) {
-						case "file":
-							connectedVariableSources.push({
+						case "dataStore":
+							// Skip "schema" output - it's only for Text/Image Generation prompts
+							if (output.accessor === "schema") {
+								continue;
+							}
+							connectedDataStoreSources.push({
 								output,
-								node: outputNode as FileNode,
+								node: outputNode as DataStoreNode,
 								connection,
 							});
 							break;
@@ -151,26 +130,10 @@ export function useConnectedSources(node: ImageGenerationNode) {
 								connection,
 							});
 							break;
-						case "webPage":
-							connectedVariableSources.push({
-								output,
-								node: outputNode as WebPageNode,
-								connection,
-							});
-							break;
 						case "vectorStore":
 						case "github":
-							throw new Error("vector store can not be connected");
-						case "dataStore":
-							// Skip Data Store "source" output - it's only for Data Query connections
-							if (output.accessor === "source") {
-								continue;
-							}
-							connectedVariableSources.push({
-								output,
-								node: outputNode as DataStoreNode,
-								connection,
-							});
+						case "file":
+						case "webPage":
 							break;
 						default: {
 							const _exhaustiveCheck: never = outputNode.content.type;
@@ -195,21 +158,19 @@ export function useConnectedSources(node: ImageGenerationNode) {
 
 		return {
 			all: [
-				...connectedGeneratedTextSources,
+				...connectedDataStoreSources,
+				...connectedGeneratedSources,
 				...connectedVariableSources,
-				...connectedQuerySources,
-				...connectedDataQuerySources,
-				...connectedGeneratedImageSources,
-				...connectedTriggerSources,
 				...connectedActionSources,
+				...connectedTriggerSources,
+				...connectedAppEntrySources,
 			],
-			generationText: connectedGeneratedTextSources,
-			generationImage: connectedGeneratedImageSources,
+			dataStore: connectedDataStoreSources,
+			generation: connectedGeneratedSources,
 			variable: connectedVariableSources,
-			query: connectedQuerySources,
-			dataQuery: connectedDataQuerySources,
-			trigger: connectedTriggerSources,
 			action: connectedActionSources,
+			trigger: connectedTriggerSources,
+			appEntry: connectedAppEntrySources,
 			connections: uiConnections,
 		};
 	}, [connections, node, nodes]);

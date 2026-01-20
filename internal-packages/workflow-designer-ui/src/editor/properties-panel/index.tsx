@@ -2,6 +2,7 @@ import {
 	isActionNode,
 	isAppEntryNode,
 	isContentGenerationNode,
+	isDataQueryNode,
 	isDataStoreNode,
 	isEndNode,
 	isFileNode,
@@ -21,6 +22,7 @@ import {
 } from "../../app-designer";
 import { ActionNodePropertiesPanel } from "./action-node-properties-panel";
 import { AppEntryNodePropertiesPanel } from "./app-entry-node-properties-panel";
+import { DataQueryNodePropertiesPanel } from "./data-query-properties-panel";
 import { DataStoreNodePropertiesPanel } from "./data-store-properties-panel";
 import { EndNodePropertiesPanel } from "./end-node-properties-panel";
 import { FileNodePropertiesPanel } from "./file-node-properties-panel";
@@ -102,6 +104,12 @@ export function PropertiesPanel() {
 			)}
 			{isDataStoreNode(selectedNodes[0]) && (
 				<DataStoreNodePropertiesPanel
+					node={selectedNodes[0]}
+					key={selectedNodes[0].id}
+				/>
+			)}
+			{isDataQueryNode(selectedNodes[0]) && (
+				<DataQueryNodePropertiesPanel
 					node={selectedNodes[0]}
 					key={selectedNodes[0].id}
 				/>
