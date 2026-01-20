@@ -216,13 +216,17 @@ export function isSupportedConnection(
 		}
 	}
 
-	// data query can only be connected to text generation or image generation
+	// data query can only be connected to text generation, image generation, or content generation
 	if (isDataQueryNode(outputNode)) {
-		if (!isTextGenerationNode(inputNode) && !isImageGenerationNode(inputNode)) {
+		if (
+			!isTextGenerationNode(inputNode) &&
+			!isImageGenerationNode(inputNode) &&
+			!isContentGenerationNode(inputNode)
+		) {
 			return {
 				canConnect: false,
 				message:
-					"Data query node can only be connected to text generation or image generation",
+					"Data query node can only be connected to text generation, image generation, or content generation",
 			};
 		}
 	}

@@ -519,6 +519,14 @@ describe("isSupportedConnection", () => {
 			expect(result.canConnect).toBe(true);
 		});
 
+		test("should allow connection from DataQueryNode to ContentGenerationNode", () => {
+			const outputNode = createDataQueryNode(NodeId.generate());
+			const inputNode = createContentGenerationNode(NodeId.generate());
+
+			const result = isSupportedConnection(outputNode, inputNode);
+			expect(result.canConnect).toBe(true);
+		});
+
 		test("should reject connection from DataQueryNode to ActionNode", () => {
 			const outputNode = createDataQueryNode(NodeId.generate());
 			const inputNode = createActionNode(NodeId.generate());
@@ -527,7 +535,7 @@ describe("isSupportedConnection", () => {
 			expect(result.canConnect).toBe(false);
 			if (!result.canConnect) {
 				expect(result.message).toBe(
-					"Data query node can only be connected to text generation or image generation",
+					"Data query node can only be connected to text generation, image generation, or content generation",
 				);
 			}
 		});
@@ -540,7 +548,7 @@ describe("isSupportedConnection", () => {
 			expect(result.canConnect).toBe(false);
 			if (!result.canConnect) {
 				expect(result.message).toBe(
-					"Data query node can only be connected to text generation or image generation",
+					"Data query node can only be connected to text generation, image generation, or content generation",
 				);
 			}
 		});
