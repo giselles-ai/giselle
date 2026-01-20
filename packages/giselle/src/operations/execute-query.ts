@@ -183,7 +183,7 @@ async function resolveQuery(
 			case "query-result":
 				return queryResultToText(generationOutput);
 			case "data-query-result":
-				throw new Error("Not implemented");
+				throw new Error("Data query result is not supported for Query node");
 			default: {
 				const _exhaustiveCheck: never = generationOutput;
 				throw new Error(

@@ -36,6 +36,7 @@ import type { GiselleContext } from "../../types";
 import type { AppEntryResolver, GenerationMetadata } from "../types";
 import {
 	checkUsageLimits,
+	dataQueryResultToText,
 	getGeneratedImage,
 	getGeneration,
 	getNodeGenerationIndexes,
@@ -280,6 +281,8 @@ export async function useGenerationExecutor<T>(args: {
 					return generationOutput.content;
 				case "query-result":
 					return queryResultToText(generationOutput);
+				case "data-query-result":
+					return dataQueryResultToText(generationOutput);
 				default:
 					throw new Error("Generation output type is not supported");
 			}
