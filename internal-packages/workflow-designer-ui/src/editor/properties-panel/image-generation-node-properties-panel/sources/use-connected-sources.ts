@@ -3,6 +3,7 @@ import type {
 	AppEntryNode,
 	Connection,
 	ContentGenerationNode,
+	DataQueryNode,
 	DataStoreNode,
 	FileNode,
 	ImageGenerationNode,
@@ -41,6 +42,7 @@ export function useConnectedSources(node: ImageGenerationNode) {
 			[];
 		const connectedVariableSources: ConnectedSource<VariableNode>[] = [];
 		const connectedQuerySources: ConnectedSource<QueryNode>[] = [];
+		const connectedDataQuerySources: ConnectedSource<DataQueryNode>[] = [];
 		const connectedTriggerSources: ConnectedSource<TriggerNode>[] = [];
 		const connectedActionSources: ConnectedSource<ActionNode>[] = [];
 		const connectedAppEntrySources: ConnectedSource<AppEntryNode>[] = [];
@@ -121,7 +123,11 @@ export function useConnectedSources(node: ImageGenerationNode) {
 							// End Node has no Output so do nothing
 							break;
 						case "dataQuery":
-							// TODO: implement dataQuery
+							connectedDataQuerySources.push({
+								output,
+								node: outputNode as DataQueryNode,
+								connection,
+							});
 							break;
 						default: {
 							const _exhaustiveCheck: never = outputNode.content.type;
@@ -192,6 +198,7 @@ export function useConnectedSources(node: ImageGenerationNode) {
 				...connectedGeneratedTextSources,
 				...connectedVariableSources,
 				...connectedQuerySources,
+				...connectedDataQuerySources,
 				...connectedGeneratedImageSources,
 				...connectedTriggerSources,
 				...connectedActionSources,
@@ -200,6 +207,7 @@ export function useConnectedSources(node: ImageGenerationNode) {
 			generationImage: connectedGeneratedImageSources,
 			variable: connectedVariableSources,
 			query: connectedQuerySources,
+			dataQuery: connectedDataQuerySources,
 			trigger: connectedTriggerSources,
 			action: connectedActionSources,
 			connections: uiConnections,
