@@ -631,7 +631,7 @@ describe("isSupportedConnection", () => {
 			expect(result.canConnect).toBe(false);
 			if (!result.canConnect) {
 				expect(result.message).toBe(
-					"Data query node can only receive inputs from data store, text, or generation nodes",
+					"This node is not supported as an input for Data Query",
 				);
 			}
 		});

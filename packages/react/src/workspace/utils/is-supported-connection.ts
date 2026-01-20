@@ -245,8 +245,7 @@ export function isSupportedConnection(
 		if (!allowedOutputTypes.includes(outputNode.content.type)) {
 			return {
 				canConnect: false,
-				message:
-					"Data query node can only receive inputs from data store, text, or generation nodes",
+				message: "This node is not supported as an input for Data Query",
 			};
 		}
 	}
