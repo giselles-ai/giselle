@@ -39,6 +39,12 @@ export async function executeQuery(input: { generation: QueuedGeneration }) {
 	await giselle.executeQuery(input.generation);
 }
 
+export async function executeDataQuery(input: {
+	generation: QueuedGeneration;
+}) {
+	await giselle.executeDataQuery(input.generation);
+}
+
 export async function getGitHubRepositoryFullname(
 	input: Parameters<typeof giselle.getGitHubRepositoryFullname>[0],
 ) {
