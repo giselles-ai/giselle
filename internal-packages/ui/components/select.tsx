@@ -123,6 +123,7 @@ export function Select<T extends SelectOption>({
 			onValueChange={onValueChange}
 			defaultValue={defaultValue}
 			name={name}
+			disabled={disabled}
 		>
 			<SelectPrimitive.Trigger id={id} asChild>
 				<button

@@ -42,6 +42,7 @@ function getGradientColors(
 		action: "var(--color-action-node-1)",
 		query: "var(--color-query-node-1)",
 		vectorStore: "var(--color-vector-store-node-1)",
+		dataStore: "var(--color-data-store-node-1)",
 		appEntry: STAGE_NODE_COLOR_VAR,
 		end: STAGE_NODE_COLOR_VAR,
 	};

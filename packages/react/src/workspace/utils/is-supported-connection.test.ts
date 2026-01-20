@@ -8,6 +8,9 @@ import {
 import type {
 	ActionNode,
 	AppEntryNode,
+	ContentGenerationNode,
+	DataQueryNode,
+	DataStoreNode,
 	EndNode,
 	FileNode,
 	GitHubNode,
@@ -164,6 +167,46 @@ describe("isSupportedConnection", () => {
 		outputs: [],
 		content: {
 			type: "end",
+		},
+	});
+
+	const createDataStoreNode = (id: NodeId): DataStoreNode => ({
+		id,
+		type: "variable",
+		inputs: [],
+		outputs: [],
+		content: {
+			type: "dataStore",
+			state: { status: "unconfigured" },
+		},
+	});
+
+	const createDataQueryNode = (id: NodeId): DataQueryNode => ({
+		id,
+		type: "operation",
+		inputs: [],
+		outputs: [],
+		content: {
+			type: "dataQuery",
+			query: "test query",
+		},
+	});
+
+	const createContentGenerationNode = (id: NodeId): ContentGenerationNode => ({
+		id,
+		type: "operation",
+		inputs: [],
+		outputs: [],
+		content: {
+			type: "contentGeneration",
+			version: "v1",
+			prompt: "",
+			languageModel: {
+				provider: "anthropic",
+				id: "anthropic/claude-opus-4.5",
+				configuration: {},
+			},
+			tools: [],
 		},
 	});
 
@@ -327,6 +370,72 @@ describe("isSupportedConnection", () => {
 			if (!result.canConnect) {
 				expect(result.message).toBe(
 					"Vector store node can only be connected to query node",
+				);
+			}
+		});
+	});
+
+	describe("Data store node restrictions", () => {
+		test("should allow connection from DataStoreNode to DataQueryNode", () => {
+			const outputNode = createDataStoreNode(NodeId.generate());
+			const inputNode = createDataQueryNode(NodeId.generate());
+
+			const result = isSupportedConnection(outputNode, inputNode);
+
+			expect(result.canConnect).toBe(true);
+		});
+
+		test("should allow connection from DataStoreNode to TextGenerationNode", () => {
+			const outputNode = createDataStoreNode(NodeId.generate());
+			const inputNode = createTextGenerationNode(NodeId.generate());
+
+			const result = isSupportedConnection(outputNode, inputNode);
+
+			expect(result.canConnect).toBe(true);
+		});
+
+		test("should allow connection from DataStoreNode to ImageGenerationNode", () => {
+			const outputNode = createDataStoreNode(NodeId.generate());
+			const inputNode = createImageGenerationNode(NodeId.generate());
+
+			const result = isSupportedConnection(outputNode, inputNode);
+
+			expect(result.canConnect).toBe(true);
+		});
+
+		test("should allow connection from DataStoreNode to ContentGenerationNode", () => {
+			const outputNode = createDataStoreNode(NodeId.generate());
+			const inputNode = createContentGenerationNode(NodeId.generate());
+
+			const result = isSupportedConnection(outputNode, inputNode);
+
+			expect(result.canConnect).toBe(true);
+		});
+
+		test("should reject connection from DataStoreNode to non-supported node", () => {
+			const outputNode = createDataStoreNode(NodeId.generate());
+			const inputNode = createActionNode(NodeId.generate());
+
+			const result = isSupportedConnection(outputNode, inputNode);
+
+			expect(result.canConnect).toBe(false);
+			if (!result.canConnect) {
+				expect(result.message).toBe(
+					"Data store node can only be connected to data query or generation nodes",
+				);
+			}
+		});
+
+		test("should reject connection from DataStoreNode to QueryNode", () => {
+			const outputNode = createDataStoreNode(NodeId.generate());
+			const inputNode = createQueryNode(NodeId.generate());
+
+			const result = isSupportedConnection(outputNode, inputNode);
+
+			expect(result.canConnect).toBe(false);
+			if (!result.canConnect) {
+				expect(result.message).toBe(
+					"Data store node can only be connected to data query or generation nodes",
 				);
 			}
 		});

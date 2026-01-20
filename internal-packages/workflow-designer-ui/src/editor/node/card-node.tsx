@@ -21,7 +21,7 @@ import { EditableText } from "../../ui/editable-text";
 import { Tooltip } from "../../ui/tooltip";
 import { NodeGenerationStatusBadge } from "./node-generation-status-badge";
 import { nodeRequiresSetup, useNodeGenerationStatus } from "./node-utils";
-import { DocumentNodeInfo, GitHubNodeInfo } from "./ui";
+import { DataStoreNodeInfo, DocumentNodeInfo, GitHubNodeInfo } from "./ui";
 import { GitHubTriggerStatusBadge } from "./ui/github-trigger/status-badge";
 
 export function CardXyFlowNode({ id, selected }: NodeProps) {
@@ -74,6 +74,7 @@ function useVariant(node: NodeLike) {
 		const isImageGeneration = node.content.type === "imageGeneration";
 		const isGithub = node.content.type === "github";
 		const isVectorStore = node.content.type === "vectorStore";
+		const isDataStore = node.content.type === "dataStore";
 		const isTrigger = node.content.type === "trigger";
 		const isAction = node.content.type === "action";
 		const isQuery = node.content.type === "query";
@@ -91,9 +92,14 @@ function useVariant(node: NodeLike) {
 		const isFillIcon =
 			isText || isFile || isWebPage || isGithub || isVectorStore || isAction;
 		const isStrokeIcon =
-			isTextGeneration || isImageGeneration || isTrigger || isQuery;
+			isTextGeneration ||
+			isImageGeneration ||
+			isTrigger ||
+			isQuery ||
+			isDataStore;
 
-		const isDarkIconText = isText || isFile || isWebPage || isQuery;
+		const isDarkIconText =
+			isText || isFile || isWebPage || isQuery || isDataStore;
 		const isLightIconText =
 			isTextGeneration ||
 			isImageGeneration ||
@@ -111,6 +117,7 @@ function useVariant(node: NodeLike) {
 			isImageGeneration,
 			isGithub,
 			isVectorStore,
+			isDataStore,
 			isTrigger,
 			isAction,
 			isQuery,
@@ -165,6 +172,7 @@ export function NodeComponent({
 		isImageGeneration: boolean;
 		isGithub: boolean;
 		isVectorStore: boolean;
+		isDataStore: boolean;
 		isTrigger: boolean;
 		isAction: boolean;
 		isQuery: boolean;
@@ -191,6 +199,7 @@ export function NodeComponent({
 				variant.isVectorStoreDocument
 			)
 				return "var(--color-github-node-1)";
+			if (variant.isDataStore) return "var(--color-data-store-node-1)";
 			if (variant.isTrigger) return "var(--color-trigger-node-1)";
 			if (variant.isAction) return "var(--color-action-node-1)";
 			if (variant.isQuery) return "var(--color-query-node-1)";
@@ -257,6 +266,7 @@ export function NodeComponent({
 				selected && v.isTrigger && "shadow-trigger-node-1",
 				selected && v.isAction && "shadow-action-node-1",
 				selected && v.isQuery && "shadow-query-node-1",
+				selected && v.isDataStore && "shadow-data-store-node-1",
 				selected && "shadow-[0px_0px_20px_1px_rgba(0,_0,_0,_0.4)]",
 				selected &&
 					v.isTrigger &&
@@ -273,6 +283,7 @@ export function NodeComponent({
 				highlighted && v.isTrigger && "shadow-trigger-node-1",
 				highlighted && v.isAction && "shadow-action-node-1",
 				highlighted && v.isQuery && "shadow-query-node-1",
+				highlighted && v.isDataStore && "shadow-data-store-node-1",
 				highlighted && "shadow-[0px_0px_20px_1px_rgba(0,_0,_0,_0.4)]",
 				highlighted &&
 					v.isTrigger &&
@@ -336,6 +347,9 @@ export function NodeComponent({
 					!borderGradientStyle &&
 						v.isQuery &&
 						"from-query-node-1/30 via-query-node-1/50 to-query-node-1",
+					!borderGradientStyle &&
+						v.isDataStore &&
+						"from-data-store-node-1/30 via-data-store-node-1/50 to-data-store-node-1",
 				)}
 				style={borderGradientStyle}
 			/>
@@ -365,6 +379,7 @@ export function NodeComponent({
 							v.isTrigger && "bg-trigger-node-1",
 							v.isAction && "bg-action-node-1",
 							v.isQuery && "bg-query-node-1",
+							v.isDataStore && "bg-data-store-node-1",
 						)}
 					>
 						<NodeIcon
@@ -386,6 +401,7 @@ export function NodeComponent({
 								v.isGithubTrigger && "fill-current",
 								v.isAction && "fill-current",
 								v.isQuery && "stroke-current fill-none",
+								v.isDataStore && "stroke-current fill-none",
 								v.isGithub && "fill-current",
 								v.isText && "text-background",
 								v.isFile && "text-background",
@@ -399,6 +415,7 @@ export function NodeComponent({
 								v.isGithubTrigger && "text-background",
 								v.isAction && "text-inverse",
 								v.isQuery && "text-background",
+								v.isDataStore && "text-background",
 							)}
 						/>
 					</div>
@@ -440,6 +457,7 @@ export function NodeComponent({
 					</div>
 				</div>
 			</div>
+			<DataStoreNodeInfo node={node} />
 			<DocumentNodeInfo node={node} />
 			<GitHubNodeInfo node={node} />
 			{!preview && (
@@ -541,6 +559,8 @@ function InputOutput({
 								"!border-action-node-1 group-data-[state=connected]:!bg-action-node-1 group-data-[state=connected]:!border-action-node-1",
 							v.isQuery &&
 								"!border-query-node-1 group-data-[state=connected]:!bg-query-node-1 group-data-[state=connected]:!border-query-node-1",
+							v.isDataStore &&
+								"!border-data-store-node-1 group-data-[state=connected]:!bg-data-store-node-1 group-data-[state=connected]:!border-data-store-node-1",
 						)}
 					/>
 					<div

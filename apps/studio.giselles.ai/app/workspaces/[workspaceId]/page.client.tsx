@@ -65,6 +65,10 @@ export function Page({
 						})),
 					}}
 					usageLimits={data.usageLimits}
+					dataStore={{
+						dataStores: data.teamDataStores,
+						settingPath: "/settings/team/data-stores",
+					}}
 					telemetry={{
 						metadata: {
 							teamPlan: data.workspaceTeam.plan,
