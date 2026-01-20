@@ -53,6 +53,7 @@ export const useTriggerConfiguration = ({
 								repositoryNodeId: step.repoNodeId,
 								installationId: step.installationId,
 								event,
+								shouldPostInProgressComment: true,
 							},
 						},
 					});
