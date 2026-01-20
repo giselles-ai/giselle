@@ -288,6 +288,16 @@ export const jsonRoutes = {
 				return new Response(null, { status: 204 });
 			},
 		}),
+	executeDataQuery: (giselle: Giselle) =>
+		createHandler({
+			input: z.object({
+				generation: QueuedGeneration,
+			}),
+			handler: async ({ input }) => {
+				await giselle.executeDataQuery(input.generation);
+				return new Response(null, { status: 204 });
+			},
+		}),
 	addWebPage: (giselle: Giselle) =>
 		createHandler({
 			input: z.object({
