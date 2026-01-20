@@ -231,6 +231,26 @@ export function isSupportedConnection(
 		}
 	}
 
+	// data query node can only receive inputs from data store, text, trigger, action, app entry, or generation nodes
+	if (isDataQueryNode(inputNode)) {
+		const allowedOutputTypes = [
+			"dataStore",
+			"text",
+			"trigger",
+			"action",
+			"appEntry",
+			"textGeneration",
+			"contentGeneration",
+		];
+		if (!allowedOutputTypes.includes(outputNode.content.type)) {
+			return {
+				canConnect: false,
+				message:
+					"Data query node can only receive inputs from data store, text, or generation nodes",
+			};
+		}
+	}
+
 	return {
 		canConnect: true,
 	};

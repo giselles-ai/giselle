@@ -22,6 +22,7 @@ import type {
 	TriggerNode,
 	VariableNode,
 	VectorStoreNode,
+	WebPageNode,
 } from "@giselles-ai/protocol";
 import { NodeId } from "@giselles-ai/protocol";
 import { describe, expect, test } from "vitest";
@@ -189,6 +190,17 @@ describe("isSupportedConnection", () => {
 		content: {
 			type: "dataQuery",
 			query: "test query",
+		},
+	});
+
+	const createWebPageNode = (id: NodeId): WebPageNode => ({
+		id,
+		type: "variable",
+		inputs: [],
+		outputs: [],
+		content: {
+			type: "webPage",
+			webpages: [],
 		},
 	});
 
@@ -549,6 +561,116 @@ describe("isSupportedConnection", () => {
 			if (!result.canConnect) {
 				expect(result.message).toBe(
 					"Data query node can only be connected to text generation, image generation, or content generation",
+				);
+			}
+		});
+	});
+
+	describe("Data query node input restrictions", () => {
+		test("should allow connection from DataStoreNode to DataQueryNode", () => {
+			const outputNode = createDataStoreNode(NodeId.generate());
+			const inputNode = createDataQueryNode(NodeId.generate());
+
+			const result = isSupportedConnection(outputNode, inputNode);
+			expect(result.canConnect).toBe(true);
+		});
+
+		test("should allow connection from TextNode to DataQueryNode", () => {
+			const outputNode = createTextNode(NodeId.generate());
+			const inputNode = createDataQueryNode(NodeId.generate());
+
+			const result = isSupportedConnection(outputNode, inputNode);
+			expect(result.canConnect).toBe(true);
+		});
+
+		test("should allow connection from TriggerNode to DataQueryNode", () => {
+			const outputNode = createTriggerNode(NodeId.generate());
+			const inputNode = createDataQueryNode(NodeId.generate());
+
+			const result = isSupportedConnection(outputNode, inputNode);
+			expect(result.canConnect).toBe(true);
+		});
+
+		test("should allow connection from ActionNode to DataQueryNode", () => {
+			const outputNode = createActionNode(NodeId.generate());
+			const inputNode = createDataQueryNode(NodeId.generate());
+
+			const result = isSupportedConnection(outputNode, inputNode);
+			expect(result.canConnect).toBe(true);
+		});
+
+		test("should allow connection from AppEntryNode to DataQueryNode", () => {
+			const outputNode = createAppEntryNode(NodeId.generate());
+			const inputNode = createDataQueryNode(NodeId.generate());
+
+			const result = isSupportedConnection(outputNode, inputNode);
+			expect(result.canConnect).toBe(true);
+		});
+
+		test("should allow connection from TextGenerationNode to DataQueryNode", () => {
+			const outputNode = createTextGenerationNode(NodeId.generate());
+			const inputNode = createDataQueryNode(NodeId.generate());
+
+			const result = isSupportedConnection(outputNode, inputNode);
+			expect(result.canConnect).toBe(true);
+		});
+
+		test("should allow connection from ContentGenerationNode to DataQueryNode", () => {
+			const outputNode = createContentGenerationNode(NodeId.generate());
+			const inputNode = createDataQueryNode(NodeId.generate());
+
+			const result = isSupportedConnection(outputNode, inputNode);
+			expect(result.canConnect).toBe(true);
+		});
+
+		test("should reject connection from WebPageNode to DataQueryNode", () => {
+			const outputNode = createWebPageNode(NodeId.generate());
+			const inputNode = createDataQueryNode(NodeId.generate());
+
+			const result = isSupportedConnection(outputNode, inputNode);
+			expect(result.canConnect).toBe(false);
+			if (!result.canConnect) {
+				expect(result.message).toBe(
+					"Data query node can only receive inputs from data store, text, or generation nodes",
+				);
+			}
+		});
+
+		test("should reject connection from VectorStoreNode to DataQueryNode", () => {
+			const outputNode = createVectorStoreNode(NodeId.generate());
+			const inputNode = createDataQueryNode(NodeId.generate());
+
+			const result = isSupportedConnection(outputNode, inputNode);
+			expect(result.canConnect).toBe(false);
+			if (!result.canConnect) {
+				expect(result.message).toBe(
+					"Vector store node can only be connected to query node",
+				);
+			}
+		});
+
+		test("should reject connection from FileNode to DataQueryNode", () => {
+			const outputNode = createFileNode(NodeId.generate());
+			const inputNode = createDataQueryNode(NodeId.generate());
+
+			const result = isSupportedConnection(outputNode, inputNode);
+			expect(result.canConnect).toBe(false);
+			if (!result.canConnect) {
+				expect(result.message).toBe(
+					"File node is not supported as an input for this node",
+				);
+			}
+		});
+
+		test("should reject connection from GitHubNode to DataQueryNode", () => {
+			const outputNode = createGitHubNode(NodeId.generate());
+			const inputNode = createDataQueryNode(NodeId.generate());
+
+			const result = isSupportedConnection(outputNode, inputNode);
+			expect(result.canConnect).toBe(false);
+			if (!result.canConnect) {
+				expect(result.message).toBe(
+					"GitHub node is not supported as an output",
 				);
 			}
 		});
