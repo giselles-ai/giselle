@@ -21,7 +21,7 @@ import { EditableText } from "../../ui/editable-text";
 import { Tooltip } from "../../ui/tooltip";
 import { NodeGenerationStatusBadge } from "./node-generation-status-badge";
 import { nodeRequiresSetup, useNodeGenerationStatus } from "./node-utils";
-import { DocumentNodeInfo, GitHubNodeInfo } from "./ui";
+import { DataStoreNodeInfo, DocumentNodeInfo, GitHubNodeInfo } from "./ui";
 import { GitHubTriggerStatusBadge } from "./ui/github-trigger/status-badge";
 
 export function CardXyFlowNode({ id, selected }: NodeProps) {
@@ -470,6 +470,7 @@ export function NodeComponent({
 					</div>
 				</div>
 			</div>
+			<DataStoreNodeInfo node={node} />
 			<DocumentNodeInfo node={node} />
 			<GitHubNodeInfo node={node} />
 			{!preview && (
