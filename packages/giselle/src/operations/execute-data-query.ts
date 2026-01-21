@@ -196,6 +196,17 @@ async function resolveQuery(
 		return findGenerationByTask(nodeId, taskId);
 	}
 
+	function findOutput(outputId: OutputId) {
+		for (const sourceNode of runningGeneration.context.sourceNodes) {
+			for (const sourceOutput of sourceNode.outputs) {
+				if (sourceOutput.id === outputId) {
+					return sourceOutput;
+				}
+			}
+		}
+		return undefined;
+	}
+
 	async function generationContentResolver(
 		nodeId: NodeId,
 		outputId: OutputId,
@@ -204,8 +215,14 @@ async function resolveQuery(
 		if (generation === undefined || !isCompletedGeneration(generation)) {
 			return undefined;
 		}
+
+		const output = findOutput(outputId);
+		if (output === undefined) {
+			return undefined;
+		}
+
 		const generationOutput = generation.outputs.find(
-			(output) => output.outputId === outputId,
+			(o) => o.outputId === outputId,
 		);
 		if (generationOutput === undefined) {
 			return undefined;
