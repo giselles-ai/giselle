@@ -13,6 +13,7 @@ import {
 	type RunningGeneration,
 	Secret,
 	SecretId,
+	type TaskId,
 } from "@giselles-ai/protocol";
 import type { GiselleStorage } from "@giselles-ai/storage";
 import {
@@ -22,6 +23,7 @@ import {
 import { Client } from "pg";
 import { getDataStore } from "../data-stores/get-data-store";
 import type { AppEntryResolver, GenerationMetadata } from "../generations";
+import { getTaskGenerationIndexes } from "../generations/internal/get-task-generation-indexes";
 import { useGenerationExecutor } from "../generations/internal/use-generation-executor";
 import { getGeneration, getNodeGenerationIndexes } from "../generations/utils";
 import { secretPath } from "../secrets/paths";
@@ -151,13 +153,11 @@ async function resolveQuery(
 	appEntryResolver: AppEntryResolver,
 ): Promise<string> {
 	const generationContext = GenerationContext.parse(runningGeneration.context);
+	const taskId = runningGeneration.context.origin.taskId;
 
-	async function generationContentResolver(
-		nodeId: NodeId,
-		outputId: OutputId,
-	): Promise<string | undefined> {
+	async function findGenerationByNode(nodeId: NodeId) {
 		const nodeGenerationIndexes = await getNodeGenerationIndexes({
-			storage: storage,
+			storage,
 			nodeId,
 		});
 		if (
@@ -166,11 +166,42 @@ async function resolveQuery(
 		) {
 			return undefined;
 		}
-		const generation = await getGeneration({
-			storage: storage,
+		return await getGeneration({
+			storage,
 			generationId: nodeGenerationIndexes[nodeGenerationIndexes.length - 1].id,
 		});
-		if (!isCompletedGeneration(generation)) {
+	}
+
+	async function findGenerationByTask(nodeId: NodeId, taskId: TaskId) {
+		const taskGenerationIndexes = await getTaskGenerationIndexes({
+			storage,
+			taskId,
+		});
+		const targetGenerationIndex = taskGenerationIndexes?.find(
+			(index) => index.nodeId === nodeId,
+		);
+		if (targetGenerationIndex === undefined) {
+			return undefined;
+		}
+		return await getGeneration({
+			storage,
+			generationId: targetGenerationIndex.id,
+		});
+	}
+
+	function findGeneration(nodeId: NodeId) {
+		if (taskId === undefined) {
+			return findGenerationByNode(nodeId);
+		}
+		return findGenerationByTask(nodeId, taskId);
+	}
+
+	async function generationContentResolver(
+		nodeId: NodeId,
+		outputId: OutputId,
+	): Promise<string | undefined> {
+		const generation = await findGeneration(nodeId);
+		if (generation === undefined || !isCompletedGeneration(generation)) {
 			return undefined;
 		}
 		const generationOutput = generation.outputs.find(
