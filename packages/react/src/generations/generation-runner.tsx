@@ -259,13 +259,7 @@ function DataQueryRunner({ generation }: { generation: Generation }) {
 		addStopHandler,
 	} = useGenerationRunnerSystem();
 	const client = useGiselle();
-	const stopRequestedRef = useRef(false);
-
-	const stop = useCallback(() => {
-		stopRequestedRef.current = true;
-		void client.cancelGeneration({ generationId: generation.id });
-	}, [client, generation.id]);
-
+	const stop = () => {};
 	useOnce(() => {
 		if (!isQueuedGeneration(generation)) {
 			return;
@@ -282,23 +276,14 @@ function DataQueryRunner({ generation }: { generation: Generation }) {
 						generation,
 					})
 					.then(() => {
-						if (stopRequestedRef.current) {
-							return;
-						}
 						updateGenerationStatusToComplete(generation.id);
 					})
 					.catch((error) => {
-						if (stopRequestedRef.current) {
-							return;
-						}
 						console.error("Data query execution failed:", error);
 						updateGenerationStatusToFailure(generation.id);
 					});
 			})
 			.catch((error) => {
-				if (stopRequestedRef.current) {
-					return;
-				}
 				console.error("Failed to set generation:", error);
 				updateGenerationStatusToFailure(generation.id);
 			});
