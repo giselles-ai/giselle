@@ -89,7 +89,7 @@ catalog:
   swr: 2.3.6
   tailwindcss: 4.1.10
   tailwindcss-animate: 1.0.7
-  tar: 7.4.3
+  tar: 7.5.4
   tiktoken: 1.0.22
   tsup: 8.3.5
   tsx: 4.20.6
