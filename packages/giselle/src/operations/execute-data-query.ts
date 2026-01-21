@@ -132,7 +132,6 @@ export function executeDataQuery(args: {
 					error: {
 						name: error instanceof Error ? error.name : "UnknownError",
 						message: error instanceof Error ? error.message : String(error),
-						dump: error,
 					},
 				} satisfies FailedGeneration;
 
