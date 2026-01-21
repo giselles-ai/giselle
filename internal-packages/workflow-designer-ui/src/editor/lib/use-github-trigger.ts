@@ -93,10 +93,17 @@ export function useGitHubTrigger(triggerId: TriggerId) {
 	const disableTrigger = useCallback(() => {
 		setTrigger({ enable: false });
 	}, [setTrigger]);
+	const setTriggerConfiguration = useCallback(
+		(configuration: Trigger["configuration"]) => {
+			setTrigger({ configuration });
+		},
+		[setTrigger],
+	);
 	return {
 		isLoading: isLoadingTriggerData || isLoadingGitHubRepositoryFullname,
 		data,
 		enableTrigger,
 		disableTrigger,
+		setTriggerConfiguration,
 	};
 }

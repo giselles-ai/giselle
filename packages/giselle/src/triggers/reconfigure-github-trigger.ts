@@ -63,6 +63,8 @@ export async function reconfigureGitHubTrigger(args: {
 			repositoryNodeId: newRepositoryNodeId,
 			installationId: args.installationId,
 			event: requestedEvent,
+			shouldPostInProgressComment:
+				currentTrigger.configuration.shouldPostInProgressComment,
 		},
 	} satisfies Trigger;
 	await setTrigger({

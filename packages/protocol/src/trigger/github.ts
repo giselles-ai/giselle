@@ -102,5 +102,6 @@ export const GitHubEventConfiguration = z.object({
 	event: GitHubEventData,
 	installationId: z.number(),
 	repositoryNodeId: z.string(),
+	shouldPostInProgressComment: z.boolean().default(true),
 });
 export type GitHubEventConfiguration = z.infer<typeof GitHubEventConfiguration>;

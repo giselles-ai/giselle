@@ -679,6 +679,7 @@ export function Installed({
 																repositoryNodeId: step.repoNodeId,
 																installationId: step.installationId,
 																event,
+																shouldPostInProgressComment: true,
 															},
 														},
 													});
