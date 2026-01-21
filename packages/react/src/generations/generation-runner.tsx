@@ -1,6 +1,7 @@
 import {
 	type Generation,
 	GenerationContext,
+	isCompletedGeneration,
 	isContentGenerationNode,
 	isQueuedGeneration,
 	isTextGenerationNode,
@@ -276,12 +277,12 @@ function DataQueryRunner({ generation }: { generation: Generation }) {
 						generation,
 					})
 					.then(async () => {
-						// Server Action no longer throws on user SQL errors.
+						// client.executeDataQuery no longer throws on user SQL errors.
 						// Check the persisted generation status to determine outcome.
 						const persistedGeneration = await client.getGeneration({
 							generationId: generation.id,
 						});
-						if (persistedGeneration?.status === "completed") {
+						if (isCompletedGeneration(persistedGeneration)) {
 							updateGenerationStatusToComplete(generation.id);
 						} else {
 							updateGenerationStatusToFailure(generation.id);
