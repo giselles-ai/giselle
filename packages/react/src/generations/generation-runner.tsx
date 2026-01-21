@@ -275,10 +275,20 @@ function DataQueryRunner({ generation }: { generation: Generation }) {
 					.executeDataQuery({
 						generation,
 					})
-					.then(() => {
-						updateGenerationStatusToComplete(generation.id);
+					.then(async () => {
+						// Server Action no longer throws on user SQL errors.
+						// Check the persisted generation status to determine outcome.
+						const persistedGeneration = await client.getGeneration({
+							generationId: generation.id,
+						});
+						if (persistedGeneration?.status === "completed") {
+							updateGenerationStatusToComplete(generation.id);
+						} else {
+							updateGenerationStatusToFailure(generation.id);
+						}
 					})
 					.catch((error) => {
+						// Only unexpected errors (network, etc.) reach here
 						console.error("Data query execution failed:", error);
 						updateGenerationStatusToFailure(generation.id);
 					});
