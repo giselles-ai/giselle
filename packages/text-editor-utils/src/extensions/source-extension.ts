@@ -52,4 +52,7 @@ export const SourceExtension = Node.create({
 			`{{${node.attrs.node.id}:${node.attrs.outputId}}}`,
 		];
 	},
+	renderText({ node }) {
+		return `{{${node.attrs.node.id}:${node.attrs.outputId}}}`;
+	},
 });
