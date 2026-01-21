@@ -66,9 +66,6 @@ export function PropertiesPanelRoot({ children }: { children: ReactNode }) {
 
 function getNodeIconBackground(node: NodeLike): string {
 	if (node.type === "operation") {
-		if (`${node.content.type}` === "vectorStore") {
-			return "bg-github-node-1";
-		}
 		switch (node.content.type) {
 			case "textGeneration":
 				return "bg-generation-node-1";
