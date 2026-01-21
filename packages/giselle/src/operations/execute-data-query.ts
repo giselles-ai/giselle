@@ -87,7 +87,11 @@ export function executeDataQuery(args: {
 				});
 				const connectionString = await args.context.vault.decrypt(secret.value);
 
-				const client = new Client({ connectionString });
+				const client = new Client({
+					connectionString,
+					connectionTimeoutMillis: 10000,
+					query_timeout: 60000,
+				});
 				try {
 					await client.connect();
 
