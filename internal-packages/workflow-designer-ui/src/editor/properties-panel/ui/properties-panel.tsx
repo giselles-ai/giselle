@@ -20,8 +20,8 @@ function getNodeIconColor(node: NodeLike): string {
 			case "contentGeneration":
 			case "imageGeneration":
 			case "action":
-			case "dataQuery":
 				return "text-inverse";
+			case "dataQuery":
 			case "trigger":
 			case "query":
 				return "text-background";
@@ -37,9 +37,7 @@ function getNodeIconColor(node: NodeLike): string {
 	if (node.type === "variable") {
 		switch (node.content.type) {
 			case "vectorStore":
-				return "text-background";
 			case "github":
-				return "text-background";
 			case "text":
 			case "file":
 			case "webPage":
