@@ -255,6 +255,10 @@ async function resolveQuery(
 			case "webPage":
 			case "github":
 			case "imageGeneration":
+			case "query":
+			case "dataQuery":
+			case "vectorStore":
+			case "dataStore":
 				throw new Error(
 					`Node type ${contextNode.content.type} is not supported for data query`,
 				);
@@ -273,11 +277,6 @@ async function resolveQuery(
 				resolvedQuery = resolvedQuery.replace(replaceKeyword, "");
 				break;
 			}
-			case "query":
-			case "dataQuery":
-			case "vectorStore":
-			case "dataStore":
-				break;
 			default: {
 				const _exhaustiveCheck: never = contextNode.content;
 				throw new Error(`Unhandled type: ${_exhaustiveCheck}`);
