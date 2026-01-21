@@ -18,11 +18,10 @@ import type { GiselleStorage } from "@giselles-ai/storage";
 import {
 	isJsonContent,
 	jsonContentToPlainText,
-	jsonContentToText,
 } from "@giselles-ai/text-editor-utils";
 import { Client } from "pg";
 import { getDataStore } from "../data-stores/get-data-store";
-import type { GenerationMetadata } from "../generations";
+import type { AppEntryResolver, GenerationMetadata } from "../generations";
 import { useGenerationExecutor } from "../generations/internal/use-generation-executor";
 import { getGeneration, getNodeGenerationIndexes } from "../generations/utils";
 import { secretPath } from "../secrets/paths";
@@ -42,6 +41,7 @@ export function executeDataQuery(args: {
 			generationContext,
 			finishGeneration,
 			setGeneration,
+			appEntryResolver,
 		}) => {
 			try {
 				const operationNode = generationContext.operationNode;
@@ -53,6 +53,7 @@ export function executeDataQuery(args: {
 					operationNode.content.query,
 					runningGeneration,
 					args.context.storage,
+					appEntryResolver,
 				);
 
 				const connectedDataStoreNode = generationContext.sourceNodes
@@ -147,6 +148,7 @@ async function resolveQuery(
 	query: string,
 	runningGeneration: RunningGeneration,
 	storage: GiselleStorage,
+	appEntryResolver: AppEntryResolver,
 ): Promise<string> {
 	const generationContext = GenerationContext.parse(runningGeneration.context);
 
@@ -228,7 +230,7 @@ async function resolveQuery(
 				}
 				const jsonOrText = contextNode.content.text;
 				const text = isJsonContent(jsonOrText)
-					? jsonContentToText(JSON.parse(jsonOrText))
+					? jsonContentToPlainText(JSON.parse(jsonOrText))
 					: jsonOrText;
 				resolvedQuery = resolvedQuery.replace(replaceKeyword, text);
 				break;
@@ -239,7 +241,10 @@ async function resolveQuery(
 					contextNode.id,
 					sourceKeyword.outputId,
 				);
-				resolvedQuery = resolvedQuery.replace(replaceKeyword, result ?? "");
+				// LLM often outputs SQL wrapped in markdown code blocks (```sql...```),
+				// which would cause syntax errors when executed.
+				const content = stripCodeBlock(result ?? "");
+				resolvedQuery = resolvedQuery.replace(replaceKeyword, content);
 				break;
 			}
 			case "file":
@@ -263,8 +268,17 @@ async function resolveQuery(
 				resolvedQuery = resolvedQuery.replace(replaceKeyword, result ?? "");
 				break;
 			}
-			case "end":
 			case "appEntry": {
+				const messageParts = await appEntryResolver(
+					contextNode.id,
+					sourceKeyword.outputId,
+				);
+				const textParts = messageParts.filter((p) => p.type === "text");
+				const text = textParts.map((p) => p.text).join(" ");
+				resolvedQuery = resolvedQuery.replace(replaceKeyword, text);
+				break;
+			}
+			case "end": {
 				resolvedQuery = resolvedQuery.replace(replaceKeyword, "");
 				break;
 			}
@@ -276,4 +290,14 @@ async function resolveQuery(
 	}
 
 	return resolvedQuery;
+}
+
+/**
+ * Remove markdown code block syntax from text.
+ * Handles ```sql ... ```, ```...```, etc.
+ */
+function stripCodeBlock(text: string): string {
+	const codeBlockPattern = /^```(?:\w+)?\s*([\s\S]*?)\s*```$/;
+	const match = text.trim().match(codeBlockPattern);
+	return match ? match[1] : text;
 }
