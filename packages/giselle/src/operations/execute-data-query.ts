@@ -8,7 +8,6 @@ import {
 	isDataStoreNode,
 	isTextNode,
 	NodeId,
-	type Output,
 	OutputId,
 	type QueuedGeneration,
 	type RunningGeneration,
@@ -169,19 +168,7 @@ async function resolveQuery(
 			storage: storage,
 			generationId: nodeGenerationIndexes[nodeGenerationIndexes.length - 1].id,
 		});
-		if (generation === undefined || !isCompletedGeneration(generation)) {
-			return undefined;
-		}
-		let output: Output | undefined;
-		for (const sourceNode of runningGeneration.context.sourceNodes) {
-			for (const sourceOutput of sourceNode.outputs) {
-				if (sourceOutput.id === outputId) {
-					output = sourceOutput;
-					break;
-				}
-			}
-		}
-		if (output === undefined) {
+		if (!isCompletedGeneration(generation)) {
 			return undefined;
 		}
 		const generationOutput = generation.outputs.find(
