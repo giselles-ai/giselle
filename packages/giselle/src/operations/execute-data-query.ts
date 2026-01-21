@@ -56,17 +56,15 @@ export function executeDataQuery(args: {
 					args.context.storage,
 				);
 
-				const connectedDataStoreNode = generationContext.sourceNodes.find(
-					(node) =>
+				const connectedDataStoreNode = generationContext.sourceNodes
+					.filter(isDataStoreNode)
+					.find((node) =>
 						generationContext.connections.some(
 							(connection) => connection.outputNode.id === node.id,
 						),
-				);
+					);
 				if (connectedDataStoreNode === undefined) {
-					throw new Error("No node connected to DataQuery node");
-				}
-				if (!isDataStoreNode(connectedDataStoreNode)) {
-					throw new Error("Invalid generation type for executeDataQuery");
+					throw new Error("No DataStore node connected to DataQuery node");
 				}
 				if (connectedDataStoreNode.content.state.status !== "configured") {
 					throw new Error("DataStore node is not configured");
