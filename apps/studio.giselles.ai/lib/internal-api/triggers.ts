@@ -1,11 +1,11 @@
 "use server";
 
+import { DataQueryError } from "@giselles-ai/giselle";
 import type {
 	QueuedGeneration,
 	Trigger,
 	TriggerId,
 } from "@giselles-ai/protocol";
-import { DatabaseError } from "pg";
 import { giselle } from "@/app/giselle";
 
 export async function resolveTrigger(input: { generation: QueuedGeneration }) {
@@ -46,13 +46,11 @@ export async function executeDataQuery(input: {
 	try {
 		await giselle.executeDataQuery(input.generation);
 	} catch (error) {
-		if (error instanceof DatabaseError) {
-			// PostgreSQL errors (syntax errors, missing tables, etc.) are expected user errors.
+		if (error instanceof DataQueryError) {
+			// User-caused errors (SQL syntax, connection issues, etc.) should not go to Sentry.
 			// The generation status is already persisted as "failed" by execute-data-query.ts.
-			// Don't re-throw to avoid Sentry noise from user-initiated errors.
 			return;
 		}
-		// Other errors (network, configuration, etc.) should go to Sentry
 		throw error;
 	}
 }

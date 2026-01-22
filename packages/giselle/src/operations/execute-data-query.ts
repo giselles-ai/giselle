@@ -20,8 +20,9 @@ import {
 	isJsonContent,
 	jsonContentToPlainText,
 } from "@giselles-ai/text-editor-utils";
-import { Client } from "pg";
+import { Client, type QueryResult } from "pg";
 import { getDataStore } from "../data-stores/get-data-store";
+import { DataQueryError } from "../error";
 import type { AppEntryResolver, GenerationMetadata } from "../generations";
 import { getTaskGenerationIndexes } from "../generations/internal/get-task-generation-indexes";
 import { useGenerationExecutor } from "../generations/internal/use-generation-executor";
@@ -94,40 +95,45 @@ export function executeDataQuery(args: {
 					connectionTimeoutMillis: 10000,
 					query_timeout: 60000,
 				});
+
+				let result: QueryResult;
 				try {
 					await client.connect();
-
-					const result = await client.query(query);
-
-					const outputId = operationNode.outputs.find(
-						(output) => output.accessor === "result",
-					)?.id;
-
-					if (outputId === undefined) {
-						throw new Error("result output not found in operation node");
-					}
-
-					const outputs: GenerationOutput[] = [
-						{
-							type: "data-query-result",
-							outputId,
-							content: {
-								type: "data-query",
-								dataStoreId,
-								rows: result.rows,
-								rowCount: result.rowCount ?? result.rows.length,
-								query,
-							},
-						},
-					];
-
-					await finishGeneration({
-						inputMessages: [],
-						outputs,
-					});
+					result = await client.query(query);
+				} catch (error) {
+					throw new DataQueryError(
+						error instanceof Error ? error.message : String(error),
+					);
 				} finally {
 					await client.end();
 				}
+
+				const outputId = operationNode.outputs.find(
+					(output) => output.accessor === "result",
+				)?.id;
+
+				if (outputId === undefined) {
+					throw new Error("result output not found in operation node");
+				}
+
+				const outputs: GenerationOutput[] = [
+					{
+						type: "data-query-result",
+						outputId,
+						content: {
+							type: "data-query",
+							dataStoreId,
+							rows: result.rows,
+							rowCount: result.rowCount ?? result.rows.length,
+							query,
+						},
+					},
+				];
+
+				await finishGeneration({
+					inputMessages: [],
+					outputs,
+				});
 			} catch (error) {
 				const failedGeneration = {
 					...runningGeneration,

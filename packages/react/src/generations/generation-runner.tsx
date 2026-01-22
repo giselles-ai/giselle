@@ -277,7 +277,7 @@ function DataQueryRunner({ generation }: { generation: Generation }) {
 						generation,
 					})
 					.then(async () => {
-						// client.executeDataQuery no longer throws on user SQL errors.
+						// client.executeDataQuery catches DataQueryError and doesn't re-throw.
 						// Check the persisted generation status to determine outcome.
 						const persistedGeneration = await client.getGeneration({
 							generationId: generation.id,
@@ -289,7 +289,7 @@ function DataQueryRunner({ generation }: { generation: Generation }) {
 						}
 					})
 					.catch((error) => {
-						// Only unexpected errors (network, etc.) reach here
+						// Only unexpected errors reach here
 						console.error("Data query execution failed:", error);
 						updateGenerationStatusToFailure(generation.id);
 					});

@@ -421,7 +421,7 @@ importers:
         version: 2.1.1
       drizzle-orm:
         specifier: 0.44.2
-        version: 0.44.2(@opentelemetry/api@1.9.0)(@types/pg@8.11.13)(@vercel/postgres@0.9.0)(pg@8.14.1)
+        version: 0.44.2(@opentelemetry/api@1.9.0)(@types/pg@8.15.6)(@vercel/postgres@0.9.0)(pg@8.14.1)
       flags:
         specifier: 4.0.0
         version: 4.0.0(@opentelemetry/api@1.9.0)(next@16.0.10(@babel/core@7.26.7)(@opentelemetry/api@1.9.0)(@playwright/test@1.56.1)(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
@@ -540,9 +540,6 @@ importers:
       '@types/nodemailer':
         specifier: 6.4.17
         version: 6.4.17
-      '@types/pg':
-        specifier: 'catalog:'
-        version: 8.11.13
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.7
@@ -13923,10 +13920,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.44.2(@opentelemetry/api@1.9.0)(@types/pg@8.11.13)(@vercel/postgres@0.9.0)(pg@8.14.1):
+  drizzle-orm@0.44.2(@opentelemetry/api@1.9.0)(@types/pg@8.15.6)(@vercel/postgres@0.9.0)(pg@8.14.1):
     optionalDependencies:
       '@opentelemetry/api': 1.9.0
-      '@types/pg': 8.11.13
+      '@types/pg': 8.15.6
       '@vercel/postgres': 0.9.0
       pg: 8.14.1
 
