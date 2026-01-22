@@ -8,7 +8,8 @@
 * 27 New BSD
 * 16 Simplified BSD
 * 8 BlueOak-1.0.0
-* 2 MIT OR Apache-2.0
+* 3 MIT OR Apache-2.0
+* 3 Mozilla Public License 2.0
 * 2 MIT-0
 * 2 LGPL-3.0-or-later
 * 1 BSD
