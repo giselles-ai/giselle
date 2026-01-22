@@ -497,6 +497,8 @@ export async function processEvent<TEventName extends WebhookEventName>(
 
 	const repositoryNodeId = args.trigger.configuration.repositoryNodeId;
 	const installationId = args.trigger.configuration.installationId;
+	const shouldPostInProgressComment =
+		args.trigger.configuration.shouldPostInProgressComment;
 	const authConfig = args.createAuthConfig(installationId);
 
 	// Merge provided dependencies with defaults
@@ -587,97 +589,102 @@ export async function processEvent<TEventName extends WebhookEventName>(
 
 					const body = `Running flow...\n\n${buildProgressTable(progressTableData)}`;
 
-					if (
-						deps.ensureWebhookEvent(args.event, "issue_comment.created") ||
-						deps.ensureWebhookEvent(args.event, "issues.opened") ||
-						deps.ensureWebhookEvent(args.event, "issues.closed") ||
-						deps.ensureWebhookEvent(args.event, "issues.labeled")
-					) {
-						const issueNumber = args.event.data.payload.issue.number;
-						const comment = await deps.createIssueComment({
-							repositoryNodeId,
-							issueNumber,
-							body,
-							authConfig,
-						});
-						createdComment = { id: comment.id, type: "issue" };
-					} else if (
-						deps.ensureWebhookEvent(args.event, "pull_request.opened") ||
-						deps.ensureWebhookEvent(
-							args.event,
-							"pull_request.ready_for_review",
-						) ||
-						deps.ensureWebhookEvent(args.event, "pull_request.closed") ||
-						deps.ensureWebhookEvent(args.event, "pull_request.labeled")
-					) {
-						const pullNumber = args.event.data.payload.pull_request.number;
-						const comment = await deps.createPullRequestComment({
-							repositoryNodeId,
-							pullNumber,
-							body,
-							authConfig,
-						});
-						createdComment = { id: comment.id, type: "issue" };
-					} else if (
-						deps.ensureWebhookEvent(
-							args.event,
-							"pull_request_review_comment.created",
-						)
-					) {
-						const pullNumber = args.event.data.payload.pull_request.number;
-						const comment = await deps.replyPullRequestReviewComment({
-							repositoryNodeId,
-							pullNumber,
-							commentId: args.event.data.payload.comment.id,
-							body,
-							authConfig,
-						});
-						createdComment = { id: comment.id, type: "review" };
-					} else if (
-						deps.ensureWebhookEvent(args.event, "discussion.created") ||
-						deps.ensureWebhookEvent(args.event, "discussion_comment.created")
-					) {
-						const discussionPayload = args.event.data.payload.discussion;
-						const discussionId = discussionPayload.node_id;
-						let replyToId: string | undefined;
+					if (shouldPostInProgressComment) {
 						if (
+							deps.ensureWebhookEvent(args.event, "issue_comment.created") ||
+							deps.ensureWebhookEvent(args.event, "issues.opened") ||
+							deps.ensureWebhookEvent(args.event, "issues.closed") ||
+							deps.ensureWebhookEvent(args.event, "issues.labeled")
+						) {
+							const issueNumber = args.event.data.payload.issue.number;
+							const comment = await deps.createIssueComment({
+								repositoryNodeId,
+								issueNumber,
+								body,
+								authConfig,
+							});
+							createdComment = { id: comment.id, type: "issue" };
+						} else if (
+							deps.ensureWebhookEvent(args.event, "pull_request.opened") ||
+							deps.ensureWebhookEvent(
+								args.event,
+								"pull_request.ready_for_review",
+							) ||
+							deps.ensureWebhookEvent(args.event, "pull_request.closed") ||
+							deps.ensureWebhookEvent(args.event, "pull_request.labeled")
+						) {
+							const pullNumber = args.event.data.payload.pull_request.number;
+							const comment = await deps.createPullRequestComment({
+								repositoryNodeId,
+								pullNumber,
+								body,
+								authConfig,
+							});
+							createdComment = { id: comment.id, type: "issue" };
+						} else if (
+							deps.ensureWebhookEvent(
+								args.event,
+								"pull_request_review_comment.created",
+							)
+						) {
+							const pullNumber = args.event.data.payload.pull_request.number;
+							const comment = await deps.replyPullRequestReviewComment({
+								repositoryNodeId,
+								pullNumber,
+								commentId: args.event.data.payload.comment.id,
+								body,
+								authConfig,
+							});
+							createdComment = { id: comment.id, type: "review" };
+						} else if (
+							deps.ensureWebhookEvent(args.event, "discussion.created") ||
 							deps.ensureWebhookEvent(args.event, "discussion_comment.created")
 						) {
-							const parentDatabaseId =
-								args.event.data.payload.comment.parent_id;
-							if (parentDatabaseId !== null) {
-								const owner = args.event.data.payload.repository.owner.login;
-								const name = args.event.data.payload.repository.name;
-								const discussionNumber = discussionPayload.number;
-								const discussionForCommentCreation =
-									await deps.getDiscussionForCommentCreation({
-										owner,
-										name,
-										number: discussionNumber,
-										authConfig,
+							const discussionPayload = args.event.data.payload.discussion;
+							const discussionId = discussionPayload.node_id;
+							let replyToId: string | undefined;
+							if (
+								deps.ensureWebhookEvent(
+									args.event,
+									"discussion_comment.created",
+								)
+							) {
+								const parentDatabaseId =
+									args.event.data.payload.comment.parent_id;
+								if (parentDatabaseId !== null) {
+									const owner = args.event.data.payload.repository.owner.login;
+									const name = args.event.data.payload.repository.name;
+									const discussionNumber = discussionPayload.number;
+									const discussionForCommentCreation =
+										await deps.getDiscussionForCommentCreation({
+											owner,
+											name,
+											number: discussionNumber,
+											authConfig,
+										});
+									const commentNodes =
+										discussionForCommentCreation.data?.repository?.discussion
+											?.comments?.nodes ?? [];
+									replyToId = findDiscussionReplyTargetId({
+										comments: commentNodes,
+										targetDatabaseId: parentDatabaseId,
 									});
-								const commentNodes =
-									discussionForCommentCreation.data?.repository?.discussion
-										?.comments?.nodes ?? [];
-								replyToId = findDiscussionReplyTargetId({
-									comments: commentNodes,
-									targetDatabaseId: parentDatabaseId,
-								});
-							} else {
-								replyToId = args.event.data.payload.comment.node_id;
+								} else {
+									replyToId = args.event.data.payload.comment.node_id;
+								}
 							}
-						}
-						const comment = await deps.createDiscussionComment({
-							discussionId,
-							body,
-							replyToId,
-							authConfig,
-						});
-						if (comment?.id) {
-							createdComment = {
-								type: "discussion",
-								id: comment.id,
-							};
+							const comment = await deps.createDiscussionComment({
+								discussionId,
+								body,
+								replyToId,
+								authConfig,
+							});
+							if (comment?.id) {
+								createdComment = {
+									type: "discussion",
+									id: comment.id,
+								};
+							}
 						}
 					}
 				},

@@ -7,9 +7,8 @@
 * 42 ISC
 * 27 New BSD
 * 16 Simplified BSD
-* 7 BlueOak-1.0.0
-* 3 MIT OR Apache-2.0
-* 3 Mozilla Public License 2.0
+* 8 BlueOak-1.0.0
+* 2 MIT OR Apache-2.0
 * 2 MIT-0
 * 2 LGPL-3.0-or-later
 * 1 BSD
@@ -12254,6 +12253,17 @@ Unknown manually approved
 * /home/runner/work/giselle/giselle
 
 <a href="http://en.wikipedia.org/wiki/ISC_license">ISC</a> permitted
+
+
+
+<a name="tar"></a>
+### tar v7.5.4
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+BlueOak-1.0.0 permitted
 
 
 

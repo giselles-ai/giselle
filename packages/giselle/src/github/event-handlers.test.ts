@@ -113,6 +113,7 @@ describe("GitHub Event Handlers", () => {
 					},
 					installationId: 12345,
 					repositoryNodeId: "repo-node-id",
+					shouldPostInProgressComment: true,
 				},
 				enable: true,
 			} as Trigger,
@@ -1317,6 +1318,7 @@ describe("GitHub Event Handlers", () => {
 					},
 					installationId: 12345,
 					repositoryNodeId: "repo-node-id",
+					shouldPostInProgressComment: true,
 				},
 			} as Trigger;
 
@@ -1418,6 +1420,7 @@ describe("GitHub Event Handlers", () => {
 					},
 					installationId: 12345,
 					repositoryNodeId: "repo-node-id",
+					shouldPostInProgressComment: true,
 				},
 			} as Trigger;
 
