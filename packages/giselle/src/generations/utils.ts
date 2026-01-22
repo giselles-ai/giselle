@@ -2,6 +2,7 @@ import { hasTierAccess, languageModels } from "@giselles-ai/language-model";
 import {
 	type CompletedGeneration,
 	type ContentGenerationNode,
+	type DataQueryResultOutput,
 	type FileContent,
 	type FileId,
 	Generation,
@@ -218,12 +219,20 @@ async function buildGenerationMessageForTextGeneration({
 				}
 				break;
 
-			case "dataQuery":
 			case "dataStore":
 			case "github":
 			case "imageGeneration":
 			case "vectorStore":
 				throw new Error("Not implemented");
+
+			case "dataQuery": {
+				const result = await generationContentResolver(
+					contextNode.id,
+					sourceKeyword.outputId,
+				);
+				userMessage = userMessage.replace(replaceKeyword, result ?? "");
+				break;
+			}
 
 			case "webPage": {
 				const fileContents = await geWebPageContents(
@@ -581,7 +590,8 @@ async function buildGenerationMessageForImageGeneration(
 
 			case "action":
 			case "trigger":
-			case "query": {
+			case "query":
+			case "dataQuery": {
 				const result = await textGenerationResolver(
 					contextNode.id,
 					sourceKeyword.outputId,
@@ -637,13 +647,9 @@ async function buildGenerationMessageForImageGeneration(
 				}
 				break;
 			}
-
-			case "dataQuery":
-			case "dataStore":
-				throw new Error("Not implemented");
-
 			case "github":
 			case "vectorStore":
+			case "dataStore":
 			case "end":
 				userMessage = userMessage.replace(replaceKeyword, "");
 				break;
@@ -880,6 +886,12 @@ export function queryResultToText(
 	return sections.length > 0 ? sections.join("\n\n---\n\n") : undefined;
 }
 
+export function dataQueryResultToText(
+	queryResult: DataQueryResultOutput,
+): string {
+	return JSON.stringify(queryResult.content.rows, null, 2);
+}
+
 async function buildGenerationMessageForContentGeneration({
 	node,
 	contextNodes,
@@ -1002,6 +1014,7 @@ async function buildGenerationMessageForContentGeneration({
 			case "github":
 			case "imageGeneration":
 			case "vectorStore":
+			case "dataStore":
 				throw new Error("Not implemented");
 
 			case "webPage": {
@@ -1051,13 +1064,10 @@ async function buildGenerationMessageForContentGeneration({
 				break;
 			}
 
-			case "dataQuery":
-			case "dataStore":
-				throw new Error("Not implemented");
-
 			case "query":
 			case "trigger":
-			case "action": {
+			case "action":
+			case "dataQuery": {
 				const result = await generationContentResolver(
 					contextNode.id,
 					sourceKeyword.outputId,

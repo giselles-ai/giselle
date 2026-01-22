@@ -50,7 +50,7 @@ import {
 	getGitHubRepositoryFullname,
 	handleGitHubWebhookV2,
 } from "./github";
-import { executeAction } from "./operations";
+import { executeAction, executeDataQuery } from "./operations";
 import { executeQuery } from "./operations/execute-query";
 import { addSecret, deleteSecret, getWorkspaceSecrets } from "./secrets";
 import { addWebPage } from "./sources";
@@ -303,6 +303,8 @@ export function Giselle(config: GiselleConfig) {
 		}) => handleGitHubWebhookV2({ ...args, context }),
 		executeQuery: async (generation: QueuedGeneration) =>
 			executeQuery({ context, generation }),
+		executeDataQuery: async (generation: QueuedGeneration) =>
+			executeDataQuery({ context, generation }),
 		addWebPage: async (args: {
 			workspaceId: WorkspaceId;
 			webpage: FetchingWebPage;

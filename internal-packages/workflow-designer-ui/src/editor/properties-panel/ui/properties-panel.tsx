@@ -15,34 +15,38 @@ import {
 
 function getNodeIconColor(node: NodeLike): string {
 	if (node.type === "operation") {
-		// handle out-of-union runtime type safely without widening types
-		if (`${node.content.type}` === "vectorStore") {
-			return "text-background";
-		}
 		switch (node.content.type) {
 			case "textGeneration":
+			case "contentGeneration":
 			case "imageGeneration":
 			case "action":
 				return "text-inverse";
+			case "dataQuery":
 			case "trigger":
 			case "query":
 				return "text-background";
-			default:
+			case "appEntry":
+			case "end":
 				return "text-inverse";
+			default: {
+				const _exhaustiveCheck: never = node.content.type;
+				throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
+			}
 		}
 	}
 	if (node.type === "variable") {
 		switch (node.content.type) {
 			case "vectorStore":
-				return "text-background";
 			case "github":
-				return "text-background";
 			case "text":
 			case "file":
 			case "webPage":
+			case "dataStore":
 				return "text-background";
-			default:
-				return "text-inverse";
+			default: {
+				const _exhaustiveCheck: never = node.content.type;
+				throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
+			}
 		}
 	}
 	return "text-inverse";
@@ -60,9 +64,6 @@ export function PropertiesPanelRoot({ children }: { children: ReactNode }) {
 
 function getNodeIconBackground(node: NodeLike): string {
 	if (node.type === "operation") {
-		if (`${node.content.type}` === "vectorStore") {
-			return "bg-github-node-1";
-		}
 		switch (node.content.type) {
 			case "textGeneration":
 				return "bg-generation-node-1";
@@ -81,8 +82,7 @@ function getNodeIconBackground(node: NodeLike): string {
 			case "end":
 				return STAGE_NODE_BG_CLASS_SOLID;
 			case "dataQuery":
-				// TODO: implement dataQuery
-				return "bg-bg-900";
+				return "bg-data-query-node-1";
 			default: {
 				const _exhaustiveCheck: never = node.content.type;
 				throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
@@ -101,8 +101,12 @@ function getNodeIconBackground(node: NodeLike): string {
 				return "bg-github-node-1";
 			case "webPage":
 				return "bg-webPage-node-1";
-			default:
-				return "bg-bg-900";
+			case "dataStore":
+				return "bg-data-store-node-1";
+			default: {
+				const _exhaustiveCheck: never = node.content.type;
+				throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
+			}
 		}
 	}
 	return "bg-bg-900";
