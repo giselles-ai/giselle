@@ -279,9 +279,16 @@ function DataQueryRunner({ generation }: { generation: Generation }) {
 					.then(async () => {
 						// client.executeDataQuery catches DataQueryError and doesn't re-throw.
 						// Check the persisted generation status to determine outcome.
-						const persistedGeneration = await client.getGeneration({
-							generationId: generation.id,
-						});
+						let persistedGeneration: Generation;
+						try {
+							persistedGeneration = await client.getGeneration({
+								generationId: generation.id,
+							});
+						} catch (error) {
+							console.error("Failed to get generation result:", error);
+							updateGenerationStatusToFailure(generation.id);
+							return;
+						}
 						if (isCompletedGeneration(persistedGeneration)) {
 							updateGenerationStatusToComplete(generation.id);
 						} else {
@@ -289,7 +296,7 @@ function DataQueryRunner({ generation }: { generation: Generation }) {
 						}
 					})
 					.catch((error) => {
-						// Only unexpected errors reach here
+						// Only unexpected errors (network, etc.) reach here
 						console.error("Data query execution failed:", error);
 						updateGenerationStatusToFailure(generation.id);
 					});
