@@ -43,6 +43,7 @@ export function createInternalGiselleClient(): GiselleClient {
 		reconfigureGitHubTrigger: internalApi.reconfigureGitHubTrigger,
 		executeAction: internalApi.executeAction,
 		executeQuery: internalApi.executeQuery,
+		executeDataQuery: internalApi.executeDataQuery,
 		getGitHubRepositoryFullname: internalApi.getGitHubRepositoryFullname,
 
 		// files

@@ -1,6 +1,7 @@
 import type { DataQueryResult, Generation } from "@giselles-ai/protocol";
 import { ChevronDownIcon, ChevronRightIcon } from "lucide-react";
 import { useState } from "react";
+import { Streamdown } from "streamdown";
 import { WilliIcon } from "../icons";
 
 function Spinner() {
@@ -98,9 +99,9 @@ export function DataQueryResultView({
 			{isJsonExpanded && (
 				<div className="bg-surface/5 rounded-[8px] p-[12px] border border-border/10 overflow-auto max-h-[400px]">
 					{result.rows.length > 0 ? (
-						<pre className="text-[12px] text-inverse font-mono whitespace-pre-wrap">
-							{JSON.stringify(result.rows, null, 2)}
-						</pre>
+						<Streamdown className="markdown-renderer">
+							{`\`\`\`json\n${JSON.stringify(result.rows, null, 2)}\n\`\`\``}
+						</Streamdown>
 					) : (
 						<p className="text-[12px] text-text-muted text-center py-[16px]">
 							Query executed successfully but returned no rows.

@@ -1,5 +1,6 @@
 "use server";
 
+import { DataQueryError } from "@giselles-ai/giselle";
 import type {
 	QueuedGeneration,
 	Trigger,
@@ -37,6 +38,21 @@ export async function executeAction(input: { generation: QueuedGeneration }) {
 
 export async function executeQuery(input: { generation: QueuedGeneration }) {
 	await giselle.executeQuery(input.generation);
+}
+
+export async function executeDataQuery(input: {
+	generation: QueuedGeneration;
+}) {
+	try {
+		await giselle.executeDataQuery(input.generation);
+	} catch (error) {
+		if (error instanceof DataQueryError) {
+			// User-caused errors (SQL syntax, connection issues, etc.) should not go to Sentry.
+			// The generation status is already persisted as "failed" by execute-data-query.ts.
+			return;
+		}
+		throw error;
+	}
 }
 
 export async function getGitHubRepositoryFullname(

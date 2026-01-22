@@ -3,6 +3,7 @@ import {
 	type CompletedGeneration,
 	type ContentGenerationNode,
 	type DataStoreId,
+	type DataQueryResultOutput,
 	type FileContent,
 	type FileId,
 	Generation,
@@ -230,7 +231,6 @@ async function buildGenerationMessageForTextGeneration({
 				}
 				break;
 
-			case "dataQuery":
 			case "github":
 			case "imageGeneration":
 			case "vectorStore":
@@ -305,6 +305,7 @@ async function buildGenerationMessageForTextGeneration({
 			}
 
 			case "query":
+			case "dataQuery":
 			case "trigger":
 			case "action": {
 				const result = await generationContentResolver(
@@ -615,7 +616,8 @@ async function buildGenerationMessageForImageGeneration(
 
 			case "action":
 			case "trigger":
-			case "query": {
+			case "query":
+			case "dataQuery": {
 				const result = await textGenerationResolver(
 					contextNode.id,
 					sourceKeyword.outputId,
@@ -671,9 +673,6 @@ async function buildGenerationMessageForImageGeneration(
 				}
 				break;
 			}
-
-			case "dataQuery":
-				throw new Error("Not implemented");
 
 			case "dataStore": {
 				const output = contextNode.outputs.find(
@@ -933,6 +932,12 @@ export function queryResultToText(
 	return sections.length > 0 ? sections.join("\n\n---\n\n") : undefined;
 }
 
+export function dataQueryResultToText(
+	queryResult: DataQueryResultOutput,
+): string {
+	return JSON.stringify(queryResult.content.rows, null, 2);
+}
+
 async function buildGenerationMessageForContentGeneration({
 	node,
 	contextNodes,
@@ -1108,9 +1113,6 @@ async function buildGenerationMessageForContentGeneration({
 				break;
 			}
 
-			case "dataQuery":
-				throw new Error("Not implemented");
-
 			case "dataStore": {
 				const output = contextNode.outputs.find(
 					(o) => o.id === sourceKeyword.outputId,
@@ -1133,7 +1135,8 @@ async function buildGenerationMessageForContentGeneration({
 
 			case "query":
 			case "trigger":
-			case "action": {
+			case "action":
+			case "dataQuery": {
 				const result = await generationContentResolver(
 					contextNode.id,
 					sourceKeyword.outputId,
