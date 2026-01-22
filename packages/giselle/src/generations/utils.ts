@@ -706,7 +706,7 @@ async function buildGenerationMessageForImageGeneration(
 				throw new Error(`Unhandled type: ${_exhaustiveCheck}`);
 			}
 		}
-  }
+	}
 	return [
 		{
 			role: "user",

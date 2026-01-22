@@ -391,7 +391,12 @@ export async function useGenerationExecutor<T>(args: {
 				return undefined;
 			}
 
-			const pool = new Pool({ connectionString });
+			const pool = new Pool({
+				connectionString,
+				connectionTimeoutMillis: 10000,
+				query_timeout: 25000,
+				statement_timeout: 20000,
+			});
 			try {
 				const res = await pool.query(`
           SELECT table_name, column_name, data_type, is_nullable
