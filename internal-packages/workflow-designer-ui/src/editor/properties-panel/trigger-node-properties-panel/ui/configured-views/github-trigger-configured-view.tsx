@@ -329,7 +329,7 @@ export function GitHubTriggerConfiguredView({
 			)}
 			<div className="space-y-[4px]">
 				<p className="text-[14px] py-[1.5px] text-inverse">
-					In-progress comment
+					In-Progress Comment
 				</p>
 				<div className="flex items-center justify-between gap-[12px]">
 					<p className="text-[12px] text-text-muted max-w-[260px]">
