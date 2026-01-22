@@ -108,6 +108,7 @@ export function generateContent({
 			generationContentResolver,
 			imageGenerationResolver,
 			appEntryResolver,
+			dataStoreSchemaResolver,
 		}) => {
 			const operationNode = generationContext.operationNode;
 			if (!isTextGenerationNode(operationNode)) {
@@ -128,6 +129,7 @@ export function generateContent({
 				generationContentResolver,
 				imageGenerationResolver,
 				appEntryResolver,
+				dataStoreSchemaResolver,
 			});
 
 			let preparedToolSet: PreparedToolSet = {
@@ -594,6 +596,7 @@ function generateContentV2({
 			generationContentResolver,
 			imageGenerationResolver,
 			appEntryResolver,
+			dataStoreSchemaResolver,
 		}) => {
 			const operationNode = generationContext.operationNode;
 			if (!isContentGenerationNode(operationNode)) {
@@ -621,6 +624,7 @@ function generateContentV2({
 				generationContentResolver,
 				imageGenerationResolver,
 				appEntryResolver,
+				dataStoreSchemaResolver,
 			});
 
 			const { toolSet, cleanupFunctions } = await buildToolSet({
