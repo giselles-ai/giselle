@@ -1,5 +1,6 @@
 import {
 	Dialog,
+	DialogClose,
 	DialogContent,
 	DialogDescription,
 	DialogFooter,
@@ -7,6 +8,7 @@ import {
 	DialogTitle,
 } from "@giselle-internal/ui/dialog";
 import { Input } from "@giselle-internal/ui/input";
+import { X } from "lucide-react";
 import { useState, useTransition } from "react";
 import { Button } from "../../components/button";
 import { createDataStore } from "./actions";
@@ -52,9 +54,15 @@ export function DataStoreCreateDialog({
 		<Dialog open={isOpen} onOpenChange={handleDialogOpenChange}>
 			<DialogContent variant="glass">
 				<DialogHeader>
-					<DialogTitle className="text-[20px] font-semibold text-white-900">
-						New Data Store
-					</DialogTitle>
+					<div className="flex items-center justify-between">
+						<DialogTitle className="text-[20px] font-semibold text-white-900">
+							New Data Store
+						</DialogTitle>
+						<DialogClose className="rounded-sm text-inverse opacity-70 hover:opacity-100 focus:outline-none">
+							<X className="h-5 w-5" />
+							<span className="sr-only">Close</span>
+						</DialogClose>
+					</div>
 					<DialogDescription className="font-geist mt-2 text-[14px] text-text-muted">
 						Add a PostgreSQL database connection to use it in Data Store Nodes.
 					</DialogDescription>
