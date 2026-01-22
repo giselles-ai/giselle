@@ -409,7 +409,13 @@ export async function useGenerationExecutor<T>(args: {
 				);
 				return JSON.stringify(res.rows);
 			} finally {
-				await pool.end();
+				try {
+					await pool.end();
+				} catch {
+					args.context.logger.warn(
+						`Failed to close pool for data store: ${dataStoreId}`,
+					);
+				}
 			}
 		} catch {
 			// Error details are not logged to prevent exposing sensitive data
