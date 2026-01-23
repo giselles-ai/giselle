@@ -368,6 +368,11 @@ export async function resolveQuery(
 				// LLM often outputs SQL wrapped in markdown code blocks (```sql...```),
 				// which would cause syntax errors when executed.
 				const content = stripCodeBlock(result ?? "");
+				// Handle both quoted and unquoted placeholders for consistency
+				parameterizedQuery = parameterizedQuery.replaceAll(
+					quotedReplaceKeyword,
+					content,
+				);
 				parameterizedQuery = parameterizedQuery.replaceAll(
 					replaceKeyword,
 					content,
