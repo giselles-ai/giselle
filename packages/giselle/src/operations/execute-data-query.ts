@@ -97,6 +97,7 @@ export function executeDataQuery(args: {
 				});
 
 				let result: QueryResult;
+				console.log(parameterizedQuery, values);
 				try {
 					await client.connect();
 					result = await client.query(parameterizedQuery, values);
@@ -368,16 +369,10 @@ export async function resolveQuery(
 				// LLM often outputs SQL wrapped in markdown code blocks (```sql...```),
 				// which would cause syntax errors when executed.
 				const content = stripCodeBlock(result ?? "");
-				// Handle both quoted and unquoted placeholders for consistency
-				parameterizedQuery = parameterizedQuery.replaceAll(
-					quotedReplaceKeyword,
-					content,
-				);
 				parameterizedQuery = parameterizedQuery.replaceAll(
 					replaceKeyword,
 					content,
 				);
-				displayQuery = displayQuery.replaceAll(quotedReplaceKeyword, content);
 				displayQuery = displayQuery.replaceAll(replaceKeyword, content);
 				break;
 			}
