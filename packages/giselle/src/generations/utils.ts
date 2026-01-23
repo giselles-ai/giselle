@@ -3,6 +3,7 @@ import {
 	type CompletedGeneration,
 	type ContentGenerationNode,
 	type DataQueryResultOutput,
+	type DataStoreId,
 	type FileContent,
 	type FileId,
 	Generation,
@@ -42,6 +43,7 @@ export async function buildMessageObject({
 	generationContentResolver,
 	imageGenerationResolver,
 	appEntryResolver,
+	dataStoreSchemaResolver,
 }: {
 	node: OperationNode;
 	contextNodes: Node[];
@@ -55,6 +57,9 @@ export async function buildMessageObject({
 		outputId: OutputId,
 	) => Promise<ImagePart[] | undefined>;
 	appEntryResolver: AppEntryResolver;
+	dataStoreSchemaResolver: (
+		dataStoreId: DataStoreId,
+	) => Promise<string | undefined>;
 }): Promise<ModelMessage[]> {
 	switch (node.content.type) {
 		case "textGeneration": {
@@ -64,6 +69,7 @@ export async function buildMessageObject({
 				fileResolver,
 				generationContentResolver,
 				appEntryResolver,
+				dataStoreSchemaResolver,
 			});
 		}
 		case "contentGeneration": {
@@ -73,6 +79,7 @@ export async function buildMessageObject({
 				fileResolver,
 				generationContentResolver,
 				appEntryResolver,
+				dataStoreSchemaResolver,
 			});
 		}
 		case "imageGeneration": {
@@ -83,6 +90,7 @@ export async function buildMessageObject({
 				generationContentResolver,
 				imageGenerationResolver,
 				appEntryResolver,
+				dataStoreSchemaResolver,
 			);
 		}
 		case "dataQuery":
@@ -106,6 +114,7 @@ async function buildGenerationMessageForTextGeneration({
 	fileResolver,
 	generationContentResolver,
 	appEntryResolver,
+	dataStoreSchemaResolver,
 }: {
 	node: TextGenerationNode;
 	contextNodes: Node[];
@@ -115,6 +124,9 @@ async function buildGenerationMessageForTextGeneration({
 		outputId: OutputId,
 	) => Promise<string | undefined>;
 	appEntryResolver: AppEntryResolver;
+	dataStoreSchemaResolver: (
+		dataStoreId: DataStoreId,
+	) => Promise<string | undefined>;
 }): Promise<ModelMessage[]> {
 	const llmProvider = node.content.llm.provider;
 	const prompt = node.content.prompt;
@@ -219,18 +231,28 @@ async function buildGenerationMessageForTextGeneration({
 				}
 				break;
 
-			case "dataStore":
 			case "github":
 			case "imageGeneration":
 			case "vectorStore":
 				throw new Error("Not implemented");
 
-			case "dataQuery": {
-				const result = await generationContentResolver(
-					contextNode.id,
-					sourceKeyword.outputId,
+			case "dataStore": {
+				const output = contextNode.outputs.find(
+					(o) => o.id === sourceKeyword.outputId,
 				);
-				userMessage = userMessage.replace(replaceKeyword, result ?? "");
+				if (output?.accessor === "schema") {
+					if (contextNode.content.state.status !== "configured") {
+						userMessage = userMessage.replace(replaceKeyword, "");
+						break;
+					}
+					const schemaText = await dataStoreSchemaResolver(
+						contextNode.content.state.dataStoreId,
+					);
+					userMessage = userMessage.replace(replaceKeyword, schemaText ?? "");
+				} else {
+					// Handle "source" output or other unsupported outputs by replacing with empty string
+					userMessage = userMessage.replace(replaceKeyword, "");
+				}
 				break;
 			}
 
@@ -283,6 +305,7 @@ async function buildGenerationMessageForTextGeneration({
 			}
 
 			case "query":
+			case "dataQuery":
 			case "trigger":
 			case "action": {
 				const result = await generationContentResolver(
@@ -472,6 +495,9 @@ async function buildGenerationMessageForImageGeneration(
 		outputId: OutputId,
 	) => Promise<ImagePart[] | undefined>,
 	appEntryResolver: AppEntryResolver,
+	dataStoreSchemaResolver: (
+		dataStoreId: DataStoreId,
+	) => Promise<string | undefined>,
 ): Promise<ModelMessage[]> {
 	const prompt = node.content.prompt;
 	if (prompt === undefined) {
@@ -647,9 +673,29 @@ async function buildGenerationMessageForImageGeneration(
 				}
 				break;
 			}
+
+			case "dataStore": {
+				const output = contextNode.outputs.find(
+					(o) => o.id === sourceKeyword.outputId,
+				);
+				if (output?.accessor === "schema") {
+					if (contextNode.content.state.status !== "configured") {
+						userMessage = userMessage.replace(replaceKeyword, "");
+						break;
+					}
+					const schemaText = await dataStoreSchemaResolver(
+						contextNode.content.state.dataStoreId,
+					);
+					userMessage = userMessage.replace(replaceKeyword, schemaText ?? "");
+				} else {
+					// Handle "source" output or other unsupported outputs by replacing with empty string
+					userMessage = userMessage.replace(replaceKeyword, "");
+				}
+				break;
+			}
+
 			case "github":
 			case "vectorStore":
-			case "dataStore":
 			case "end":
 				userMessage = userMessage.replace(replaceKeyword, "");
 				break;
@@ -898,6 +944,7 @@ async function buildGenerationMessageForContentGeneration({
 	fileResolver,
 	generationContentResolver,
 	appEntryResolver,
+	dataStoreSchemaResolver,
 }: {
 	node: ContentGenerationNode;
 	contextNodes: Node[];
@@ -907,6 +954,9 @@ async function buildGenerationMessageForContentGeneration({
 		outputId: OutputId,
 	) => Promise<string | undefined>;
 	appEntryResolver: AppEntryResolver;
+	dataStoreSchemaResolver: (
+		dataStoreId: DataStoreId,
+	) => Promise<string | undefined>;
 }): Promise<ModelMessage[]> {
 	const llmProvider = node.content.languageModel.provider;
 	const prompt = node.content.prompt;
@@ -1014,7 +1064,6 @@ async function buildGenerationMessageForContentGeneration({
 			case "github":
 			case "imageGeneration":
 			case "vectorStore":
-			case "dataStore":
 				throw new Error("Not implemented");
 
 			case "webPage": {
@@ -1060,6 +1109,26 @@ async function buildGenerationMessageForContentGeneration({
 						const _exhaustiveCheck: never = llmProvider;
 						throw new Error(`Unhandled type: ${_exhaustiveCheck}`);
 					}
+				}
+				break;
+			}
+
+			case "dataStore": {
+				const output = contextNode.outputs.find(
+					(o) => o.id === sourceKeyword.outputId,
+				);
+				if (output?.accessor === "schema") {
+					if (contextNode.content.state.status !== "configured") {
+						userMessage = userMessage.replace(replaceKeyword, "");
+						break;
+					}
+					const schemaText = await dataStoreSchemaResolver(
+						contextNode.content.state.dataStoreId,
+					);
+					userMessage = userMessage.replace(replaceKeyword, schemaText ?? "");
+				} else {
+					// Handle "source" output or other unsupported outputs by replacing with empty string
+					userMessage = userMessage.replace(replaceKeyword, "");
 				}
 				break;
 			}
