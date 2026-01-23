@@ -52,7 +52,7 @@ export function executeDataQuery(args: {
 					throw new Error("Invalid generation type for executeDataQuery");
 				}
 
-				const query = await resolveQuery(
+				const { parameterizedQuery, displayQuery, values } = await resolveQuery(
 					operationNode.content.query,
 					runningGeneration,
 					args.context.storage,
@@ -99,7 +99,7 @@ export function executeDataQuery(args: {
 				let result: QueryResult;
 				try {
 					await client.connect();
-					result = await client.query(query);
+					result = await client.query(parameterizedQuery, values);
 				} catch (error) {
 					throw new DataQueryError(
 						error instanceof Error ? error.message : String(error),
@@ -125,7 +125,7 @@ export function executeDataQuery(args: {
 							dataStoreId,
 							rows: result.rows,
 							rowCount: result.rowCount ?? result.rows.length,
-							query,
+							query: displayQuery,
 						},
 					},
 				];
@@ -152,14 +152,51 @@ export function executeDataQuery(args: {
 	});
 }
 
-async function resolveQuery(
+export interface ResolvedQuery {
+	/** Parameterized query for safe execution (e.g., "SELECT * FROM users WHERE id = $1") */
+	parameterizedQuery: string;
+	/** Display query with actual values substituted (e.g., "SELECT * FROM users WHERE id = '1'") */
+	displayQuery: string;
+	/** Parameter values for parameterized query execution */
+	values: unknown[];
+}
+
+/**
+ * Helper for building parameterized SQL queries
+ * Automatically tracks parameter indices and builds the values array
+ * Reuses the same parameter index for the same placeholder key
+ */
+function createParamHelper() {
+	const values: unknown[] = [];
+	const placeholderMap = new Map<string, string>();
+
+	return {
+		add(key: string, value: unknown): string {
+			// Reuse the same parameter index for the same placeholder key
+			const existing = placeholderMap.get(key);
+			if (existing !== undefined) {
+				return existing;
+			}
+			values.push(value);
+			const placeholder = `$${values.length}`;
+			placeholderMap.set(key, placeholder);
+			return placeholder;
+		},
+		values() {
+			return values;
+		},
+	};
+}
+
+export async function resolveQuery(
 	query: string,
 	runningGeneration: RunningGeneration,
 	storage: GiselleStorage,
 	appEntryResolver: AppEntryResolver,
-): Promise<string> {
+): Promise<ResolvedQuery> {
 	const generationContext = GenerationContext.parse(runningGeneration.context);
 	const taskId = runningGeneration.context.origin.taskId;
+	const paramHelper = createParamHelper();
 
 	async function findGenerationByNode(nodeId: NodeId) {
 		const nodeGenerationIndexes = await getNodeGenerationIndexes({
@@ -257,13 +294,15 @@ async function resolveQuery(
 		}
 	}
 
-	let resolvedQuery = isJsonContent(query)
+	const baseQuery = isJsonContent(query)
 		? jsonContentToPlainText(JSON.parse(query))
 		: query;
+	let parameterizedQuery = baseQuery;
+	let displayQuery = baseQuery;
 
 	// Find all references in the format {{nd-XXXX:otp-XXXX}}
 	const pattern = /\{\{(nd-[a-zA-Z0-9]+):(otp-[a-zA-Z0-9]+)\}\}/g;
-	const sourceKeywords = [...resolvedQuery.matchAll(pattern)].map((match) => ({
+	const sourceKeywords = [...baseQuery.matchAll(pattern)].map((match) => ({
 		nodeId: NodeId.parse(match[1]),
 		outputId: OutputId.parse(match[2]),
 	}));
@@ -276,6 +315,33 @@ async function resolveQuery(
 			continue;
 		}
 		const replaceKeyword = `{{${sourceKeyword.nodeId}:${sourceKeyword.outputId}}}`;
+		// PostgreSQL parameter placeholders must NOT be inside quotes.
+		// If the placeholder is quoted like '{{...}}', we must remove the quotes.
+		const quotedReplaceKeyword = `'${replaceKeyword}'`;
+
+		/**
+		 * Replace placeholder with parameterized query marker for SQL injection protection.
+		 * Used for user-controlled inputs (text, appEntry, trigger, action nodes).
+		 */
+		function replaceWithParam(value: unknown): void {
+			const placeholder = paramHelper.add(replaceKeyword, value);
+			const stringValue = String(value);
+
+			// Parameterized query: replace with $1, $2, etc.
+			// Handle quoted placeholder: '{{...}}' → $1 (removes surrounding quotes)
+			parameterizedQuery = parameterizedQuery.replaceAll(
+				quotedReplaceKeyword,
+				placeholder,
+			);
+			// Handle unquoted placeholder: {{...}} → $1
+			parameterizedQuery = parameterizedQuery.replaceAll(
+				replaceKeyword,
+				placeholder,
+			);
+
+			// Display query: replace with actual value (like original behavior)
+			displayQuery = displayQuery.replaceAll(replaceKeyword, stringValue);
+		}
 
 		switch (contextNode.content.type) {
 			case "text": {
@@ -286,11 +352,15 @@ async function resolveQuery(
 				const text = isJsonContent(jsonOrText)
 					? jsonContentToPlainText(JSON.parse(jsonOrText))
 					: jsonOrText;
-				resolvedQuery = resolvedQuery.replace(replaceKeyword, text);
+				replaceWithParam(text);
 				break;
 			}
 			case "textGeneration":
 			case "contentGeneration": {
+				// LLM-generated content is treated as executable SQL, not parameterized.
+				// This allows use cases where LLM generates complete SQL queries.
+				// Note: This means prompt injection could potentially affect the generated SQL,
+				// but parameterizing would break legitimate use cases where LLM outputs full queries.
 				const result = await generationContentResolver(
 					contextNode.id,
 					sourceKeyword.outputId,
@@ -298,7 +368,11 @@ async function resolveQuery(
 				// LLM often outputs SQL wrapped in markdown code blocks (```sql...```),
 				// which would cause syntax errors when executed.
 				const content = stripCodeBlock(result ?? "");
-				resolvedQuery = resolvedQuery.replace(replaceKeyword, content);
+				parameterizedQuery = parameterizedQuery.replaceAll(
+					replaceKeyword,
+					content,
+				);
+				displayQuery = displayQuery.replaceAll(replaceKeyword, content);
 				break;
 			}
 			case "file":
@@ -319,7 +393,7 @@ async function resolveQuery(
 					contextNode.id,
 					sourceKeyword.outputId,
 				);
-				resolvedQuery = resolvedQuery.replace(replaceKeyword, result ?? "");
+				replaceWithParam(result ?? "");
 				break;
 			}
 			case "appEntry": {
@@ -329,11 +403,11 @@ async function resolveQuery(
 				);
 				const textParts = messageParts.filter((p) => p.type === "text");
 				const text = textParts.map((p) => p.text).join(" ");
-				resolvedQuery = resolvedQuery.replace(replaceKeyword, text);
+				replaceWithParam(text);
 				break;
 			}
 			case "end": {
-				resolvedQuery = resolvedQuery.replace(replaceKeyword, "");
+				replaceWithParam("");
 				break;
 			}
 			default: {
@@ -343,7 +417,11 @@ async function resolveQuery(
 		}
 	}
 
-	return resolvedQuery;
+	return {
+		parameterizedQuery,
+		displayQuery,
+		values: paramHelper.values(),
+	};
 }
 
 /**
