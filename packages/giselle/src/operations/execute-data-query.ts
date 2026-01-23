@@ -152,7 +152,7 @@ export function executeDataQuery(args: {
 	});
 }
 
-export interface ResolvedQuery {
+interface ResolvedQuery {
 	/** Parameterized query for safe execution (e.g., "SELECT * FROM users WHERE id = $1") */
 	parameterizedQuery: string;
 	/** Display query with actual values substituted (e.g., "SELECT * FROM users WHERE id = '1'") */
