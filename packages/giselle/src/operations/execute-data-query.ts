@@ -377,6 +377,7 @@ export async function resolveQuery(
 					replaceKeyword,
 					content,
 				);
+				displayQuery = displayQuery.replaceAll(quotedReplaceKeyword, content);
 				displayQuery = displayQuery.replaceAll(replaceKeyword, content);
 				break;
 			}
