@@ -97,7 +97,6 @@ export function executeDataQuery(args: {
 				});
 
 				let result: QueryResult;
-				console.log(parameterizedQuery, values);
 				try {
 					await client.connect();
 					result = await client.query(parameterizedQuery, values);
@@ -159,7 +158,7 @@ interface ResolvedQuery {
 	/** Display query with actual values substituted (e.g., "SELECT * FROM users WHERE id = '1'") */
 	displayQuery: string;
 	/** Parameter values for parameterized query execution */
-	values: unknown[];
+	values: string[];
 }
 
 /**
@@ -168,11 +167,11 @@ interface ResolvedQuery {
  * Reuses the same parameter index for the same placeholder key
  */
 function createParamHelper() {
-	const values: unknown[] = [];
+	const values: string[] = [];
 	const placeholderMap = new Map<string, string>();
 
 	return {
-		add(key: string, value: unknown): string {
+		add(key: string, value: string): string {
 			// Reuse the same parameter index for the same placeholder key
 			const existing = placeholderMap.get(key);
 			if (existing !== undefined) {
@@ -189,7 +188,57 @@ function createParamHelper() {
 	};
 }
 
-export async function resolveQuery(
+interface ReplaceKeywordValue {
+	/** Replace keyword in the format {{nodeId:outputId}} */
+	replaceKeyword: string;
+	/** Resolved value to substitute */
+	value: string;
+}
+
+/**
+ * Parameterizes a SQL query by replacing keywords with SQL placeholders ($1, $2, etc.).
+ * This is a pure function that handles the conversion logic without any I/O.
+ *
+ * @param query - The SQL query with replace keywords like {{nodeId:outputId}}
+ * @param replaceKeywordValues - Array of keyword-value pairs to substitute
+ * @returns ResolvedQuery with parameterizedQuery, displayQuery, and values
+ */
+export function parameterizeQuery(
+	query: string,
+	replaceKeywordValues: ReplaceKeywordValue[],
+): ResolvedQuery {
+	const paramHelper = createParamHelper();
+	let parameterizedQuery = query;
+	let displayQuery = query;
+
+	for (const { replaceKeyword, value } of replaceKeywordValues) {
+		const quotedReplaceKeyword = `'${replaceKeyword}'`;
+		const placeholder = paramHelper.add(replaceKeyword, value);
+
+		// Parameterized query: replace with $1, $2, etc.
+		// Handle quoted keyword: '{{...}}' → $1 (removes surrounding quotes)
+		parameterizedQuery = parameterizedQuery.replaceAll(
+			quotedReplaceKeyword,
+			placeholder,
+		);
+		// Handle unquoted keyword: {{...}} → $1
+		parameterizedQuery = parameterizedQuery.replaceAll(
+			replaceKeyword,
+			placeholder,
+		);
+
+		// Display query: replace with actual value
+		displayQuery = displayQuery.replaceAll(replaceKeyword, value);
+	}
+
+	return {
+		parameterizedQuery,
+		displayQuery,
+		values: paramHelper.values(),
+	};
+}
+
+async function resolveQuery(
 	query: string,
 	runningGeneration: RunningGeneration,
 	storage: GiselleStorage,
@@ -197,7 +246,6 @@ export async function resolveQuery(
 ): Promise<ResolvedQuery> {
 	const generationContext = GenerationContext.parse(runningGeneration.context);
 	const taskId = runningGeneration.context.origin.taskId;
-	const paramHelper = createParamHelper();
 
 	async function findGenerationByNode(nodeId: NodeId) {
 		const nodeGenerationIndexes = await getNodeGenerationIndexes({
@@ -298,8 +346,6 @@ export async function resolveQuery(
 	const baseQuery = isJsonContent(query)
 		? jsonContentToPlainText(JSON.parse(query))
 		: query;
-	let parameterizedQuery = baseQuery;
-	let displayQuery = baseQuery;
 
 	// Find all references in the format {{nd-XXXX:otp-XXXX}}
 	const pattern = /\{\{(nd-[a-zA-Z0-9]+):(otp-[a-zA-Z0-9]+)\}\}/g;
@@ -307,6 +353,11 @@ export async function resolveQuery(
 		nodeId: NodeId.parse(match[1]),
 		outputId: OutputId.parse(match[2]),
 	}));
+
+	// Collect values for parameterization (user-controlled inputs)
+	const replaceKeywordValues: ReplaceKeywordValue[] = [];
+	// Collect direct replacements for LLM-generated SQL (not parameterized)
+	const directReplacements: ReplaceKeywordValue[] = [];
 
 	for (const sourceKeyword of sourceKeywords) {
 		const contextNode = generationContext.sourceNodes.find(
@@ -316,34 +367,6 @@ export async function resolveQuery(
 			continue;
 		}
 		const replaceKeyword = `{{${sourceKeyword.nodeId}:${sourceKeyword.outputId}}}`;
-		// PostgreSQL parameter placeholders must NOT be inside quotes.
-		// If the placeholder is quoted like '{{...}}', we must remove the quotes.
-		const quotedReplaceKeyword = `'${replaceKeyword}'`;
-
-		/**
-		 * Replace placeholder with parameterized query marker for SQL injection protection.
-		 * Used for user-controlled inputs (text, appEntry, trigger, action nodes).
-		 */
-		function replaceWithParam(value: unknown): void {
-			const placeholder = paramHelper.add(replaceKeyword, value);
-			const stringValue = String(value);
-
-			// Parameterized query: replace with $1, $2, etc.
-			// Handle quoted placeholder: '{{...}}' → $1 (removes surrounding quotes)
-			parameterizedQuery = parameterizedQuery.replaceAll(
-				quotedReplaceKeyword,
-				placeholder,
-			);
-			// Handle unquoted placeholder: {{...}} → $1
-			parameterizedQuery = parameterizedQuery.replaceAll(
-				replaceKeyword,
-				placeholder,
-			);
-
-			// Display query: replace with actual value (like original behavior)
-			displayQuery = displayQuery.replaceAll(replaceKeyword, stringValue);
-		}
-
 		switch (contextNode.content.type) {
 			case "text": {
 				if (!isTextNode(contextNode)) {
@@ -353,7 +376,7 @@ export async function resolveQuery(
 				const text = isJsonContent(jsonOrText)
 					? jsonContentToPlainText(JSON.parse(jsonOrText))
 					: jsonOrText;
-				replaceWithParam(text);
+				replaceKeywordValues.push({ replaceKeyword, value: text });
 				break;
 			}
 			case "textGeneration":
@@ -369,11 +392,7 @@ export async function resolveQuery(
 				// LLM often outputs SQL wrapped in markdown code blocks (```sql...```),
 				// which would cause syntax errors when executed.
 				const content = stripCodeBlock(result ?? "");
-				parameterizedQuery = parameterizedQuery.replaceAll(
-					replaceKeyword,
-					content,
-				);
-				displayQuery = displayQuery.replaceAll(replaceKeyword, content);
+				directReplacements.push({ replaceKeyword, value: content });
 				break;
 			}
 			case "file":
@@ -394,7 +413,7 @@ export async function resolveQuery(
 					contextNode.id,
 					sourceKeyword.outputId,
 				);
-				replaceWithParam(result ?? "");
+				replaceKeywordValues.push({ replaceKeyword, value: result ?? "" });
 				break;
 			}
 			case "appEntry": {
@@ -404,11 +423,11 @@ export async function resolveQuery(
 				);
 				const textParts = messageParts.filter((p) => p.type === "text");
 				const text = textParts.map((p) => p.text).join(" ");
-				replaceWithParam(text);
+				replaceKeywordValues.push({ replaceKeyword, value: text });
 				break;
 			}
 			case "end": {
-				replaceWithParam("");
+				replaceKeywordValues.push({ replaceKeyword, value: "" });
 				break;
 			}
 			default: {
@@ -418,11 +437,14 @@ export async function resolveQuery(
 		}
 	}
 
-	return {
-		parameterizedQuery,
-		displayQuery,
-		values: paramHelper.values(),
-	};
+	// Apply direct replacements first (LLM-generated SQL)
+	let processedQuery = baseQuery;
+	for (const { replaceKeyword, value } of directReplacements) {
+		processedQuery = processedQuery.replaceAll(replaceKeyword, value);
+	}
+
+	// Then parameterize user-controlled inputs
+	return parameterizeQuery(processedQuery, replaceKeywordValues);
 }
 
 /**

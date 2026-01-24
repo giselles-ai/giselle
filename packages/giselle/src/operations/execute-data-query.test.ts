@@ -1,101 +1,30 @@
-import {
-	NodeId,
-	OutputId,
-	type RunningGeneration,
-	WorkspaceId,
-} from "@giselles-ai/protocol";
-import { memoryStorageDriver } from "@giselles-ai/storage";
-import { describe, expect, it, vi } from "vitest";
-import type { AppEntryResolver } from "../generations";
-import { resolveQuery } from "./execute-data-query";
+import { describe, expect, it } from "vitest";
+import { parameterizeQuery } from "./execute-data-query";
 
-describe("resolveQuery", () => {
-	// Shared test fixtures
-	const storage = memoryStorageDriver();
-	const appEntryResolver: AppEntryResolver = vi
-		.fn()
-		.mockResolvedValue([{ type: "text", text: "" }]);
-
-	/**
-	 * Creates a text node definition for testing
-	 */
-	function createTextNode(text: string) {
-		const nodeId = NodeId.generate();
-		const outputId = OutputId.generate();
-		return {
-			nodeId,
-			outputId,
-			placeholder: `{{${nodeId}:${outputId}}}`,
-			node: {
-				id: nodeId,
-				type: "variable" as const,
-				content: { type: "text" as const, text },
-				inputs: [],
-				outputs: [{ id: outputId, label: "text", accessor: "text" }],
-			},
-		};
-	}
-
-	/**
-	 * Creates a RunningGeneration with given query and source nodes
-	 */
-	function createGeneration(
-		query: string,
-		sourceNodes: ReturnType<typeof createTextNode>["node"][] = [],
-	): RunningGeneration {
-		return {
-			id: "gnr-test",
-			status: "running",
-			createdAt: Date.now(),
-			queuedAt: Date.now(),
-			startedAt: Date.now(),
-			messages: [],
-			context: {
-				origin: {
-					type: "studio",
-					workspaceId: WorkspaceId.generate(),
-					taskId: undefined,
+describe("parameterizeQuery", () => {
+	it("should replace quoted keyword with SQL placeholder $1", () => {
+		const result = parameterizeQuery(
+			"SELECT * FROM users WHERE id = '{{nd-xxx:otp-xxx}}'",
+			[
+				{
+					replaceKeyword: "{{nd-xxx:otp-xxx}}",
+					value: "'); DROP TABLE users; --",
 				},
-				operationNode: {
-					id: NodeId.generate(),
-					type: "operation",
-					content: { type: "dataQuery", query },
-					inputs: [],
-					outputs: [],
-				},
-				sourceNodes,
-				connections: [],
-			},
-		};
-	}
-
-	it("should parameterize simple text node placeholder", async () => {
-		const textNode = createTextNode("'); DROP TABLE users; --");
-		const query = `SELECT * FROM users WHERE id = '${textNode.placeholder}'`;
-
-		const result = await resolveQuery(
-			query,
-			createGeneration(query, [textNode.node]),
-			storage,
-			appEntryResolver,
+			],
 		);
 
 		expect(result.parameterizedQuery).toBe("SELECT * FROM users WHERE id = $1");
+		// displayQuery keeps surrounding quotes, only replaces the keyword content
 		expect(result.displayQuery).toBe(
 			"SELECT * FROM users WHERE id = ''); DROP TABLE users; --'",
 		);
 		expect(result.values).toEqual(["'); DROP TABLE users; --"]);
 	});
 
-	it("should reuse same parameter index for duplicate placeholders", async () => {
-		const textNode = createTextNode("test@example.com");
-		const query = `SELECT * FROM users WHERE name = '${textNode.placeholder}' AND email = '${textNode.placeholder}'`;
-
-		const result = await resolveQuery(
-			query,
-			createGeneration(query, [textNode.node]),
-			storage,
-			appEntryResolver,
+	it("should reuse same placeholder index for duplicate keywords", () => {
+		const result = parameterizeQuery(
+			"SELECT * FROM users WHERE name = '{{nd-xxx:otp-xxx}}' AND email = '{{nd-xxx:otp-xxx}}'",
+			[{ replaceKeyword: "{{nd-xxx:otp-xxx}}", value: "test@example.com" }],
 		);
 
 		expect(result.parameterizedQuery).toBe(
@@ -107,16 +36,13 @@ describe("resolveQuery", () => {
 		expect(result.values).toEqual(["test@example.com"]);
 	});
 
-	it("should handle multiple different placeholders", async () => {
-		const nameNode = createTextNode("John");
-		const ageNode = createTextNode("25");
-		const query = `SELECT * FROM users WHERE name = '${nameNode.placeholder}' AND age = ${ageNode.placeholder}`;
-
-		const result = await resolveQuery(
-			query,
-			createGeneration(query, [nameNode.node, ageNode.node]),
-			storage,
-			appEntryResolver,
+	it("should handle multiple different keywords", () => {
+		const result = parameterizeQuery(
+			"SELECT * FROM users WHERE name = '{{nd-aaa:otp-aaa}}' AND age = {{nd-bbb:otp-bbb}}",
+			[
+				{ replaceKeyword: "{{nd-aaa:otp-aaa}}", value: "John" },
+				{ replaceKeyword: "{{nd-bbb:otp-bbb}}", value: "25" },
+			],
 		);
 
 		expect(result.parameterizedQuery).toBe(
@@ -128,15 +54,10 @@ describe("resolveQuery", () => {
 		expect(result.values).toEqual(["John", "25"]);
 	});
 
-	it("should handle empty string values", async () => {
-		const textNode = createTextNode("");
-		const query = `SELECT * FROM users WHERE name = '${textNode.placeholder}'`;
-
-		const result = await resolveQuery(
-			query,
-			createGeneration(query, [textNode.node]),
-			storage,
-			appEntryResolver,
+	it("should handle empty string values", () => {
+		const result = parameterizeQuery(
+			"SELECT * FROM users WHERE name = '{{nd-xxx:otp-xxx}}'",
+			[{ replaceKeyword: "{{nd-xxx:otp-xxx}}", value: "" }],
 		);
 
 		expect(result.parameterizedQuery).toBe(
@@ -146,15 +67,10 @@ describe("resolveQuery", () => {
 		expect(result.values).toEqual([""]);
 	});
 
-	it("should handle unquoted placeholder", async () => {
-		const textNode = createTextNode("100");
-		const query = `SELECT * FROM users WHERE age = ${textNode.placeholder}`;
-
-		const result = await resolveQuery(
-			query,
-			createGeneration(query, [textNode.node]),
-			storage,
-			appEntryResolver,
+	it("should handle unquoted keyword", () => {
+		const result = parameterizeQuery(
+			"SELECT * FROM users WHERE age = {{nd-xxx:otp-xxx}}",
+			[{ replaceKeyword: "{{nd-xxx:otp-xxx}}", value: "100" }],
 		);
 
 		expect(result.parameterizedQuery).toBe(
@@ -164,15 +80,10 @@ describe("resolveQuery", () => {
 		expect(result.values).toEqual(["100"]);
 	});
 
-	it("should handle query without placeholders", async () => {
+	it("should handle query without keywords", () => {
 		const query = "SELECT * FROM users";
 
-		const result = await resolveQuery(
-			query,
-			createGeneration(query),
-			storage,
-			appEntryResolver,
-		);
+		const result = parameterizeQuery(query, []);
 
 		expect(result.parameterizedQuery).toBe(query);
 		expect(result.displayQuery).toBe(query);
