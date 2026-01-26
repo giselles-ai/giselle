@@ -377,14 +377,15 @@ export default class Giselle {
 			);
 		}
 
+		const responseText = await readResponseText(response);
 		let json: unknown;
 		try {
-			json = await response.json();
+			json = JSON.parse(responseText);
 		} catch {
 			throw new ApiError(
 				"Runs API returned invalid JSON",
 				response.status,
-				await readResponseText(response),
+				responseText,
 			);
 		}
 		try {
@@ -427,14 +428,15 @@ export default class Giselle {
 			);
 		}
 
+		const responseText = await readResponseText(response);
 		let json: unknown;
 		try {
-			json = await response.json();
+			json = JSON.parse(responseText);
 		} catch {
 			throw new ApiError(
 				"Files API returned invalid JSON",
 				response.status,
-				await readResponseText(response),
+				responseText,
 			);
 		}
 
@@ -471,14 +473,15 @@ export default class Giselle {
 			);
 		}
 
+		const responseText = await readResponseText(response);
 		let json: unknown;
 		try {
-			json = await response.json();
+			json = JSON.parse(responseText);
 		} catch {
 			throw new ApiError(
 				"Apps API returned invalid JSON",
 				response.status,
-				await readResponseText(response),
+				responseText,
 			);
 		}
 
@@ -525,14 +528,15 @@ export default class Giselle {
 			);
 		}
 
+		const responseText = await readResponseText(response);
 		let json: unknown;
 		try {
-			json = await response.json();
+			json = JSON.parse(responseText);
 		} catch {
 			throw new ApiError(
 				"Tasks API returned invalid JSON",
 				response.status,
-				await readResponseText(response),
+				responseText,
 			);
 		}
 
