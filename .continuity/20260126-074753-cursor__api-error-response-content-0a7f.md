@@ -32,15 +32,18 @@ This section is intentionally stable: do not overwrite it when updating the ledg
 - Read CONTINUITY.md and initialized per-branch ledger.
 - Updated SDK to parse JSON from response text before decoding.
 - Added a test covering responseText preservation on JSON parse failure.
+- Ran pnpm format/build-sdk/check-types/tidy/test (failed: missing node_modules,
+  biome/turbo/knip not found).
+- Checked lints for edited files (none reported).
+- Committed and pushed changes.
 
 ## Now
 
-- Run formatting, build, typecheck, tidy, tests, and lints.
-- Commit and push changes.
+- Await next request or install dependencies to re-run tooling if needed.
 
 ## Next
 
-- Address any failures from format/build/test/lint.
+- Re-run pnpm format/build-sdk/check-types/tidy/test after installing deps.
 
 ## Open questions (UNCONFIRMED if needed)
 
