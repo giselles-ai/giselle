@@ -49,6 +49,31 @@ describe("GET /api/apps/[appId]/tasks/[taskId]", () => {
 		}) as unknown as Parameters<typeof GET>[0];
 	}
 
+	it("returns 401 when app record is not found", async () => {
+		const appId = AppId.generate();
+		const taskId = TaskId.generate();
+
+		// @ts-expect-error - mocked shape
+		db.select.mockReturnValue({
+			from: () => ({
+				where: () => ({
+					limit: async () => [],
+				}),
+			}),
+		});
+
+		const request = makeNextRequest("https://example.com", {
+			headers: { authorization: "Bearer gsk-test.secret" },
+		});
+
+		const response = await GET(request, {
+			params: Promise.resolve({ appId, taskId }),
+		});
+
+		expect(response.status).toBe(401);
+		expect(verifyApiSecretForTeam).not.toHaveBeenCalled();
+	});
+
 	it("returns 401 when team API key verification fails", async () => {
 		const appId = AppId.generate();
 		const taskId = TaskId.generate();
