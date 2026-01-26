@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import {
+	ApiError,
 	ConfigurationError,
 	TimeoutError,
 	UnsupportedFeatureError,
@@ -108,6 +109,32 @@ describe("Giselle SDK (public Runs API)", () => {
 				},
 			}),
 		).resolves.toEqual({ taskId: "tsk_123" });
+	});
+
+	it("app.run() preserves responseText when JSON parsing fails", async () => {
+		const html = "<html><body>error</body></html>";
+		const fetchMock = vi.fn(() => {
+			return new Response(html, {
+				status: 200,
+				headers: { "Content-Type": "text/html" },
+			});
+		});
+
+		const client = new Giselle({
+			baseUrl: "https://example.com",
+			apiKey: "apk_test.secret",
+			fetch: fetchMock as unknown as typeof fetch,
+		});
+
+		let error: unknown;
+		try {
+			await client.apps.run({ appId: "app-xxxxx", input: { text: "hello" } });
+		} catch (caught) {
+			error = caught;
+		}
+
+		expect(error).toBeInstanceOf(ApiError);
+		expect((error as ApiError).responseText).toBe(html);
 	});
 
 	it("app.run() rejects inline base64 file larger than 3MB (decoded)", async () => {
