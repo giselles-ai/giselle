@@ -12,7 +12,7 @@ import {
 	privatePreviewToolsFlag,
 	webSearchActionFlag,
 } from "@/flags";
-import { getTeamDataStores } from "@/lib/data-stores/actions";
+import { getTeamDataStores } from "@/lib/data-stores/queries";
 import { logger } from "@/lib/logger";
 import {
 	getDocumentVectorStores,
