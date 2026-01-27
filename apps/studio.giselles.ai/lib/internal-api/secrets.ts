@@ -16,10 +16,7 @@ async function assertWorkspaceAccess(workspaceId: WorkspaceId) {
 		getCurrentUser(),
 		getWorkspaceTeam(workspaceId),
 	]);
-	const isMember = await isMemberOfTeam(
-		currentUser.dbId,
-		workspaceTeam.dbId,
-	);
+	const isMember = await isMemberOfTeam(currentUser.dbId, workspaceTeam.dbId);
 	if (!isMember) {
 		throw new Error("Not authorized to access this workspace");
 	}
