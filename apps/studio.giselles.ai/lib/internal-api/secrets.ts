@@ -29,12 +29,19 @@ async function getSecret(secretId: SecretId) {
 	});
 }
 
+/**
+ * giselle.addSecret allows optional workspaceId, but this API expects a workspace
+ * to always exist for its use cases. If it's missing, we cannot verify ownership,
+ * so we fail fast. This differs from giselle.addSecret's input type, but matches
+ * the intended usage here.
+ */
 export async function addSecret(
 	input: Parameters<typeof giselle.addSecret>[0],
 ) {
-	if (input.workspaceId) {
-		await assertWorkspaceAccess(input.workspaceId);
+	if (input.workspaceId === undefined) {
+		throw new Error("Workspace ID is required");
 	}
+	await assertWorkspaceAccess(input.workspaceId);
 	return { secret: await giselle.addSecret(input) };
 }
 
