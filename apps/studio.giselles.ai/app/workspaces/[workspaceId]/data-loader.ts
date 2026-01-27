@@ -1,8 +1,7 @@
 import type { WorkspaceId } from "@giselles-ai/protocol";
-import { desc, eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { giselle } from "@/app/giselle";
-import { dataStores, db } from "@/db";
+import { db } from "@/db";
 import {
 	aiGatewayFlag,
 	aiGatewayUnsupportedModelsFlag,
@@ -13,6 +12,7 @@ import {
 	privatePreviewToolsFlag,
 	webSearchActionFlag,
 } from "@/flags";
+import { getTeamDataStores } from "@/lib/data-stores/actions";
 import { logger } from "@/lib/logger";
 import {
 	getDocumentVectorStores,
@@ -90,14 +90,7 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 		await Promise.all([
 			getDocumentVectorStores(workspaceTeam.dbId),
 			getOfficialDocumentVectorStores(),
-			db
-				.select({
-					id: dataStores.id,
-					name: dataStores.name,
-				})
-				.from(dataStores)
-				.where(eq(dataStores.teamDbId, workspaceTeam.dbId))
-				.orderBy(desc(dataStores.createdAt)),
+			getTeamDataStores(workspaceTeam.dbId),
 		]);
 
 	// Merge stores with isOfficial flag, deduplicating official stores already in team stores

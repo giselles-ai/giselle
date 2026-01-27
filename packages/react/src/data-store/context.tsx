@@ -11,6 +11,7 @@ export interface DataStoreItem {
 export interface DataStoreContextValue {
 	dataStores: DataStoreItem[];
 	settingPath: string;
+	fetchDataStores: () => Promise<DataStoreItem[]>;
 }
 
 export const DataStoreContext = createContext<

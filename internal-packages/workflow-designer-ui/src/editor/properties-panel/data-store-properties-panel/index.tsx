@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useCallback } from "react";
 import { useDeleteNode, useUpdateNodeData } from "../../../app-designer";
 import { TriangleAlert } from "../../../icons";
+import { useDataStores } from "../../hooks/use-data-stores";
 import { NodePanelHeader } from "../ui/node-panel-header";
 import {
 	PropertiesPanelContent,
@@ -36,7 +37,16 @@ export function DataStoreNodePropertiesPanel({
 
 function DataStorePropertiesContent({ node }: { node: DataStoreNode }) {
 	const updateNodeData = useUpdateNodeData();
-	const { dataStores, settingPath } = useDataStore();
+	const {
+		dataStores: fallbackStores,
+		settingPath,
+		fetchDataStores,
+	} = useDataStore();
+
+	const { stores: dataStores } = useDataStores({
+		fallbackStores,
+		fetcher: fetchDataStores,
+	});
 
 	const state = node.content.state;
 	const selectedStoreId =

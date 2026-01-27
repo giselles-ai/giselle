@@ -8,6 +8,7 @@ import type { Integration } from "@giselles-ai/giselle";
 import type { Trigger, Workspace } from "@giselles-ai/protocol";
 import { GiselleClientProvider, WorkspaceProvider } from "@giselles-ai/react";
 import { use, useMemo } from "react";
+import { getTeamDataStores } from "@/lib/data-stores/actions";
 import { createInternalGiselleClient } from "@/lib/internal-api/create-giselle-client";
 import type { LoaderData } from "./data-loader";
 
@@ -68,6 +69,7 @@ export function Page({
 					dataStore={{
 						dataStores: data.teamDataStores,
 						settingPath: "/settings/team/data-stores",
+						fetchDataStores: () => getTeamDataStores(data.workspaceTeam.dbId),
 					}}
 					telemetry={{
 						metadata: {
