@@ -24,16 +24,17 @@ This section is intentionally stable: do not overwrite it when updating the ledg
 
 ## State
 
-- Access check added; pending commit/push.
+- Fix committed and pushed.
 
 ## Done
 
 - Added `assertWorkspaceAccess` before `giselle.addSecret` when workspaceId is set.
 - Checked lints for `secrets.ts`.
+- Committed and pushed changes to `secure-internal-api-secrets`.
 
 ## Now
 
-- Commit and push the fix.
+- Await review/next request.
 
 ## Next
 
