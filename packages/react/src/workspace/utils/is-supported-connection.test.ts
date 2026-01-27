@@ -507,6 +507,38 @@ describe("isSupportedConnection", () => {
 
 			expect(result.canConnect).toBe(true);
 		});
+
+		test("should allow non-DataStore nodes to connect to DataQuery even when DataStore is already connected", () => {
+			const existingDataStoreNode = createDataStoreNode(NodeId.generate());
+			const textNode = createTextNode(NodeId.generate());
+			const dataQueryNode = createDataQueryNode(NodeId.generate());
+
+			// Data Query already has a Data Store connected
+			const existingConnections = [
+				{
+					id: "cnnc-existing" as const,
+					outputNode: {
+						id: existingDataStoreNode.id,
+						type: existingDataStoreNode.type,
+						content: existingDataStoreNode.content,
+					},
+					outputId: "otp-1" as const,
+					inputNode: {
+						id: dataQueryNode.id,
+						type: dataQueryNode.type,
+						content: dataQueryNode.content,
+					},
+					inputId: "inp-1" as const,
+				},
+			];
+
+			// Text node should still be able to connect
+			const result = isSupportedConnection(textNode, dataQueryNode, {
+				existingConnections,
+			});
+
+			expect(result.canConnect).toBe(true);
+		});
 	});
 
 	describe("Image generation node restrictions", () => {
