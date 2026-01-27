@@ -1,4 +1,4 @@
-import { fetchEnrichedActs } from "@/app/(main)/stage/(depreacted)/services";
+import { fetchEnrichedActs } from "@/app/(main)/stage/(deprecated)/services";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchUserTeams } from "@/services/teams";
 
