@@ -437,19 +437,6 @@ export function useStageInput({
 		});
 	}, []);
 
-	const handleImageLoad = useCallback((fileId: string) => {
-		setLocalPreviews((prev) => {
-			const previewUrl = prev.get(fileId);
-			if (previewUrl) {
-				URL.revokeObjectURL(previewUrl);
-				const next = new Map(prev);
-				next.delete(fileId);
-				return next;
-			}
-			return prev;
-		});
-	}, []);
-
 	const handleDismissFileRestrictionError = useCallback(() => {
 		setFileRestrictionError(null);
 	}, []);
@@ -568,7 +555,6 @@ export function useStageInput({
 			handleFileInputChange,
 			handleAttachmentButtonClick,
 			handleRemoveFile,
-			handleImageLoad,
 			handleDismissFileRestrictionError,
 			handleSubmit: submitInputs,
 		}),
@@ -595,7 +581,6 @@ export function useStageInput({
 			handleFileInputChange,
 			handleAttachmentButtonClick,
 			handleRemoveFile,
-			handleImageLoad,
 			handleDismissFileRestrictionError,
 			submitInputs,
 		],
