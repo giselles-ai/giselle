@@ -3,13 +3,8 @@ import { DataStoreId, type DataStoreNode } from "@giselles-ai/protocol";
 import { useDataStore } from "@giselles-ai/react";
 import Link from "next/link";
 import { useCallback } from "react";
-import {
-	useAppDesignerStore,
-	useDeleteNode,
-	useUpdateNodeData,
-} from "../../../app-designer";
+import { useDeleteNode, useUpdateNodeData } from "../../../app-designer";
 import { TriangleAlert } from "../../../icons";
-import { useDataStores } from "../../hooks/use-data-stores";
 import { NodePanelHeader } from "../ui/node-panel-header";
 import {
 	PropertiesPanelContent,
@@ -40,19 +35,8 @@ export function DataStoreNodePropertiesPanel({
 }
 
 function DataStorePropertiesContent({ node }: { node: DataStoreNode }) {
-	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
 	const updateNodeData = useUpdateNodeData();
-	const {
-		dataStores: fallbackStores,
-		settingPath,
-		fetchDataStores,
-	} = useDataStore();
-
-	const { stores: dataStores } = useDataStores({
-		workspaceId,
-		fallbackStores,
-		fetcher: fetchDataStores,
-	});
+	const { dataStores, settingPath } = useDataStore();
 
 	const state = node.content.state;
 	const selectedStoreId =

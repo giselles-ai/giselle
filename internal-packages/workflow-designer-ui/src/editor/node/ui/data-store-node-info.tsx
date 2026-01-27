@@ -1,8 +1,6 @@
 import { isDataStoreNode, type NodeLike } from "@giselles-ai/protocol";
 import { useDataStore } from "@giselles-ai/react";
 import type { ReactElement } from "react";
-import { useAppDesignerStore } from "../../../app-designer";
-import { useDataStores } from "../../hooks/use-data-stores";
 import { RequiresSetupBadge } from "./requires-setup-badge";
 
 function DataStoreNameBadge({ label }: { label: string }): ReactElement {
@@ -20,13 +18,7 @@ export function DataStoreNodeInfo({
 }: {
 	node: NodeLike;
 }): ReactElement | null {
-	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
-	const { dataStores: fallbackStores, fetchDataStores } = useDataStore();
-	const { stores: dataStores } = useDataStores({
-		workspaceId,
-		fallbackStores,
-		fetcher: fetchDataStores,
-	});
+	const { dataStores } = useDataStore();
 
 	if (!isDataStoreNode(node)) {
 		return null;
