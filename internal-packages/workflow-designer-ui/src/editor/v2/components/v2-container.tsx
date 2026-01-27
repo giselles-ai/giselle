@@ -311,7 +311,9 @@ function V2NodeCanvas() {
 					throw new Error("Node not found");
 				}
 
-				const supported = isSupportedConnection(outputNode, inputNode);
+				const supported = isSupportedConnection(outputNode, inputNode, {
+					existingConnections: connections,
+				});
 				if (!supported.canConnect) {
 					throw new Error(supported.message);
 				}
@@ -323,7 +325,7 @@ function V2NodeCanvas() {
 				);
 			}
 		},
-		[connectNodes, nodes, toast],
+		[connectNodes, connections, nodes, toast],
 	);
 
 	const isValidConnection: IsValidConnection = useCallback(

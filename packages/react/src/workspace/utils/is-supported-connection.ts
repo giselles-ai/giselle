@@ -4,6 +4,7 @@ import {
 	languageModels,
 } from "@giselles-ai/language-model";
 import {
+	type Connection,
 	isAppEntryNode,
 	isContentGenerationNode,
 	isDataQueryNode,
@@ -21,9 +22,14 @@ export type ConnectionValidationResult =
 	| { canConnect: true }
 	| { canConnect: false; message: string };
 
+export interface ConnectionValidationOptions {
+	existingConnections?: Connection[];
+}
+
 export function isSupportedConnection(
 	outputNode: NodeLike,
 	inputNode: NodeLike,
+	options?: ConnectionValidationOptions,
 ): ConnectionValidationResult {
 	// prevent self-loop
 	if (outputNode.id === inputNode.id) {
@@ -194,6 +200,20 @@ export function isSupportedConnection(
 			isImageGenerationNode(inputNode) ||
 			isContentGenerationNode(inputNode)
 		) {
+			// Data Query can only have one Data Store connected
+			if (isDataQueryNode(inputNode) && options?.existingConnections) {
+				const hasExistingDataStore = options.existingConnections.some(
+					(conn) =>
+						conn.inputNode.id === inputNode.id &&
+						conn.outputNode.content.type === "dataStore",
+				);
+				if (hasExistingDataStore) {
+					return {
+						canConnect: false,
+						message: "Data Query node can only have one Data Store connected",
+					};
+				}
+			}
 			return {
 				canConnect: true,
 			};
