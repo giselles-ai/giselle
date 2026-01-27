@@ -32,6 +32,9 @@ async function getSecret(secretId: SecretId) {
 export async function addSecret(
 	input: Parameters<typeof giselle.addSecret>[0],
 ) {
+	if (input.workspaceId) {
+		await assertWorkspaceAccess(input.workspaceId);
+	}
 	return { secret: await giselle.addSecret(input) };
 }
 
