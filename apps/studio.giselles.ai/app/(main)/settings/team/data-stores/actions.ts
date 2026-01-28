@@ -86,12 +86,14 @@ export async function createDataStore(
 			});
 		} catch (dbError) {
 			// Rollback: delete secret and data store if DB insert failed
-			await giselle.deleteSecret({ secretId }).catch((e) => {
-				console.error("Failed to rollback secret:", e);
-			});
-			await giselle.deleteDataStore({ dataStoreId }).catch((e) => {
-				console.error("Failed to rollback data store:", e);
-			});
+			await Promise.all([
+				giselle.deleteSecret({ secretId }).catch((e) => {
+					console.error("Failed to rollback secret:", e);
+				}),
+				giselle.deleteDataStore({ dataStoreId }).catch((e) => {
+					console.error("Failed to rollback data store:", e);
+				}),
+			]);
 			throw dbError;
 		}
 
