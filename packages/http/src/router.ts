@@ -502,6 +502,12 @@ export const jsonRoutes = {
 			}),
 			handler: async ({ input }) => {
 				const dataStore = await giselle.getDataStore(input);
+				if (!dataStore) {
+					return JsonResponse.json(
+						{ error: `DataStore not found: ${input.dataStoreId}` },
+						{ status: 404 },
+					);
+				}
 				return JsonResponse.json({ dataStore });
 			},
 		}),
@@ -523,6 +529,10 @@ export const jsonRoutes = {
 			}),
 			handler: async ({ input }) => {
 				const dataStore = await giselle.deleteDataStore(input);
+				if (!dataStore) {
+					// For idempotent DELETE, treat not found as success
+					return new Response(null, { status: 204 });
+				}
 				return JsonResponse.json({ dataStore });
 			},
 		}),
