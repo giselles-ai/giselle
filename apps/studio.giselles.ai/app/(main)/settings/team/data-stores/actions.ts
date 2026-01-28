@@ -9,6 +9,37 @@ import { dataStores, db } from "@/db";
 import { fetchCurrentTeam } from "@/services/teams";
 import type { ActionResult, DataStoreListItem } from "./types";
 
+/**
+ * Creates a secret and data store in Giselle storage with rollback support.
+ * If createDataStore fails, the secret is deleted to prevent orphaned resources.
+ */
+async function createGiselleDataStoreWithSecret(
+	name: string,
+	connectionString: string,
+): Promise<{ secretId: SecretId; dataStoreId: DataStoreId }> {
+	const secret = await giselle.addSecret({
+		label: `Data Store: ${name}`,
+		value: connectionString,
+		tags: ["data-store"],
+	});
+
+	try {
+		const dataStore = await giselle.createDataStore({
+			provider: "postgres",
+			configuration: {
+				connectionStringSecretId: secret.id,
+			},
+		});
+		return { secretId: secret.id, dataStoreId: dataStore.id };
+	} catch (error) {
+		// Rollback: delete the secret if createDataStore failed
+		await giselle.deleteSecret({ secretId: secret.id }).catch((e) => {
+			console.error("Failed to rollback secret:", e);
+		});
+		throw error;
+	}
+}
+
 export async function getDataStores(): Promise<DataStoreListItem[]> {
 	const team = await fetchCurrentTeam();
 
@@ -41,27 +72,28 @@ export async function createDataStore(
 	}
 
 	try {
-		const [team, secret] = await Promise.all([
-			fetchCurrentTeam(),
-			giselle.addSecret({
-				label: `Data Store: ${trimmedName}`,
-				value: trimmedConnectionString,
-				tags: ["data-store"],
-			}),
-		]);
+		const team = await fetchCurrentTeam();
+		const { secretId, dataStoreId } = await createGiselleDataStoreWithSecret(
+			trimmedName,
+			trimmedConnectionString,
+		);
 
-		const dataStore = await giselle.createDataStore({
-			provider: "postgres",
-			configuration: {
-				connectionStringSecretId: secret.id,
-			},
-		});
-
-		await db.insert(dataStores).values({
-			id: dataStore.id,
-			teamDbId: team.dbId,
-			name: trimmedName,
-		});
+		try {
+			await db.insert(dataStores).values({
+				id: dataStoreId,
+				teamDbId: team.dbId,
+				name: trimmedName,
+			});
+		} catch (dbError) {
+			// Rollback: delete secret and data store if DB insert failed
+			await giselle.deleteSecret({ secretId }).catch((e) => {
+				console.error("Failed to rollback secret:", e);
+			});
+			await giselle.deleteDataStore({ dataStoreId }).catch((e) => {
+				console.error("Failed to rollback data store:", e);
+			});
+			throw dbError;
+		}
 
 		revalidatePath("/settings/team/data-stores");
 		return { success: true };
