@@ -2,9 +2,9 @@
 
 
 ## Summary
-* 928 MIT
+* 927 MIT
 * 181 Apache 2.0
-* 42 ISC
+* 41 ISC
 * 27 New BSD
 * 16 Simplified BSD
 * 8 BlueOak-1.0.0
@@ -5808,7 +5808,7 @@ Python-2.0 manually approved
 
 
 <a name="baseline-browser-mapping"></a>
-### baseline-browser-mapping v2.8.23
+### baseline-browser-mapping v2.9.8
 #### 
 
 ##### Paths
@@ -6006,7 +6006,7 @@ Python-2.0 manually approved
 
 
 <a name="caniuse-lite"></a>
-### caniuse-lite v1.0.30001753
+### caniuse-lite v1.0.30001760
 #### 
 
 ##### Paths
@@ -9625,18 +9625,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="minizlib"></a>
-### minizlib v3.0.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="mkdirp"></a>
-### mkdirp v3.0.1
+### minizlib v3.1.0
 #### 
 
 ##### Paths
@@ -12155,17 +12144,6 @@ Unknown manually approved
 * /home/runner/work/giselle/giselle
 
 <a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="tar"></a>
-### tar v7.4.3
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://en.wikipedia.org/wiki/ISC_license">ISC</a> permitted
 
 
 

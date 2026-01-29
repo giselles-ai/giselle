@@ -72,7 +72,7 @@ catalog:
   lucide-react: 0.473.0
   motion: 12.23.24
   nanoid: 5.0.9
-  next: 16.0.10
+  next: 16.1.5
   node-loader: 2.1.0
   nuqs: 2.6.0
   openai: 5.11.0
@@ -89,7 +89,7 @@ catalog:
   swr: 2.3.6
   tailwindcss: 4.1.10
   tailwindcss-animate: 1.0.7
-  tar: 7.5.4
+  tar: 7.5.7
   tiktoken: 1.0.22
   tsup: 8.3.5
   tsx: 4.20.6

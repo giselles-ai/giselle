@@ -20,7 +20,7 @@ import {
 	isJsonContent,
 	jsonContentToPlainText,
 } from "@giselles-ai/text-editor-utils";
-import { Client, type QueryResult } from "pg";
+import { Pool, type QueryResult } from "pg";
 import { getDataStore } from "../data-stores/get-data-store";
 import { DataQueryError } from "../error";
 import type { AppEntryResolver, GenerationMetadata } from "../generations";
@@ -78,6 +78,9 @@ export function executeDataQuery(args: {
 					context: args.context,
 					dataStoreId,
 				});
+				if (!dataStore) {
+					throw new Error(`DataStore not found: ${dataStoreId}`);
+				}
 				const config = parseConfiguration(
 					dataStore.provider,
 					dataStore.configuration,
@@ -90,22 +93,28 @@ export function executeDataQuery(args: {
 				});
 				const connectionString = await args.context.vault.decrypt(secret.value);
 
-				const client = new Client({
-					connectionString,
-					connectionTimeoutMillis: 10000,
-					query_timeout: 60000,
-				});
-
 				let result: QueryResult;
+				let pool: Pool | undefined;
 				try {
-					await client.connect();
-					result = await client.query(parameterizedQuery, values);
+					pool = new Pool({
+						connectionString,
+						connectionTimeoutMillis: 10000,
+						query_timeout: 65000,
+						statement_timeout: 60000,
+					});
+					result = await pool.query(parameterizedQuery, values);
 				} catch (error) {
 					throw new DataQueryError(
 						error instanceof Error ? error.message : String(error),
 					);
 				} finally {
-					await client.end();
+					try {
+						await pool?.end();
+					} catch {
+						args.context.logger.warn(
+							`Failed to close pool for data store: ${dataStoreId}`,
+						);
+					}
 				}
 
 				const outputId = operationNode.outputs.find(
