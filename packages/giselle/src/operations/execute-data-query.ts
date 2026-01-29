@@ -102,7 +102,12 @@ export function executeDataQuery(args: {
 						query_timeout: 65000,
 						statement_timeout: 60000,
 					});
-					result = await pool.query(parameterizedQuery, values);
+					const queryResult = await pool.query(parameterizedQuery, values);
+					// When executing multiple statements (e.g., "SELECT 1; SELECT 2"),
+					// pg returns an array of QueryResult objects. Use the last result.
+					result = Array.isArray(queryResult)
+						? queryResult[queryResult.length - 1]
+						: queryResult;
 				} catch (error) {
 					throw new DataQueryError(
 						error instanceof Error ? error.message : String(error),
