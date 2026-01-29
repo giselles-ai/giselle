@@ -168,25 +168,26 @@ export async function deleteDataStore(
 			return { success: false, error: "Data store not found" };
 		}
 
-		// Delete DB record first to make it invisible from UI
-		await db.delete(dataStores).where(eq(dataStores.id, dataStoreId));
-
+		// Get giselle storage data first (returns undefined if not found)
 		const existingDataStore = await giselle.getDataStore({ dataStoreId });
+
+		// Delete giselle storage data: secret first (credentials), then dataStore
 		if (existingDataStore) {
-			try {
-				const config = parseConfiguration(
-					existingDataStore.provider,
-					existingDataStore.configuration,
-				);
-				const secretId = SecretId.parse(config.connectionStringSecretId);
-				await Promise.all([
-					giselle.deleteDataStore({ dataStoreId }),
-					giselle.deleteSecret({ secretId }),
-				]);
-			} catch (e) {
-				console.error("Failed to cleanup giselle resources:", e);
-			}
+			const config = parseConfiguration(
+				existingDataStore.provider,
+				existingDataStore.configuration,
+			);
+			const secretId = SecretId.parse(config.connectionStringSecretId);
+
+			// Secret contains encrypted connection credentials - we don't want it orphaned,
+			// so delete it first. DataStore may be orphaned if deletion fails after this point,
+			// but we accept this trade-off since it only contains metadata (reference to secret).
+			await giselle.deleteSecret({ secretId });
+			await giselle.deleteDataStore({ dataStoreId });
 		}
+
+		// Delete DB record last
+		await db.delete(dataStores).where(eq(dataStores.id, dataStoreId));
 
 		revalidatePath("/settings/team/data-stores");
 		return { success: true };

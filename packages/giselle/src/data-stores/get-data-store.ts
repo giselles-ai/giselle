@@ -8,12 +8,12 @@ export async function getDataStore({
 }: {
 	context: GiselleContext;
 	dataStoreId: DataStoreId;
-}): Promise<DataStore> {
+}): Promise<DataStore | undefined> {
 	const path = dataStorePath(dataStoreId);
 
 	const exists = await context.storage.exists(path);
 	if (!exists) {
-		throw new Error(`DataStore not found: ${dataStoreId}`);
+		return;
 	}
 
 	const dataStore = await context.storage.getJson({
