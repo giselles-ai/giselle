@@ -78,6 +78,9 @@ export function executeDataQuery(args: {
 					context: args.context,
 					dataStoreId,
 				});
+				if (!dataStore) {
+					throw new Error(`DataStore not found: ${dataStoreId}`);
+				}
 				const config = parseConfiguration(
 					dataStore.provider,
 					dataStore.configuration,
