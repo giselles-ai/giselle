@@ -10,6 +10,67 @@ import { fetchCurrentTeam } from "@/services/teams";
 import type { ActionResult, DataStoreListItem } from "./types";
 
 /**
+ * Updates a data store and its secret in Giselle storage with rollback support.
+ * Order: 1) create newSecret, 2) updateDataStore, 3) delete oldSecret
+ *
+ * Rollback strategy:
+ * - If updateDataStore fails: delete newSecret (oldSecret still exists)
+ * - If oldSecret deletion fails: revert to oldSecret and delete newSecret
+ *   (rollback is possible because oldSecret still exists)
+ */
+async function updateGiselleDataStoreWithSecret(
+	dataStoreId: DataStoreId,
+	oldSecretId: SecretId,
+	newSecretLabel: string,
+	newSecretValue: string,
+): Promise<void> {
+	// Step 1: Create new secret
+	const newSecret = await giselle.addSecret({
+		label: newSecretLabel,
+		value: newSecretValue,
+		tags: ["data-store"],
+	});
+
+	// Step 2: Update data store to use new secret
+	// If fails, delete newSecret to prevent orphan
+	try {
+		await giselle.updateDataStore({
+			dataStoreId,
+			configuration: {
+				connectionStringSecretId: newSecret.id,
+			},
+		});
+	} catch (updateError) {
+		await giselle.deleteSecret({ secretId: newSecret.id }).catch((e) => {
+			console.error("Failed to rollback new secret:", e);
+		});
+		throw updateError;
+	}
+
+	// Step 3: Delete old secret
+	// If fails, revert to old secret and delete new secret to prevent orphan
+	try {
+		await giselle.deleteSecret({ secretId: oldSecretId });
+	} catch (deleteError) {
+		try {
+			await giselle.updateDataStore({
+				dataStoreId,
+				configuration: {
+					connectionStringSecretId: oldSecretId,
+				},
+			});
+			await giselle.deleteSecret({ secretId: newSecret.id });
+		} catch (rollbackError) {
+			console.error(
+				"Failed to rollback after old secret deletion failure:",
+				rollbackError,
+			);
+		}
+		throw deleteError;
+	}
+}
+
+/*
  * Creates a secret and data store in Giselle storage with rollback support.
  * If createDataStore fails, the secret is deleted to prevent orphaned resources.
  */
@@ -148,30 +209,36 @@ export async function updateDataStore(
 				existingDataStore.provider,
 				existingDataStore.configuration,
 			);
-
-			const newSecret = await giselle.addSecret({
-				label: `Data Store: ${trimmedName}`,
-				value: trimmedConnectionString,
-				tags: ["data-store"],
-			});
-
-			await giselle.updateDataStore({
-				dataStoreId,
-				configuration: {
-					connectionStringSecretId: newSecret.id,
-				},
-			});
-
 			const oldSecretId = SecretId.parse(config.connectionStringSecretId);
-			await giselle.deleteSecret({ secretId: oldSecretId }).catch((e) => {
-				console.error("Failed to delete old secret:", e);
-			});
+
+			await updateGiselleDataStoreWithSecret(
+				dataStoreId,
+				oldSecretId,
+				`Data Store: ${trimmedName}`,
+				trimmedConnectionString,
+			);
 		}
 
-		await db
-			.update(dataStores)
-			.set({ name: trimmedName })
-			.where(eq(dataStores.id, dataStoreId));
+		try {
+			await db
+				.update(dataStores)
+				.set({ name: trimmedName })
+				.where(eq(dataStores.id, dataStoreId));
+		} catch (dbError) {
+			// We don't rollback here because:
+			// 1. oldSecret has already been deleted, so we can't restore the original connection string
+			// 2. Rollback could also fail, making the situation worse
+			// 3. The data store is functional with the new connection string
+			// Instead, we inform the user about the partial success.
+			if (connectionString) {
+				return {
+					success: false,
+					error:
+						"Connection string was updated successfully, but name update failed. Please try updating the name again.",
+				};
+			}
+			throw dbError;
+		}
 
 		revalidatePath("/settings/team/data-stores");
 		return { success: true };
