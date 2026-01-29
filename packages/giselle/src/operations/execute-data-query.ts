@@ -237,7 +237,8 @@ export function parameterizeQuery(
 		);
 
 		// Display query: replace with actual value
-		displayQuery = displayQuery.replaceAll(replaceKeyword, value);
+		// Use arrow function to avoid special replacement patterns ($&, $', $`, $$)
+		displayQuery = displayQuery.replaceAll(replaceKeyword, () => value);
 	}
 
 	return {
@@ -449,7 +450,8 @@ async function resolveQuery(
 	// Apply direct replacements first (LLM-generated SQL)
 	let processedQuery = baseQuery;
 	for (const { replaceKeyword, value } of directReplacements) {
-		processedQuery = processedQuery.replaceAll(replaceKeyword, value);
+		// Use arrow function to avoid special replacement patterns ($&, $', $`, $$)
+		processedQuery = processedQuery.replaceAll(replaceKeyword, () => value);
 	}
 
 	// Then parameterize user-controlled inputs

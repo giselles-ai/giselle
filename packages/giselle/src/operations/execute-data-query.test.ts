@@ -89,4 +89,56 @@ describe("parameterizeQuery", () => {
 		expect(result.displayQuery).toBe(query);
 		expect(result.values).toEqual([]);
 	});
+
+	describe("dollar sign special replacement patterns", () => {
+		it("should handle $& (matched string) literally", () => {
+			const result = parameterizeQuery(
+				"SELECT * FROM users WHERE note = '{{nd-xxx:otp-xxx}}'",
+				[{ replaceKeyword: "{{nd-xxx:otp-xxx}}", value: "test $& value" }],
+			);
+			expect(result.displayQuery).toBe(
+				"SELECT * FROM users WHERE note = 'test $& value'",
+			);
+		});
+
+		it("should handle $' (text after match) literally", () => {
+			const result = parameterizeQuery(
+				"SELECT * FROM users WHERE note = '{{nd-xxx:otp-xxx}}'",
+				[{ replaceKeyword: "{{nd-xxx:otp-xxx}}", value: "test $' value" }],
+			);
+			expect(result.displayQuery).toBe(
+				"SELECT * FROM users WHERE note = 'test $' value'",
+			);
+		});
+
+		it("should handle $` (text before match) literally", () => {
+			const result = parameterizeQuery(
+				"SELECT * FROM users WHERE note = '{{nd-xxx:otp-xxx}}'",
+				[{ replaceKeyword: "{{nd-xxx:otp-xxx}}", value: "test $` value" }],
+			);
+			expect(result.displayQuery).toBe(
+				"SELECT * FROM users WHERE note = 'test $` value'",
+			);
+		});
+
+		it("should handle $$ (escaped dollar) literally", () => {
+			const result = parameterizeQuery(
+				"SELECT * FROM users WHERE note = '{{nd-xxx:otp-xxx}}'",
+				[{ replaceKeyword: "{{nd-xxx:otp-xxx}}", value: "Price is $$50" }],
+			);
+			expect(result.displayQuery).toBe(
+				"SELECT * FROM users WHERE note = 'Price is $$50'",
+			);
+		});
+
+		it("should handle regular dollar amounts", () => {
+			const result = parameterizeQuery(
+				"SELECT * FROM users WHERE note = '{{nd-xxx:otp-xxx}}'",
+				[{ replaceKeyword: "{{nd-xxx:otp-xxx}}", value: "Price is $50" }],
+			);
+			expect(result.displayQuery).toBe(
+				"SELECT * FROM users WHERE note = 'Price is $50'",
+			);
+		});
+	});
 });
