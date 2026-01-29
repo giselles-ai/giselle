@@ -10,7 +10,7 @@ import { fetchCurrentTeam } from "@/services/teams";
 import type { ActionResult, DataStoreListItem } from "./types";
 
 /**
- * Updates a data store's secret with a new one, with rollback support.
+ * Updates a data store and its secret in Giselle storage with rollback support.
  * Order: 1) create newSecret, 2) updateDataStore, 3) delete oldSecret
  *
  * Rollback strategy:
@@ -18,7 +18,7 @@ import type { ActionResult, DataStoreListItem } from "./types";
  * - If oldSecret deletion fails: revert to oldSecret and delete newSecret
  *   (rollback is possible because oldSecret still exists)
  */
-async function updateDataStoreWithSecret(
+async function updateGiselleDataStoreWithSecret(
 	dataStoreId: DataStoreId,
 	oldSecretId: SecretId,
 	newSecretLabel: string,
@@ -211,7 +211,7 @@ export async function updateDataStore(
 			);
 			const oldSecretId = SecretId.parse(config.connectionStringSecretId);
 
-			await updateDataStoreWithSecret(
+			await updateGiselleDataStoreWithSecret(
 				dataStoreId,
 				oldSecretId,
 				`Data Store: ${trimmedName}`,
