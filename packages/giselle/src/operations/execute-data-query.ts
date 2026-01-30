@@ -119,7 +119,8 @@ export function executeDataQuery(args: {
 				const pool = new Pool({
 					connectionString,
 					connectionTimeoutMillis: 10000,
-					query_timeout: 60000,
+					query_timeout: 65000,
+					statement_timeout: 60000,
 				});
 
 				let result: QueryResult;
@@ -148,6 +149,8 @@ export function executeDataQuery(args: {
 							);
 							if (cancelled) {
 								await pool.query("SELECT pg_cancel_backend($1)", [pid]);
+								pollingStopped = true;
+								return;
 							}
 						} catch {
 							// Ignore errors (storage access, pg_cancel_backend failure, etc.)
@@ -156,7 +159,8 @@ export function executeDataQuery(args: {
 							pollingTimer = setTimeout(poll, 5000);
 						}
 					};
-					pollingTimer = setTimeout(poll, 5000);
+					// Start polling immediately, then every 5 seconds
+					poll();
 
 					// 5. Wait for query to complete
 					// When executing multiple statements (e.g., "SELECT 1; SELECT 2"),
@@ -167,13 +171,22 @@ export function executeDataQuery(args: {
 						: queryResult;
 				} catch (error) {
 					// 6. Handle cancellation error gracefully
-					// PostgreSQL error code 57014 = query_canceled
+					// PostgreSQL error code 57014 = query_canceled (user cancel or statement_timeout)
 					if (
 						error instanceof Error &&
 						"code" in error &&
 						error.code === "57014"
 					) {
-						return;
+						// Check if this was a user-initiated cancellation
+						const cancelled = await isCancelledGeneration(
+							runningGeneration.id,
+							args.context.storage,
+						);
+						if (cancelled) {
+							// User cancelled - exit gracefully
+							return;
+						}
+						// Not user-initiated (e.g., statement_timeout) - treat as error
 					}
 
 					throw new DataQueryError(

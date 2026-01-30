@@ -1,6 +1,7 @@
 import {
 	type Generation,
 	GenerationContext,
+	isCancelledGeneration,
 	isCompletedGeneration,
 	isContentGenerationNode,
 	isQueuedGeneration,
@@ -300,6 +301,8 @@ function DataQueryRunner({ generation }: { generation: Generation }) {
 						}
 						if (isCompletedGeneration(persistedGeneration)) {
 							updateGenerationStatusToComplete(generation.id);
+						} else if (isCancelledGeneration(persistedGeneration)) {
+							// Cancelled from another session - already handled by cancelGeneration
 						} else {
 							updateGenerationStatusToFailure(generation.id);
 						}
