@@ -35,7 +35,10 @@ import type { GiselleContext } from "../types";
 /**
  * Check if a generation has been cancelled by the user.
  */
-async function isCancelledGeneration(generationId: GenerationId, storage: GiselleStorage) {
+async function isCancelledGeneration(
+	generationId: GenerationId,
+	storage: GiselleStorage,
+) {
 	const generation = await getGeneration({ storage, generationId });
 	return isCancelled(generation);
 }
@@ -104,7 +107,12 @@ export function executeDataQuery(args: {
 				const connectionString = await args.context.vault.decrypt(secret.value);
 
 				// 1. Check if cancelled before connecting to database
-				if (await isCancelledGeneration(runningGeneration.id, args.context.storage)) {
+				if (
+					await isCancelledGeneration(
+						runningGeneration.id,
+						args.context.storage,
+					)
+				) {
 					return;
 				}
 
@@ -188,7 +196,12 @@ export function executeDataQuery(args: {
 				}
 
 				// 7. Check if cancelled before saving results
-				if (await isCancelledGeneration(runningGeneration.id, args.context.storage)) {
+				if (
+					await isCancelledGeneration(
+						runningGeneration.id,
+						args.context.storage,
+					)
+				) {
 					return;
 				}
 
