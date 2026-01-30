@@ -265,7 +265,7 @@ function DataQueryRunner({ generation }: { generation: Generation }) {
 
 	const stop = useCallback(() => {
 		stopRequestedRef.current = true;
-		void client.cancelGeneration({ generationId: generation.id });
+		client.cancelGeneration({ generationId: generation.id });
 	}, [client, generation.id]);
 
 	useOnce(() => {
@@ -278,6 +278,9 @@ function DataQueryRunner({ generation }: { generation: Generation }) {
 				generation,
 			})
 			.then(() => {
+				if (stopRequestedRef.current) {
+					return;
+				}
 				updateGenerationStatusToRunning(generation.id);
 				client
 					.executeDataQuery({
