@@ -2,7 +2,9 @@ import { parseConfiguration } from "@giselles-ai/data-store-registry";
 import {
 	type FailedGeneration,
 	GenerationContext,
+	type GenerationId,
 	type GenerationOutput,
+	isCancelledGeneration as isCancelled,
 	isCompletedGeneration,
 	isDataQueryNode,
 	isDataStoreNode,
@@ -20,7 +22,7 @@ import {
 	isJsonContent,
 	jsonContentToPlainText,
 } from "@giselles-ai/text-editor-utils";
-import { Pool, type QueryResult } from "pg";
+import { Pool, type PoolClient, type QueryResult } from "pg";
 import { getDataStore } from "../data-stores/get-data-store";
 import { DataQueryError } from "../error";
 import type { AppEntryResolver, GenerationMetadata } from "../generations";
@@ -29,6 +31,14 @@ import { useGenerationExecutor } from "../generations/internal/use-generation-ex
 import { getGeneration, getNodeGenerationIndexes } from "../generations/utils";
 import { secretPath } from "../secrets/paths";
 import type { GiselleContext } from "../types";
+
+/**
+ * Check if a generation has been cancelled by the user.
+ */
+async function isCancelledGeneration(generationId: GenerationId, storage: GiselleStorage) {
+	const generation = await getGeneration({ storage, generationId });
+	return isCancelled(generation);
+}
 
 export function executeDataQuery(args: {
 	context: GiselleContext;
@@ -93,33 +103,93 @@ export function executeDataQuery(args: {
 				});
 				const connectionString = await args.context.vault.decrypt(secret.value);
 
+				// 1. Check if cancelled before connecting to database
+				if (await isCancelledGeneration(runningGeneration.id, args.context.storage)) {
+					return;
+				}
+
+				const pool = new Pool({
+					connectionString,
+					connectionTimeoutMillis: 10000,
+					query_timeout: 60000,
+				});
+
 				let result: QueryResult;
-				let pool: Pool | undefined;
+				let pollingTimer: ReturnType<typeof setTimeout> | undefined;
+				let pollingStopped = false;
+				let client: PoolClient | undefined;
 				try {
-					pool = new Pool({
-						connectionString,
-						connectionTimeoutMillis: 10000,
-						query_timeout: 65000,
-						statement_timeout: 60000,
-					});
-					const queryResult = await pool.query(parameterizedQuery, values);
+					client = await pool.connect();
+
+					// 2. Get the backend PID for potential cancellation
+					const pidResult = await client.query("SELECT pg_backend_pid()");
+					const pid = pidResult.rows[0].pg_backend_pid;
+
+					// 3. Start query execution (don't await yet - keep the Promise)
+					const queryPromise = client.query(parameterizedQuery, values);
+
+					// 4. Start polling for cancellation (use pool for cancel, not client)
+					const poll = async () => {
+						if (pollingStopped) {
+							return;
+						}
+						try {
+							const cancelled = await isCancelledGeneration(
+								runningGeneration.id,
+								args.context.storage,
+							);
+							if (cancelled) {
+								await pool.query("SELECT pg_cancel_backend($1)", [pid]);
+							}
+						} catch {
+							// Ignore errors (storage access, pg_cancel_backend failure, etc.)
+						}
+						if (!pollingStopped) {
+							pollingTimer = setTimeout(poll, 5000);
+						}
+					};
+					pollingTimer = setTimeout(poll, 5000);
+
+					// 5. Wait for query to complete
 					// When executing multiple statements (e.g., "SELECT 1; SELECT 2"),
 					// pg returns an array of QueryResult objects. Use the last result.
+					const queryResult = await queryPromise;
 					result = Array.isArray(queryResult)
 						? queryResult[queryResult.length - 1]
 						: queryResult;
 				} catch (error) {
+					// 6. Handle cancellation error gracefully
+					// PostgreSQL error code 57014 = query_canceled
+					if (
+						error instanceof Error &&
+						"code" in error &&
+						error.code === "57014"
+					) {
+						return;
+					}
+
 					throw new DataQueryError(
 						error instanceof Error ? error.message : String(error),
 					);
 				} finally {
+					pollingStopped = true;
+					if (pollingTimer) {
+						clearTimeout(pollingTimer);
+					}
+					client?.release();
+
 					try {
-						await pool?.end();
+						await pool.end();
 					} catch {
 						args.context.logger.warn(
 							`Failed to close pool for data store: ${dataStoreId}`,
 						);
 					}
+				}
+
+				// 7. Check if cancelled before saving results
+				if (await isCancelledGeneration(runningGeneration.id, args.context.storage)) {
+					return;
 				}
 
 				const outputId = operationNode.outputs.find(
