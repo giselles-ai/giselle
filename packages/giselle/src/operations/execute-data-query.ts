@@ -1,8 +1,11 @@
 import { parseConfiguration } from "@giselles-ai/data-store-registry";
 import {
+	type DataStoreId,
 	type FailedGeneration,
 	GenerationContext,
+	type GenerationId,
 	type GenerationOutput,
+	isCancelledGeneration as isCancelled,
 	isCompletedGeneration,
 	isDataQueryNode,
 	isDataStoreNode,
@@ -20,7 +23,7 @@ import {
 	isJsonContent,
 	jsonContentToPlainText,
 } from "@giselles-ai/text-editor-utils";
-import { Pool, type QueryResult } from "pg";
+import { Pool, type PoolClient, type QueryResult } from "pg";
 import { getDataStore } from "../data-stores/get-data-store";
 import { DataQueryError } from "../error";
 import type { AppEntryResolver, GenerationMetadata } from "../generations";
@@ -29,6 +32,96 @@ import { useGenerationExecutor } from "../generations/internal/use-generation-ex
 import { getGeneration, getNodeGenerationIndexes } from "../generations/utils";
 import { secretPath } from "../secrets/paths";
 import type { GiselleContext } from "../types";
+
+/**
+ * Check if a generation has been cancelled by the user.
+ */
+async function isCancelledGeneration(
+	generationId: GenerationId,
+	storage: GiselleStorage,
+) {
+	const generation = await getGeneration({ storage, generationId });
+	return isCancelled(generation);
+}
+
+/**
+ * Creates a query executor that polls for cancellation while executing queries.
+ * Encapsulates connection management, PID tracking, and cancellation polling.
+ */
+function createPollingQueryExecutor({
+	pool,
+	generationId,
+	storage,
+	logger,
+	dataStoreId,
+}: {
+	pool: Pool;
+	generationId: GenerationId;
+	storage: GiselleStorage;
+	logger: { warn: (message: string) => void };
+	dataStoreId: DataStoreId;
+}) {
+	let client: PoolClient | null = null;
+	let polling = true;
+
+	/**
+	 * Executes a SQL query while polling for cancellation.
+	 */
+	const execute = async (
+		query: string,
+		values: unknown[],
+	): Promise<QueryResult> => {
+		client = await pool.connect();
+
+		const pidResult = await client.query("SELECT pg_backend_pid()");
+		const pid = pidResult.rows[0].pg_backend_pid;
+
+		const poll = async () => {
+			if (!polling) return;
+			try {
+				const cancelled = await isCancelledGeneration(generationId, storage);
+				if (cancelled) {
+					await pool.query("SELECT pg_cancel_backend($1)", [pid]);
+					polling = false;
+					return;
+				}
+			} catch {
+				// Ignore errors (storage access, pg_cancel_backend failure, etc.)
+			}
+			if (polling) {
+				setTimeout(poll, 5000);
+			}
+		};
+		poll();
+
+		// When executing multiple statements (e.g., "SELECT 1; SELECT 2"),
+		// pg returns an array of QueryResult objects. Use the last result.
+		const queryResult = await client.query(query, values);
+		return Array.isArray(queryResult)
+			? queryResult[queryResult.length - 1]
+			: queryResult;
+	};
+
+	/**
+	 * Cleans up resources. Must be called in a finally block.
+	 */
+	const cleanup = async () => {
+		polling = false;
+
+		if (client) {
+			client.release();
+			client = null;
+		}
+
+		try {
+			await pool.end();
+		} catch {
+			logger.warn(`Failed to close pool for data store: ${dataStoreId}`);
+		}
+	};
+
+	return { execute, cleanup };
+}
 
 export function executeDataQuery(args: {
 	context: GiselleContext;
@@ -93,33 +186,67 @@ export function executeDataQuery(args: {
 				});
 				const connectionString = await args.context.vault.decrypt(secret.value);
 
+				if (
+					await isCancelledGeneration(
+						runningGeneration.id,
+						args.context.storage,
+					)
+				) {
+					return;
+				}
+
+				const pool = new Pool({
+					connectionString,
+					connectionTimeoutMillis: 10000,
+					query_timeout: 65000,
+					statement_timeout: 60000,
+				});
+
+				const executor = createPollingQueryExecutor({
+					pool,
+					generationId: runningGeneration.id,
+					storage: args.context.storage,
+					logger: args.context.logger,
+					dataStoreId,
+				});
+
 				let result: QueryResult;
-				let pool: Pool | undefined;
 				try {
-					pool = new Pool({
-						connectionString,
-						connectionTimeoutMillis: 10000,
-						query_timeout: 65000,
-						statement_timeout: 60000,
-					});
-					const queryResult = await pool.query(parameterizedQuery, values);
-					// When executing multiple statements (e.g., "SELECT 1; SELECT 2"),
-					// pg returns an array of QueryResult objects. Use the last result.
-					result = Array.isArray(queryResult)
-						? queryResult[queryResult.length - 1]
-						: queryResult;
+					result = await executor.execute(parameterizedQuery, values);
 				} catch (error) {
+					// Handle cancellation error gracefully
+					// PostgreSQL error code 57014 = query_canceled (user cancel or statement_timeout)
+					if (
+						error instanceof Error &&
+						"code" in error &&
+						error.code === "57014"
+					) {
+						// Check if this was a user-initiated cancellation
+						const cancelled = await isCancelledGeneration(
+							runningGeneration.id,
+							args.context.storage,
+						);
+						if (cancelled) {
+							// User cancelled - exit gracefully
+							return;
+						}
+						// Not user-initiated (e.g., statement_timeout) - treat as error
+					}
+
 					throw new DataQueryError(
 						error instanceof Error ? error.message : String(error),
 					);
 				} finally {
-					try {
-						await pool?.end();
-					} catch {
-						args.context.logger.warn(
-							`Failed to close pool for data store: ${dataStoreId}`,
-						);
-					}
+					await executor.cleanup();
+				}
+
+				if (
+					await isCancelledGeneration(
+						runningGeneration.id,
+						args.context.storage,
+					)
+				) {
+					return;
 				}
 
 				const outputId = operationNode.outputs.find(
