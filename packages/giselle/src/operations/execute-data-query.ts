@@ -89,7 +89,7 @@ function createPollingQueryExecutor({
 				// Ignore errors (storage access, pg_cancel_backend failure, etc.)
 			}
 			if (polling) {
-				setTimeout(poll, 5000);
+				setTimeout(poll, 2500);
 			}
 		};
 		poll();
@@ -214,7 +214,6 @@ export function executeDataQuery(args: {
 				try {
 					result = await executor.execute(parameterizedQuery, values);
 				} catch (error) {
-					// Handle cancellation error gracefully
 					// PostgreSQL error code 57014 = query_canceled (user cancel or statement_timeout)
 					if (
 						error instanceof Error &&
@@ -227,7 +226,6 @@ export function executeDataQuery(args: {
 							args.context.storage,
 						);
 						if (cancelled) {
-							// User cancelled - exit gracefully
 							return;
 						}
 						// Not user-initiated (e.g., statement_timeout) - treat as error
