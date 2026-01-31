@@ -141,6 +141,7 @@ export function PlaygroundStageInput({
 						files={attachedFiles}
 						onRemoveFile={handleRemoveFile}
 						workspaceId={selectedApp?.workspaceId}
+						basePath="/api/giselle"
 						localPreviews={localPreviews}
 						onImageLoad={handleImageLoad}
 					/>
