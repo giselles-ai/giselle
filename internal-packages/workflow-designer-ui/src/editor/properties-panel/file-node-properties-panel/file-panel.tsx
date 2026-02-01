@@ -50,7 +50,7 @@ class InvalidFileTypeError extends FileUploadError {
 			case "image/jpeg":
 			case "image/png":
 			case "image/gif":
-			case "image/svg":
+			case "image/svg+xml":
 				return "Please use Image node to upload this file.";
 			case "application/pdf":
 				return "Please use PDF node to upload this file.";
@@ -132,7 +132,7 @@ export function FilePanel({ node, config }: FilePanelProps) {
 					}
 				}
 				isValid = config.accept.some((accept) =>
-					new RegExp(accept).test(itemType),
+					accept === itemType
 				);
 			}
 			return isValid;
@@ -157,7 +157,7 @@ export function FilePanel({ node, config }: FilePanelProps) {
 				}
 
 				const isValid = config.accept.some((accept) =>
-					new RegExp(accept).test(mimeType),
+					accept === mimeType
 				);
 				if (!isValid) {
 					throw new InvalidFileTypeError(config.accept, mimeType);
