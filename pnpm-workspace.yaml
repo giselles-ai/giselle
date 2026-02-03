@@ -30,7 +30,7 @@ catalog:
   "@supabase/auth-js": 2.70.0
   "@supabase/ssr": 0.6.1
   "@supabase/supabase-js": 2.50.5
-  "@tailwindcss/postcss": 4.1.10
+  "@tailwindcss/postcss": 4.1.18
   "@tailwindcss/typography": 0.5.16
   "@tiptap/core": 2.11.5
   "@tiptap/extension-code-block-lowlight": 2.11.5
@@ -87,7 +87,7 @@ catalog:
   react-dom: 19.2.1
   react-resizable-panels: 2.1.7
   swr: 2.3.6
-  tailwindcss: 4.1.10
+  tailwindcss: 4.1.18
   tailwindcss-animate: 1.0.7
   tar: 7.5.7
   tiktoken: 1.0.22
