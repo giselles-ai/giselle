@@ -1514,7 +1514,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@next/swc-linux-x64-gnu"></a>
-### @next/swc-linux-x64-gnu v16.0.10
+### @next/swc-linux-x64-gnu v16.1.5
 #### 
 
 ##### Paths
@@ -9812,7 +9812,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="next"></a>
-### next v16.0.10
+### next v16.1.5
 #### 
 
 ##### Paths
