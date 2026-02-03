@@ -4,62 +4,21 @@ import {
 	TextFileIcon,
 	XlsxFileIcon,
 } from "@giselle-internal/workflow-designer-ui";
-import type {
-	FileData,
-	UploadedFileData,
-	WorkspaceId,
-} from "@giselles-ai/protocol";
+import type { FileData, UploadedFileData } from "@giselles-ai/protocol";
 import { AlertCircle, Check, Loader2, Paperclip, X } from "lucide-react";
 import Image from "next/image";
 import type React from "react";
-import { useEffect, useState } from "react";
 
+// FileAttachments component uses only local blob URLs for image previews.
+// This eliminates the need for server-side preview logic (workspaceId, basePath, onImageLoad).
+// Blob URLs are managed in the parent component's localPreviews Map.
 interface FileAttachmentsProps {
 	files: FileData[];
 	onRemoveFile: (fileId: string) => void;
-	workspaceId?: WorkspaceId;
-	basePath?: string;
 	localPreviews?: Map<string, string>;
-	onImageLoad?: (fileId: string) => void;
 }
 
-function ImageThumbnail(props: {
-	remoteSrc: string;
-	localFallbackSrc?: string;
-	alt: string;
-	onRemoteLoaded?: () => void;
-}) {
-	const { remoteSrc, localFallbackSrc, alt, onRemoteLoaded } = props;
-	const [src, setSrc] = useState(remoteSrc);
 
-	useEffect(() => {
-		setSrc(remoteSrc);
-	}, [remoteSrc]);
-
-	return (
-		<Image
-			src={src}
-			alt={alt}
-			fill
-			sizes="60px"
-			// We may render blob/object URLs (local previews) here.
-			unoptimized
-			className="object-cover"
-			onError={() => {
-				if (localFallbackSrc && src !== localFallbackSrc) {
-					setSrc(localFallbackSrc);
-				}
-			}}
-			onLoad={() => {
-				// Notify the parent only when the remote image successfully loads.
-				// The parent uses this to safely clean up the local preview URL.
-				if (src === remoteSrc) {
-					onRemoteLoaded?.();
-				}
-			}}
-		/>
-	);
-}
 
 function formatFileSize(bytes: number) {
 	if (!Number.isFinite(bytes) || bytes <= 0) {
@@ -148,30 +107,17 @@ function getFileTypeLabel(file: FileData): string | null {
 	return labelMap[ext] || null;
 }
 
-function getFileUrl(
-	file: UploadedFileData,
-	workspaceId: WorkspaceId,
-	basePath: string,
-): string {
-	// Generate file path for stage type
-	const path = `workspaces/${workspaceId}/files/${file.id}/${file.id}`;
-	const normalizedPath = path.startsWith("/") ? path.slice(1) : path;
-	return `${basePath}/${normalizedPath}`;
-}
+
 
 export function FileAttachments({
 	files,
 	onRemoveFile,
-	workspaceId,
-	basePath,
 	localPreviews,
-	onImageLoad,
 }: FileAttachmentsProps) {
 	if (files.length === 0) {
 		return null;
 	}
 
-	const resolvedBasePath = basePath ?? "";
 	const readyCount = files.filter(isUploadedFile).length;
 	const thumbnailFiles = files.filter(
 		(file) => isImageFile(file) || getFileTypeBadge(file) !== null,
@@ -197,33 +143,21 @@ export function FileAttachments({
 
 						// Image file rendering
 						if (isImage) {
-							const isUploaded = isUploadedFile(file);
 							const localPreview = localPreviews?.get(file.id);
-							let imageUrl: string | null = null;
-
-							if (isUploaded && workspaceId && resolvedBasePath.length > 0) {
-								imageUrl = getFileUrl(file, workspaceId, resolvedBasePath);
-							} else if (localPreview) {
-								imageUrl = localPreview;
-							}
 
 							return (
 								<div
 									key={file.id}
 									className="relative group shrink-0 rounded-lg overflow-hidden bg-white/5 border border-white/5 w-[60px] h-[60px]"
 								>
-									{imageUrl ? (
-										<ImageThumbnail
-											remoteSrc={imageUrl}
-											localFallbackSrc={isUploaded ? localPreview : undefined}
+									{localPreview ? (
+										<Image
+											src={localPreview}
 											alt={file.name}
-											onRemoteLoaded={() => {
-												// Notify parent that server image loaded successfully
-												// Parent will clean up local preview URL
-												if (isUploaded && onImageLoad) {
-													onImageLoad(file.id);
-												}
-											}}
+											fill
+											sizes="60px"
+											unoptimized
+											className="object-cover"
 										/>
 									) : (
 										<div className="w-full h-full flex items-center justify-center text-blue-muted/50">

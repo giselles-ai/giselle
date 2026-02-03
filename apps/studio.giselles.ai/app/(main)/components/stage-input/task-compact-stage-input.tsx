@@ -44,7 +44,6 @@ export function TaskCompactStageInput({
 		handleFileInputChange,
 		handleAttachmentButtonClick,
 		handleRemoveFile,
-		handleImageLoad,
 		handleDismissFileRestrictionError,
 		handleSubmit,
 		selectedApp,
@@ -134,9 +133,7 @@ export function TaskCompactStageInput({
 					<FileAttachments
 						files={attachedFiles}
 						onRemoveFile={handleRemoveFile}
-						workspaceId={selectedApp?.workspaceId}
 						localPreviews={localPreviews}
-						onImageLoad={handleImageLoad}
 					/>
 
 					{fileRestrictionError ? (
