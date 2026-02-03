@@ -498,7 +498,13 @@ export function useStageInput({
 			selectedApp,
 		});
 
+		// Clean up blob URLs to prevent memory leaks
+		for (const previewUrl of localPreviews.values()) {
+			URL.revokeObjectURL(previewUrl);
+		}
+
 		setAttachedFiles([]);
+		setLocalPreviews(new Map());
 		setInputValue("");
 		requestAnimationFrame(() => {
 			resizeTextarea();
