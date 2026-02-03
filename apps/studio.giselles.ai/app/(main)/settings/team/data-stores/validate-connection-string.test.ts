@@ -61,6 +61,11 @@ describe("isPrivateIP", () => {
 		expect(isPrivateIP("192.0.0.255")).toBe(true);
 	});
 
+	it("should return false for non-IETF 192.0.x.x ranges", () => {
+		expect(isPrivateIP("192.0.1.1")).toBe(false);
+		expect(isPrivateIP("192.0.255.1")).toBe(false);
+	});
+
 	it("should return true for Private Class C (192.168.x.x)", () => {
 		expect(isPrivateIP("192.168.0.1")).toBe(true);
 		expect(isPrivateIP("192.168.255.255")).toBe(true);

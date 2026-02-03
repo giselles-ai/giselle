@@ -38,7 +38,7 @@ export function isPrivateIP(ip: string): boolean {
 		nums.push(num);
 	}
 
-	const [a, b] = nums;
+	const [a, b, c] = nums;
 
 	// 0.0.0.0/8 - "This host" (often routes to localhost on Linux)
 	if (a === 0) {
@@ -66,7 +66,7 @@ export function isPrivateIP(ip: string): boolean {
 	}
 
 	// 192.0.0.0/24 - IETF Protocol Assignments
-	if (a === 192 && b === 0) {
+	if (a === 192 && b === 0 && c === 0) {
 		return true;
 	}
 
