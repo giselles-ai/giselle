@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 926 MIT
+* 927 MIT
 * 185 Apache 2.0
 * 41 ISC
 * 27 New BSD
@@ -1361,6 +1361,17 @@ LGPL-3.0-or-later permitted
 
 <a name="@jridgewell/gen-mapping"></a>
 ### @jridgewell/gen-mapping v0.3.13
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@jridgewell/remapping"></a>
+### @jridgewell/remapping v2.3.5
 #### 
 
 ##### Paths
@@ -4308,7 +4319,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@tailwindcss/node"></a>
-### @tailwindcss/node v4.1.10
+### @tailwindcss/node v4.1.18
 #### 
 
 ##### Paths
@@ -4319,7 +4330,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@tailwindcss/oxide"></a>
-### @tailwindcss/oxide v4.1.10
+### @tailwindcss/oxide v4.1.18
 #### 
 
 ##### Paths
@@ -4330,7 +4341,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@tailwindcss/oxide-linux-x64-gnu"></a>
-### @tailwindcss/oxide-linux-x64-gnu v4.1.10
+### @tailwindcss/oxide-linux-x64-gnu v4.1.18
 #### 
 
 ##### Paths
@@ -4341,7 +4352,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@tailwindcss/postcss"></a>
-### @tailwindcss/postcss v4.1.10
+### @tailwindcss/postcss v4.1.18
 #### 
 
 ##### Paths
@@ -6732,7 +6743,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="detect-libc"></a>
-### detect-libc v2.0.4
+### detect-libc v2.1.2
 #### 
 
 ##### Paths
@@ -6963,7 +6974,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="enhanced-resolve"></a>
-### enhanced-resolve v5.18.3
+### enhanced-resolve v5.18.4
 #### 
 
 ##### Paths
@@ -8734,7 +8745,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="lightningcss"></a>
-### lightningcss v1.30.1
+### lightningcss v1.30.2
 #### 
 
 ##### Paths
@@ -8745,7 +8756,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="lightningcss-linux-x64-gnu"></a>
-### lightningcss-linux-x64-gnu v1.30.1
+### lightningcss-linux-x64-gnu v1.30.2
 #### 
 
 ##### Paths
@@ -12159,7 +12170,7 @@ Unknown manually approved
 
 
 <a name="tailwindcss"></a>
-### tailwindcss v4.1.10
+### tailwindcss v4.1.18
 #### 
 
 ##### Paths
@@ -12181,7 +12192,7 @@ Unknown manually approved
 
 
 <a name="tar"></a>
-### tar v7.5.4
+### tar v7.5.7
 #### 
 
 ##### Paths
