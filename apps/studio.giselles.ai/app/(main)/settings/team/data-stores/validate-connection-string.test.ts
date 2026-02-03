@@ -10,8 +10,7 @@ let mockLookup: typeof dns.promises.lookup;
 vi.mock("node:dns", () => ({
 	default: {
 		promises: {
-			lookup: (...args: Parameters<typeof mockLookup>) =>
-				mockLookup(...args),
+			lookup: (...args: Parameters<typeof mockLookup>) => mockLookup(...args),
 		},
 	},
 }));
