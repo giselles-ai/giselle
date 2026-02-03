@@ -8,6 +8,7 @@ import { giselle } from "@/app/giselle";
 import { dataStores, db } from "@/db";
 import { fetchCurrentTeam } from "@/services/teams";
 import type { ActionResult, DataStoreListItem } from "./types";
+import { validateConnectionStringForSSRF } from "./validate-connection-string";
 
 /**
  * Updates a data store and its secret in Giselle storage with rollback support.
@@ -132,6 +133,13 @@ export async function createDataStore(
 		return { success: false, error: "Connection string is required" };
 	}
 
+	const ssrfValidation = await validateConnectionStringForSSRF(
+		trimmedConnectionString,
+	);
+	if (!ssrfValidation.isValid) {
+		return { success: false, error: ssrfValidation.error };
+	}
+
 	try {
 		const team = await fetchCurrentTeam();
 		const { secretId, dataStoreId } = await createGiselleDataStoreWithSecret(
@@ -198,6 +206,13 @@ export async function updateDataStore(
 			const trimmedConnectionString = connectionString.trim();
 			if (trimmedConnectionString.length === 0) {
 				return { success: false, error: "Connection string is required" };
+			}
+
+			const ssrfValidation = await validateConnectionStringForSSRF(
+				trimmedConnectionString,
+			);
+			if (!ssrfValidation.isValid) {
+				return { success: false, error: ssrfValidation.error };
 			}
 
 			const existingDataStore = await giselle.getDataStore({ dataStoreId });
