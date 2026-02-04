@@ -1,11 +1,12 @@
 import { notFound } from "next/navigation";
-import { dataStoreFlag } from "@/flags";
+import { fetchCurrentTeam } from "@/services/teams";
+import { isInternalPlan } from "@/services/teams/utils";
 import { getDataStores } from "./actions";
 import { DataStoresPageClient } from "./page-client";
 
 export default async function DataStoresPage() {
-	const isDataStoreEnabled = await dataStoreFlag();
-	if (!isDataStoreEnabled) {
+	const team = await fetchCurrentTeam();
+	if (!isInternalPlan(team)) {
 		notFound();
 	}
 

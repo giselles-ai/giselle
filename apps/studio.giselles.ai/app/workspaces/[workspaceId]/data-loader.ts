@@ -5,7 +5,6 @@ import { db } from "@/db";
 import {
 	aiGatewayFlag,
 	aiGatewayUnsupportedModelsFlag,
-	dataStoreFlag,
 	generateContentNodeFlag,
 	googleUrlContextFlag,
 	layoutV3Flag,
@@ -65,7 +64,7 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 	const data = await giselle.getWorkspace(workspaceId);
 	const generateContentNode = await generateContentNodeFlag();
 	const privatePreviewTools = await privatePreviewToolsFlag();
-	const dataStore = await dataStoreFlag();
+	const dataStore = isInternalPlan(workspaceTeam);
 	const [teamGitHubRepositoryIndexes, officialGitHubRepositoryIndexes] =
 		await Promise.all([
 			getGitHubRepositoryIndexes(workspaceTeam.dbId),
