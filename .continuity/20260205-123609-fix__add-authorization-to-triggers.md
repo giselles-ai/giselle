@@ -41,7 +41,13 @@ This section is intentionally stable: do not overwrite it when updating the ledg
   - `resolveTrigger`, `executeAction`, `executeQuery`, `executeDataQuery` - extract from `generation.context.origin.workspaceId`
   - `configureTrigger`, `setTrigger` - extract from `input.trigger.workspaceId`
   - `getTrigger`, `reconfigureGitHubTrigger` - fetch trigger first to get workspaceId
-- All checks pass: `pnpm format`, `pnpm check-types`, `pnpm tidy`, `pnpm test`
+  - `getGitHubRepositoryFullname` - added `workspaceId` to input (internal-api layer only)
+- Updated `GiselleClient` interface to include `workspaceId` in `getGitHubRepositoryFullname`
+- Updated callers to pass `workspaceId`:
+  - `use-github-trigger.ts` - uses `trigger.workspaceId`
+  - `github-action-configured-view.tsx` - uses `useAppDesignerStore`
+  - `github-repository-badge-from-repo.tsx` - uses `useAppDesignerStore`
+- All checks pass: `pnpm format`, `pnpm build-sdk`, `pnpm check-types`, `pnpm tidy`, `pnpm test`
 
 ## Now
 
@@ -50,7 +56,6 @@ This section is intentionally stable: do not overwrite it when updating the ledg
 ## Next
 
 - Commit & create PR
-- Separate PR for adding workspaceId to `getGitHubRepositoryFullname`
 
 ## Open questions (UNCONFIRMED if needed)
 

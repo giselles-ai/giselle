@@ -1,5 +1,6 @@
 import { useGiselle } from "@giselles-ai/react";
 import useSWR from "swr";
+import { useAppDesignerStore } from "../../../app-designer";
 import { GitHubRepositoryBadge } from "./github-repository-badge";
 
 interface GitHubRepositoryBadgeFromRepoProps {
@@ -16,15 +17,18 @@ export function GitHubRepositoryBadgeFromRepo({
 	repositoryNodeId,
 }: GitHubRepositoryBadgeFromRepoProps) {
 	const client = useGiselle();
+	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
 	const { isLoading, data } = useSWR(
 		{
 			installationId,
 			repositoryNodeId,
+			workspaceId,
 		},
-		({ installationId, repositoryNodeId }) =>
+		({ installationId, repositoryNodeId, workspaceId }) =>
 			client.getGitHubRepositoryFullname({
 				installationId,
 				repositoryNodeId,
+				workspaceId,
 			}),
 	);
 

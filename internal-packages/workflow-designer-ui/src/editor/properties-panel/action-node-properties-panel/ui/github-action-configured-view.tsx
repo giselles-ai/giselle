@@ -109,17 +109,20 @@ export function GitHubActionConfiguredView({
 }) {
 	const client = useGiselle();
 	const ui = useAppDesignerStore((s) => s.ui);
+	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
 	const removeConnectionAndInput = useRemoveConnectionAndInput();
 	const updateNodeData = useUpdateNodeData();
 	const { isLoading, data } = useSWR(
 		{
 			installationId: state.installationId,
 			repositoryNodeId: state.repositoryNodeId,
+			workspaceId,
 		},
-		({ installationId, repositoryNodeId }) =>
+		({ installationId, repositoryNodeId, workspaceId }) =>
 			client.getGitHubRepositoryFullname({
 				installationId,
 				repositoryNodeId,
+				workspaceId,
 			}),
 	);
 

@@ -5,6 +5,7 @@ import type {
 	QueuedGeneration,
 	Trigger,
 	TriggerId,
+	WorkspaceId,
 } from "@giselles-ai/protocol";
 import { giselle } from "@/app/giselle";
 import { assertWorkspaceAccess } from "./utils";
@@ -73,7 +74,15 @@ export async function executeDataQuery(input: {
 }
 
 export async function getGitHubRepositoryFullname(
-	input: Parameters<typeof giselle.getGitHubRepositoryFullname>[0],
+	input: Parameters<typeof giselle.getGitHubRepositoryFullname>[0] & {
+		workspaceId: WorkspaceId;
+	},
 ) {
-	return { fullname: await giselle.getGitHubRepositoryFullname(input) };
+	await assertWorkspaceAccess(input.workspaceId);
+	return {
+		fullname: await giselle.getGitHubRepositoryFullname({
+			repositoryNodeId: input.repositoryNodeId,
+			installationId: input.installationId,
+		}),
+	};
 }
