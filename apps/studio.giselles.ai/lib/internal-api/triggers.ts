@@ -27,12 +27,28 @@ export async function getTrigger(input: { triggerId: TriggerId }) {
 	if (trigger === undefined) {
 		return { trigger: undefined };
 	}
-	await assertWorkspaceAccess(trigger.workspaceId);
+	try {
+		await assertWorkspaceAccess(trigger.workspaceId);
+	} catch {
+		// Return same response for unauthorized as for not found to prevent existence leak
+		return { trigger: undefined };
+	}
 	return { trigger };
 }
 
 export async function setTrigger(input: { trigger: Trigger }) {
-	await assertWorkspaceAccess(input.trigger.workspaceId);
+	const existingTrigger = await giselle.getTrigger({
+		triggerId: input.trigger.id,
+	});
+	if (existingTrigger === undefined) {
+		throw new Error("Trigger not found");
+	}
+	try {
+		await assertWorkspaceAccess(existingTrigger.workspaceId);
+	} catch {
+		// Throw same error as not found to prevent existence leak
+		throw new Error("Trigger not found");
+	}
 	return { triggerId: await giselle.setTrigger(input) };
 }
 
@@ -41,9 +57,14 @@ export async function reconfigureGitHubTrigger(
 ) {
 	const trigger = await giselle.getTrigger({ triggerId: input.triggerId });
 	if (trigger === undefined) {
-		throw new Error(`Trigger not found: ${input.triggerId}`);
+		throw new Error("Trigger not found");
 	}
-	await assertWorkspaceAccess(trigger.workspaceId);
+	try {
+		await assertWorkspaceAccess(trigger.workspaceId);
+	} catch {
+		// Throw same error as not found to prevent existence leak
+		throw new Error("Trigger not found");
+	}
 	return { triggerId: await giselle.reconfigureGitHubTrigger(input) };
 }
 
