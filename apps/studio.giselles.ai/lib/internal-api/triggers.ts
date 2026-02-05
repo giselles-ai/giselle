@@ -8,7 +8,7 @@ import type {
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import { giselle } from "@/app/giselle";
-import { assertWorkspaceAccess } from "./utils";
+import { assertWorkspaceAccess } from "@/lib/assert-workspace-access";
 
 export async function resolveTrigger(input: { generation: QueuedGeneration }) {
 	await assertWorkspaceAccess(input.generation.context.origin.workspaceId);

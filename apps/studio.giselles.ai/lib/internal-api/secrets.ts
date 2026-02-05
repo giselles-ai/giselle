@@ -3,7 +3,7 @@
 import type { SecretId, WorkspaceId } from "@giselles-ai/protocol";
 import { Secret } from "@giselles-ai/protocol";
 import { giselle, storage } from "@/app/giselle";
-import { assertWorkspaceAccess } from "./utils";
+import { assertWorkspaceAccess } from "@/lib/assert-workspace-access";
 
 function secretPath(secretId: SecretId) {
 	return `secrets/${secretId}/secret.json`;
