@@ -7,42 +7,59 @@ import type {
 	TriggerId,
 } from "@giselles-ai/protocol";
 import { giselle } from "@/app/giselle";
+import { assertWorkspaceAccess } from "./utils";
 
 export async function resolveTrigger(input: { generation: QueuedGeneration }) {
+	await assertWorkspaceAccess(input.generation.context.origin.workspaceId);
 	return { trigger: await giselle.resolveTrigger(input) };
 }
 
 export async function configureTrigger(
 	input: Parameters<typeof giselle.configureTrigger>[0],
 ) {
+	await assertWorkspaceAccess(input.trigger.workspaceId);
 	return { triggerId: await giselle.configureTrigger(input) };
 }
 
 export async function getTrigger(input: { triggerId: TriggerId }) {
-	return { trigger: await giselle.getTrigger(input) };
+	const trigger = await giselle.getTrigger(input);
+	if (trigger === undefined) {
+		return { trigger: undefined };
+	}
+	await assertWorkspaceAccess(trigger.workspaceId);
+	return { trigger };
 }
 
 export async function setTrigger(input: { trigger: Trigger }) {
+	await assertWorkspaceAccess(input.trigger.workspaceId);
 	return { triggerId: await giselle.setTrigger(input) };
 }
 
 export async function reconfigureGitHubTrigger(
 	input: Parameters<typeof giselle.reconfigureGitHubTrigger>[0],
 ) {
+	const trigger = await giselle.getTrigger({ triggerId: input.triggerId });
+	if (trigger === undefined) {
+		throw new Error(`Trigger not found: ${input.triggerId}`);
+	}
+	await assertWorkspaceAccess(trigger.workspaceId);
 	return { triggerId: await giselle.reconfigureGitHubTrigger(input) };
 }
 
 export async function executeAction(input: { generation: QueuedGeneration }) {
+	await assertWorkspaceAccess(input.generation.context.origin.workspaceId);
 	await giselle.executeAction(input);
 }
 
 export async function executeQuery(input: { generation: QueuedGeneration }) {
+	await assertWorkspaceAccess(input.generation.context.origin.workspaceId);
 	await giselle.executeQuery(input.generation);
 }
 
 export async function executeDataQuery(input: {
 	generation: QueuedGeneration;
 }) {
+	await assertWorkspaceAccess(input.generation.context.origin.workspaceId);
 	try {
 		await giselle.executeDataQuery(input.generation);
 	} catch (error) {

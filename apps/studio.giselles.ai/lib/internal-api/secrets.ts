@@ -3,23 +3,10 @@
 import type { SecretId, WorkspaceId } from "@giselles-ai/protocol";
 import { Secret } from "@giselles-ai/protocol";
 import { giselle, storage } from "@/app/giselle";
-import { getCurrentUser } from "@/lib/get-current-user";
-import { getWorkspaceTeam } from "@/lib/workspaces/get-workspace-team";
-import { isMemberOfTeam } from "@/services/teams";
+import { assertWorkspaceAccess } from "./utils";
 
 function secretPath(secretId: SecretId) {
 	return `secrets/${secretId}/secret.json`;
-}
-
-async function assertWorkspaceAccess(workspaceId: WorkspaceId) {
-	const [currentUser, workspaceTeam] = await Promise.all([
-		getCurrentUser(),
-		getWorkspaceTeam(workspaceId),
-	]);
-	const isMember = await isMemberOfTeam(currentUser.dbId, workspaceTeam.dbId);
-	if (!isMember) {
-		throw new Error("Not authorized to access this workspace");
-	}
 }
 
 async function getSecret(secretId: SecretId) {
