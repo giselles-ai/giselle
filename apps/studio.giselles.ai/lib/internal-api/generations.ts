@@ -6,7 +6,6 @@ import type {
 	GenerationOrigin,
 	NodeId,
 	QueuedGeneration,
-	RunningGeneration,
 } from "@giselles-ai/protocol";
 import { giselle } from "@/app/giselle";
 
@@ -48,13 +47,4 @@ export async function getGenerationMessageChunks(input: {
 		generationId: input.generationId,
 		startByte: input.startByte,
 	});
-}
-
-export async function generateContent(input: {
-	generation: RunningGeneration;
-}) {
-	const generation = await giselle.generateContent({
-		generation: input.generation,
-	});
-	return { generation };
 }

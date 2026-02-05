@@ -5,14 +5,6 @@ import * as internalApi from "@/lib/internal-api";
 
 export function createInternalGiselleClient(): GiselleClient {
 	return {
-		// bootstrap
-		createWorkspace: internalApi.createWorkspace,
-		createSampleWorkspaces: internalApi.createSampleWorkspaces,
-
-		// workspaces
-		getWorkspace: internalApi.getWorkspace,
-		updateWorkspace: internalApi.updateWorkspace,
-
 		// apps
 		getApp: internalApi.getApp,
 		saveApp: internalApi.saveApp,
@@ -33,7 +25,6 @@ export function createInternalGiselleClient(): GiselleClient {
 		generateImage: internalApi.generateImage,
 		startContentGeneration: internalApi.startContentGeneration,
 		getGenerationMessageChunks: internalApi.getGenerationMessageChunks,
-		generateContent: internalApi.generateContent,
 
 		// triggers + ops
 		resolveTrigger: internalApi.resolveTrigger,
@@ -57,11 +48,5 @@ export function createInternalGiselleClient(): GiselleClient {
 		addSecret: internalApi.addSecret,
 		deleteSecret: internalApi.deleteSecret,
 		getWorkspaceSecrets: internalApi.getWorkspaceSecrets,
-
-		// data stores
-		createDataStore: internalApi.createDataStore,
-		getDataStore: internalApi.getDataStore,
-		updateDataStore: internalApi.updateDataStore,
-		deleteDataStore: internalApi.deleteDataStore,
 	};
 }

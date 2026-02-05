@@ -10,23 +10,10 @@ import type {
 	NodeId,
 	QueuedGeneration,
 	Task,
-	Workspace,
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 
 export interface GiselleClient {
-	// bootstrap (used in playground home)
-	createWorkspace: Giselle["createWorkspace"];
-	createSampleWorkspaces: Giselle["createSampleWorkspaces"];
-
-	// workspaces
-	getWorkspace(input: {
-		workspaceId: WorkspaceId;
-	}): ReturnType<Giselle["getWorkspace"]>;
-	updateWorkspace(input: {
-		workspace: Workspace;
-	}): ReturnType<Giselle["updateWorkspace"]>;
-
 	// apps
 	getApp(
 		input: Parameters<Giselle["getApp"]>[0],
@@ -46,7 +33,6 @@ export interface GiselleClient {
 	getWorkspaceTasks(input: {
 		workspaceId: WorkspaceId;
 	}): Promise<{ tasks: Task[] }>;
-	// streamTask omitted (not currently used in Studio editor UI)
 
 	// generations
 	getGeneration(input: {
@@ -72,9 +58,6 @@ export interface GiselleClient {
 			"abortSignal"
 		>,
 	): ReturnType<Giselle["getGenerationMessageChunks"]>;
-	generateContent(
-		input: Parameters<Giselle["generateContent"]>[0],
-	): Promise<{ generation: Awaited<ReturnType<Giselle["generateContent"]>> }>;
 
 	// triggers + ops
 	resolveTrigger(
@@ -129,18 +112,4 @@ export interface GiselleClient {
 	getWorkspaceSecrets(
 		input: Parameters<Giselle["getWorkspaceSecrets"]>[0],
 	): Promise<{ secrets: Awaited<ReturnType<Giselle["getWorkspaceSecrets"]>> }>;
-
-	// data stores
-	createDataStore(input: Parameters<Giselle["createDataStore"]>[0]): Promise<{
-		dataStore: Awaited<ReturnType<Giselle["createDataStore"]>>;
-	}>;
-	getDataStore(input: Parameters<Giselle["getDataStore"]>[0]): Promise<{
-		dataStore: Awaited<ReturnType<Giselle["getDataStore"]>>;
-	}>;
-	updateDataStore(input: Parameters<Giselle["updateDataStore"]>[0]): Promise<{
-		dataStore: Awaited<ReturnType<Giselle["updateDataStore"]>>;
-	}>;
-	deleteDataStore(input: Parameters<Giselle["deleteDataStore"]>[0]): Promise<{
-		dataStore: Awaited<ReturnType<Giselle["deleteDataStore"]>>;
-	}>;
 }
