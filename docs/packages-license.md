@@ -3065,7 +3065,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@react-email/body"></a>
-### @react-email/body v0.2.0
+### @react-email/body v0.2.1
 #### 
 
 ##### Paths
@@ -3076,7 +3076,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@react-email/button"></a>
-### @react-email/button v0.2.0
+### @react-email/button v0.2.1
 #### 
 
 ##### Paths
@@ -3087,7 +3087,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@react-email/code-block"></a>
-### @react-email/code-block v0.2.0
+### @react-email/code-block v0.2.1
 #### 
 
 ##### Paths
@@ -3098,7 +3098,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@react-email/code-inline"></a>
-### @react-email/code-inline v0.0.5
+### @react-email/code-inline v0.0.6
 #### 
 
 ##### Paths
@@ -3109,7 +3109,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@react-email/column"></a>
-### @react-email/column v0.0.13
+### @react-email/column v0.0.14
 #### 
 
 ##### Paths
@@ -3120,7 +3120,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@react-email/components"></a>
-### @react-email/components v1.0.1
+### @react-email/components v1.0.6
 #### 
 
 ##### Paths
@@ -3131,7 +3131,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@react-email/container"></a>
-### @react-email/container v0.0.15
+### @react-email/container v0.0.16
 #### 
 
 ##### Paths
@@ -3142,7 +3142,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@react-email/font"></a>
-### @react-email/font v0.0.9
+### @react-email/font v0.0.10
 #### 
 
 ##### Paths
@@ -3153,7 +3153,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@react-email/head"></a>
-### @react-email/head v0.0.12
+### @react-email/head v0.0.13
 #### 
 
 ##### Paths
@@ -3164,7 +3164,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@react-email/heading"></a>
-### @react-email/heading v0.0.15
+### @react-email/heading v0.0.16
 #### 
 
 ##### Paths
@@ -3175,7 +3175,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@react-email/hr"></a>
-### @react-email/hr v0.0.11
+### @react-email/hr v0.0.12
 #### 
 
 ##### Paths
@@ -3186,7 +3186,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@react-email/html"></a>
-### @react-email/html v0.0.11
+### @react-email/html v0.0.12
 #### 
 
 ##### Paths
@@ -3197,7 +3197,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@react-email/img"></a>
-### @react-email/img v0.0.11
+### @react-email/img v0.0.12
 #### 
 
 ##### Paths
@@ -3208,7 +3208,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@react-email/link"></a>
-### @react-email/link v0.0.12
+### @react-email/link v0.0.13
 #### 
 
 ##### Paths
@@ -3219,7 +3219,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@react-email/markdown"></a>
-### @react-email/markdown v0.0.17
+### @react-email/markdown v0.0.18
 #### 
 
 ##### Paths
@@ -3230,7 +3230,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@react-email/preview"></a>
-### @react-email/preview v0.0.13
+### @react-email/preview v0.0.14
 #### 
 
 ##### Paths
@@ -3241,7 +3241,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@react-email/preview-server"></a>
-### @react-email/preview-server v5.0.5
+### @react-email/preview-server v5.2.5
 #### 
 
 ##### Paths
@@ -3252,7 +3252,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@react-email/render"></a>
-### @react-email/render v2.0.0
+### @react-email/render v2.0.4
 #### 
 
 ##### Paths
@@ -3263,7 +3263,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@react-email/row"></a>
-### @react-email/row v0.0.12
+### @react-email/row v0.0.13
 #### 
 
 ##### Paths
@@ -3274,7 +3274,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@react-email/section"></a>
-### @react-email/section v0.0.16
+### @react-email/section v0.0.17
 #### 
 
 ##### Paths
@@ -3285,7 +3285,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@react-email/tailwind"></a>
-### @react-email/tailwind v2.0.1
+### @react-email/tailwind v2.0.3
 #### 
 
 ##### Paths
@@ -3296,7 +3296,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@react-email/text"></a>
-### @react-email/text v0.1.5
+### @react-email/text v0.1.6
 #### 
 
 ##### Paths
@@ -9922,7 +9922,7 @@ MIT-0 permitted
 
 
 <a name="nypm"></a>
-### nypm v0.6.0
+### nypm v0.6.2
 #### 
 
 ##### Paths
@@ -11044,7 +11044,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="react-email"></a>
-### react-email v5.0.5
+### react-email v5.2.5
 #### 
 
 ##### Paths
