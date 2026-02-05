@@ -1327,7 +1327,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@isaacs/brace-expansion"></a>
-### @isaacs/brace-expansion v5.0.0
+### @isaacs/brace-expansion v5.0.1
 #### 
 
 ##### Paths
