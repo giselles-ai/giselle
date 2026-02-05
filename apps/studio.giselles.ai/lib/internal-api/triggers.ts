@@ -49,7 +49,12 @@ export async function setTrigger(input: { trigger: Trigger }) {
 		// Throw same error as not found to prevent existence leak
 		throw new Error("Trigger not found");
 	}
-	return { triggerId: await giselle.setTrigger(input) };
+	// Preserve existing workspaceId to prevent moving trigger to unauthorized workspace
+	return {
+		triggerId: await giselle.setTrigger({
+			trigger: { ...input.trigger, workspaceId: existingTrigger.workspaceId },
+		}),
+	};
 }
 
 export async function reconfigureGitHubTrigger(
