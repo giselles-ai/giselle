@@ -30,7 +30,9 @@ export async function resolveTrigger(input: { generation: QueuedGeneration }) {
 		throw new Error("Generation not found");
 	}
 	await assertWorkspaceAccess(storedGeneration.context.origin.workspaceId);
-	return { trigger: await giselle.resolveTrigger({ generation: storedGeneration }) };
+	return {
+		trigger: await giselle.resolveTrigger({ generation: storedGeneration }),
+	};
 }
 
 export async function configureTrigger(
@@ -41,7 +43,9 @@ export async function configureTrigger(
 	];
 	if (input.trigger.configuration.provider === "github") {
 		checks.push(
-			assertGitHubInstallationAccess(input.trigger.configuration.installationId),
+			assertGitHubInstallationAccess(
+				input.trigger.configuration.installationId,
+			),
 		);
 	}
 	await Promise.all(checks);
@@ -69,7 +73,9 @@ export async function setTrigger(input: { trigger: Trigger }) {
 	];
 	if (input.trigger.configuration.provider === "github") {
 		checks.push(
-			assertGitHubInstallationAccess(input.trigger.configuration.installationId),
+			assertGitHubInstallationAccess(
+				input.trigger.configuration.installationId,
+			),
 		);
 	}
 	await Promise.all(checks);
