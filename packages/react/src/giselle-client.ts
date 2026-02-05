@@ -81,9 +81,7 @@ export interface GiselleClient {
 	executeQuery(input: { generation: QueuedGeneration }): Promise<void>;
 	executeDataQuery(input: { generation: QueuedGeneration }): Promise<void>;
 	getGitHubRepositoryFullname(
-		input: Parameters<Giselle["getGitHubRepositoryFullname"]>[0] & {
-			workspaceId: WorkspaceId;
-		},
+		input: Parameters<Giselle["getGitHubRepositoryFullname"]>[0],
 	): Promise<{
 		fullname: Awaited<ReturnType<Giselle["getGitHubRepositoryFullname"]>>;
 	}>;

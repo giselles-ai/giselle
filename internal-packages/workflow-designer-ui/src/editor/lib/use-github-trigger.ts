@@ -33,14 +33,12 @@ export function useGitHubTrigger(triggerId: TriggerId) {
 			? {
 					installationId: trigger.configuration.installationId,
 					repositoryNodeId: trigger.configuration.repositoryNodeId,
-					workspaceId: trigger.workspaceId,
 				}
 			: null,
-		({ installationId, repositoryNodeId, workspaceId }) =>
+		({ installationId, repositoryNodeId }) =>
 			client.getGitHubRepositoryFullname({
 				installationId,
 				repositoryNodeId,
-				workspaceId,
 			}),
 		{
 			keepPreviousData: true,
