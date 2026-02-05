@@ -36,12 +36,15 @@ export async function resolveTrigger(input: { generation: QueuedGeneration }) {
 export async function configureTrigger(
 	input: Parameters<typeof giselle.configureTrigger>[0],
 ) {
-	await assertWorkspaceAccess(input.trigger.workspaceId);
+	const checks: Promise<void>[] = [
+		assertWorkspaceAccess(input.trigger.workspaceId),
+	];
 	if (input.trigger.configuration.provider === "github") {
-		await assertGitHubInstallationAccess(
-			input.trigger.configuration.installationId,
+		checks.push(
+			assertGitHubInstallationAccess(input.trigger.configuration.installationId),
 		);
 	}
+	await Promise.all(checks);
 	return { triggerId: await giselle.configureTrigger(input) };
 }
 
@@ -61,12 +64,15 @@ export async function setTrigger(input: { trigger: Trigger }) {
 	if (existingTrigger === undefined) {
 		throw new Error("Trigger not found");
 	}
-	await assertWorkspaceAccess(existingTrigger.workspaceId);
+	const checks: Promise<void>[] = [
+		assertWorkspaceAccess(existingTrigger.workspaceId),
+	];
 	if (input.trigger.configuration.provider === "github") {
-		await assertGitHubInstallationAccess(
-			input.trigger.configuration.installationId,
+		checks.push(
+			assertGitHubInstallationAccess(input.trigger.configuration.installationId),
 		);
 	}
+	await Promise.all(checks);
 	return {
 		triggerId: await giselle.setTrigger({
 			trigger: { ...input.trigger, workspaceId: existingTrigger.workspaceId },
@@ -81,8 +87,10 @@ export async function reconfigureGitHubTrigger(
 	if (trigger === undefined) {
 		throw new Error("Trigger not found");
 	}
-	await assertWorkspaceAccess(trigger.workspaceId);
-	await assertGitHubInstallationAccess(input.installationId);
+	await Promise.all([
+		assertWorkspaceAccess(trigger.workspaceId),
+		assertGitHubInstallationAccess(input.installationId),
+	]);
 	return { triggerId: await giselle.reconfigureGitHubTrigger(input) };
 }
 
