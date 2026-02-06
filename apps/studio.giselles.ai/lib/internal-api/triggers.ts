@@ -1,50 +1,133 @@
 "use server";
 
 import { DataQueryError } from "@giselles-ai/giselle";
-import type {
-	QueuedGeneration,
-	Trigger,
-	TriggerId,
+import {
+	isQueuedGeneration,
+	type QueuedGeneration,
+	type Trigger,
+	type TriggerId,
 } from "@giselles-ai/protocol";
 import { giselle } from "@/app/giselle";
+import { assertWorkspaceAccess } from "@/lib/assert-workspace-access";
+import { getGitHubIdentityState } from "@/services/accounts";
+
+async function assertGitHubInstallationAccess(installationId: number) {
+	const githubIdentityState = await getGitHubIdentityState();
+	if (githubIdentityState.status !== "authorized") {
+		throw new Error("GitHub authentication required");
+	}
+	const { installations } =
+		await githubIdentityState.gitHubUserClient.getInstallations();
+	const hasAccess = installations.some((inst) => inst.id === installationId);
+	if (!hasAccess) {
+		throw new Error("Installation not found");
+	}
+}
 
 export async function resolveTrigger(input: { generation: QueuedGeneration }) {
-	return { trigger: await giselle.resolveTrigger(input) };
+	const storedGeneration = await giselle.getGeneration(input.generation.id);
+	if (storedGeneration === undefined || !isQueuedGeneration(storedGeneration)) {
+		throw new Error("Generation not found");
+	}
+	await assertWorkspaceAccess(storedGeneration.context.origin.workspaceId);
+	return {
+		trigger: await giselle.resolveTrigger({ generation: storedGeneration }),
+	};
 }
 
 export async function configureTrigger(
 	input: Parameters<typeof giselle.configureTrigger>[0],
 ) {
+	const checks: Promise<void>[] = [
+		assertWorkspaceAccess(input.trigger.workspaceId),
+	];
+	if (input.trigger.configuration.provider === "github") {
+		checks.push(
+			assertGitHubInstallationAccess(
+				input.trigger.configuration.installationId,
+			),
+		);
+	}
+	await Promise.all(checks);
 	return { triggerId: await giselle.configureTrigger(input) };
 }
 
 export async function getTrigger(input: { triggerId: TriggerId }) {
-	return { trigger: await giselle.getTrigger(input) };
+	const trigger = await giselle.getTrigger(input);
+	if (trigger === undefined) {
+		return { trigger: undefined };
+	}
+	await assertWorkspaceAccess(trigger.workspaceId);
+	return { trigger };
 }
 
 export async function setTrigger(input: { trigger: Trigger }) {
-	return { triggerId: await giselle.setTrigger(input) };
+	const existingTrigger = await giselle.getTrigger({
+		triggerId: input.trigger.id,
+	});
+	if (existingTrigger === undefined) {
+		throw new Error("Trigger not found");
+	}
+	const checks: Promise<void>[] = [
+		assertWorkspaceAccess(existingTrigger.workspaceId),
+	];
+	if (input.trigger.configuration.provider === "github") {
+		checks.push(
+			assertGitHubInstallationAccess(
+				input.trigger.configuration.installationId,
+			),
+		);
+	}
+	await Promise.all(checks);
+	return {
+		triggerId: await giselle.setTrigger({
+			trigger: { ...input.trigger, workspaceId: existingTrigger.workspaceId },
+		}),
+	};
 }
 
 export async function reconfigureGitHubTrigger(
 	input: Parameters<typeof giselle.reconfigureGitHubTrigger>[0],
 ) {
+	const trigger = await giselle.getTrigger({ triggerId: input.triggerId });
+	if (trigger === undefined) {
+		throw new Error("Trigger not found");
+	}
+	await Promise.all([
+		assertWorkspaceAccess(trigger.workspaceId),
+		assertGitHubInstallationAccess(input.installationId),
+	]);
 	return { triggerId: await giselle.reconfigureGitHubTrigger(input) };
 }
 
 export async function executeAction(input: { generation: QueuedGeneration }) {
-	await giselle.executeAction(input);
+	const storedGeneration = await giselle.getGeneration(input.generation.id);
+	if (storedGeneration === undefined || !isQueuedGeneration(storedGeneration)) {
+		throw new Error("Generation not found");
+	}
+	await assertWorkspaceAccess(storedGeneration.context.origin.workspaceId);
+	await giselle.executeAction({ generation: storedGeneration });
 }
 
 export async function executeQuery(input: { generation: QueuedGeneration }) {
-	await giselle.executeQuery(input.generation);
+	const storedGeneration = await giselle.getGeneration(input.generation.id);
+	if (storedGeneration === undefined || !isQueuedGeneration(storedGeneration)) {
+		throw new Error("Generation not found");
+	}
+	await assertWorkspaceAccess(storedGeneration.context.origin.workspaceId);
+	await giselle.executeQuery(storedGeneration);
 }
 
 export async function executeDataQuery(input: {
 	generation: QueuedGeneration;
 }) {
+	const storedGeneration = await giselle.getGeneration(input.generation.id);
+	if (storedGeneration === undefined || !isQueuedGeneration(storedGeneration)) {
+		throw new Error("Generation not found");
+	}
+	await assertWorkspaceAccess(storedGeneration.context.origin.workspaceId);
 	try {
-		await giselle.executeDataQuery(input.generation);
+		await giselle.executeDataQuery(storedGeneration);
 	} catch (error) {
 		if (error instanceof DataQueryError) {
 			// User-caused errors (SQL syntax, connection issues, etc.) should not go to Sentry.
@@ -58,5 +141,8 @@ export async function executeDataQuery(input: {
 export async function getGitHubRepositoryFullname(
 	input: Parameters<typeof giselle.getGitHubRepositoryFullname>[0],
 ) {
-	return { fullname: await giselle.getGitHubRepositoryFullname(input) };
+	await assertGitHubInstallationAccess(input.installationId);
+	return {
+		fullname: await giselle.getGitHubRepositoryFullname(input),
+	};
 }
