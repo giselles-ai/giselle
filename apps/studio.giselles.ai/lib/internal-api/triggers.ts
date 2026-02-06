@@ -26,7 +26,7 @@ async function assertGitHubInstallationAccess(installationId: number) {
 
 export async function resolveTrigger(input: { generation: QueuedGeneration }) {
 	const storedGeneration = await giselle.getGeneration(input.generation.id);
-	if (storedGeneration === undefined || !isQueuedGeneration(storedGeneration)) {
+	if (!isQueuedGeneration(storedGeneration)) {
 		throw new Error("Generation not found");
 	}
 	await assertWorkspaceAccess(storedGeneration.context.origin.workspaceId);
@@ -102,7 +102,7 @@ export async function reconfigureGitHubTrigger(
 
 export async function executeAction(input: { generation: QueuedGeneration }) {
 	const storedGeneration = await giselle.getGeneration(input.generation.id);
-	if (storedGeneration === undefined || !isQueuedGeneration(storedGeneration)) {
+	if (!isQueuedGeneration(storedGeneration)) {
 		throw new Error("Generation not found");
 	}
 	await assertWorkspaceAccess(storedGeneration.context.origin.workspaceId);
@@ -111,7 +111,7 @@ export async function executeAction(input: { generation: QueuedGeneration }) {
 
 export async function executeQuery(input: { generation: QueuedGeneration }) {
 	const storedGeneration = await giselle.getGeneration(input.generation.id);
-	if (storedGeneration === undefined || !isQueuedGeneration(storedGeneration)) {
+	if (!isQueuedGeneration(storedGeneration)) {
 		throw new Error("Generation not found");
 	}
 	await assertWorkspaceAccess(storedGeneration.context.origin.workspaceId);
@@ -122,7 +122,7 @@ export async function executeDataQuery(input: {
 	generation: QueuedGeneration;
 }) {
 	const storedGeneration = await giselle.getGeneration(input.generation.id);
-	if (storedGeneration === undefined || !isQueuedGeneration(storedGeneration)) {
+	if (!isQueuedGeneration(storedGeneration)) {
 		throw new Error("Generation not found");
 	}
 	await assertWorkspaceAccess(storedGeneration.context.origin.workspaceId);
