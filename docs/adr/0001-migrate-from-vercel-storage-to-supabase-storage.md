@@ -34,8 +34,7 @@ By not including the file extension, the file type information is lost. However,
 While Supabase Storage allows specifying FileType during file upload, which we would like to use in the future, the unstorage library we currently use doesn't support this feature. For now, we will upload files without specifying FileType.
 
 ### Data Migration
-The existing data migration will be handled using the tool available at [`tools/storage-migration`](../../tools/storage-migration).
-For more details, please refer to that directory.
+The data migration has been completed. The migration tool (`tools/storage-migration`) was removed after successful migration.
 
 ## Consequences
 ### Positive
