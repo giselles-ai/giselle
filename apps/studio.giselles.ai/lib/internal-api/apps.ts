@@ -25,15 +25,14 @@ export async function saveApp(input: Parameters<typeof giselle.saveApp>[0]) {
 		// App doesn't exist, verify access to the target workspace for new app creation
 		await assertWorkspaceAccess(input.app.workspaceId);
 		await giselle.saveApp(input);
+		return;
 	}
 
-	if (existingApp) {
-		// Update existing app, verify access to the existing workspace
-		await assertWorkspaceAccess(existingApp.workspaceId);
-		await giselle.saveApp({
-			app: { ...input.app, workspaceId: existingApp.workspaceId },
-		});
-	}
+	// Update existing app, verify access to the existing workspace
+	await assertWorkspaceAccess(existingApp.workspaceId);
+	await giselle.saveApp({
+		app: { ...input.app, workspaceId: existingApp.workspaceId },
+	});
 }
 
 export async function deleteApp(

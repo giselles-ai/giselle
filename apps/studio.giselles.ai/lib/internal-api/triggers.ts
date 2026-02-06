@@ -26,8 +26,8 @@ async function assertGitHubInstallationAccess(installationId: number) {
 
 export async function resolveTrigger(input: { generation: QueuedGeneration }) {
 	const storedGeneration = await giselle.getGeneration(input.generation.id);
-	if (storedGeneration === undefined || !isQueuedGeneration(storedGeneration)) {
-		throw new Error("Generation not found");
+	if (!isQueuedGeneration(storedGeneration)) {
+		throw new Error("Generation is not queued");
 	}
 	await assertWorkspaceAccess(storedGeneration.context.origin.workspaceId);
 	return {
@@ -102,8 +102,8 @@ export async function reconfigureGitHubTrigger(
 
 export async function executeAction(input: { generation: QueuedGeneration }) {
 	const storedGeneration = await giselle.getGeneration(input.generation.id);
-	if (storedGeneration === undefined || !isQueuedGeneration(storedGeneration)) {
-		throw new Error("Generation not found");
+	if (!isQueuedGeneration(storedGeneration)) {
+		throw new Error("Generation is not queued");
 	}
 	await assertWorkspaceAccess(storedGeneration.context.origin.workspaceId);
 	await giselle.executeAction({ generation: storedGeneration });
@@ -111,8 +111,8 @@ export async function executeAction(input: { generation: QueuedGeneration }) {
 
 export async function executeQuery(input: { generation: QueuedGeneration }) {
 	const storedGeneration = await giselle.getGeneration(input.generation.id);
-	if (storedGeneration === undefined || !isQueuedGeneration(storedGeneration)) {
-		throw new Error("Generation not found");
+	if (!isQueuedGeneration(storedGeneration)) {
+		throw new Error("Generation is not queued");
 	}
 	await assertWorkspaceAccess(storedGeneration.context.origin.workspaceId);
 	await giselle.executeQuery(storedGeneration);
@@ -122,8 +122,8 @@ export async function executeDataQuery(input: {
 	generation: QueuedGeneration;
 }) {
 	const storedGeneration = await giselle.getGeneration(input.generation.id);
-	if (storedGeneration === undefined || !isQueuedGeneration(storedGeneration)) {
-		throw new Error("Generation not found");
+	if (!isQueuedGeneration(storedGeneration)) {
+		throw new Error("Generation is not queued");
 	}
 	await assertWorkspaceAccess(storedGeneration.context.origin.workspaceId);
 	try {
