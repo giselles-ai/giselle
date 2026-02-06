@@ -2,8 +2,8 @@
 
 
 ## Summary
-* 927 MIT
-* 185 Apache 2.0
+* 920 MIT
+* 184 Apache 2.0
 * 41 ISC
 * 27 New BSD
 * 16 Simplified BSD
@@ -1174,17 +1174,6 @@ MIT-0 permitted
 
 <a name="@esbuild/linux-x64"></a>
 ### @esbuild/linux-x64 v0.18.20
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="@fastify/busboy"></a>
-### @fastify/busboy v2.1.1
 #### 
 
 ##### Paths
@@ -5176,17 +5165,6 @@ LGPL-3.0-or-later permitted
 
 
 
-<a name="@vercel/blob"></a>
-### @vercel/blob v0.27.3
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
-
-
-
 <a name="@vercel/edge-config"></a>
 ### @vercel/edge-config v1.4.0
 #### 
@@ -5765,17 +5743,6 @@ Python-2.0 manually approved
 
 <a name="assertion-error"></a>
 ### assertion-error v2.0.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="async-retry"></a>
-### async-retry v1.3.3
 #### 
 
 ##### Paths
@@ -8249,17 +8216,6 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="is-buffer"></a>
-### is-buffer v2.0.5
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="is-core-module"></a>
 ### is-core-module v2.16.1
 #### 
@@ -8328,17 +8284,6 @@ BlueOak-1.0.0 permitted
 
 <a name="is-interactive"></a>
 ### is-interactive v2.0.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="is-node-process"></a>
-### is-node-process v1.2.0
 #### 
 
 ##### Paths
@@ -11384,17 +11329,6 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="retry"></a>
-### retry v0.13.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="reusify"></a>
 ### reusify v1.0.4
 #### 
@@ -12301,17 +12235,6 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="throttleit"></a>
-### throttleit v2.1.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="tiktoken"></a>
 ### tiktoken v1.0.22
 #### 
@@ -12710,17 +12633,6 @@ BlueOak-1.0.0 permitted
 
 <a name="uncrypto"></a>
 ### uncrypto v0.1.3
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="undici"></a>
-### undici v5.28.5
 #### 
 
 ##### Paths
