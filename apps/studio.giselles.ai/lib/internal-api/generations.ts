@@ -44,7 +44,9 @@ function isNoSuchKeyError(error: unknown) {
 }
 
 export async function setGeneration(input: { generation: Generation }) {
-	let existingGeneration: Awaited<ReturnType<typeof giselle.getGeneration>> | undefined;
+	let existingGeneration:
+		| Awaited<ReturnType<typeof giselle.getGeneration>>
+		| undefined;
 	try {
 		existingGeneration = await giselle.getGeneration(input.generation.id);
 	} catch (error) {
@@ -80,7 +82,9 @@ export async function generateImage(input: { generation: QueuedGeneration }) {
 export async function startContentGeneration(input: {
 	generation: Generation;
 }) {
-	let storedGeneration: Awaited<ReturnType<typeof giselle.getGeneration>> | undefined;
+	let storedGeneration:
+		| Awaited<ReturnType<typeof giselle.getGeneration>>
+		| undefined;
 	try {
 		storedGeneration = await giselle.getGeneration(input.generation.id);
 	} catch (error) {
