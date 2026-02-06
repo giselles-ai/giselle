@@ -2,6 +2,7 @@
 
 import { FileId, WorkspaceId } from "@giselles-ai/protocol";
 import { giselle } from "@/app/giselle";
+import { assertWorkspaceAccess } from "@/lib/assert-workspace-access";
 
 /**
  * Hard limit to upload file since Vercel Serverless Functions have a 4.5MB body size limit.
@@ -49,6 +50,7 @@ export async function uploadFile(formData: FormData) {
 	const workspaceId = WorkspaceId.parse(workspaceIdRaw);
 	const fileId = FileId.parse(fileIdRaw);
 
+	await assertWorkspaceAccess(workspaceId);
 	await giselle.uploadFile(file, workspaceId, fileId, fileNameRaw);
 }
 
@@ -56,6 +58,7 @@ export async function removeFile(input: {
 	workspaceId: WorkspaceId;
 	fileId: FileId;
 }) {
+	await assertWorkspaceAccess(input.workspaceId);
 	await giselle.removeFile(input.workspaceId, input.fileId);
 }
 
@@ -64,6 +67,7 @@ export async function copyFile(input: {
 	sourceFileId: FileId;
 	destinationFileId: FileId;
 }) {
+	await assertWorkspaceAccess(input.workspaceId);
 	await giselle.copyFile(
 		input.workspaceId,
 		input.sourceFileId,
@@ -75,6 +79,7 @@ export async function getFileText(input: {
 	workspaceId: WorkspaceId;
 	fileId: FileId;
 }) {
+	await assertWorkspaceAccess(input.workspaceId);
 	return {
 		text: await giselle.getFileText({
 			workspaceId: input.workspaceId,
@@ -86,6 +91,7 @@ export async function getFileText(input: {
 export async function addWebPage(
 	input: Parameters<typeof giselle.addWebPage>[0],
 ) {
+	await assertWorkspaceAccess(input.workspaceId);
 	return await giselle.addWebPage(input);
 }
 
