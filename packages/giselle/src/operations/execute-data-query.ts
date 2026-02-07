@@ -160,10 +160,10 @@ export function executeDataQuery(args: {
 						),
 					);
 				if (connectedDataStoreNode === undefined) {
-					throw new Error("No DataStore node connected to DataQuery node");
+					throw new Error("No Data Store node connected to Data Query node");
 				}
 				if (connectedDataStoreNode.content.state.status !== "configured") {
-					throw new Error("DataStore node is not configured");
+					throw new Error("Data Store node is not configured");
 				}
 
 				const dataStoreId = connectedDataStoreNode.content.state.dataStoreId;
