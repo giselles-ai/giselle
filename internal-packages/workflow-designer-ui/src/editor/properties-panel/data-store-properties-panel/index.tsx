@@ -99,7 +99,8 @@ function DataStorePropertiesContent({ node }: { node: DataStoreNode }) {
 
 				{dataStores.length === 0 && (
 					<div className="rounded-md border border-dashed border-border/15 bg-surface/10 px-4 py-6 text-sm text-inverse">
-						No data stores available. Click the link below to go to your settings page and create one.
+						No data stores available. Click the link below to go to your
+						settings page and create one.
 					</div>
 				)}
 			</div>
