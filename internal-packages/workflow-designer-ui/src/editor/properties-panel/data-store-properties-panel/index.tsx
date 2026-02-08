@@ -76,7 +76,7 @@ function DataStorePropertiesContent({ node }: { node: DataStoreNode }) {
 							<span>
 								The selected data store "
 								<span className="font-mono">{selectedStoreId}</span>" is no
-								longer available. Please choose another store.
+								longer available. Please choose another data store.
 							</span>
 						</div>
 					)}
@@ -99,7 +99,8 @@ function DataStorePropertiesContent({ node }: { node: DataStoreNode }) {
 
 				{dataStores.length === 0 && (
 					<div className="rounded-md border border-dashed border-border/15 bg-surface/10 px-4 py-6 text-sm text-inverse">
-						No data stores available. Create one from settings to use it here.
+						No data stores available. Click the link below to go to your
+						settings page and create one.
 					</div>
 				)}
 			</div>
