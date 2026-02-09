@@ -131,9 +131,7 @@ export function FilePanel({ node, config }: FilePanelProps) {
 						itemType = "text/markdown";
 					}
 				}
-				isValid = config.accept.some((accept) =>
-					accept === itemType
-				);
+				isValid = config.accept.some((accept) => accept === itemType);
 			}
 			return isValid;
 		},
@@ -156,9 +154,7 @@ export function FilePanel({ node, config }: FilePanelProps) {
 					}
 				}
 
-				const isValid = config.accept.some((accept) =>
-					accept === mimeType
-				);
+				const isValid = config.accept.some((accept) => accept === mimeType);
 				if (!isValid) {
 					throw new InvalidFileTypeError(config.accept, mimeType);
 				}
