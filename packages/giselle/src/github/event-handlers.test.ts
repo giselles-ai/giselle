@@ -474,83 +474,6 @@ describe("GitHub Event Handlers", () => {
 				shouldRun: true,
 				reactionNodeId: "comment-node-id",
 			});
-
-			describe("handlePullRequestReviewCommentCreated", () => {
-				it("should handle pull request review comment created event with matching callsign", async () => {
-					const args = {
-						...baseEventArgs,
-						event: {
-							name: "pull_request_review_comment.created",
-							data: {
-								payload: {
-									installation: { id: 12345 },
-									repository: { node_id: "repo-node-id" },
-									pull_request: {
-										node_id: "pr-node-id",
-										title: "PR",
-										body: "body",
-										number: 1,
-									},
-									comment: {
-										node_id: "comment-node-id",
-										body: "@giselle help",
-									},
-								},
-							},
-						} as TestWebhookEvent,
-					};
-					args.trigger.configuration.event.id =
-						"github.pull_request_review_comment.created";
-
-					const result = await handlePullRequestReviewCommentCreated(args);
-
-					expect(result).toEqual({
-						shouldRun: true,
-						reactionNodeId: "comment-node-id",
-					});
-					expect(args.deps.parseCommand).toHaveBeenCalledWith("@giselle help");
-					expect(args.deps.addReaction).not.toHaveBeenCalled();
-				});
-
-				it("should not run if callsign doesn't match", async () => {
-					const args = {
-						...baseEventArgs,
-						event: {
-							name: "pull_request_review_comment.created",
-							data: {
-								payload: {
-									installation: { id: 12345 },
-									repository: { node_id: "repo-node-id" },
-									pull_request: {
-										node_id: "pr-node-id",
-										title: "PR",
-										body: "body",
-										number: 1,
-									},
-									comment: {
-										node_id: "comment-node-id",
-										body: "@someone help",
-									},
-								},
-							},
-						} as TestWebhookEvent,
-					};
-					args.trigger.configuration.event.id =
-						"github.pull_request_review_comment.created";
-					args.deps = {
-						...args.deps,
-						parseCommand: vi.fn().mockReturnValue({
-							callsign: "someone",
-							content: "help",
-						}),
-					};
-
-					const result = await handlePullRequestReviewCommentCreated(args);
-
-					expect(result).toEqual({ shouldRun: false });
-					expect(args.deps.addReaction).not.toHaveBeenCalled();
-				});
-			});
 			expect(args.deps.parseCommand).toHaveBeenCalledWith("@giselle help me");
 			expect(args.deps.addReaction).not.toHaveBeenCalled();
 		});
@@ -590,6 +513,83 @@ describe("GitHub Event Handlers", () => {
 			const result = await handlePullRequestCommentCreated(args);
 
 			// Assert
+			expect(result).toEqual({ shouldRun: false });
+			expect(args.deps.addReaction).not.toHaveBeenCalled();
+		});
+	});
+
+	describe("handlePullRequestReviewCommentCreated", () => {
+		it("should handle pull request review comment created event with matching callsign", async () => {
+			const args = {
+				...baseEventArgs,
+				event: {
+					name: "pull_request_review_comment.created",
+					data: {
+						payload: {
+							installation: { id: 12345 },
+							repository: { node_id: "repo-node-id" },
+							pull_request: {
+								node_id: "pr-node-id",
+								title: "PR",
+								body: "body",
+								number: 1,
+							},
+							comment: {
+								node_id: "comment-node-id",
+								body: "@giselle help",
+							},
+						},
+					},
+				} as TestWebhookEvent,
+			};
+			args.trigger.configuration.event.id =
+				"github.pull_request_review_comment.created";
+
+			const result = await handlePullRequestReviewCommentCreated(args);
+
+			expect(result).toEqual({
+				shouldRun: true,
+				reactionNodeId: "comment-node-id",
+			});
+			expect(args.deps.parseCommand).toHaveBeenCalledWith("@giselle help");
+			expect(args.deps.addReaction).not.toHaveBeenCalled();
+		});
+
+		it("should not run if callsign doesn't match", async () => {
+			const args = {
+				...baseEventArgs,
+				event: {
+					name: "pull_request_review_comment.created",
+					data: {
+						payload: {
+							installation: { id: 12345 },
+							repository: { node_id: "repo-node-id" },
+							pull_request: {
+								node_id: "pr-node-id",
+								title: "PR",
+								body: "body",
+								number: 1,
+							},
+							comment: {
+								node_id: "comment-node-id",
+								body: "@someone help",
+							},
+						},
+					},
+				} as TestWebhookEvent,
+			};
+			args.trigger.configuration.event.id =
+				"github.pull_request_review_comment.created";
+			args.deps = {
+				...args.deps,
+				parseCommand: vi.fn().mockReturnValue({
+					callsign: "someone",
+					content: "help",
+				}),
+			};
+
+			const result = await handlePullRequestReviewCommentCreated(args);
+
 			expect(result).toEqual({ shouldRun: false });
 			expect(args.deps.addReaction).not.toHaveBeenCalled();
 		});
