@@ -175,10 +175,6 @@ describe("assertGenerationResourceAccess", () => {
 			// workspace contains both operationNode and sourceNode
 			mockGetWorkspace(workspaceId, operationNodeId, sourceNodeId);
 
-			// -----
-			// generationにないプロパティ確認する。
-			// createTaskでどうするか
-			// ----
 			const generation = {
 				id: GenerationId.generate(),
 				status: "created",
