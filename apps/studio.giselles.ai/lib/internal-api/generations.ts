@@ -9,6 +9,7 @@ import type {
 } from "@giselles-ai/protocol";
 import { isQueuedGeneration } from "@giselles-ai/protocol";
 import { giselle } from "@/app/giselle";
+import { assertGenerationResourceAccess } from "@/lib/assert-generation-resource-access";
 import { assertWorkspaceAccess } from "@/lib/assert-workspace-access";
 
 export async function getGeneration(input: { generationId: GenerationId }) {
@@ -55,19 +56,22 @@ export async function setGeneration(input: { generation: Generation }) {
 		}
 		// Generation doesn't exist, verify access to the target workspace for new generation creation
 		await assertWorkspaceAccess(input.generation.context.origin.workspaceId);
+		await assertGenerationResourceAccess(input.generation);
 		await giselle.setGeneration(input.generation);
 		return;
 	}
 
 	// Update existing generation, verify access to the existing workspace
 	await assertWorkspaceAccess(existingGeneration.context.origin.workspaceId);
-	await giselle.setGeneration({
+	const mergedGeneration: Generation = {
 		...input.generation,
 		context: {
 			...input.generation.context,
 			origin: existingGeneration.context.origin,
 		},
-	});
+	};
+	await assertGenerationResourceAccess(mergedGeneration);
+	await giselle.setGeneration(mergedGeneration);
 }
 
 export async function generateImage(input: { generation: QueuedGeneration }) {
@@ -93,12 +97,14 @@ export async function startContentGeneration(input: {
 		}
 		// Generation doesn't exist, verify access to the target workspace for new generation creation
 		await assertWorkspaceAccess(input.generation.context.origin.workspaceId);
+		await assertGenerationResourceAccess(input.generation);
 		const generation = await giselle.startContentGeneration(input);
 		return { generation };
 	}
 
 	// Generation exists, verify access to the existing workspace
 	await assertWorkspaceAccess(storedGeneration.context.origin.workspaceId);
+	await assertGenerationResourceAccess(storedGeneration);
 	const generation = await giselle.startContentGeneration({
 		generation: storedGeneration,
 	});
