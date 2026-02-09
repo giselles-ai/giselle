@@ -8,12 +8,14 @@ import { getEntry } from "@giselles-ai/language-model-registry";
 import {
 	type ActionNode,
 	type AppEntryNode,
+	AppParameterId,
 	type ContentGenerationNode,
 	createPendingCopyFileData,
+	type DataQueryNode,
+	type DataStoreNode,
 	DEFAULT_MAX_RESULTS,
 	DEFAULT_SIMILARITY_THRESHOLD,
 	type DraftApp,
-	DraftAppParameterId,
 	type EndNode,
 	type FileContent,
 	type FileData,
@@ -28,6 +30,8 @@ import {
 	isActionNode,
 	isAppEntryNode,
 	isContentGenerationNode,
+	isDataQueryNode,
+	isDataStoreNode,
 	isEndNode,
 	isFileNode,
 	isGitHubNode,
@@ -129,15 +133,21 @@ function cloneAndRenewInputIdsWithMap(
 
 function createDefaultDraftApp(): DraftApp {
 	return {
-		name: "",
+		name: "Start",
 		description: "",
-		iconName: "",
+		iconName: "cable",
 		parameters: [
 			{
-				id: DraftAppParameterId.generate(),
-				name: "",
-				type: "text",
+				id: AppParameterId.generate(),
+				name: "Input (Text)",
+				type: "multiline-text",
 				required: true,
+			},
+			{
+				id: AppParameterId.generate(),
+				name: "Input (File)",
+				type: "files",
+				required: false,
 			},
 		],
 	};
@@ -615,6 +625,90 @@ const vectorStoreFactoryImpl = {
 	VectorStoreContent["source"]["provider"]
 >;
 
+const dataStoreFactoryImpl = {
+	create: (): DataStoreNode => ({
+		id: NodeId.generate(),
+		type: "variable",
+		name: "Data Store",
+		content: {
+			type: "dataStore",
+			state: {
+				status: "unconfigured",
+			},
+		},
+		inputs: [],
+		outputs: [
+			{
+				id: OutputId.generate(),
+				label: "Schema",
+				accessor: "schema",
+			},
+			{
+				id: OutputId.generate(),
+				label: "Source",
+				accessor: "source",
+			},
+		],
+	}),
+	clone: (orig: DataStoreNode): NodeFactoryCloneResult<DataStoreNode> => {
+		const clonedContent = structuredClone(orig.content);
+		// Reset data store state to unconfigured
+		clonedContent.state = { status: "unconfigured" };
+
+		const { newIo: newInputs, idMap: inputIdMap } =
+			cloneAndRenewInputIdsWithMap(orig.inputs);
+		const { newIo: newOutputs, idMap: outputIdMap } =
+			cloneAndRenewOutputIdsWithMap(orig.outputs);
+
+		const newNode = {
+			id: NodeId.generate(),
+			type: "variable",
+			name: `Copy of ${orig.name ?? defaultName(orig)}`,
+			content: clonedContent,
+			inputs: newInputs,
+			outputs: newOutputs,
+		} satisfies DataStoreNode;
+		return { newNode, inputIdMap, outputIdMap };
+	},
+} satisfies NodeFactory<DataStoreNode>;
+
+const dataQueryFactoryImpl = {
+	create: (): DataQueryNode => {
+		return {
+			id: NodeId.generate(),
+			type: "operation",
+			content: {
+				type: "dataQuery",
+				query: "",
+			},
+			inputs: [],
+			outputs: [
+				{
+					id: OutputId.generate(),
+					label: "Output",
+					accessor: "result",
+				},
+			],
+		} satisfies DataQueryNode;
+	},
+	clone: (orig: DataQueryNode): NodeFactoryCloneResult<DataQueryNode> => {
+		const { newIo: newInputs, idMap: inputIdMap } =
+			cloneAndRenewInputIdsWithMap(orig.inputs);
+		const { newIo: newOutputs, idMap: outputIdMap } =
+			cloneAndRenewOutputIdsWithMap(orig.outputs);
+
+		const newNode = {
+			id: NodeId.generate(),
+			type: "operation",
+			name: `Copy of ${orig.name ?? defaultName(orig)}`,
+			content: structuredClone(orig.content),
+			inputs: newInputs,
+			outputs: newOutputs,
+		} satisfies DataQueryNode;
+		return { newNode, inputIdMap, outputIdMap };
+	},
+} satisfies NodeFactory<DataQueryNode>;
+
 const webPageFactoryImpl = {
 	create: (): WebPageNode => ({
 		id: NodeId.generate(),
@@ -652,16 +746,22 @@ const webPageFactoryImpl = {
 
 const appEntryFactoryImpl = {
 	create: (): AppEntryNode => {
+		const draftApp = createDefaultDraftApp();
 		return {
+			name: draftApp.name,
 			id: NodeId.generate(),
 			type: "operation",
 			content: {
 				type: "appEntry",
 				status: "unconfigured",
-				draftApp: createDefaultDraftApp(),
+				draftApp,
 			},
 			inputs: [],
-			outputs: [],
+			outputs: draftApp.parameters.map((parameter) => ({
+				id: OutputId.generate(),
+				label: parameter.name,
+				accessor: parameter.id,
+			})),
 		} satisfies AppEntryNode;
 	},
 	clone: (orig: AppEntryNode): NodeFactoryCloneResult<AppEntryNode> => {
@@ -684,7 +784,7 @@ const appEntryFactoryImpl = {
 							parameters: clonedContent.draftApp.parameters.map(
 								(parameter) => ({
 									...parameter,
-									id: DraftAppParameterId.generate(),
+									id: AppParameterId.generate(),
 								}),
 							),
 						},
@@ -820,11 +920,13 @@ const factoryImplementations = {
 	trigger: triggerFactoryImpl,
 	action: actionFactoryImpl,
 	query: queryFactoryImpl,
+	dataQuery: dataQueryFactoryImpl,
 	end: endFactoryImpl,
 	text: textVariableFactoryImpl,
 	file: fileVariableFactoryImpl,
 	github: githubVariableFactoryImpl,
 	vectorStore: vectorStoreFactoryImpl,
+	dataStore: dataStoreFactoryImpl,
 	webPage: webPageFactoryImpl,
 	appEntry: appEntryFactoryImpl,
 	contentGeneration: contentGenerationFactoryImpl,
@@ -836,11 +938,13 @@ type CreateArgMap = {
 	trigger: Parameters<typeof triggerFactoryImpl.create>[0];
 	action: Parameters<typeof actionFactoryImpl.create>[0];
 	query: undefined; // queryFactoryImpl.create is no argument
+	dataQuery: undefined; // dataQueryFactoryImpl.create is no argument
 	end: undefined;
 	text: undefined; // textVariableFactoryImpl.create is no argument
 	file: Parameters<typeof fileVariableFactoryImpl.create>[0];
 	github: Parameters<typeof githubVariableFactoryImpl.create>[0];
 	vectorStore: Parameters<typeof vectorStoreFactoryImpl.create>[0];
+	dataStore: undefined; // dataStoreFactoryImpl.create is no argument
 	webPage: undefined;
 	appEntry: undefined;
 	contentGeneration: CreateContentGenerationNodeInput;
@@ -918,6 +1022,14 @@ export function createDocumentVectorStoreNode(): VectorStoreNode {
 	return vectorStoreFactoryImpl.create("document");
 }
 
+export function createDataStoreNode(): DataStoreNode {
+	return dataStoreFactoryImpl.create();
+}
+
+export function createDataQueryNode(): DataQueryNode {
+	return dataQueryFactoryImpl.create();
+}
+
 export function createWebPageNode(): WebPageNode {
 	return webPageFactoryImpl.create();
 }
@@ -962,6 +1074,13 @@ export function cloneNode<N extends Node>(
 				return queryFactoryImpl.clone(sourceNode) as NodeFactoryCloneResult<N>;
 			}
 			break;
+		case "dataQuery":
+			if (isDataQueryNode(sourceNode)) {
+				return dataQueryFactoryImpl.clone(
+					sourceNode,
+				) as NodeFactoryCloneResult<N>;
+			}
+			break;
 		case "end":
 			if (isEndNode(sourceNode)) {
 				return endFactoryImpl.clone(sourceNode) as NodeFactoryCloneResult<N>;
@@ -991,6 +1110,13 @@ export function cloneNode<N extends Node>(
 		case "vectorStore":
 			if (isVectorStoreNode(sourceNode)) {
 				return vectorStoreFactoryImpl.clone(
+					sourceNode,
+				) as NodeFactoryCloneResult<N>;
+			}
+			break;
+		case "dataStore":
+			if (isDataStoreNode(sourceNode)) {
+				return dataStoreFactoryImpl.clone(
 					sourceNode,
 				) as NodeFactoryCloneResult<N>;
 			}
@@ -1050,6 +1176,8 @@ export const nodeFactories = {
 				);
 			case "query":
 				return factoryImplementations.query.create();
+			case "dataQuery":
+				return factoryImplementations.dataQuery.create();
 			case "end":
 				return factoryImplementations.end.create();
 			case "text":
@@ -1064,6 +1192,8 @@ export const nodeFactories = {
 				return factoryImplementations.vectorStore.create(
 					arg as CreateArgMap["vectorStore"],
 				);
+			case "dataStore":
+				return factoryImplementations.dataStore.create();
 			case "webPage":
 				return factoryImplementations.webPage.create();
 			case "appEntry":
@@ -1106,6 +1236,11 @@ export const nodeFactories = {
 					return factoryImplementations.query.clone(sourceNode);
 				}
 				break;
+			case "dataQuery":
+				if (isDataQueryNode(sourceNode)) {
+					return factoryImplementations.dataQuery.clone(sourceNode);
+				}
+				break;
 			case "end":
 				if (isEndNode(sourceNode)) {
 					return factoryImplementations.end.clone(sourceNode);
@@ -1129,6 +1264,11 @@ export const nodeFactories = {
 			case "vectorStore":
 				if (isVectorStoreNode(sourceNode)) {
 					return factoryImplementations.vectorStore.clone(sourceNode);
+				}
+				break;
+			case "dataStore":
+				if (isDataStoreNode(sourceNode)) {
+					return factoryImplementations.dataStore.clone(sourceNode);
 				}
 				break;
 			case "webPage":

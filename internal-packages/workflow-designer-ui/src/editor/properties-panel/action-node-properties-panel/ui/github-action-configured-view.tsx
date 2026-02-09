@@ -12,11 +12,18 @@ import type {
 	NodeLike,
 	OutputId,
 } from "@giselles-ai/protocol";
-import { useGiselle, useWorkflowDesigner } from "@giselles-ai/react";
+import { isSupportedConnection } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { PlusIcon, TriangleAlert, XIcon } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import useSWR from "swr";
+import {
+	useAddConnection,
+	useAppDesignerStore,
+	useRemoveConnectionAndInput,
+	useUpdateNodeData,
+} from "../../../../app-designer";
+import { useGiselle } from "../../../../app-designer/store/giselle-client-provider";
 // Import icons to display next to Event Type
 import {
 	DiscussionCommentCreatedIcon,
@@ -101,11 +108,9 @@ export function GitHubActionConfiguredView({
 	isGenerating: boolean;
 }) {
 	const client = useGiselle();
-	const {
-		deleteConnection,
-		updateNodeData,
-		data: { ui },
-	} = useWorkflowDesigner();
+	const ui = useAppDesignerStore((s) => s.ui);
+	const removeConnectionAndInput = useRemoveConnectionAndInput();
+	const updateNodeData = useUpdateNodeData();
 	const { isLoading, data } = useSWR(
 		{
 			installationId: state.installationId,
@@ -122,9 +127,9 @@ export function GitHubActionConfiguredView({
 
 	const handleClickRemoveButton = useCallback(
 		(connectionId: ConnectionId) => () => {
-			deleteConnection(connectionId);
+			removeConnectionAndInput(connectionId);
 		},
-		[deleteConnection],
+		[removeConnectionAndInput],
 	);
 
 	const githubActionOption = useMemo(
@@ -282,11 +287,15 @@ function SelectOutputPopover({
 	nodeId: NodeId;
 	input: InputWithConnectedOutput;
 }) {
-	const { data, addConnection, isSupportedConnection } = useWorkflowDesigner();
+	const { nodes, connections } = useAppDesignerStore((s) => ({
+		nodes: s.nodes,
+		connections: s.connections,
+	}));
+	const addConnection = useAddConnection();
 
 	const node = useMemo(
-		() => data.nodes.find((n) => n.id === nodeId),
-		[data.nodes, nodeId],
+		() => nodes.find((n) => n.id === nodeId),
+		[nodes, nodeId],
 	);
 
 	const groupedOutputs = useMemo(() => {
@@ -302,7 +311,14 @@ function SelectOutputPopover({
 			return [];
 		}
 
-		for (const currentNode of data.nodes) {
+		const connectedNodes = nodes.filter((maybeConnectNode) =>
+			connections.some(
+				(connection) =>
+					connection.inputNode.id === nodeId &&
+					connection.outputNode.id === maybeConnectNode.id,
+			),
+		);
+		for (const currentNode of connectedNodes) {
 			if (currentNode.id === nodeId) {
 				continue;
 			}
@@ -362,7 +378,7 @@ function SelectOutputPopover({
 			{ label: "GitHub", nodes: githubNodes },
 			{ label: "Other", nodes: otherNodes },
 		].filter((group) => group.nodes.length > 0);
-	}, [data.nodes, nodeId, node, isSupportedConnection]);
+	}, [nodeId, node, nodes, connections]);
 
 	const handleSelectOutput = useCallback(
 		(outputNode: Node, outputId: OutputId) => {

@@ -31,10 +31,12 @@ export async function login(
 		return createAuthError(error);
 	}
 
+	const fallbackUrl = "/playground";
+
 	// Validate returnUrl to prevent open redirect attacks
 	const validReturnUrl = isValidReturnUrl(returnUrlEntry)
 		? returnUrlEntry
-		: "/workspaces";
+		: fallbackUrl;
 	redirect(validReturnUrl);
 	return null;
 }

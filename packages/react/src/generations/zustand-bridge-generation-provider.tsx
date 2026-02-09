@@ -10,6 +10,7 @@ import {
 	isCompletedGeneration,
 	isCreatedGeneration,
 	isFailedGeneration,
+	isQueuedGeneration,
 	isRunningGeneration,
 	type QueuedGeneration,
 	type RunningGeneration,
@@ -275,7 +276,11 @@ export function ZustandBridgeGenerationProvider({
 			};
 			updateGeneration(cancelled);
 			generationListener.current[generationId] = cancelled;
-			if (isRunningGeneration(generation)) {
+			if (
+				isRunningGeneration(generation) ||
+				isCreatedGeneration(generation) ||
+				isQueuedGeneration(generation)
+			) {
 				await client.cancelGeneration({
 					generationId,
 				});

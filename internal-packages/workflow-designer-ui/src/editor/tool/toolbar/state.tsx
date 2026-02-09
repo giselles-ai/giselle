@@ -1,18 +1,16 @@
 "use client";
 
-import { nodeFactories } from "@giselles-ai/node-registry";
-import type { Node, VectorStoreContent } from "@giselles-ai/protocol";
+import type { Node } from "@giselles-ai/protocol";
 import { createContext, type ReactNode, useContext, useState } from "react";
 import type {
 	AddNodeTool,
 	MoveTool,
-	SelectEnviromentActionTool,
+	SelectContextTool,
 	SelectFileNodeCategoryTool,
+	SelectGitHubTriggerTool,
+	SelectIntegrationTool,
 	SelectLanguageModelTool,
 	SelectLanguageModelV2Tool,
-	SelectRetrievalCategoryTool,
-	SelectSourceCategoryTool,
-	SelectTriggerTool,
 	Tool,
 } from "../types";
 
@@ -92,38 +90,23 @@ export function addNodeTool(node: Node) {
 	} satisfies AddNodeTool;
 }
 
-export function selectRetrievalCategoryTool() {
+export function selectContextTool() {
 	return {
-		action: "selectRetrievalCategory",
+		action: "selectContext",
 		category: "edit",
-	} satisfies SelectRetrievalCategoryTool;
+	} satisfies SelectContextTool;
 }
 
-export function selectSourceCategoryTool() {
+export function selectGithubTriggerTool() {
 	return {
-		action: "selectSourceCategory",
+		action: "selectGithubTrigger",
 		category: "edit",
-	} satisfies SelectSourceCategoryTool;
+	} satisfies SelectGitHubTriggerTool;
 }
 
-export function selectTriggerTool() {
+export function selectIntegrationTool() {
 	return {
-		action: "selectTrigger",
+		action: "selectIntegration",
 		category: "edit",
-	} satisfies SelectTriggerTool;
-}
-
-export function selectActionTool() {
-	return {
-		action: "selectAction",
-		category: "edit",
-	} satisfies SelectEnviromentActionTool;
-}
-
-function _vectorStoreNode(provider: VectorStoreContent["source"]["provider"]) {
-	return nodeFactories.create("vectorStore", provider);
-}
-
-function _webPageNode() {
-	return nodeFactories.create("webPage");
+	} satisfies SelectIntegrationTool;
 }

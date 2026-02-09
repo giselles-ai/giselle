@@ -1,0 +1,1 @@
+ALTER TABLE "stripe_pricing_plan_subscription_histories" ADD COLUMN "will_cancel_at" timestamp;

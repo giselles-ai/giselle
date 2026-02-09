@@ -9,9 +9,9 @@ import {
 	googleUrlContextFlag,
 	layoutV3Flag,
 	privatePreviewToolsFlag,
-	stageFlag,
 	webSearchActionFlag,
 } from "@/flags";
+import { getTeamDataStores } from "@/lib/data-stores/queries";
 import { logger } from "@/lib/logger";
 import {
 	getDocumentVectorStores,
@@ -25,6 +25,7 @@ import { getGitHubIntegrationState } from "@/packages/lib/github";
 import { getUsageLimitsForTeam } from "@/packages/lib/usage-limits";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchWorkspaceTeam, isMemberOfTeam } from "@/services/teams";
+import { isInternalPlan } from "@/services/teams/utils";
 
 export async function dataLoader(workspaceId: WorkspaceId) {
 	logger.debug("Loading workspace");
@@ -52,16 +53,18 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 		return notFound();
 	}
 
+	const sdkAvailability = isInternalPlan(workspaceTeam);
 	const usageLimits = await getUsageLimitsForTeam(workspaceTeam);
 	const webSearchAction = await webSearchActionFlag();
 	const layoutV3 = await layoutV3Flag();
-	const stage = await stageFlag();
+	const stage = true;
 	const aiGateway = await aiGatewayFlag();
 	const aiGatewayUnsupportedModels = await aiGatewayUnsupportedModelsFlag();
 	const googleUrlContext = await googleUrlContextFlag();
 	const data = await giselle.getWorkspace(workspaceId);
 	const generateContentNode = await generateContentNodeFlag();
 	const privatePreviewTools = await privatePreviewToolsFlag();
+	const dataStore = isInternalPlan(workspaceTeam);
 	const [teamGitHubRepositoryIndexes, officialGitHubRepositoryIndexes] =
 		await Promise.all([
 			getGitHubRepositoryIndexes(workspaceTeam.dbId),
@@ -82,10 +85,12 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 			.map((repo) => ({ ...repo, isOfficial: true })),
 	];
 
-	const [teamDocumentStores, officialDocumentStores] = await Promise.all([
-		getDocumentVectorStores(workspaceTeam.dbId),
-		getOfficialDocumentVectorStores(),
-	]);
+	const [teamDocumentStores, officialDocumentStores, teamDataStores] =
+		await Promise.all([
+			getDocumentVectorStores(workspaceTeam.dbId),
+			getOfficialDocumentVectorStores(),
+			getTeamDataStores(workspaceTeam.dbId),
+		]);
 
 	// Merge stores with isOfficial flag, deduplicating official stores already in team stores
 	const officialStoreIds = new Set(officialDocumentStores.map((s) => s.id));
@@ -99,6 +104,8 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 			.filter((store) => !teamStoreIds.has(store.id))
 			.map((store) => ({ ...store, isOfficial: true })),
 	];
+
+	const llmProviders = giselle.getLanguageModelProviders();
 
 	return {
 		currentUser,
@@ -115,6 +122,7 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 		googleUrlContext,
 		data,
 		documentVectorStores,
+		teamDataStores,
 		featureFlags: {
 			webSearchAction,
 			layoutV3,
@@ -124,7 +132,10 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 			googleUrlContext,
 			generateContentNode,
 			privatePreviewTools,
+			dataStore,
+			sdkAvailability,
 		},
+		llmProviders,
 	};
 }
 

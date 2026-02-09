@@ -49,3 +49,7 @@ app/fonts/
 
 # reports from local metrics
 .reports/*.json
+
+/worktrees/
+
+.mise.toml

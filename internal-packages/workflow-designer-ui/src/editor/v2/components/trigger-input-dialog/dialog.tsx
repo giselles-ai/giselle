@@ -1,11 +1,12 @@
 import { Button } from "@giselle-internal/ui/button";
 import { useToasts } from "@giselle-internal/ui/toast";
 import type { ConnectionId, TriggerNode } from "@giselles-ai/protocol";
-import { useTaskSystem, useWorkflowDesignerStore } from "@giselles-ai/react";
+import { useTaskSystem } from "@giselles-ai/react";
 import { clsx } from "clsx/lite";
 import { LoaderIcon, PlayIcon, XIcon } from "lucide-react";
 import { Dialog } from "radix-ui";
 import { type FormEventHandler, useCallback, useMemo, useState } from "react";
+import { useAppDesignerStore } from "../../../../app-designer";
 import { useTrigger } from "../../../../hooks/use-trigger";
 import {
 	buttonLabel,
@@ -35,7 +36,7 @@ export function TriggerInputDialog({
 	>({});
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
-	const workspaceId = useWorkflowDesignerStore((s) => s.workspace.id);
+	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
 	const { createAndStartTask } = useTaskSystem(workspaceId);
 	const { toast } = useToasts();
 

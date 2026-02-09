@@ -16,6 +16,19 @@ describe("calculateDisplayCost", () => {
 			});
 		});
 
+		it("should calculate display cost for OpenAI gpt-5.2 model", async () => {
+			const result = await calculateDisplayCost("openai", "gpt-5.2", {
+				inputTokens: 1000,
+				outputTokens: 500,
+			});
+
+			expect(result).toEqual({
+				inputCostForDisplay: 0.00175, // 1000 tokens * 1.75 per mega token
+				outputCostForDisplay: 0.007, // 500 tokens * 14.0 per mega token
+				totalCostForDisplay: 0.00875,
+			});
+		});
+
 		it("should calculate display cost for Google Gemini 3 Pro Preview model", async () => {
 			const result = await calculateDisplayCost(
 				"google",

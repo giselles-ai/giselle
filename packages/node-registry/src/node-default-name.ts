@@ -2,6 +2,8 @@ import { type ActionProvider, getEntry } from "@giselles-ai/action-registry";
 import {
 	isActionNode,
 	isContentGenerationNode,
+	isDataQueryNode,
+	isDataStoreNode,
 	isEndNode,
 	isImageGenerationNode,
 	isQueryNode,
@@ -82,14 +84,19 @@ export function defaultName(node: NodeLike) {
 					if (!isQueryNode(node)) {
 						throw new Error(`Expected query node, got ${node.type}`);
 					}
-					return node.name ?? "Query";
+					return node.name ?? "Vector Query";
+				case "dataQuery":
+					if (!isDataQueryNode(node)) {
+						throw new Error(`Expected data query node, got ${node.type}`);
+					}
+					return node.name ?? "Data Query";
 				case "end":
 					if (!isEndNode(node)) {
 						throw new Error(`Expected end node, got ${node.type}`);
 					}
 					return node.name ?? "End";
 				case "appEntry":
-					return node.name ?? "App Entry";
+					return node.name ?? "Start";
 				default: {
 					const _exhaustiveCheck: never = node.content.type;
 					throw new Error(`Unhandled action content type: ${_exhaustiveCheck}`);
@@ -107,6 +114,13 @@ export function defaultName(node: NodeLike) {
 						node.name ??
 						vectorStoreNodeDefaultName(node.content.source.provider)
 					);
+				case "dataStore":
+					if (!isDataStoreNode(node)) {
+						throw new Error(
+							`Expected data store node, got ${JSON.stringify(node)}`,
+						);
+					}
+					return node.name ?? "Data Store";
 				case "webPage":
 					return node.name ?? "Webpage";
 				default:

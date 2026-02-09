@@ -26,6 +26,36 @@ const textVerbosityDescription =
  * @see https://platform.openai.com/docs/api-reference/responses/create#responses_create-reasoning-effort
  */
 export const openai = {
+	"openai/gpt-5.2": defineLanguageModel({
+		provider: openaiProvider,
+		id: "openai/gpt-5.2",
+		name: "GPT-5.2",
+		description:
+			"GPT-5.2 is OpenAI's best general-purpose model, part of the GPT-5 flagship model family. It's their most intelligent model yet for both general and agentic tasks.",
+		contextWindow: 400_000,
+		maxOutputTokens: 128_000,
+		knowledgeCutoff: new Date(2025, 7, 31).getTime(),
+		pricing: {
+			input: definePricing(1.75),
+			output: definePricing(14.0),
+		},
+		requiredTier: "pro",
+		configurationOptions: {
+			reasoningEffort: {
+				description: reasoningEffortDescription,
+				schema: z.enum(["none", "low", "medium", "high", "xhigh"]),
+			},
+			textVerbosity: {
+				description: textVerbosityDescription,
+				schema: z.enum(["low", "medium", "high"]),
+			},
+		},
+		defaultConfiguration: {
+			reasoningEffort: "none",
+			textVerbosity: "medium",
+		},
+		url: "https://platform.openai.com/docs/models/gpt-5.2",
+	}),
 	"openai/gpt-5.1-thinking": defineLanguageModel({
 		provider: openaiProvider,
 		id: "openai/gpt-5.1-thinking",
@@ -43,7 +73,7 @@ export const openai = {
 		configurationOptions: {
 			reasoningEffort: {
 				description: reasoningEffortDescription,
-				schema: z.enum(["none", "low", "medium", "high"]),
+				schema: z.enum(["none", "low", "medium", "high", "xhigh"]),
 			},
 			textVerbosity: {
 				description: textVerbosityDescription,
@@ -73,18 +103,48 @@ export const openai = {
 		configurationOptions: {
 			reasoningEffort: {
 				description: reasoningEffortDescription,
-				schema: z.enum(["none", "low", "medium", "high"]),
+				schema: z.enum(["low", "medium", "high"]),
 			},
 			textVerbosity: {
 				description: textVerbosityDescription,
-				schema: z.enum(["low", "medium", "high"]),
+				schema: z.enum(["medium"]),
 			},
 		},
 		defaultConfiguration: {
-			reasoningEffort: "none",
+			reasoningEffort: "medium",
 			textVerbosity: "medium",
 		},
 		url: "https://platform.openai.com/docs/models/gpt-5.1-codex",
+	}),
+	"openai/gpt-5.2-codex": defineLanguageModel({
+		provider: openaiProvider,
+		id: "openai/gpt-5.2-codex",
+		name: "GPT-5.2 Codex",
+		description:
+			"GPT-5.2-Codex is specifically designed for use in Codex and agentic coding tasks in Codex-like environments.",
+		contextWindow: 400_000,
+		maxOutputTokens: 128_000,
+		knowledgeCutoff: new Date(2025, 7, 31).getTime(),
+		pricing: {
+			input: definePricing(1.75),
+			output: definePricing(14.0),
+		},
+		requiredTier: "pro",
+		configurationOptions: {
+			reasoningEffort: {
+				description: reasoningEffortDescription,
+				schema: z.enum(["low", "medium", "high", "xhigh"]),
+			},
+			textVerbosity: {
+				description: textVerbosityDescription,
+				schema: z.enum(["medium"]),
+			},
+		},
+		defaultConfiguration: {
+			reasoningEffort: "medium",
+			textVerbosity: "medium",
+		},
+		url: "https://platform.openai.com/docs/models/gpt-5.2-codex",
 	}),
 
 	"openai/gpt-5": defineLanguageModel({

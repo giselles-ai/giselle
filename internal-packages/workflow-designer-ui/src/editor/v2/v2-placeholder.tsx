@@ -1,8 +1,9 @@
 "use client";
 
-import { useFeatureFlag, useWorkflowDesignerStore } from "@giselles-ai/react";
+import { useFeatureFlag } from "@giselles-ai/react";
 import { useCallback, useState } from "react";
 import { useShallow } from "zustand/shallow";
+import { useAppDesignerStore } from "../../app-designer";
 import { ReadOnlyBanner } from "../../ui/read-only-banner";
 import { FloatingChat } from "../chat";
 import { tourSteps, WorkspaceTour } from "../workspace-tour";
@@ -23,8 +24,8 @@ export function V2Placeholder({
 	teamName?: string;
 	teamAvatarUrl?: string | null;
 }) {
-	const defaultTour = useWorkflowDesignerStore(
-		useShallow((s) => s.workspace.nodes.length === 0),
+	const defaultTour = useAppDesignerStore(
+		useShallow((s) => s.nodes.length === 0),
 	);
 	const [showReadOnlyBanner, setShowReadOnlyBanner] = useState(isReadOnly);
 	const [layoutState, setLayoutState] = useState<V2LayoutState>({

@@ -1,0 +1,33 @@
+{
+	"name": "@giselles-ai/sdk",
+	"version": "0.0.0",
+	"private": true,
+	"main": "./dist/index.js",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.ts",
+	"dependencies": {
+		"@giselles-ai/protocol": "workspace:*"
+	},
+	"scripts": {
+		"build": "tsup",
+		"check-types": "tsc --noEmit",
+		"clean": "rm -rf .turbo dist node_modules",
+		"test": "vitest run",
+		"format": "biome check --write .",
+		"prepack": "pnpm build"
+	},
+	"exports": {
+		"./package.json": "./package.json",
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.js",
+			"default": "./dist/index.js"
+		}
+	},
+	"devDependencies": {
+		"@giselles-ai/tsconfig": "workspace:*",
+		"tsup": "catalog:",
+		"vitest": "catalog:"
+	}
+}

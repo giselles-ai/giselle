@@ -86,6 +86,11 @@
 	--color-trigger-node-2: var(--color-node-trigger-secondary);
 	--shadow-trigger-node-1: 0px 4px 12px hsla(220, 15%, 50%, 0.3);
 
+	/* Stage nodes (App Entry / End) */
+	--color-stage-node-1: var(--color-blue-muted);
+	--shadow-stage-node-1: 0px 4px 12px
+		color-mix(in srgb, var(--color-stage-node-1) 30%, transparent);
+
 	--color-action-node-1: var(--color-node-action-primary);
 	--color-action-node-2: var(--color-node-action-secondary);
 
@@ -109,6 +114,12 @@
 
 	--color-vector-store-node-1: var(--color-node-vector-store-primary);
 	--color-vector-store-node-2: var(--color-node-vector-store-secondary);
+
+	--color-data-store-node-1: var(--color-node-data-store-primary);
+	--color-data-store-node-2: var(--color-node-data-store-secondary);
+
+	--color-data-query-node-1: var(--color-node-data-query-primary);
+	--color-data-query-node-2: var(--color-node-data-query-secondary);
 
 	--color-end-node-1: var(--color-blue-400);
 	--color-end-node-2: var(--color-blue-800);
@@ -281,9 +292,7 @@
 			font-weight: 400;
 			font-size: var(--text-sm);
 			line-height: var(--pre-line-height);
-			margin-top: calc(20 / var(--pre-font-size) * 1em);
 			margin-bottom: calc(20 / var(--pre-font-size) * 1em);
-			border-radius: var(--radius-base);
 			padding-top: calc(8 / var(--pre-font-size) * 1em);
 			padding-bottom: calc(8 / var(--pre-font-size) * 1em);
 			padding-left: calc(12 / var(--pre-font-size) * 1em);

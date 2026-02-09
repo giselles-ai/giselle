@@ -6,6 +6,7 @@ import type {
 } from "@giselles-ai/github-tool";
 import type {
 	AppId,
+	DataStoreId,
 	EmbeddingDimensions,
 	EmbeddingProfileId,
 	NodeId,
@@ -18,6 +19,7 @@ import type {
 	DocumentVectorStoreSourceId,
 	GitHubRepositoryIndexId,
 } from "@giselles-ai/types";
+import { createIdGenerator } from "@giselles-ai/utils";
 import { relations, sql } from "drizzle-orm";
 import {
 	boolean,
@@ -34,6 +36,7 @@ import {
 	unique,
 	uniqueIndex,
 } from "drizzle-orm/pg-core";
+import type * as z from "zod/v4";
 import type { ContentStatusMetadata } from "@/lib/vector-stores/github/types";
 import type { AgentId } from "@/services/agents/types";
 import type { TeamId } from "@/services/teams/types";
@@ -45,7 +48,7 @@ import { vectorWithoutDimensions } from "./custom-types";
  * Stores snapshots of billing cadence data from Stripe v2 API.
  * Each webhook event creates a new history record.
  *
- * @see https://docs.stripe.com/api/v2/billing-cadences/object?api-version=2025-11-17.preview
+ * @see https://docs.stripe.com/api/v2/billing-cadences/object?api-version=2025-12-15.preview
  */
 export const stripeBillingCadenceHistories = pgTable(
 	"stripe_billing_cadence_histories",
@@ -117,7 +120,7 @@ export const stripeBillingCadenceHistoryRelations = relations(
  * Stores snapshots of pricing plan subscription data from Stripe v2 API.
  * Each webhook event creates a new history record.
  *
- * @see https://docs.stripe.com/api/v2/pricing-plan-subscriptions/object?api-version=2025-11-17.preview
+ * @see https://docs.stripe.com/api/v2/pricing-plan-subscriptions/object?api-version=2025-12-15.preview
  */
 export const stripePricingPlanSubscriptionHistories = pgTable(
 	"stripe_pricing_plan_subscription_histories",
@@ -150,6 +153,7 @@ export const stripePricingPlanSubscriptionHistories = pgTable(
 		activatedAt: timestamp("activated_at"),
 		canceledAt: timestamp("canceled_at"),
 		pausedAt: timestamp("paused_at"),
+		willCancelAt: timestamp("will_cancel_at"), // https://docs.stripe.com/api/v2/pricing-plan-subscriptions/update?api-version=2025-12-15.preview#v2_update_pricing_plan_subscriptions-response-servicing_status_transitions-will_cancel_at
 
 		// Collection status transitions
 		collectionCurrentAt: timestamp("collection_current_at"),
@@ -203,13 +207,14 @@ export const teams = pgTable("teams", {
 		.notNull()
 		.$onUpdate(() => new Date()),
 	plan: text("plan").$type<TeamPlan>().notNull().default("free"),
-	activeSubscriptionId: text("active_subscription_id"),
+	activeSubscriptionId: text("active_subscription_id").unique(),
 	activeCustomerId: text("active_customer_id"),
 });
 
 export const teamRelations = relations(teams, ({ many }) => ({
 	apps: many(apps),
 	tasks: many(tasks),
+	dataStores: many(dataStores),
 }));
 
 export type UserId = `usr_${string}`;
@@ -340,6 +345,10 @@ export const workspaceRelations = relations(workspaces, ({ one }) => ({
 	team: one(teams, {
 		fields: [workspaces.teamDbId],
 		references: [teams.dbId],
+	}),
+	app: one(apps, {
+		fields: [workspaces.dbId],
+		references: [apps.workspaceDbId],
 	}),
 }));
 
@@ -910,6 +919,31 @@ export const githubRepositoryIssueEmbeddings = pgTable(
 	],
 );
 
+export const dataStores = pgTable(
+	"data_stores",
+	{
+		id: text("id").$type<DataStoreId>().notNull().unique(),
+		dbId: serial("db_id").primaryKey(),
+		teamDbId: integer("team_db_id")
+			.notNull()
+			.references(() => teams.dbId, { onDelete: "cascade" }),
+		name: text("name").notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		updatedAt: timestamp("updated_at")
+			.defaultNow()
+			.notNull()
+			.$onUpdate(() => new Date()),
+	},
+	(table) => [index("data_stores_team_db_id_idx").on(table.teamDbId)],
+);
+
+export const dataStoreRelations = relations(dataStores, ({ one }) => ({
+	team: one(teams, {
+		fields: [dataStores.teamDbId],
+		references: [teams.dbId],
+	}),
+}));
+
 export const flowTriggers = pgTable(
 	"flow_triggers",
 	{
@@ -971,10 +1005,8 @@ export const apps = pgTable(
 	"apps",
 	{
 		id: text("id").$type<AppId>().notNull().unique(),
-		appEntryNodeId: text("app_entry_node_id")
-			.$type<NodeId>()
-			.notNull()
-			.unique(),
+		appEntryNodeId: text("app_entry_node_id").$type<NodeId>().notNull(),
+		endNodeId: text("end_node_id").$type<NodeId | null>(),
 		dbId: serial("db_id").primaryKey(),
 		teamDbId: integer("team_db_id")
 			.notNull()
@@ -988,7 +1020,10 @@ export const apps = pgTable(
 			.notNull()
 			.$onUpdate(() => new Date()),
 	},
-	(table) => [index().on(table.teamDbId)],
+	(table) => [
+		index().on(table.teamDbId),
+		unique().on(table.workspaceDbId, table.appEntryNodeId),
+	],
 );
 
 export const appRelations = relations(apps, ({ one, many }) => ({
@@ -1002,6 +1037,90 @@ export const appRelations = relations(apps, ({ one, many }) => ({
 	}),
 	tasks: many(tasks),
 }));
+
+export const ApiKeyId = createIdGenerator("gsk");
+export type ApiKeyId = z.infer<typeof ApiKeyId.schema>;
+
+export type ApiSecretKdf = {
+	type: "scrypt";
+	salt: string;
+	params: {
+		n: number;
+		r: number;
+		p: number;
+		keyLen: number;
+	};
+};
+
+export const apiKeys = pgTable(
+	"api_keys",
+	{
+		dbId: serial("db_id").primaryKey(),
+		id: text("id").$type<ApiKeyId>().notNull(),
+		teamDbId: integer("team_db_id")
+			.notNull()
+			.references(() => teams.dbId, { onDelete: "cascade" }),
+		label: text("label"),
+		createdByUserDbId: integer("created_by_user_db_id").references(
+			() => users.dbId,
+		),
+		redactedValue: text("redacted_value").notNull(),
+		kdfType: text("kdf_type").$type<ApiSecretKdf["type"]>().notNull(),
+		kdfSalt: text("kdf_salt").notNull(),
+		kdfN: integer("kdf_n").notNull(),
+		kdfR: integer("kdf_r").notNull(),
+		kdfP: integer("kdf_p").notNull(),
+		kdfKeyLen: integer("kdf_key_len").notNull(),
+		secretHash: text("secret_hash").notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		lastUsedAt: timestamp("last_used_at"),
+		revokedAt: timestamp("revoked_at"),
+	},
+	(table) => [
+		uniqueIndex("api_keys_id_unique").on(table.id),
+		index("api_keys_team_db_id_idx").on(table.teamDbId),
+		index("api_keys_revoked_at_idx").on(table.revokedAt),
+	],
+);
+
+export const apiSecretRecordRelations = relations(apiKeys, ({ one }) => ({
+	team: one(teams, {
+		fields: [apiKeys.teamDbId],
+		references: [teams.dbId],
+	}),
+	creator: one(users, {
+		fields: [apiKeys.createdByUserDbId],
+		references: [users.dbId],
+	}),
+}));
+
+export type ApiSecretRecord = typeof apiKeys.$inferSelect;
+
+export const apiRateLimitCounters = pgTable(
+	"api_rate_limit_counters",
+	{
+		teamDbId: integer("team_db_id")
+			.notNull()
+			.references(() => teams.dbId, { onDelete: "cascade" }),
+		routeKey: text("route_key").notNull(),
+		windowStart: timestamp("window_start").notNull(),
+		count: integer("count").notNull().default(0),
+		updatedAt: timestamp("updated_at")
+			.defaultNow()
+			.notNull()
+			.$onUpdate(() => new Date()),
+	},
+	(table) => [
+		primaryKey({
+			columns: [table.teamDbId, table.routeKey, table.windowStart],
+			name: "api_rate_limit_counters_pk",
+		}),
+		index("api_rate_limit_counters_team_window_idx").on(
+			table.teamDbId,
+			table.windowStart,
+		),
+	],
+);
 
 export const tasks = pgTable(
 	"tasks",

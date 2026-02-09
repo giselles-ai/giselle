@@ -9,6 +9,8 @@ export interface FeatureFlagContextValue {
 	googleUrlContext: boolean;
 	generateContentNode: boolean;
 	privatePreviewTools: boolean;
+	dataStore: boolean;
+	sdkAvailability: boolean;
 }
 export const FeatureFlagContext = createContext<
 	FeatureFlagContextValue | undefined

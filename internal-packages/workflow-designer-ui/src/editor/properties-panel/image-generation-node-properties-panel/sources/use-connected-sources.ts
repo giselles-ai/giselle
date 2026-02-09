@@ -3,6 +3,8 @@ import type {
 	AppEntryNode,
 	Connection,
 	ContentGenerationNode,
+	DataQueryNode,
+	DataStoreNode,
 	FileNode,
 	ImageGenerationNode,
 	NodeBase,
@@ -14,8 +16,9 @@ import type {
 	VariableNode,
 	WebPageNode,
 } from "@giselles-ai/protocol";
-import { type UIConnection, useWorkflowDesigner } from "@giselles-ai/react";
+import type { UIConnection } from "@giselles-ai/react";
 import { useMemo } from "react";
+import { useAppDesignerStore } from "../../../../app-designer";
 
 type ConnectedSource<T extends NodeBase> = {
 	output: Output;
@@ -24,9 +27,12 @@ type ConnectedSource<T extends NodeBase> = {
 };
 
 export function useConnectedSources(node: ImageGenerationNode) {
-	const { data } = useWorkflowDesigner();
+	const { nodes, connections } = useAppDesignerStore((s) => ({
+		nodes: s.nodes,
+		connections: s.connections,
+	}));
 	return useMemo(() => {
-		const connectionsToThisNode = data.connections.filter(
+		const connectionsToThisNode = connections.filter(
 			(connection) => connection.inputNode.id === node.id,
 		);
 		const connectedGeneratedTextSources: ConnectedSource<
@@ -36,12 +42,13 @@ export function useConnectedSources(node: ImageGenerationNode) {
 			[];
 		const connectedVariableSources: ConnectedSource<VariableNode>[] = [];
 		const connectedQuerySources: ConnectedSource<QueryNode>[] = [];
+		const connectedDataQuerySources: ConnectedSource<DataQueryNode>[] = [];
 		const connectedTriggerSources: ConnectedSource<TriggerNode>[] = [];
 		const connectedActionSources: ConnectedSource<ActionNode>[] = [];
 		const connectedAppEntrySources: ConnectedSource<AppEntryNode>[] = [];
 		const uiConnections: UIConnection[] = [];
 		for (const connection of connectionsToThisNode) {
-			const outputNode = data.nodes.find(
+			const outputNode = nodes.find(
 				(node) => node.id === connection.outputNode.id,
 			);
 			if (outputNode === undefined) {
@@ -59,13 +66,6 @@ export function useConnectedSources(node: ImageGenerationNode) {
 			if (input === undefined) {
 				continue;
 			}
-			uiConnections.push({
-				id: connection.id,
-				output,
-				outputNode,
-				input,
-				inputNode: node,
-			});
 
 			switch (outputNode.type) {
 				case "operation":
@@ -122,6 +122,13 @@ export function useConnectedSources(node: ImageGenerationNode) {
 						case "end":
 							// End Node has no Output so do nothing
 							break;
+						case "dataQuery":
+							connectedDataQuerySources.push({
+								output,
+								node: outputNode as DataQueryNode,
+								connection,
+							});
+							break;
 						default: {
 							const _exhaustiveCheck: never = outputNode.content.type;
 							throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
@@ -153,7 +160,18 @@ export function useConnectedSources(node: ImageGenerationNode) {
 							break;
 						case "vectorStore":
 						case "github":
-							throw new Error("vectore store can not be connected");
+							throw new Error("vector store can not be connected");
+						case "dataStore":
+							// Skip Data Store "source" output - it's only for Data Query connections
+							if (output.accessor === "source") {
+								continue;
+							}
+							connectedVariableSources.push({
+								output,
+								node: outputNode as DataStoreNode,
+								connection,
+							});
+							break;
 						default: {
 							const _exhaustiveCheck: never = outputNode.content.type;
 							throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
@@ -165,6 +183,14 @@ export function useConnectedSources(node: ImageGenerationNode) {
 					throw new Error(`Unhandled node type: ${_exhaustiveCheck}`);
 				}
 			}
+
+			uiConnections.push({
+				id: connection.id,
+				output,
+				outputNode,
+				input,
+				inputNode: node,
+			});
 		}
 
 		return {
@@ -172,6 +198,7 @@ export function useConnectedSources(node: ImageGenerationNode) {
 				...connectedGeneratedTextSources,
 				...connectedVariableSources,
 				...connectedQuerySources,
+				...connectedDataQuerySources,
 				...connectedGeneratedImageSources,
 				...connectedTriggerSources,
 				...connectedActionSources,
@@ -180,9 +207,10 @@ export function useConnectedSources(node: ImageGenerationNode) {
 			generationImage: connectedGeneratedImageSources,
 			variable: connectedVariableSources,
 			query: connectedQuerySources,
+			dataQuery: connectedDataQuerySources,
 			trigger: connectedTriggerSources,
 			action: connectedActionSources,
 			connections: uiConnections,
 		};
-	}, [node, data.connections, data.nodes]);
+	}, [connections, node, nodes]);
 }

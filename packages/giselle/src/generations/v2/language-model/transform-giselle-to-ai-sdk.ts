@@ -18,7 +18,9 @@ export function transformGiselleLanguageModelToAiSdkLanguageModelCallOptions(
 		case "openai/gpt-5-mini":
 		case "openai/gpt-5-nano":
 		case "openai/gpt-5.1-codex":
-		case "openai/gpt-5.1-thinking": {
+		case "openai/gpt-5.1-thinking":
+		case "openai/gpt-5.2":
+		case "openai/gpt-5.2-codex": {
 			const config = parseConfiguration(
 				languageModel,
 				content.languageModel.configuration,
@@ -32,9 +34,9 @@ export function transformGiselleLanguageModelToAiSdkLanguageModelCallOptions(
 				},
 			} satisfies Partial<LanguageModelV2CallOptions>;
 		}
-		case "anthropic/claude-haiku-4-5":
+		case "anthropic/claude-haiku-4.5":
 		case "anthropic/claude-opus-4.5":
-		case "anthropic/claude-sonnet-4-5": {
+		case "anthropic/claude-sonnet-4.5": {
 			const config = parseConfiguration(
 				languageModel,
 				content.languageModel.configuration,
@@ -63,7 +65,8 @@ export function transformGiselleLanguageModelToAiSdkLanguageModelCallOptions(
 				},
 			} as Partial<LanguageModelV2CallOptions>;
 		}
-		case "google/gemini-3-pro-preview": {
+		case "google/gemini-3-pro-preview":
+		case "google/gemini-3-flash": {
 			const config = parseConfiguration(
 				languageModel,
 				content.languageModel.configuration,

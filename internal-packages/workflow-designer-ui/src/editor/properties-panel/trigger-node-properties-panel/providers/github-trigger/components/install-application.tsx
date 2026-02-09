@@ -1,4 +1,6 @@
+import { Button } from "@giselle-internal/ui/button";
 import { useIntegration } from "@giselles-ai/react";
+import { ExternalLink } from "lucide-react";
 import { useCallback, useEffect, useTransition } from "react";
 import { SourceLinkIcon, SpinnerIcon } from "../../../../../../icons";
 import { usePopupWindow } from "../../../hooks/use-popup-window";
@@ -43,15 +45,22 @@ export function InstallGitHubApplication({
 						from to continue
 					</p>
 				</div>
-				<button
+				<Button
 					type="button"
-					className="flex items-center justify-center px-[24px] py-[12px] mt-[16px] bg-background text-white rounded-[9999px] border border-border/15 transition-all hover:bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] hover:border-border/25 hover:translate-y-[-1px] cursor-pointer font-sans font-[500] text-[14px] disabled:opacity-50 disabled:cursor-wait group"
+					variant="primary"
+					size="large"
 					onClick={open}
 					disabled={isPending}
+					rightIcon={
+						isPending ? (
+							<SpinnerIcon className="animate-follow-through-overlap-spin" />
+						) : (
+							<ExternalLink />
+						)
+					}
 				>
 					Install
-					<SpinnerIcon className="hidden group-disabled:block animate-follow-through-overlap-spin ml-[8px]" />
-				</button>
+				</Button>
 			</div>
 		</div>
 	);

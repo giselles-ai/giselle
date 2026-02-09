@@ -263,7 +263,7 @@ describe("node-conversion", () => {
 			);
 
 			expect(result.content.llm?.provider).toBe("anthropic");
-			expect(result.content.llm?.id).toBe("claude-sonnet-4-5-20250929");
+			expect(result.content.llm?.id).toBe("claude-sonnet-4.5");
 		});
 
 		it("should convert Anthropic Claude Opus 4.5 model back", () => {

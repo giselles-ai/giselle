@@ -31,6 +31,8 @@ const config: KnipConfig = {
 				"require-in-the-middle",
 				"@react-email/preview-server",
 				"pino-pretty",
+				"prettier",
+				"shiki",
 			],
 		},
 		"apps/ui.giselles.ai": {
@@ -44,6 +46,8 @@ const config: KnipConfig = {
 			ignore: [
 				// Not currently used in the product, but kept as a reference implementation for future use
 				"src/editor/properties-panel/content-generation-node-properties-panel/**/*",
+				// Will be used in the future
+				"src/editor/properties-panel/app-entry-node-properties-panel/app-icon-select.tsx",
 			],
 		},
 		"packages/rag": {

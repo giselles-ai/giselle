@@ -10,6 +10,10 @@ export function isProPlan(team: Pick<CurrentTeam, "plan">) {
 	);
 }
 
+export function isInternalPlan(team: Pick<CurrentTeam, "plan">) {
+	return team.plan === "internal";
+}
+
 const PLAN_LABELS: Record<string, string> = {
 	free: "Free plan",
 	pro: "Pro plan",

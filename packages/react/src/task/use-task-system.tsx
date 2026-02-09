@@ -2,15 +2,17 @@ import type {
 	CreateTaskInputs,
 	TaskExecutorOptions,
 } from "@giselles-ai/giselle";
-import type {
-	NodeGenerationIndex,
-	TaskId,
-	WorkspaceId,
+import {
+	isCancelledGeneration,
+	type NodeGenerationIndex,
+	type TaskId,
+	type WorkspaceId,
 } from "@giselles-ai/protocol";
 import { useCallback, useEffect } from "react";
 import useSWR from "swr";
 import { useShallow } from "zustand/shallow";
 import { useGenerationRunnerSystem } from "../generations";
+import { useGenerationStore } from "../generations/store";
 import { useGiselle } from "../use-giselle";
 import { useTaskStore } from "./store";
 
@@ -80,7 +82,19 @@ export function useTaskSystem(workspaceId: WorkspaceId) {
 				).then((nullableData) =>
 					nullableData.filter((data) => data !== undefined),
 				);
-				addGenerationRunner(changedGenerations);
+
+				// Filter out generations that have been locally cancelled to prevent
+				// server updates from overwriting user's cancellation intent
+				const cancelledIds = new Set(
+					useGenerationStore
+						.getState()
+						.generations.filter(isCancelledGeneration)
+						.map((g) => g.id),
+				);
+				const filteredGenerations = changedGenerations.filter(
+					(g) => !cancelledIds.has(g.id),
+				);
+				addGenerationRunner(filteredGenerations);
 
 				for (const changed of changedGenerationIndexes) {
 					prevGenerationIndexMap.set(changed.id, changed);

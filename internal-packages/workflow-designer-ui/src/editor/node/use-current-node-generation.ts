@@ -2,13 +2,13 @@ import type { NodeId } from "@giselles-ai/protocol";
 import {
 	useGenerationRunnerSystem,
 	useGenerationStore,
-	useWorkflowDesignerStore,
 } from "@giselles-ai/react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/shallow";
+import { useAppDesignerStore } from "../../app-designer";
 
 export function useCurrentNodeGeneration(nodeId: NodeId) {
-	const workspaceId = useWorkflowDesignerStore((state) => state.workspace.id);
+	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
 	const { stopGenerationRunner } = useGenerationRunnerSystem();
 	const currentGeneration = useGenerationStore(
 		useShallow((s) => {

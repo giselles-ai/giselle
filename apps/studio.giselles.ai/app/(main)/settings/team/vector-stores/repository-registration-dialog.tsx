@@ -121,20 +121,15 @@ export function RepositoryRegistrationDialog({
 			}
 
 			startTransition(async () => {
-				const owner = installationsWithRepos.find(
-					(i) => String(i.installation.id) === ownerId,
-				)?.installation.name;
-				if (!owner) {
-					setError("Owner not found");
-					return;
-				}
-				const repo = repositoryOptions.find(
+				const selectedRepo = repositoryOptions.find(
 					(r) => String(r.id) === repositoryId,
-				)?.name;
-				if (!repo) {
+				);
+				if (!selectedRepo) {
 					setError("Repository not found");
 					return;
 				}
+				const owner = selectedRepo.owner;
+				const repo = selectedRepo.name;
 				const contentTypes: {
 					contentType: GitHubRepositoryContentType;
 					enabled: boolean;
@@ -170,7 +165,6 @@ export function RepositoryRegistrationDialog({
 			});
 		},
 		[
-			installationsWithRepos,
 			ownerId,
 			repositoryId,
 			repositoryOptions,

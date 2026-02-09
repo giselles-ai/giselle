@@ -20,14 +20,14 @@ const DEFAULT_TARGET_DPI = 144;
 
 export async function extractPdfText(
 	input: BinaryDataInput,
-	options: PdfTextExtractionOptions = {},
+	options: PdfTextExtractionOptions,
 ): Promise<PdfTextExtractionResult> {
 	const bytes = toUint8Array(input);
-	const { password, maxPages, signal } = options;
+	const { password, maxPages, pdfiumWasmBinary, signal } = options;
 
 	return await withPdfDocument(
 		bytes,
-		{ password, signal },
+		{ password, signal, wasmBinary: pdfiumWasmBinary },
 		(document): PdfTextExtractionResult => {
 			const totalPages = document.getPageCount();
 			const limit = calculatePageLimit(totalPages, maxPages);
@@ -55,16 +55,16 @@ export async function extractPdfText(
 
 export async function renderPdfPageImages(
 	input: BinaryDataInput,
-	options: PdfImageRenderOptions = {},
+	options: PdfImageRenderOptions,
 ): Promise<PdfImageRenderResult> {
 	const bytes = toUint8Array(input);
-	const { password, maxPages, signal } = options;
+	const { password, maxPages, pdfiumWasmBinary, signal } = options;
 	const targetDpi = options.targetDpi ?? DEFAULT_TARGET_DPI;
 	const scale = Math.max(targetDpi / POINTS_PER_INCH, 0.1);
 
 	return await withPdfDocument(
 		bytes,
-		{ password, signal },
+		{ password, signal, wasmBinary: pdfiumWasmBinary },
 		async (document): Promise<PdfImageRenderResult> => {
 			const totalPages = document.getPageCount();
 			const limit = calculatePageLimit(totalPages, maxPages);

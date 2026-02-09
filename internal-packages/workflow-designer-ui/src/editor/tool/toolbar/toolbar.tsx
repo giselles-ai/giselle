@@ -1,7 +1,6 @@
 "use client";
 
 import { GlassSurfaceLayers } from "@giselle-internal/ui/glass-surface";
-import { actionRegistry, isActionProvider } from "@giselles-ai/action-registry";
 import {
 	Capability,
 	hasCapability,
@@ -13,38 +12,31 @@ import {
 	createActionNode,
 	createAppEntryNode,
 	createContentGenerationNode,
+	createDataQueryNode,
+	createDataStoreNode,
 	createDocumentVectorStoreNode,
-	createEndNode,
 	createFileNode,
 	createGitHubVectorStoreNode,
 	createQueryNode,
 	createTextNode,
 	createTriggerNode,
 	createWebPageNode,
-	triggerNodeDefaultName,
 } from "@giselles-ai/node-registry";
 import { FileCategory } from "@giselles-ai/protocol";
-import {
-	useFeatureFlag,
-	useUsageLimits,
-	useWorkflowDesigner,
-} from "@giselles-ai/react";
-import {
-	isTriggerProvider,
-	triggerRegistry,
-} from "@giselles-ai/trigger-registry";
+import { useFeatureFlag, useUsageLimits } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import {
+	CableIcon,
 	DatabaseZapIcon,
-	FileSlidersIcon,
-	FlagIcon,
-	FolderInputIcon,
+	HammerIcon,
+	Layers2Icon,
 	SparklesIcon,
-	SquareArrowOutUpRightIcon,
-	ZapIcon,
 } from "lucide-react";
 import { Popover, ToggleGroup } from "radix-ui";
 import { useEffect, useMemo, useState } from "react";
+import { useAppDesignerStore } from "../../../app-designer";
+import { DataQueryIcon } from "../../../icons/node/data-query-icon";
+import { DataStoreIcon } from "../../../icons/node/data-store-icon";
 import { DocumentVectorStoreIcon } from "../../../icons/node/document-vector-store-icon";
 import { Tooltip } from "../../../ui/tooltip";
 import { isToolAction } from "../types";
@@ -61,7 +53,6 @@ import {
 	SearchIcon,
 	TextFileIcon,
 	TooltipAndHotkey,
-	TriggerIcon,
 	VideoIcon,
 	WebPageFileIcon,
 } from "./components";
@@ -78,13 +69,12 @@ import {
 } from "./model-components";
 import {
 	addNodeTool,
-	selectActionTool,
+	selectContextTool,
 	selectFileNodeCategoryTool,
+	selectGithubTriggerTool,
+	selectIntegrationTool,
 	selectLanguageModelTool,
 	selectLanguageModelV2Tool,
-	selectRetrievalCategoryTool,
-	selectSourceCategoryTool,
-	selectTriggerTool,
 	useToolbar,
 } from "./state";
 
@@ -99,9 +89,25 @@ export function Toolbar() {
 	} = useHoverState();
 	const [searchQuery, setSearchQuery] = useState<string>("");
 	const [selectedCategory, setSelectedCategory] = useState<string>("All");
-	const { llmProviders } = useWorkflowDesigner();
-	const { stage, aiGatewayUnsupportedModels, generateContentNode } =
-		useFeatureFlag();
+	const { llmProviders, nodes } = useAppDesignerStore((s) => ({
+		llmProviders: s.llmProviders,
+		nodes: s.nodes,
+	}));
+	const {
+		aiGatewayUnsupportedModels,
+		generateContentNode,
+		stage,
+		dataStore: dataStoreFlag,
+	} = useFeatureFlag();
+	const hasAppRequestNode = useMemo(
+		() => nodes.some((node) => node.content.type === "appEntry"),
+		[nodes],
+	);
+	const hasEndNode = useMemo(
+		() => nodes.some((node) => node.content.type === "end"),
+		[nodes],
+	);
+	const isStageFlowAlreadyPlaced = hasAppRequestNode || hasEndNode;
 
 	const availableLanguageModels = useMemo(
 		() =>
@@ -158,34 +164,38 @@ export function Toolbar() {
 	// Recommended models for each provider - adjust based on user tier
 	const isFreeUser = userTier === Tier.enum.free;
 	const openaiModels = getAvailableModels(
-		isFreeUser ? ["gpt-5-nano"] : ["gpt-5"],
+		isFreeUser ? ["gpt-5-nano"] : ["gpt-5.2"],
 		"openai",
 		llmProviders,
 		availableLanguageModels,
 	);
 	const anthropicModels = getAvailableModels(
-		isFreeUser
-			? ["claude-haiku-4-5-20251001"]
-			: ["claude-sonnet-4-5-20250929", "claude-opus-4.5"],
+		isFreeUser ? ["claude-haiku-4.5"] : ["claude-opus-4.5"],
 		"anthropic",
 		llmProviders,
 		availableLanguageModels,
 	);
 	const googleModels = getAvailableModels(
-		isFreeUser
-			? ["gemini-2.5-flash-lite"]
-			: ["gemini-2.5-pro-exp-03-25", "gemini-1.5-pro-latest", "gemini-1.0-pro"],
+		isFreeUser ? ["gemini-2.5-flash-lite"] : ["gemini-3-flash"],
 		"google",
 		llmProviders,
 		availableLanguageModels,
 	);
 
 	// Combine all recommended models
-	const recommendedModels = [
-		...openaiModels.slice(0, 1),
-		...anthropicModels.slice(0, 1),
-		...googleModels.slice(0, 1),
-	];
+	// Free tier: OpenAI, Google, Anthropic
+	// Pro tier: Google, OpenAI, Anthropic
+	const recommendedModels = isFreeUser
+		? [
+				...openaiModels.slice(0, 1),
+				...googleModels.slice(0, 1),
+				...anthropicModels.slice(0, 1),
+			]
+		: [
+				...googleModels.slice(0, 1),
+				...openaiModels.slice(0, 1),
+				...anthropicModels.slice(0, 1),
+			];
 
 	// Hover management is handled by useHoverState hook
 
@@ -225,14 +235,11 @@ export function Toolbar() {
 						"flex items-center px-[4px] z-10 h-full gap-[12px] text-inverse",
 						"**:data-tool:hover:bg-bg-850/30 **:data-tool:p-[4px] **:data-tool:rounded-[4px]",
 						"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
+						"**:data-tool:data-[disabled]:opacity-40 **:data-tool:data-[disabled]:cursor-not-allowed **:data-tool:data-[disabled]:hover:bg-transparent",
 						"**:data-icon:w-[24px] **:data-icon:h-[24px] **:data-icon:text-inverse ",
 					)}
 					value={selectedTool?.action}
 					onValueChange={(value) => {
-						if (value === "addEnd") {
-							setSelectedTool(addNodeTool(createEndNode()));
-							return;
-						}
 						if (isToolAction(value)) {
 							switch (value) {
 								case "selectLanguageModel":
@@ -241,17 +248,20 @@ export function Toolbar() {
 								case "selectFileNodeCategory":
 									setSelectedTool(selectFileNodeCategoryTool());
 									break;
-								case "selectSourceCategory":
-									setSelectedTool(selectSourceCategoryTool());
-									break;
 								case "selectTrigger":
-									setSelectedTool(selectTriggerTool());
+									if (hasAppRequestNode) {
+										return;
+									}
+									setSelectedTool(addNodeTool(createAppEntryNode()));
 									break;
-								case "selectAction":
-									setSelectedTool(selectActionTool());
+								case "selectGithubTrigger":
+									setSelectedTool(selectGithubTriggerTool());
 									break;
-								case "selectRetrievalCategory":
-									setSelectedTool(selectRetrievalCategoryTool());
+								case "selectIntegration":
+									setSelectedTool(selectIntegrationTool());
+									break;
+								case "selectContext":
+									setSelectedTool(selectContextTool());
 									break;
 								case "selectLanguageModelV2":
 									setSelectedTool(selectLanguageModelV2Tool());
@@ -260,15 +270,28 @@ export function Toolbar() {
 						}
 					}}
 				>
+					{stage && (
+						<ToggleGroup.Item
+							value="selectTrigger"
+							data-tool
+							className="relative order-1"
+							disabled={isStageFlowAlreadyPlaced}
+						>
+							<Tooltip text={<TooltipAndHotkey text="App" hotkey="a" />}>
+								<HammerIcon data-icon />
+							</Tooltip>
+						</ToggleGroup.Item>
+					)}
+
 					<ToggleGroup.Item
-						value="selectTrigger"
+						value="selectIntegration"
 						data-tool
-						className="relative"
+						className="relative order-4"
 					>
-						<Tooltip text={<TooltipAndHotkey text="Trigger" hotkey="t" />}>
-							<ZapIcon data-icon />
+						<Tooltip text={<TooltipAndHotkey text="Integration" hotkey="i" />}>
+							<CableIcon data-icon />
 						</Tooltip>
-						{selectedTool?.action === "selectTrigger" && (
+						{selectedTool?.action === "selectIntegration" && (
 							<Popover.Root open={true}>
 								<Popover.Anchor />
 								<Popover.Portal>
@@ -293,52 +316,60 @@ export function Toolbar() {
 											blurClass="backdrop-blur-md"
 											zIndexClass="z-0"
 										/>
-										<div className="relative flex flex-col gap-[8px]">
+
+										<div className="relative flex flex-col gap-0">
+											<p className="text-[#505D7B] text-[12px] font-medium leading-[170%] mb-[4px] px-[8px]">
+												Trigger
+											</p>
 											<ToggleGroup.Root
 												type="single"
 												className={clsx(
 													"flex flex-col gap-[8px]",
 													"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
-													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-surface-hover",
+													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-[rgba(222,233,242,0.10)]",
 													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
 												)}
-												onValueChange={(value) => {
-													if (isTriggerProvider(value)) {
-														setSelectedTool(
-															addNodeTool(createTriggerNode(value)),
-														);
-														return;
-													}
-													if (value === "appEntry") {
-														setSelectedTool(addNodeTool(createAppEntryNode()));
-													}
+												onValueChange={() => {
+													setSelectedTool(
+														addNodeTool(createTriggerNode("github")),
+													);
 												}}
 											>
-												{stage && (
-													<ToggleGroup.Item value="appEntry" data-tool>
-														<TriggerIcon className="size-[20px] shrink-0" />
-														<p className="text-[14px]">App Entry Node</p>
-													</ToggleGroup.Item>
+												<ToggleGroup.Item
+													value="github-trigger"
+													data-tool
+													className="hover:bg-[rgba(222,233,242,0.10)]"
+												>
+													<GitHubIcon className="size-[20px] shrink-0" />
+													<p className="text-[14px]">GitHub Trigger</p>
+												</ToggleGroup.Item>
+											</ToggleGroup.Root>
+
+											<p className="text-[#505D7B] text-[12px] font-medium leading-[170%] mt-[8px] mb-[4px] px-[8px]">
+												Action
+											</p>
+											<ToggleGroup.Root
+												type="single"
+												className={clsx(
+													"flex flex-col gap-[8px]",
+													"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
+													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-[rgba(222,233,242,0.10)]",
+													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
 												)}
-												{triggerRegistry
-													.filter(
-														(triggerEntry) =>
-															triggerEntry.provider === "github",
-													)
-													.map((triggerEntry) => (
-														<ToggleGroup.Item
-															key={triggerEntry.provider}
-															value={triggerEntry.provider}
-															data-tool
-														>
-															{triggerEntry.provider === "github" && (
-																<GitHubIcon className="size-[20px] shrink-0" />
-															)}
-															<p className="text-[14px]">
-																{triggerNodeDefaultName(triggerEntry.provider)}
-															</p>
-														</ToggleGroup.Item>
-													))}
+												onValueChange={() => {
+													setSelectedTool(
+														addNodeTool(createActionNode("github")),
+													);
+												}}
+											>
+												<ToggleGroup.Item
+													value="github-action"
+													data-tool
+													className="hover:bg-[rgba(222,233,242,0.10)]"
+												>
+													<GitHubIcon className="size-[20px] shrink-0" />
+													<p className="text-[14px]">GitHub Action</p>
+												</ToggleGroup.Item>
 											</ToggleGroup.Root>
 										</div>
 									</Popover.Content>
@@ -348,14 +379,14 @@ export function Toolbar() {
 					</ToggleGroup.Item>
 
 					<ToggleGroup.Item
-						value="selectSourceCategory"
+						value="selectContext"
 						data-tool
-						className="relative"
+						className="relative order-3"
 					>
-						<Tooltip text={<TooltipAndHotkey text="Import" hotkey="i" />}>
-							<FolderInputIcon data-icon />
+						<Tooltip text={<TooltipAndHotkey text="Context" hotkey="c" />}>
+							<Layers2Icon data-icon />
 						</Tooltip>
-						{selectedTool?.action === "selectSourceCategory" && (
+						{selectedTool?.action === "selectContext" && (
 							<Popover.Root open={true}>
 								<Popover.Anchor />
 								<Popover.Portal>
@@ -380,26 +411,21 @@ export function Toolbar() {
 											blurClass="backdrop-blur-lg"
 											zIndexClass="z-0"
 										/>
-										<div className="relative flex flex-col gap-[8px]">
+										<div className="relative flex flex-col gap-0">
+											<p className="text-[#505D7B] text-[12px] font-medium leading-[170%] mb-[4px] px-[8px]">
+												Source
+											</p>
 											<ToggleGroup.Root
 												type="single"
 												className={clsx(
 													"flex flex-col gap-[8px]",
 													"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
-													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-surface-hover",
+													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-[rgba(222,233,242,0.10)]",
 													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
 												)}
 												onValueChange={(sourceType) => {
 													if (sourceType === "text") {
 														setSelectedTool(addNodeTool(createTextNode()));
-													} else if (sourceType === "githubVectorStore") {
-														setSelectedTool(
-															addNodeTool(createGitHubVectorStoreNode()),
-														);
-													} else if (sourceType === "documentVectorStore") {
-														setSelectedTool(
-															addNodeTool(createDocumentVectorStoreNode()),
-														);
 													} else if (sourceType === "pdf") {
 														setSelectedTool(
 															addNodeTool(
@@ -418,33 +444,144 @@ export function Toolbar() {
 																createFileNode(FileCategory.parse("text")),
 															),
 														);
+													} else if (sourceType === "webPage") {
+														setSelectedTool(addNodeTool(createWebPageNode()));
 													}
 												}}
 											>
-												<ToggleGroup.Item value="text" data-tool>
+												<ToggleGroup.Item
+													value="text"
+													data-tool
+													className="hover:bg-[rgba(222,233,242,0.10)]"
+												>
 													<PromptIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">Plain Text</p>
 												</ToggleGroup.Item>
-												<ToggleGroup.Item value="pdf" data-tool>
+												<ToggleGroup.Item
+													value="pdf"
+													data-tool
+													className="hover:bg-[rgba(222,233,242,0.10)]"
+												>
 													<PdfFileIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">PDF Upload</p>
 												</ToggleGroup.Item>
-												<ToggleGroup.Item value="image" data-tool>
+												<ToggleGroup.Item
+													value="image"
+													data-tool
+													className="hover:bg-[rgba(222,233,242,0.10)]"
+												>
 													<PictureIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">Image Upload</p>
 												</ToggleGroup.Item>
-												<ToggleGroup.Item value="textFile" data-tool>
+												<ToggleGroup.Item
+													value="textFile"
+													data-tool
+													className="hover:bg-[rgba(222,233,242,0.10)]"
+												>
 													<TextFileIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">Text Upload</p>
 												</ToggleGroup.Item>
-												<ToggleGroup.Item value="documentVectorStore" data-tool>
+												<ToggleGroup.Item
+													value="webPage"
+													data-tool
+													className="hover:bg-[rgba(222,233,242,0.10)]"
+												>
+													<WebPageFileIcon className="w-[20px] h-[20px]" />
+													<p className="text-[14px]">Webpage</p>
+												</ToggleGroup.Item>
+											</ToggleGroup.Root>
+											<ToggleGroup.Root
+												type="single"
+												className={clsx(
+													"flex flex-col gap-[8px]",
+													"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
+													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-[rgba(222,233,242,0.10)]",
+													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
+												)}
+												onValueChange={(sourceType) => {
+													if (sourceType === "githubVectorStore") {
+														setSelectedTool(
+															addNodeTool(createGitHubVectorStoreNode()),
+														);
+													} else if (sourceType === "documentVectorStore") {
+														setSelectedTool(
+															addNodeTool(createDocumentVectorStoreNode()),
+														);
+													} else if (sourceType === "dataStore") {
+														setSelectedTool(addNodeTool(createDataStoreNode()));
+													}
+												}}
+											>
+												<ToggleGroup.Item
+													value="documentVectorStore"
+													data-tool
+													className="hover:bg-[rgba(222,233,242,0.10)]"
+												>
 													<DocumentVectorStoreIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">Document Vector Store</p>
 												</ToggleGroup.Item>
-												<ToggleGroup.Item value="githubVectorStore" data-tool>
+												<ToggleGroup.Item
+													value="githubVectorStore"
+													data-tool
+													className="hover:bg-[rgba(222,233,242,0.10)]"
+												>
 													<GitHubIcon className="w-[20px] h-[20px]" />
 													<p className="text-[14px]">GitHub Vector Store</p>
 												</ToggleGroup.Item>
+												{dataStoreFlag && (
+													<ToggleGroup.Item
+														value="dataStore"
+														data-tool
+														className="hover:bg-[rgba(222,233,242,0.10)]"
+													>
+														<DataStoreIcon className="w-[20px] h-[20px]" />
+														<p className="text-[14px]">Data Store</p>
+													</ToggleGroup.Item>
+												)}
+											</ToggleGroup.Root>
+
+											<p className="text-[#505D7B] text-[12px] font-medium leading-[170%] mt-[8px] mb-[4px] px-[8px]">
+												Retrieval
+											</p>
+											<ToggleGroup.Root
+												type="single"
+												className={clsx(
+													"flex flex-col gap-[8px]",
+													"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
+													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-[rgba(222,233,242,0.10)]",
+													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
+												)}
+												onValueChange={(sourceType) => {
+													switch (sourceType) {
+														case "query":
+															setSelectedTool(addNodeTool(createQueryNode()));
+															break;
+														case "dataQuery":
+															setSelectedTool(
+																addNodeTool(createDataQueryNode()),
+															);
+															break;
+													}
+												}}
+											>
+												<ToggleGroup.Item
+													value="query"
+													data-tool
+													className="hover:bg-[rgba(222,233,242,0.10)]"
+												>
+													<DatabaseZapIcon className="w-[20px] h-[20px]" />
+													<p className="text-[14px]">Vector Query</p>
+												</ToggleGroup.Item>
+												{dataStoreFlag && (
+													<ToggleGroup.Item
+														value="dataQuery"
+														data-tool
+														className="hover:bg-[rgba(222,233,242,0.10)]"
+													>
+														<DataQueryIcon className="w-[20px] h-[20px]" />
+														<p className="text-[14px]">Data Query</p>
+													</ToggleGroup.Item>
+												)}
 											</ToggleGroup.Root>
 										</div>
 									</Popover.Content>
@@ -457,9 +594,9 @@ export function Toolbar() {
 						<ToggleGroup.Item
 							value="selectLanguageModel"
 							data-tool
-							className="relative"
+							className="relative order-2"
 						>
-							<Tooltip text={<TooltipAndHotkey text="Generation" hotkey="g" />}>
+							<Tooltip text={<TooltipAndHotkey text="Model" hotkey="m" />}>
 								<SparklesIcon data-icon />
 							</Tooltip>
 							{selectedTool?.action === "selectLanguageModel" && (
@@ -877,9 +1014,9 @@ export function Toolbar() {
 						<ToggleGroup.Item
 							value="selectLanguageModelV2"
 							data-tool
-							className="relative"
+							className="relative order-2"
 						>
-							<Tooltip text={<TooltipAndHotkey text="Generation" hotkey="p" />}>
+							<Tooltip text={<TooltipAndHotkey text="Model" hotkey="m" />}>
 								<SparklesIcon data-icon />
 							</Tooltip>
 							{selectedTool?.action === "selectLanguageModelV2" && (
@@ -929,159 +1066,7 @@ export function Toolbar() {
 						</ToggleGroup.Item>
 					)}
 
-					<ToggleGroup.Item
-						value="selectRetrievalCategory"
-						data-tool
-						className="relative"
-					>
-						<Tooltip text={<TooltipAndHotkey text="Retrieve" hotkey="r" />}>
-							<FileSlidersIcon data-icon />
-						</Tooltip>
-						{selectedTool?.action === "selectRetrievalCategory" && (
-							<Popover.Root open={true}>
-								<Popover.Anchor />
-								<Popover.Portal>
-									<Popover.Content
-										className={clsx(
-											"relative rounded-[8px] px-[8px] py-[8px]",
-											"text-inverse overflow-hidden",
-										)}
-										sideOffset={42}
-									>
-										<div
-											className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none"
-											style={{
-												backgroundColor:
-													"color-mix(in srgb, var(--color-background, #00020b) 50%, transparent)",
-											}}
-										/>
-										<GlassSurfaceLayers
-											radiusClass="rounded-[8px]"
-											borderStyle="solid"
-											withBaseFill={false}
-											blurClass="backdrop-blur-md"
-											zIndexClass="z-0"
-										/>
-
-										<div className="relative flex flex-col gap-[8px]">
-											<ToggleGroup.Root
-												type="single"
-												className={clsx(
-													"flex flex-col gap-[8px]",
-													"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
-													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-surface-hover",
-													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
-												)}
-												onValueChange={(sourceType) => {
-													switch (sourceType) {
-														case "query":
-															setSelectedTool(addNodeTool(createQueryNode()));
-															break;
-														case "webPage":
-															setSelectedTool(addNodeTool(createWebPageNode()));
-															break;
-													}
-												}}
-											>
-												<ToggleGroup.Item value="query" data-tool>
-													<DatabaseZapIcon className="w-[20px] h-[20px]" />
-													<p className="text-[14px]">Query</p>
-												</ToggleGroup.Item>
-												<ToggleGroup.Item value="webPage" data-tool>
-													<WebPageFileIcon className="w-[20px] h-[20px]" />
-													<p className="text-[14px]">Webpage</p>
-												</ToggleGroup.Item>
-											</ToggleGroup.Root>
-										</div>
-									</Popover.Content>
-								</Popover.Portal>
-							</Popover.Root>
-						)}
-					</ToggleGroup.Item>
-
-					<ToggleGroup.Item value="selectAction" data-tool className="relative">
-						<Tooltip text={<TooltipAndHotkey text="Dispatch" hotkey="d" />}>
-							<SquareArrowOutUpRightIcon data-icon />
-						</Tooltip>
-						{selectedTool?.action === "selectAction" && (
-							<Popover.Root open={true}>
-								<Popover.Anchor />
-								<Popover.Portal>
-									<Popover.Content
-										className={clsx(
-											"relative rounded-[8px] px-[8px] py-[8px]",
-											"text-inverse overflow-hidden",
-										)}
-										sideOffset={42}
-									>
-										<div
-											className="absolute inset-0 -z-10 rounded-[8px] pointer-events-none"
-											style={{
-												backgroundColor:
-													"color-mix(in srgb, var(--color-background, #00020b) 60%, transparent)",
-											}}
-										/>
-										<GlassSurfaceLayers
-											radiusClass="rounded-[8px]"
-											borderStyle="solid"
-											withBaseFill={false}
-											blurClass="backdrop-blur-lg"
-											zIndexClass="z-0"
-										/>
-										<div className="relative flex flex-col gap-[8px]">
-											<ToggleGroup.Root
-												type="single"
-												className={clsx(
-													"flex flex-col gap-[8px]",
-													"**:data-tool:flex **:data-tool:rounded-[8px] **:data-tool:items-center **:data-tool:w-full",
-													"**:data-tool:select-none **:data-tool:outline-none **:data-tool:px-[8px] **:data-tool:py-[4px] **:data-tool:gap-[8px] **:data-tool:hover:bg-surface-hover",
-													"**:data-tool:data-[state=on]:bg-primary-900 **:data-tool:focus:outline-none",
-												)}
-												onValueChange={(value) => {
-													if (isActionProvider(value)) {
-														setSelectedTool(
-															addNodeTool(createActionNode(value)),
-														);
-													}
-												}}
-											>
-												{actionRegistry.map((actionRegistry) => (
-													<ToggleGroup.Item
-														key={actionRegistry.provider}
-														value={actionRegistry.provider}
-														data-tool
-													>
-														{actionRegistry.provider === "github" && (
-															<GitHubIcon className="size-[20px] shrink-0" />
-														)}
-														<p className="text-[14px]">
-															{actionRegistry.label}
-														</p>
-													</ToggleGroup.Item>
-												))}
-												{/*<div data-tool className="opacity-50">
-													<RocketIcon className="size-[20px] shrink-0" />
-													<p className="text-[14px]">Stage (Coming soon)</p>
-												</div>*/}
-												{/*<div data-tool className="opacity-50">
-													<RocketIcon className="size-[20px] shrink-0" />
-													<p className="text-[14px]">Widget (Coming soon)</p>
-												</div>*/}
-											</ToggleGroup.Root>
-										</div>
-									</Popover.Content>
-								</Popover.Portal>
-							</Popover.Root>
-						)}
-					</ToggleGroup.Item>
-
-					{stage && (
-						<ToggleGroup.Item value="addEnd" data-tool className="relative">
-							<Tooltip text={<TooltipAndHotkey text="End" hotkey="e" />}>
-								<FlagIcon data-icon />
-							</Tooltip>
-						</ToggleGroup.Item>
-					)}
+					{/* Trigger/Action are grouped under Connect, and retrieval is under Context. */}
 				</ToggleGroup.Root>
 			</div>
 		</div>

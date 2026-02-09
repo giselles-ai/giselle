@@ -1,11 +1,16 @@
 import { useToasts } from "@giselle-internal/ui/toast";
 import type { QueryNode } from "@giselles-ai/protocol";
-import { useNodeGenerations, useWorkflowDesigner } from "@giselles-ai/react";
+import { useNodeGenerations } from "@giselles-ai/react";
 import {
 	isJsonContent,
 	jsonContentToText,
 } from "@giselles-ai/text-editor-utils";
 import { useCallback, useMemo } from "react";
+import {
+	useAppDesignerStore,
+	useDeleteNode,
+	useUpdateNodeData,
+} from "../../../app-designer";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
 import {
 	GenerateCtaButton,
@@ -20,11 +25,14 @@ import { SettingsPanel } from "./settings-panel";
 import { useConnectedSources } from "./sources";
 
 export function QueryNodePropertiesPanel({ node }: { node: QueryNode }) {
-	const { data, updateNodeData, deleteNode } = useWorkflowDesigner();
+	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
+	const connections = useAppDesignerStore((s) => s.connections);
+	const updateNodeData = useUpdateNodeData();
+	const deleteNode = useDeleteNode();
 	const { createAndStartGenerationRunner, isGenerating, stopGenerationRunner } =
 		useNodeGenerations({
 			nodeId: node.id,
-			origin: { type: "studio", workspaceId: data.id },
+			origin: { type: "studio", workspaceId },
 		});
 	const { all: connectedSources } = useConnectedSources(node);
 	const { error } = useToasts();
@@ -53,24 +61,24 @@ export function QueryNodePropertiesPanel({ node }: { node: QueryNode }) {
 		createAndStartGenerationRunner({
 			origin: {
 				type: "studio",
-				workspaceId: data.id,
+				workspaceId,
 			},
 			operationNode: node,
 			sourceNodes: connectedSources.map(
 				(connectedSource) => connectedSource.node,
 			),
-			connections: data.connections.filter(
+			connections: connections.filter(
 				(connection) => connection.inputNode.id === node.id,
 			),
 		});
 	}, [
 		connectedSources,
-		data.id,
-		data.connections,
+		connections,
 		node,
 		createAndStartGenerationRunner,
 		error,
 		query,
+		workspaceId,
 	]);
 
 	return (
@@ -80,7 +88,7 @@ export function QueryNodePropertiesPanel({ node }: { node: QueryNode }) {
 				onChangeName={(name) => {
 					updateNodeData(node, { name });
 				}}
-				docsUrl="https://docs.giselles.ai/en/glossary/query-node"
+				docsUrl="https://docs.giselles.ai/en/glossary/vector-query-node"
 				onDelete={() => deleteNode(node.id)}
 			/>
 			<PropertiesPanelContent>

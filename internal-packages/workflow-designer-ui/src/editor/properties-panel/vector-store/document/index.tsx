@@ -10,12 +10,11 @@ import {
 } from "@giselles-ai/protocol";
 import {
 	useVectorStore,
-	useWorkflowDesigner,
 	type VectorStoreContextValue,
 } from "@giselles-ai/react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-
+import { useUpdateNodeData } from "../../../../app-designer";
 import { TriangleAlert } from "../../../../icons";
 import {
 	type DocumentVectorStore,
@@ -70,7 +69,7 @@ type DocumentVectorStoreNodePropertiesPanelProps = {
 export function DocumentVectorStoreNodePropertiesPanel({
 	node,
 }: DocumentVectorStoreNodePropertiesPanelProps) {
-	const { updateNodeData } = useWorkflowDesigner();
+	const updateNodeData = useUpdateNodeData();
 	const vectorStore = useVectorStore();
 	const vectorStoreValue = vectorStore as VectorStoreContextValue | undefined;
 	const settingPath = vectorStoreValue?.documentSettingPath;

@@ -26,3 +26,10 @@ export function isUsageLimitError(error: unknown): error is UsageLimitError {
 		error.name === "UsageLimitError"
 	);
 }
+
+export class DataQueryError extends BaseError {
+	constructor(message: string, options?: ErrorOptions) {
+		super(message, options);
+		this.name = "DataQueryError";
+	}
+}

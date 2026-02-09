@@ -1,5 +1,5 @@
 import { createRequire } from "node:module";
-import { relative } from "node:path";
+import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import createBundleAnalyzer from "@next/bundle-analyzer";
 import type { SentryBuildOptions } from "@sentry/nextjs";
@@ -28,10 +28,14 @@ const pdfiumTracingConfig = {
 		"/api/vector-stores/document/[documentVectorStoreId]/documents": [
 			pdfiumWasmInclude,
 		],
+		"/api/vector-stores/cron/document/ingest": [pdfiumWasmInclude],
 	},
 };
 
 const nextConfig: NextConfig = {
+	turbopack: {
+		root: join(__dirname, "../../"),
+	},
 	serverExternalPackages,
 	images: {
 		remotePatterns: [
@@ -58,7 +62,7 @@ const nextConfig: NextConfig = {
 		return [
 			{
 				source: "/",
-				destination: "/workspaces",
+				destination: "/playground",
 				permanent: false,
 			},
 		];

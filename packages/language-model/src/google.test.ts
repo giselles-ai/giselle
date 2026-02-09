@@ -33,6 +33,18 @@ describe("google llm", () => {
 			);
 		});
 
+		it("should fallback gemini-3-flash-preview to gemini-3-flash", () => {
+			expect(GoogleLanguageModelId.parse("gemini-3-flash")).toBe(
+				"gemini-3-flash",
+			);
+			expect(GoogleLanguageModelId.parse("gemini-3-flash-preview")).toBe(
+				"gemini-3-flash",
+			);
+			expect(GoogleLanguageModelId.parse("gemini-3.0-flash-preview")).toBe(
+				"gemini-3-flash",
+			);
+		});
+
 		it("should fallback gemini-2.5-pro-preview variants to gemini-2.5-pro", () => {
 			expect(GoogleLanguageModelId.parse("gemini-2.5-pro-preview-03-25")).toBe(
 				"gemini-2.5-pro",

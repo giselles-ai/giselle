@@ -1,8 +1,10 @@
 "use client";
 
+export * from "./data-store";
 export * from "./errors";
 export * from "./feature-flags";
 export * from "./generations";
+export * from "./giselle-client";
 export * from "./integrations";
 export * from "./protocol";
 export * from "./task";

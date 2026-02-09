@@ -6,7 +6,9 @@ import {
 } from "lucide-react";
 import type { IconName } from "lucide-react/dynamic";
 import { Accordion } from "radix-ui";
-import { stageFlag } from "../../../../flags";
+import { fetchCurrentTeam } from "@/services/teams";
+import { isInternalPlan } from "@/services/teams/utils";
+import { stageV2Flag } from "../../../../flags";
 import { CreateAppButton } from "./create-app-button";
 import { SidebarLink } from "./sidebar-link";
 
@@ -57,100 +59,142 @@ function SidebarItem({ part }: { part: SidebarPart }) {
 	}
 }
 
-const stagePart: SidebarPart = {
-	type: "linkGroup",
-	id: "stage",
-	label: "Stage - Run Apps",
-	icon: "sparkle",
-	links: [
+function createStagePart(isStageV2Enabled: boolean): SidebarPart {
+	const links: SidebarLink[] = [
 		{
 			id: "playground",
 			label: "Playground",
 			href: "/playground",
 			activeMatchPattern: "/playground",
 		},
-		{
-			id: "apps",
-			label: "Apps",
-			href: "/stage/showcase",
-			activeMatchPattern: "/stage/showcase",
-		},
+		...(isStageV2Enabled
+			? [
+					{
+						id: "apps",
+						label: "Apps",
+						href: "/stage/showcase",
+						activeMatchPattern: "/stage/showcase",
+					},
+				]
+			: []),
 		{
 			id: "tasks",
 			label: "Task History",
 			href: "/tasks",
 			activeMatchPattern: "/tasks*",
 		},
-	],
-};
+	];
 
-const baseSidebarParts: SidebarPart[] = [
-	{
+	return {
 		type: "linkGroup",
-		id: "studio",
-		label: "Studio - Build Apps",
-		icon: "blocks",
-		links: [
-			{
-				id: "workspaces",
-				label: "Workspaces",
-				href: "/workspaces",
-				activeMatchPattern: "/workspaces*",
-			},
-			{
-				id: "integration",
-				label: "Integration",
-				href: "/settings/team/integrations",
-				activeMatchPattern: "/settings/team/integrations*",
-			},
-			{
-				id: "vector-stores",
-				label: "Vector Stores",
-				href: "/settings/team/vector-stores",
-				activeMatchPattern: "/settings/team/vector-stores*",
-			},
-		],
-	},
-	{ type: "divider", id: "divider1" },
-	{
-		type: "linkGroup",
-		id: "manage",
-		label: "Manage",
-		icon: "settings",
-		links: [
-			{
-				id: "member",
-				label: "Member",
-				href: "/settings/team/members",
-				activeMatchPattern: "/settings/team/members*",
-			},
-			{
-				id: "usage",
-				label: "Usage",
-				href: "/settings/team/usage",
-				activeMatchPattern: "/settings/team/usage*",
-			},
-			{
-				id: "team-settings",
-				label: "Team Settings",
-				href: "/settings/team",
-				activeMatchPattern: [
-					"/settings/team*",
-					"!/settings/team/members*",
-					"!/settings/team/integrations*",
-					"!/settings/team/vector-stores*",
-					"!/settings/team/usage*",
-				],
-			},
-		],
-	},
-];
+		id: "stage",
+		label: "Stage - Run Apps",
+		icon: "sparkle",
+		links,
+	};
+}
+
+function createBaseSidebarParts(
+	isApiPublishingEnabled: boolean,
+	isDataStoreEnabled: boolean,
+): SidebarPart[] {
+	return [
+		{
+			type: "linkGroup",
+			id: "studio",
+			label: "Studio - Build Apps",
+			icon: "blocks",
+			links: [
+				{
+					id: "workspaces",
+					label: "Workspaces",
+					href: "/workspaces",
+					activeMatchPattern: "/workspaces*",
+				},
+				{
+					id: "integration",
+					label: "Integration",
+					href: "/settings/team/integrations",
+					activeMatchPattern: "/settings/team/integrations*",
+				},
+				{
+					id: "vector-stores",
+					label: "Vector Stores",
+					href: "/settings/team/vector-stores",
+					activeMatchPattern: "/settings/team/vector-stores*",
+				},
+				...(isDataStoreEnabled
+					? [
+							{
+								id: "data-stores",
+								label: "Data Stores",
+								href: "/settings/team/data-stores",
+								activeMatchPattern: "/settings/team/data-stores*",
+							},
+						]
+					: []),
+			],
+		},
+		{ type: "divider", id: "divider1" },
+		{
+			type: "linkGroup",
+			id: "manage",
+			label: "Manage",
+			icon: "settings",
+			links: [
+				{
+					id: "member",
+					label: "Member",
+					href: "/settings/team/members",
+					activeMatchPattern: "/settings/team/members*",
+				},
+				{
+					id: "usage",
+					label: "Usage",
+					href: "/settings/team/usage",
+					activeMatchPattern: "/settings/team/usage*",
+				},
+				...(isApiPublishingEnabled
+					? [
+							{
+								id: "api-keys",
+								label: "API keys",
+								href: "/settings/team/api-keys",
+								activeMatchPattern: "/settings/team/api-keys*",
+							},
+						]
+					: []),
+				{
+					id: "team-settings",
+					label: "Team Settings",
+					href: "/settings/team",
+					activeMatchPattern: [
+						"/settings/team*",
+						"!/settings/team/members*",
+						"!/settings/team/integrations*",
+						"!/settings/team/vector-stores*",
+						...(isDataStoreEnabled ? ["!/settings/team/data-stores*"] : []),
+						"!/settings/team/usage*",
+						"!/settings/team/api-keys*",
+					],
+				},
+			],
+		},
+	];
+}
 
 export async function Sidebar() {
-	const isStageEnabled = await stageFlag();
-	const sidebarParts = isStageEnabled
-		? [stagePart, ...baseSidebarParts]
-		: baseSidebarParts;
+	const [isStageV2Enabled, team] = await Promise.all([
+		stageV2Flag(),
+		fetchCurrentTeam(),
+	]);
+	const isApiPublishingEnabled = isInternalPlan(team);
+	const canAccessDataStore = isInternalPlan(team);
+	const baseSidebarParts = createBaseSidebarParts(
+		isApiPublishingEnabled,
+		canAccessDataStore,
+	);
+	const sidebarParts = [createStagePart(isStageV2Enabled), ...baseSidebarParts];
 
 	return (
 		<div className="w-[240px]">

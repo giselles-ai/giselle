@@ -1,27 +1,8 @@
-import { createRequire } from "node:module";
-import { dirname } from "node:path";
-import { pathToFileURL } from "node:url";
-import { init as initPdfium, type WrappedPdfiumModule } from "@embedpdf/pdfium";
+import { init, type WrappedPdfiumModule } from "@embedpdf/pdfium";
 
 import { assertNotAborted } from "./abort.js";
 
-declare const __filename: string;
-
-const moduleUrl =
-	typeof import.meta !== "undefined" && typeof import.meta.url === "string"
-		? import.meta.url
-		: typeof __filename !== "undefined"
-			? pathToFileURL(__filename).href
-			: new URL("index.js", pathToFileURL(process.cwd())).href;
-
-// Ensure createRequire always receives a concrete file URL
-const requireBaseUrl = moduleUrl.endsWith("/")
-	? new URL("index.js", moduleUrl).href
-	: moduleUrl;
-
-const moduleRequire = createRequire(requireBaseUrl);
-const PDFIUM_WASM_PATH = moduleRequire.resolve("@embedpdf/pdfium/pdfium.wasm");
-const PDFIUM_WASM_DIR = dirname(PDFIUM_WASM_PATH);
+type PdfiumWasmBinary = ArrayBuffer | ArrayBufferView;
 
 type PdfiumRenderCallback = (frame: {
 	data: Uint8Array;
@@ -64,6 +45,7 @@ interface PdfiumDocument {
 type WithPdfDocumentOptions = {
 	password?: string;
 	signal?: AbortSignal;
+	wasmBinary: PdfiumWasmBinary;
 };
 
 const FORM_INFO_SIZE = 256;
@@ -86,38 +68,40 @@ const PDFIUM_ERROR_MESSAGES: Record<number, string> = {
 	6: "PDFium: page not found or content error", // PAGE
 };
 
-let cachedModule: WrappedPdfiumModule | null = null;
-let pendingModule: Promise<WrappedPdfiumModule> | null = null;
+let modulePromise: Promise<WrappedPdfiumModule> | null = null;
+let initializedWasmBinary: PdfiumWasmBinary | null = null;
 
-async function getPdfiumModule(): Promise<WrappedPdfiumModule> {
-	if (cachedModule !== null) {
-		return cachedModule;
+function getPdfiumModule(
+	wasmBinary: PdfiumWasmBinary,
+): Promise<WrappedPdfiumModule> {
+	if (!wasmBinary) {
+		throw new Error("PDFium: wasm binary is required to initialize the module");
 	}
 
-	if (pendingModule === null) {
-		pendingModule = initPdfium({
-			locateFile: (fileName: string, prefix: string) => {
-				if (fileName === "pdfium.wasm") {
-					return PDFIUM_WASM_PATH;
-				}
-				if (prefix) {
-					return `${prefix}${fileName}`;
-				}
-				return `${PDFIUM_WASM_DIR}/${fileName}`;
-			},
+	if (modulePromise !== null) {
+		if (
+			initializedWasmBinary !== null &&
+			initializedWasmBinary !== wasmBinary
+		) {
+			throw new Error("PDFium: module already initialized with a wasm binary");
+		}
+		return modulePromise;
+	}
+
+	initializedWasmBinary = wasmBinary;
+	modulePromise = init({ wasmBinary })
+		.then((module) => {
+			module.FPDF_InitLibrary();
+			module.PDFiumExt_Init();
+			return module;
 		})
-			.then((module) => {
-				module.FPDF_InitLibrary();
-				module.PDFiumExt_Init();
-				cachedModule = module;
-				return module;
-			})
-			.finally(() => {
-				pendingModule = null;
-			});
-	}
+		.catch((error) => {
+			modulePromise = null;
+			initializedWasmBinary = null;
+			throw error;
+		});
 
-	return await pendingModule;
+	return modulePromise;
 }
 
 function getHeap(pdfium: WrappedPdfiumModule["pdfium"]): Uint8Array {
@@ -130,7 +114,7 @@ export async function withPdfDocument<T>(
 	handler: (document: PdfiumDocument) => Promise<T> | T,
 ): Promise<T> {
 	assertNotAborted(options.signal);
-	const module = await getPdfiumModule();
+	const module = await getPdfiumModule(options.wasmBinary);
 	assertNotAborted(options.signal);
 	const document = loadDocument(module, data, options.password ?? "");
 	try {

@@ -30,6 +30,7 @@ import {
 	smoothStream,
 	stepCountIs,
 	streamText,
+	type Tool,
 	type UIMessage,
 } from "ai";
 import { generationUiMessageChunksPath } from "../path";
@@ -107,6 +108,7 @@ export function generateContent({
 			generationContentResolver,
 			imageGenerationResolver,
 			appEntryResolver,
+			dataStoreSchemaResolver,
 		}) => {
 			const operationNode = generationContext.operationNode;
 			if (!isTextGenerationNode(operationNode)) {
@@ -127,6 +129,7 @@ export function generateContent({
 				generationContentResolver,
 				imageGenerationResolver,
 				appEntryResolver,
+				dataStoreSchemaResolver,
 			});
 
 			let preparedToolSet: PreparedToolSet = {
@@ -229,7 +232,14 @@ export function generateContent({
 					...preparedToolSet,
 					toolSet: {
 						...preparedToolSet.toolSet,
-						google_search: google.tools.googleSearch({}),
+						// Cast needed: googleSearch returns Tool<{}, any> but ToolSet expects Tool<any, any>.
+						// This is a type mismatch in AI SDK where {} is not assignable to the ToolSet union type.
+						google_search: google.tools.googleSearch({}) as Tool<
+							// biome-ignore lint/suspicious/noExplicitAny: AI SDK type compatibility workaround
+							any,
+							// biome-ignore lint/suspicious/noExplicitAny: AI SDK type compatibility workaround
+							any
+						>,
 					},
 				};
 			}
@@ -242,7 +252,14 @@ export function generateContent({
 					...preparedToolSet,
 					toolSet: {
 						...preparedToolSet.toolSet,
-						url_context: google.tools.urlContext({}),
+						// Cast needed: urlContext returns Tool<{}, any> but ToolSet expects Tool<any, any>.
+						// This is a type mismatch in AI SDK where {} is not assignable to the ToolSet union type.
+						url_context: google.tools.urlContext({}) as Tool<
+							// biome-ignore lint/suspicious/noExplicitAny: AI SDK type compatibility workaround
+							any,
+							// biome-ignore lint/suspicious/noExplicitAny: AI SDK type compatibility workaround
+							any
+						>,
 					},
 				};
 			}
@@ -320,11 +337,21 @@ export function generateContent({
 						`Text generation stream completed in ${Date.now() - textGenerationStartTime}ms`,
 					);
 					const toolCleanupStartTime = Date.now();
-					await Promise.all(
+					const cleanupResults = await Promise.allSettled(
 						preparedToolSet.cleanupFunctions.map((cleanupFunction) =>
 							cleanupFunction(),
 						),
 					);
+					cleanupResults.forEach((result, idx) => {
+						if (result.status === "rejected") {
+							logger.error(
+								{ error: result.reason },
+								`Cleanup function at index ${idx} failed`,
+							);
+						} else {
+							logger.debug(`Cleanup function at index ${idx} succeeded`);
+						}
+					});
 					logger.info(
 						`Tool cleanup completed in ${Date.now() - toolCleanupStartTime}ms`,
 					);
@@ -454,12 +481,10 @@ export function generateContent({
 			});
 
 			let chunkCount = 0;
-			const uiMessageChunks: StreamItem<typeof uiMessageStream>[] = [];
 			for await (const chunk of uiMessageStream) {
 				chunkCount++;
 				logger.debug(`Adding chunk ${chunkCount}: ${chunk.type}`);
 				writer.add(chunk);
-				uiMessageChunks.push(chunk);
 			}
 			logger.debug(`Stream ended, total chunks: ${chunkCount}`);
 			await writer.close();
@@ -571,6 +596,7 @@ function generateContentV2({
 			generationContentResolver,
 			imageGenerationResolver,
 			appEntryResolver,
+			dataStoreSchemaResolver,
 		}) => {
 			const operationNode = generationContext.operationNode;
 			if (!isContentGenerationNode(operationNode)) {
@@ -598,6 +624,7 @@ function generateContentV2({
 				generationContentResolver,
 				imageGenerationResolver,
 				appEntryResolver,
+				dataStoreSchemaResolver,
 			});
 
 			const { toolSet, cleanupFunctions } = await buildToolSet({
@@ -663,9 +690,19 @@ function generateContentV2({
 						`Text generation stream completed in ${Date.now() - textGenerationStartTime}ms`,
 					);
 					const toolCleanupStartTime = Date.now();
-					await Promise.all(
+					const cleanupResults = await Promise.allSettled(
 						cleanupFunctions.map((cleanupFunction) => cleanupFunction()),
 					);
+					cleanupResults.forEach((result, idx) => {
+						if (result.status === "rejected") {
+							logger.error(
+								{ error: result.reason },
+								`Cleanup function at index ${idx} failed`,
+							);
+						} else {
+							logger.debug(`Cleanup function at index ${idx} succeeded`);
+						}
+					});
 					logger.info(
 						`Tool cleanup completed in ${Date.now() - toolCleanupStartTime}ms`,
 					);
@@ -795,12 +832,10 @@ function generateContentV2({
 			});
 
 			let chunkCount = 0;
-			const uiMessageChunks: StreamItem<typeof uiMessageStream>[] = [];
 			for await (const chunk of uiMessageStream) {
 				chunkCount++;
 				logger.debug(`Adding chunk ${chunkCount}: ${chunk.type}`);
 				writer.add(chunk);
-				uiMessageChunks.push(chunk);
 			}
 			logger.debug(`Stream ended, total chunks: ${chunkCount}`);
 			await writer.close();

@@ -52,6 +52,7 @@ function createTrigger(eventId: GitHubEventId): Trigger {
 			event,
 			installationId: 1,
 			repositoryNodeId: "repo-node",
+			shouldPostInProgressComment: true,
 		},
 	} as Trigger;
 }

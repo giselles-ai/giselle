@@ -11,8 +11,9 @@ import {
 	InputId,
 	OutputId,
 } from "@giselles-ai/protocol";
-import { useIntegration, useWorkflowDesigner } from "@giselles-ai/react";
+import { useIntegration } from "@giselles-ai/react";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { useUpdateNodeData } from "../../../app-designer";
 import { GitHubIcon, SpinnerIcon } from "../../../icons";
 // Import icons from GitHub trigger components
 import {
@@ -48,27 +49,6 @@ const DefaultActionIcon = ({
 		<path
 			d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"
 			fill="currentColor"
-		/>
-	</svg>
-);
-
-// Arrow right icon for action buttons
-const _ArrowRightIcon = () => (
-	<svg
-		width="16"
-		height="16"
-		viewBox="0 0 16 16"
-		fill="none"
-		xmlns="http://www.w3.org/2000/svg"
-		className="text-inverse group-hover:text-inverse transition-colors"
-	>
-		<title>Arrow Right</title>
-		<path
-			d="M6 4L10 8L6 12"
-			stroke="currentColor"
-			strokeWidth="1.5"
-			strokeLinecap="round"
-			strokeLinejoin="round"
 		/>
 	</svg>
 );
@@ -358,7 +338,7 @@ function Installed({
 			state: "select-repository",
 		},
 	);
-	const { updateNodeData } = useWorkflowDesigner();
+	const updateNodeData = useUpdateNodeData();
 	const [selectedInstallationId, setSelectedInstallationId] = useState<
 		number | null
 	>(null);

@@ -16,7 +16,7 @@ import {
 } from "@giselles-ai/github-tool";
 import type { OnGenerationComplete, OnGenerationError } from "../generations";
 import { getGitHubRepositoryIntegrationIndex } from "../integrations/utils";
-import { createAndStartTask } from "../tasks";
+import { createAndStartTask, type OnTaskCreate } from "../tasks";
 import { getTrigger } from "../triggers/utils";
 import type { GiselleContext } from "../types";
 import { type EventHandlerDependencies, processEvent } from "./event-handlers";
@@ -41,6 +41,7 @@ export async function handleGitHubWebhookV2(args: {
 	request: Request;
 	onGenerationComplete?: OnGenerationComplete;
 	onGenerationError?: OnGenerationError;
+	onTaskCreate?: OnTaskCreate;
 }) {
 	const credentials = args.context.integrationConfigs?.github?.authV2;
 	if (credentials === undefined) {
@@ -70,6 +71,7 @@ export async function handleGitHubWebhookV2(args: {
 			},
 			onGenerationComplete: args.onGenerationComplete,
 			onGenerationError: args.onGenerationError,
+			onTaskCreate: args.onTaskCreate,
 		});
 
 	const handlers: Partial<
@@ -126,6 +128,7 @@ async function process<TEventName extends WebhookEventName>(args: {
 	deps: ProcessDeps & EventHandlerDependencies;
 	onGenerationComplete?: OnGenerationComplete;
 	onGenerationError?: OnGenerationError;
+	onTaskCreate?: OnTaskCreate;
 }) {
 	if (!hasRequiredPayloadProps(args.event)) {
 		return;
@@ -176,6 +179,7 @@ async function process<TEventName extends WebhookEventName>(args: {
 					deps: args.deps,
 					onGenerationComplete: args.onGenerationComplete,
 					onGenerationError: args.onGenerationError,
+					onTaskCreate: args.onTaskCreate,
 				});
 			} catch (error) {
 				console.error(

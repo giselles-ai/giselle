@@ -2,6 +2,9 @@ import {
 	isActionNode,
 	isAppEntryNode,
 	isContentGenerationNode,
+	isDataQueryNode,
+	isDataStoreNode,
+	isEndNode,
 	isFileNode,
 	isImageGenerationNode,
 	isQueryNode,
@@ -11,11 +14,17 @@ import {
 	isVectorStoreNode,
 	isWebPageNode,
 } from "@giselles-ai/protocol";
-import { useWorkflowDesignerStore } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { useShallow } from "zustand/shallow";
+import {
+	useAppDesignerStore,
+	useSetCurrentShortcutScope,
+} from "../../app-designer";
 import { ActionNodePropertiesPanel } from "./action-node-properties-panel";
 import { AppEntryNodePropertiesPanel } from "./app-entry-node-properties-panel";
+import { DataQueryNodePropertiesPanel } from "./data-query-properties-panel";
+import { DataStoreNodePropertiesPanel } from "./data-store-properties-panel";
+import { EndNodePropertiesPanel } from "./end-node-properties-panel";
 import { FileNodePropertiesPanel } from "./file-node-properties-panel";
 import { ImageGenerationNodePropertiesPanel } from "./image-generation-node-properties-panel";
 import { QueryNodePropertiesPanel } from "./query-node-properties-panel";
@@ -27,16 +36,12 @@ import { VectorStoreNodePropertiesPanel } from "./vector-store";
 import { WebPageNodePropertiesPanel } from "./web-page-node-properties-panel";
 
 export function PropertiesPanel() {
-	const selectedNodes = useWorkflowDesignerStore(
+	const selectedNodes = useAppDesignerStore(
 		useShallow((s) =>
-			s.workspace.nodes.filter(
-				(node) => s.workspace.ui.nodeState[node.id]?.selected,
-			),
+			s.nodes.filter((node) => s.ui.nodeState[node.id]?.selected),
 		),
 	);
-	const setCurrentShortcutScope = useWorkflowDesignerStore(
-		(s) => s.setCurrentShortcutScope,
-	);
+	const setCurrentShortcutScope = useSetCurrentShortcutScope();
 	return (
 		<section
 			className={clsx("h-full text-inverse outline-none")}
@@ -97,6 +102,18 @@ export function PropertiesPanel() {
 					key={selectedNodes[0].id}
 				/>
 			)}
+			{isDataStoreNode(selectedNodes[0]) && (
+				<DataStoreNodePropertiesPanel
+					node={selectedNodes[0]}
+					key={selectedNodes[0].id}
+				/>
+			)}
+			{isDataQueryNode(selectedNodes[0]) && (
+				<DataQueryNodePropertiesPanel
+					node={selectedNodes[0]}
+					key={selectedNodes[0].id}
+				/>
+			)}
 			{isQueryNode(selectedNodes[0]) && (
 				<QueryNodePropertiesPanel
 					node={selectedNodes[0]}
@@ -111,6 +128,12 @@ export function PropertiesPanel() {
 			)}
 			{isContentGenerationNode(selectedNodes[0]) && (
 				<TextGenerationNodePropertiesPanelV2
+					node={selectedNodes[0]}
+					key={selectedNodes[0].id}
+				/>
+			)}
+			{isEndNode(selectedNodes[0]) && (
+				<EndNodePropertiesPanel
 					node={selectedNodes[0]}
 					key={selectedNodes[0].id}
 				/>

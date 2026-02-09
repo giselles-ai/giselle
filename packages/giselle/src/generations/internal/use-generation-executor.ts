@@ -1,3 +1,4 @@
+import { parseConfiguration } from "@giselles-ai/data-store-registry";
 import { isClonedFileDataPayload } from "@giselles-ai/node-registry";
 import type {
 	FailedGeneration,
@@ -11,6 +12,7 @@ import type {
 import {
 	AppParameterId,
 	type CompletedGeneration,
+	type DataStoreId,
 	type Generation,
 	GenerationContext,
 	type GenerationOutput,
@@ -21,6 +23,7 @@ import {
 	type OutputFileBlob,
 	type QueuedGeneration,
 	type RunningGeneration,
+	SecretId,
 } from "@giselles-ai/protocol";
 import type {
 	DataContent,
@@ -30,12 +33,16 @@ import type {
 	ProviderMetadata,
 	TextPart,
 } from "ai";
+import { Pool } from "pg";
+import { getDataStore } from "../../data-stores/get-data-store";
 import { UsageLimitError } from "../../error";
 import { filePath } from "../../files/utils";
+import { decryptSecret } from "../../secrets/decrypt-secret";
 import type { GiselleContext } from "../../types";
 import type { AppEntryResolver, GenerationMetadata } from "../types";
 import {
 	checkUsageLimits,
+	dataQueryResultToText,
 	getGeneratedImage,
 	getGeneration,
 	getNodeGenerationIndexes,
@@ -99,6 +106,9 @@ export async function useGenerationExecutor<T>(args: {
 			outputId: OutputId,
 		) => Promise<ImagePart[] | undefined>;
 		appEntryResolver: AppEntryResolver;
+		dataStoreSchemaResolver: (
+			dataStoreId: DataStoreId,
+		) => Promise<string | undefined>;
 		workspaceId: WorkspaceId;
 		signal?: AbortSignal;
 		finishGeneration: FinishGeneration;
@@ -131,6 +141,7 @@ export async function useGenerationExecutor<T>(args: {
 	let workspaceId: WorkspaceId;
 	switch (args.generation.context.origin.type) {
 		case "stage":
+		case "api":
 		case "github-app":
 			workspaceId = args.generation.context.origin.workspaceId;
 			break;
@@ -279,6 +290,8 @@ export async function useGenerationExecutor<T>(args: {
 					return generationOutput.content;
 				case "query-result":
 					return queryResultToText(generationOutput);
+				case "data-query-result":
+					return dataQueryResultToText(generationOutput);
 				default:
 					throw new Error("Generation output type is not supported");
 			}
@@ -351,6 +364,72 @@ export async function useGenerationExecutor<T>(args: {
 		).then((results) => results.filter((result) => result !== undefined));
 
 		return imageParts.length > 0 ? imageParts : undefined;
+	}
+
+	async function dataStoreSchemaResolver(
+		dataStoreId: DataStoreId,
+	): Promise<string | undefined> {
+		const schemaRetrievalStartTime = Date.now();
+
+		try {
+			const dataStore = await getDataStore({
+				context: args.context,
+				dataStoreId,
+			});
+			if (!dataStore) {
+				throw new Error(`DataStore not found: ${dataStoreId}`);
+			}
+
+			const config = parseConfiguration(
+				dataStore.provider,
+				dataStore.configuration,
+			);
+
+			const connectionString = await decryptSecret({
+				context: args.context,
+				secretId: SecretId.parse(config.connectionStringSecretId),
+			});
+
+			if (connectionString === undefined) {
+				args.context.logger.warn(
+					`Failed to decrypt connection string for data store: ${dataStoreId}`,
+				);
+				return undefined;
+			}
+
+			const pool = new Pool({
+				connectionString,
+				connectionTimeoutMillis: 10000,
+				query_timeout: 25000,
+				statement_timeout: 20000,
+			});
+			try {
+				const res = await pool.query(`
+          SELECT table_name, column_name, data_type, is_nullable
+          FROM information_schema.columns
+          WHERE table_schema = 'public'
+          ORDER BY table_name, ordinal_position
+        `);
+				args.context.logger.info(
+					`Schema retrieval completed in ${Date.now() - schemaRetrievalStartTime}ms (dataStoreId: ${dataStoreId})`,
+				);
+				return JSON.stringify(res.rows);
+			} finally {
+				try {
+					await pool.end();
+				} catch {
+					args.context.logger.warn(
+						`Failed to close pool for data store: ${dataStoreId}`,
+					);
+				}
+			}
+		} catch {
+			// Error details are not logged to prevent exposing sensitive data
+			args.context.logger.warn(
+				`Failed to retrieve schema for data store: ${dataStoreId}`,
+			);
+			return undefined;
+		}
 	}
 
 	async function finishGeneration({
@@ -547,5 +626,6 @@ export async function useGenerationExecutor<T>(args: {
 		signal: args.signal,
 		finishGeneration,
 		appEntryResolver,
+		dataStoreSchemaResolver,
 	});
 }

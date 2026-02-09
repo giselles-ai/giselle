@@ -1,6 +1,7 @@
 import type { QueryNode } from "@giselles-ai/protocol";
-import { useNodeGenerations, useWorkflowDesigner } from "@giselles-ai/react";
+import { useNodeGenerations } from "@giselles-ai/react";
 import clsx from "clsx/lite";
+import { useAppDesignerStore } from "../../../app-designer";
 import { StackBlicksIcon } from "../../../icons";
 import { EmptyState } from "../../../ui/empty-state";
 import { QueryResultView } from "../../../ui/query-result-view";
@@ -19,10 +20,10 @@ function Empty() {
 }
 
 export function GenerationPanel({ node }: { node: QueryNode }) {
-	const { data } = useWorkflowDesigner();
+	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
 	const { currentGeneration } = useNodeGenerations({
 		nodeId: node.id,
-		origin: { type: "studio", workspaceId: data.id },
+		origin: { type: "studio", workspaceId },
 	});
 
 	if (currentGeneration === undefined) {

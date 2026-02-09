@@ -1,6 +1,6 @@
 import { Button } from "@giselle-internal/ui/button";
+import { Toggle } from "@giselle-internal/ui/toggle";
 import type { TriggerId, TriggerNode } from "@giselles-ai/protocol";
-import { useWorkflowDesigner } from "@giselles-ai/react";
 import {
 	type GitHubEventId,
 	githubEvents,
@@ -8,6 +8,7 @@ import {
 import clsx from "clsx/lite";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useUpdateNodeData } from "../../../../../app-designer";
 import ClipboardButton from "../../../../../ui/clipboard-button";
 import { useGitHubTrigger } from "../../../../lib/use-github-trigger";
 import {
@@ -76,12 +77,13 @@ export function GitHubTriggerConfiguredView({
 	node: TriggerNode;
 	onStartReconfigure: (mode: GitHubTriggerReconfigureMode) => void;
 }) {
-	const { updateNodeData } = useWorkflowDesigner();
+	const updateNodeData = useUpdateNodeData();
 	const {
 		isLoading,
 		data,
 		enableTrigger: enableFlowTrigger,
 		disableTrigger: disableFlowTrigger,
+		setTriggerConfiguration,
 	} = useGitHubTrigger(triggerId);
 	const [actionInProgress, setActionInProgress] = useState(false);
 	const [actionError, setActionError] = useState<Error | null>(null);
@@ -100,6 +102,16 @@ export function GitHubTriggerConfiguredView({
 	if (data === undefined) {
 		return "No Data";
 	}
+
+	const isInProgressCommentEnabled =
+		data.trigger.configuration.shouldPostInProgressComment;
+
+	const handleInProgressCommentToggle = (checked: boolean) => {
+		setTriggerConfiguration({
+			...data.trigger.configuration,
+			shouldPostInProgressComment: checked,
+		});
+	};
 
 	const beginReconfigure = (mode: GitHubTriggerReconfigureMode) => {
 		onStartReconfigure(mode);
@@ -315,6 +327,21 @@ export function GitHubTriggerConfiguredView({
 					</div>
 				</div>
 			)}
+			<div className="space-y-[4px]">
+				<p className="text-[14px] py-[1.5px] text-inverse">
+					In-Progress Comment
+				</p>
+				<div className="flex items-center justify-between gap-[12px]">
+					<p className="text-[12px] text-text-muted max-w-[260px]">
+						Post a progress comment to GitHub when this workflow runs.
+					</p>
+					<Toggle
+						name="in-progress-comment"
+						checked={isInProgressCommentEnabled}
+						onCheckedChange={handleInProgressCommentToggle}
+					/>
+				</div>
+			</div>
 		</div>
 	);
 }

@@ -1,12 +1,11 @@
 import type { NodeId } from "@giselles-ai/protocol";
-import {
-	useNodeGenerations,
-	useWorkflowDesignerStore,
-} from "@giselles-ai/react";
+import { useNodeGenerations } from "@giselles-ai/react";
 import { BaseEdge, type EdgeProps, getBezierPath } from "@xyflow/react";
 import clsx from "clsx/lite";
 import type { PropsWithChildren } from "react";
 import { useShallow } from "zustand/shallow";
+import { useAppDesignerStore } from "../../app-designer";
+import { STAGE_NODE_COLOR_VAR } from "../node/node-utils";
 
 function ConnectedNodeRunning({
 	inputNodeId,
@@ -14,9 +13,7 @@ function ConnectedNodeRunning({
 }: PropsWithChildren<{
 	inputNodeId: NodeId;
 }>) {
-	const workspaceId = useWorkflowDesignerStore(
-		useShallow((s) => s.workspace.id),
-	);
+	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
 	const { currentGeneration: inputNodeCurrentGeneration } = useNodeGenerations({
 		nodeId: inputNodeId,
 		origin: { type: "studio", workspaceId },
@@ -44,9 +41,11 @@ function getGradientColors(
 		trigger: "var(--color-trigger-node-1)",
 		action: "var(--color-action-node-1)",
 		query: "var(--color-query-node-1)",
+		dataQuery: "var(--color-data-query-node-1)",
 		vectorStore: "var(--color-vector-store-node-1)",
-		appEntry: "var(--color-trigger-node-1)",
-		end: "var(--color-action-node-1)",
+		dataStore: "var(--color-data-store-node-1)",
+		appEntry: STAGE_NODE_COLOR_VAR,
+		end: STAGE_NODE_COLOR_VAR,
 	};
 
 	return {
@@ -64,10 +63,8 @@ export function Connector({
 	targetY,
 	targetPosition,
 }: EdgeProps) {
-	const connection = useWorkflowDesignerStore(
-		useShallow((s) =>
-			s.workspace.connections.find((connection) => connection.id === id),
-		),
+	const connection = useAppDesignerStore(
+		useShallow((s) => s.connections.find((connection) => connection.id === id)),
 	);
 	if (connection === undefined) {
 		return null;

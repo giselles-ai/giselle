@@ -1,18 +1,19 @@
 import { Button } from "@giselle-internal/ui/button";
 import { useToasts } from "@giselle-internal/ui/toast";
-import {
-	type WebPage,
-	WebPageId,
-	type WebPageNode,
-	type WorkspaceId,
-} from "@giselles-ai/protocol";
-import { useGiselle, useWorkflowDesigner } from "@giselles-ai/react";
+import type { WebPage, WebPageNode, WorkspaceId } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
 import { TrashIcon } from "lucide-react";
 import { Dialog } from "radix-ui";
 import { type FormEventHandler, useCallback, useState } from "react";
 import useSWR from "swr";
-import { validateUrl } from "../../lib/validate-url";
+import {
+	useAddWebPages,
+	useAppDesignerStore,
+	useDeleteNode,
+	useRemoveWebPage,
+	useUpdateNodeData,
+} from "../../../app-designer";
+import { useGiselle } from "../../../app-designer/store/giselle-client-provider";
 import { NodePanelHeader } from "../ui/node-panel-header";
 import { Note } from "../ui/note";
 import { SettingLabel } from "../ui/setting-label";
@@ -157,10 +158,13 @@ function WebPageListItem({
 }
 
 export function WebPageNodePropertiesPanel({ node }: { node: WebPageNode }) {
-	const client = useGiselle();
-	const { data, updateNodeData, updateNodeDataContent, deleteNode } =
-		useWorkflowDesigner();
 	const { error } = useToasts();
+	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
+	const updateNodeData = useUpdateNodeData();
+	const deleteNode = useDeleteNode();
+	const addWebPages = useAddWebPages();
+	const removeWebPage = useRemoveWebPage();
+
 	const handleSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
 		async (e) => {
 			e.preventDefault();
@@ -171,89 +175,24 @@ export function WebPageNodePropertiesPanel({ node }: { node: WebPageNode }) {
 					.get("urls")
 					?.toString()
 					.split("\n")
-					.map((u) => u.trim())
-					.filter((u) => u.length > 0) || [];
-			if (urls.length === 0) {
-				error("Please enter at least one valid URL.");
-				return;
-			}
-			const normalizedUrls: string[] = [];
-			for (const url of urls) {
-				const parsed = validateUrl(url, { allowedProtocols: ["https:"] });
-				if (parsed === null) {
-					error("Invalid URL format. Use https://");
-					return;
-				}
-				normalizedUrls.push(parsed.href);
-			}
+					.map((u) => u.trim()) ?? [];
 
 			e.currentTarget.reset();
-			let webpages: WebPage[] = node.content.webpages;
-			await Promise.all(
-				normalizedUrls.map(async (url) => {
-					const newWebPage: WebPage = {
-						id: WebPageId.generate(),
-						status: "fetching",
-						url,
-					};
-					webpages = [...webpages, newWebPage];
-					updateNodeDataContent(node, {
-						webpages,
-					});
-					try {
-						const addedWebPage = await client.addWebPage({
-							webpage: newWebPage,
-							workspaceId: data.id,
-						});
-						webpages = [
-							...webpages.filter((webpage) => webpage.id !== addedWebPage.id),
-							addedWebPage,
-						];
-						updateNodeDataContent(node, {
-							webpages,
-						});
-					} catch (_err) {
-						const failedWebPage: WebPage = {
-							id: newWebPage.id,
-							status: "failed",
-							url: newWebPage.url,
-							errorMessage: newWebPage.url,
-						};
-						webpages = [
-							...webpages.filter((webpage) => webpage.id !== failedWebPage.id),
-							failedWebPage,
-						];
-						updateNodeDataContent(node, {
-							webpages,
-						});
-					}
-				}),
-			);
+
+			await addWebPages({
+				nodeId: node.id,
+				urls,
+				onError: (message) => error(message),
+			});
 		},
-		[client, data.id, node, updateNodeDataContent, error],
+		[addWebPages, error, node.id],
 	);
 
-	const removeWebPage = useCallback(
-		(webpageId: WebPageId) => async () => {
-			const webpage = node.content.webpages.find(
-				(webpage) => webpage.id === webpageId,
-			);
-			if (webpage === undefined) {
-				return;
-			}
-			updateNodeDataContent(node, {
-				webpages: node.content.webpages.filter(
-					(webpage) => webpage.id !== webpageId,
-				),
-			});
-			if (webpage.status === "fetched") {
-				await client.removeFile({
-					workspaceId: data.id,
-					fileId: webpage.fileId,
-				});
-			}
+	const handleRemoveWebPage = useCallback(
+		(webpageId: WebPage["id"]) => async () => {
+			await removeWebPage({ nodeId: node.id, webpageId });
 		},
-		[updateNodeDataContent, node, client, data.id],
+		[node.id, removeWebPage],
 	);
 
 	return (
@@ -293,8 +232,8 @@ export function WebPageNodePropertiesPanel({ node }: { node: WebPageNode }) {
 								<WebPageListItem
 									key={webpage.id}
 									webpage={webpage}
-									workspaceId={data.id}
-									onRemove={removeWebPage(webpage.id)}
+									workspaceId={workspaceId}
+									onRemove={handleRemoveWebPage(webpage.id)}
 								/>
 							))}
 						</ul>

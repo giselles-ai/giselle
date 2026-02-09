@@ -115,3 +115,10 @@
     :versions:
     - 0.0.5
     :when: 2025-11-10 01:16:57.900000000 Z
+- - :approve
+  - khroma
+  - :who: toyamarinyon
+    :why: Khroma does not list license information on npm; however, the repository includes a license file, and it is licensed under the MIT License. https://github.com/fabiospampinato/khroma/blob/4968165afb0d3d09be66497e7985a34f7bfe6d42/license
+    :versions:
+    - 2.1.0
+    :when: 2025-12-23 08:01:00.900000000 Z

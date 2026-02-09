@@ -1,7 +1,12 @@
 import { useToasts } from "@giselle-internal/ui/toast";
 import type { ImageGenerationNode } from "@giselles-ai/protocol";
-import { useNodeGenerations, useWorkflowDesigner } from "@giselles-ai/react";
+import { useNodeGenerations } from "@giselles-ai/react";
 import { useCallback, useRef } from "react";
+import {
+	useAppDesignerStore,
+	useDeleteNode,
+	useUpdateNodeData,
+} from "../../../app-designer";
 import { useUsageLimitsReached } from "../../../hooks/usage-limits";
 import { UsageLimitWarning } from "../../../ui/usage-limit-warning";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
@@ -19,11 +24,14 @@ export function ImageGenerationNodePropertiesPanel({
 }: {
 	node: ImageGenerationNode;
 }) {
-	const { data, updateNodeData, deleteNode } = useWorkflowDesigner();
+	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
+	const connections = useAppDesignerStore((s) => s.connections);
+	const updateNodeData = useUpdateNodeData();
+	const deleteNode = useDeleteNode();
 	const { createAndStartGenerationRunner, isGenerating, stopGenerationRunner } =
 		useNodeGenerations({
 			nodeId: node.id,
-			origin: { type: "studio", workspaceId: data.id },
+			origin: { type: "studio", workspaceId },
 		});
 	const { all: connectedSources } = useConnectedSources(node);
 	const usageLimitsReached = useUsageLimitsReached();
@@ -54,24 +62,24 @@ export function ImageGenerationNodePropertiesPanel({
 		createAndStartGenerationRunner({
 			origin: {
 				type: "studio",
-				workspaceId: data.id,
+				workspaceId,
 			},
 			operationNode: node,
 			sourceNodes: connectedSources.map(
 				(connectedSource) => connectedSource.node,
 			),
-			connections: data.connections.filter(
+			connections: connections.filter(
 				(connection) => connection.inputNode.id === node.id,
 			),
 		});
 	}, [
 		connectedSources,
-		data.id,
-		data.connections,
+		connections,
 		node,
 		createAndStartGenerationRunner,
 		usageLimitsReached,
 		error,
+		workspaceId,
 	]);
 
 	return (

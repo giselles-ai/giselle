@@ -1,5 +1,8 @@
+import type { DataStoreProvider } from "@giselles-ai/data-store-registry";
 import { type GiselleLogger, noopLogger } from "@giselles-ai/logger";
 import {
+	type DataStore,
+	type DataStoreId,
 	type FetchingWebPage,
 	type FileId,
 	type Generation,
@@ -19,6 +22,12 @@ import {
 import { getApp, saveApp } from "./apps";
 import { deleteApp } from "./apps/delete-app";
 import { getLanguageModelProviders } from "./configurations/get-language-model-providers";
+import {
+	createDataStore,
+	deleteDataStore,
+	getDataStore,
+	updateDataStore,
+} from "./data-stores";
 import { copyFile, getFileText, removeFile, uploadFile } from "./files";
 import {
 	cancelGeneration,
@@ -41,7 +50,7 @@ import {
 	getGitHubRepositoryFullname,
 	handleGitHubWebhookV2,
 } from "./github";
-import { executeAction } from "./operations";
+import { executeAction, executeDataQuery } from "./operations";
 import { executeQuery } from "./operations/execute-query";
 import { addSecret, deleteSecret, getWorkspaceSecrets } from "./secrets";
 import { addWebPage } from "./sources";
@@ -290,9 +299,12 @@ export function Giselle(config: GiselleConfig) {
 			request: Request;
 			onGenerationComplete?: OnGenerationComplete;
 			onGenerationError?: OnGenerationError;
+			onTaskCreate?: OnTaskCreate;
 		}) => handleGitHubWebhookV2({ ...args, context }),
 		executeQuery: async (generation: QueuedGeneration) =>
 			executeQuery({ context, generation }),
+		executeDataQuery: async (generation: QueuedGeneration) =>
+			executeDataQuery({ context, generation }),
 		addWebPage: async (args: {
 			workspaceId: WorkspaceId;
 			webpage: FetchingWebPage;
@@ -305,7 +317,7 @@ export function Giselle(config: GiselleConfig) {
 			});
 		},
 		async addSecret(args: {
-			workspaceId: WorkspaceId;
+			workspaceId?: WorkspaceId;
 			label: string;
 			value: string;
 			tags?: string[];
@@ -341,7 +353,7 @@ export function Giselle(config: GiselleConfig) {
 		streamTask(args: { taskId: TaskId }) {
 			return streamTask({ ...args, context });
 		},
-		deleteSecret(args: { workspaceId: WorkspaceId; secretId: SecretId }) {
+		deleteSecret(args: { secretId: SecretId }) {
 			return deleteSecret({ ...args, context });
 		},
 		async flushGenerationIndexQueue() {
@@ -419,6 +431,26 @@ export function Giselle(config: GiselleConfig) {
 		saveApp: bindGiselleFunction(saveApp, context),
 		deleteApp: bindGiselleFunction(deleteApp, context),
 		getApp: bindGiselleFunction(getApp, context),
+
+		// Data Store CRUD
+		async createDataStore(args: {
+			provider: DataStoreProvider;
+			configuration: DataStore["configuration"];
+		}) {
+			return await createDataStore({ ...args, context });
+		},
+		async getDataStore(args: { dataStoreId: DataStoreId }) {
+			return await getDataStore({ ...args, context });
+		},
+		async updateDataStore(args: {
+			dataStoreId: DataStoreId;
+			configuration: Partial<DataStore["configuration"]>;
+		}) {
+			return await updateDataStore({ ...args, context });
+		},
+		async deleteDataStore(args: { dataStoreId: DataStoreId }) {
+			return await deleteDataStore({ ...args, context });
+		},
 	};
 }
 

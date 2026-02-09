@@ -1,16 +1,8 @@
-import { notFound } from "next/navigation";
-// import { fetchEnrichedActs } from "@/app/stage/(top)/services";
-import { fetchEnrichedActs } from "@/app/(main)/stage/(depreacted)/services";
-import { stageFlag } from "@/flags";
+import { fetchEnrichedActs } from "@/app/(main)/stage/(deprecated)/services";
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchUserTeams } from "@/services/teams";
 
 export async function GET() {
-	const enableStage = await stageFlag();
-	if (!enableStage) {
-		return notFound();
-	}
-
 	const teams = await fetchUserTeams();
 	const user = await fetchCurrentUser();
 	const acts = await fetchEnrichedActs(teams, user);

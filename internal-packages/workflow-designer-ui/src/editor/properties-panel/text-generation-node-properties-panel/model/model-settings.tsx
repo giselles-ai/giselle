@@ -15,9 +15,10 @@ import {
 	type TextGenerationContent,
 	type TextGenerationNode,
 } from "@giselles-ai/protocol";
-import { useUsageLimits, useWorkflowDesignerStore } from "@giselles-ai/react";
+import { useUsageLimits } from "@giselles-ai/react";
 import { useCallback, useMemo } from "react";
 import { useShallow } from "zustand/shallow";
+import { useAppDesignerStore } from "../../../../app-designer";
 import { ModelPicker } from "../../../../ui/model-picker";
 import { ProTag } from "../../../tool";
 import { SettingDetail, SettingLabel } from "../../ui/setting-label";
@@ -77,9 +78,9 @@ export function ModelSettings({
 }) {
 	const usageLimits = useUsageLimits();
 	const groups = useModelGroups(usageLimits?.featureTier ?? Tier.enum.free);
-	const { connections } = useWorkflowDesignerStore(
+	const { connections } = useAppDesignerStore(
 		useShallow((s) => ({
-			connections: s.workspace.connections,
+			connections: s.connections,
 		})),
 	);
 

@@ -4,6 +4,12 @@ import {
 	languageModels,
 } from "@giselles-ai/language-model";
 import {
+	type Connection,
+	isAppEntryNode,
+	isContentGenerationNode,
+	isDataQueryNode,
+	isDataStoreNode,
+	isEndNode,
 	isFileNode,
 	isImageGenerationNode,
 	isQueryNode,
@@ -16,9 +22,14 @@ export type ConnectionValidationResult =
 	| { canConnect: true }
 	| { canConnect: false; message: string };
 
+export interface ConnectionValidationOptions {
+	existingConnections?: Connection[];
+}
+
 export function isSupportedConnection(
 	outputNode: NodeLike,
 	inputNode: NodeLike,
+	options?: ConnectionValidationOptions,
 ): ConnectionValidationResult {
 	// prevent self-loop
 	if (outputNode.id === inputNode.id) {
@@ -33,6 +44,17 @@ export function isSupportedConnection(
 		return {
 			canConnect: false,
 			message: "This node does not receive inputs",
+		};
+	}
+
+	// v2container: AppEntryNode and EndNode cannot be connected directly.
+	if (
+		(isAppEntryNode(outputNode) && isEndNode(inputNode)) ||
+		(isEndNode(outputNode) && isAppEntryNode(inputNode))
+	) {
+		return {
+			canConnect: false,
+			message: "Connecting Start and End nodes is not allowed",
 		};
 	}
 
@@ -170,6 +192,39 @@ export function isSupportedConnection(
 		};
 	}
 
+	// Data store node can only be connected to data query, text generation, image generation, or content generation node
+	if (isDataStoreNode(outputNode)) {
+		if (
+			isDataQueryNode(inputNode) ||
+			isTextGenerationNode(inputNode) ||
+			isImageGenerationNode(inputNode) ||
+			isContentGenerationNode(inputNode)
+		) {
+			// Data Query can only have one Data Store connected
+			if (isDataQueryNode(inputNode) && options?.existingConnections) {
+				const hasExistingDataStore = options.existingConnections.some(
+					(conn) =>
+						conn.inputNode.id === inputNode.id &&
+						conn.outputNode.content.type === "dataStore",
+				);
+				if (hasExistingDataStore) {
+					return {
+						canConnect: false,
+						message: "Data Query node can only have one Data Store connected",
+					};
+				}
+			}
+			return {
+				canConnect: true,
+			};
+		}
+		return {
+			canConnect: false,
+			message:
+				"Data store node can only be connected to data query or generation nodes",
+		};
+	}
+
 	// query can only be connected to text generation or image generation
 	if (isQueryNode(outputNode)) {
 		if (!isTextGenerationNode(inputNode) && !isImageGenerationNode(inputNode)) {
@@ -177,6 +232,40 @@ export function isSupportedConnection(
 				canConnect: false,
 				message:
 					"Query node can only be connected to text generation or image generation",
+			};
+		}
+	}
+
+	// data query can only be connected to text generation, image generation, or content generation
+	if (isDataQueryNode(outputNode)) {
+		if (
+			!isTextGenerationNode(inputNode) &&
+			!isImageGenerationNode(inputNode) &&
+			!isContentGenerationNode(inputNode)
+		) {
+			return {
+				canConnect: false,
+				message:
+					"Data query node can only be connected to text generation, image generation, or content generation",
+			};
+		}
+	}
+
+	// data query node can only receive inputs from data store, text, trigger, action, app entry, or generation nodes
+	if (isDataQueryNode(inputNode)) {
+		const allowedOutputTypes = [
+			"dataStore",
+			"text",
+			"trigger",
+			"action",
+			"appEntry",
+			"textGeneration",
+			"contentGeneration",
+		];
+		if (!allowedOutputTypes.includes(outputNode.content.type)) {
+			return {
+				canConnect: false,
+				message: "This node is not supported as an input for Data Query",
 			};
 		}
 	}

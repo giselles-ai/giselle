@@ -34,7 +34,7 @@ export function createDefaultModelData(
 		case "google":
 			return GoogleImageLanguageModelData.parse({
 				provider: "google",
-				id: "gemini-2.5-flash-image-preview",
+				id: "gemini-2.5-flash-image",
 				configurations: {
 					responseModalities: ["IMAGE"],
 				},

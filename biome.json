@@ -12,7 +12,8 @@
 			"!**/dist",
 			"!**/node_modules",
 			"!**/build",
-			"!**/db/migrate"
+			"!**/db/migrate",
+			"!**/worktrees"
 		],
 		"ignoreUnknown": false
 	},

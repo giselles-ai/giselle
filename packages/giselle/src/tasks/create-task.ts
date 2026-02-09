@@ -1,11 +1,13 @@
 import { defaultName } from "@giselles-ai/node-registry";
 import {
+	type AppId,
 	ConnectionId,
 	type CreatedGeneration,
 	GenerationContextInput,
 	GenerationId,
 	GenerationOrigin,
 	isAppEntryNode,
+	isEndNode,
 	isOperationNode,
 	isTriggerNode,
 	Node,
@@ -88,6 +90,29 @@ export async function createTask(
 		),
 	);
 
+	let endNodeId: NodeId | undefined;
+	for (const node of nodes) {
+		if (!isEndNode(node)) {
+			continue;
+		}
+		if (endNodeId !== undefined) {
+			throw new Error(
+				`Workspace ${workspace.id} has multiple end nodes: ${endNodeId}, ${node.id}`,
+			);
+		}
+		endNodeId = node.id;
+	}
+	const nodeIdsConnectedToEnd = Array.from(
+		new Set(
+			connections
+				.filter(
+					(connection) =>
+						endNodeId !== undefined && connection.inputNode.id === endNodeId,
+				)
+				.map((connection) => connection.outputNode.id),
+		),
+	);
+
 	// Handle single operation node execution when no connections are found
 	if (nodes.length === 0 && args.nodeId !== undefined) {
 		const singleNode = workspace.nodes.find((node) => node.id === args.nodeId);
@@ -104,7 +129,7 @@ export async function createTask(
 		starterNode?.content.type === "appEntry" &&
 		starterNode?.content.status === "unconfigured"
 	) {
-		throw new Error("App entry node is unconfigured");
+		throw new Error("Start node is unconfigured");
 	}
 
 	const taskId = TaskId.generate();
@@ -116,10 +141,16 @@ export async function createTask(
 		const steps: Step[] = [];
 		for (const nodeId of level) {
 			const node = nodes.find((node) => node.id === nodeId);
+			// Exclusion conditions: Skip nodes that are:
+			// - undefined (not found)
+			// - not operation nodes
+			// - start nodes (starting points)
+			// - end nodes (termination points)
 			if (
 				node === undefined ||
 				!isOperationNode(node) ||
-				isAppEntryNode(node)
+				isAppEntryNode(node) ||
+				isEndNode(node)
 			) {
 				continue;
 			}
@@ -204,7 +235,7 @@ export async function createTask(
 				type: "run-button",
 			};
 			break;
-		case "github-app":
+		case "github-app": {
 			if (!isTriggerNode(starterNode)) {
 				throw new Error("starterNode must be a trigger node");
 			}
@@ -214,14 +245,39 @@ export async function createTask(
 			if (starterNode.content.state.status === "unconfigured") {
 				throw new Error("starterNode must be configured");
 			}
+
+			let appId: AppId | undefined;
+			for (const node of workspace.nodes) {
+				if (!isAppEntryNode(node)) {
+					continue;
+				}
+				if (node.content.status === "unconfigured") {
+					continue;
+				}
+				if (appId !== undefined) {
+					throw new Error(
+						`Workspace ${workspace.id} has multiple configured app: ${appId}`,
+					);
+				}
+				appId = node.content.appId;
+			}
 			starter = {
 				type: "github-trigger",
 				triggerId: starterNode.content.state.flowTriggerId,
+				end:
+					endNodeId === undefined || appId === undefined
+						? { type: "none" }
+						: {
+								type: "endNode",
+								appId,
+							},
 			};
 			break;
+		}
+		case "api":
 		case "stage":
 			if (!isAppEntryNode(starterNode)) {
-				throw new Error("starterNode must be an app entry node");
+				throw new Error("starterNode must be an start node");
 			}
 			if (starterNode.content.status === "unconfigured") {
 				throw new Error("starterNode must be configured");
@@ -243,6 +299,7 @@ export async function createTask(
 		workspaceId: workspace.id,
 		status: "created",
 		name: starterNode ? defaultName(starterNode) : "group-nodes",
+		nodeIdsConnectedToEnd,
 		steps: {
 			queued: generations.length,
 			inProgress: 0,

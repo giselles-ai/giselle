@@ -15,6 +15,7 @@ export interface PdfTextExtractionOptions {
 	password?: string;
 	maxPages?: number;
 	signal?: AbortSignal;
+	pdfiumWasmBinary: ArrayBuffer | ArrayBufferView;
 }
 
 export interface PdfTextExtractionResult {
@@ -35,6 +36,7 @@ export interface PdfImageRenderOptions {
 	maxPages?: number;
 	signal?: AbortSignal;
 	renderFormFields?: boolean;
+	pdfiumWasmBinary: ArrayBuffer | ArrayBufferView;
 }
 
 export interface PdfImageRenderResult {

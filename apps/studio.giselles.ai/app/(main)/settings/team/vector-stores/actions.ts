@@ -84,6 +84,18 @@ async function validateGitHubAccess(
 			return { success: false, error: "Installation not found" };
 		}
 
+		// Check if the user has access to the specific repository within the installation
+		const repoData = await userClient.getRepositories(installationId);
+		const hasRepoAccess = repoData.repositories.some(
+			(r) => r.owner.login === owner && r.name === repo,
+		);
+		if (!hasRepoAccess) {
+			return {
+				success: false,
+				error: "You don't have access to this repository",
+			};
+		}
+
 		// Check if the installation can access the repository
 		const installationClient = await buildAppInstallationClient(installationId);
 		const repository = await installationClient.request(

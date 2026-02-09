@@ -1,4 +1,9 @@
-import type { AiGatewayHeaders, QueryContext } from "@giselles-ai/giselle";
+import type {
+	AiGatewayHeaders,
+	BuildAiGatewayHeadersArgs,
+	GiselleCallbacks,
+	QueryContext,
+} from "@giselles-ai/giselle";
 import { traceEmbedding } from "@giselles-ai/langfuse";
 import { getRequestId, NextGiselle } from "@giselles-ai/nextjs/internal";
 import { type RunningGeneration, WorkspaceId } from "@giselles-ai/protocol";
@@ -28,7 +33,7 @@ import {
 } from "../lib/vector-stores/github";
 import type { generateContentJob } from "../trigger/generate-content-job";
 
-const storage = experimental_supabaseStorageDriver({
+export const storage = experimental_supabaseStorageDriver({
 	endpoint: process.env.SUPABASE_STORAGE_URL ?? "",
 	region: process.env.SUPABASE_STORAGE_REGION ?? "",
 	accessKeyId: process.env.SUPABASE_STORAGE_ACCESS_KEY_ID ?? "",
@@ -147,6 +152,11 @@ function getRuntimeEnv(): "trigger.dev" | "vercel" | "local" | "unknown" {
 	return "unknown";
 }
 
+function parseEnvNumber(value: string | undefined, fallback: number): number {
+	const parsed = Number(value);
+	return Number.isFinite(parsed) ? parsed : fallback;
+}
+
 const runtimeEnv = getRuntimeEnv();
 
 const generateContentProcessor =
@@ -156,10 +166,296 @@ const generateContentProcessor =
 		? "trigger.dev"
 		: "self";
 
+const callbacks: GiselleCallbacks = {
+	appCreate: async ({ app }) => {
+		const currentTeam = await fetchCurrentTeam();
+		const workspace = await db.query.workspaces.findFirst({
+			where: (workspaces, { eq }) => eq(workspaces.id, app.workspaceId),
+		});
+		if (workspace === undefined) {
+			throw new Error(`Workspace not found for app ${app.id}`);
+		}
+		await db.insert(apps).values({
+			id: app.id,
+			appEntryNodeId: app.entryNodeId,
+			endNodeId: app.state === "connected" ? app.endNodeId : null,
+			teamDbId: currentTeam.dbId,
+			workspaceDbId: workspace.dbId,
+		});
+	},
+	appDelete: async ({ appId }) => {
+		await db.delete(apps).where(eq(apps.id, appId));
+	},
+	appConnectionChange: async (args) => {
+		switch (args.event) {
+			case "connected": {
+				const app = args.payload.app;
+				await db
+					.update(apps)
+					.set({
+						appEntryNodeId: app.entryNodeId,
+						endNodeId: app.endNodeId,
+					})
+					.where(eq(apps.id, app.id));
+				break;
+			}
+			case "disconnected": {
+				const app = args.payload.app;
+				await db
+					.update(apps)
+					.set({
+						appEntryNodeId: app.entryNodeId,
+						endNodeId: null,
+					})
+					.where(eq(apps.id, app.id));
+				break;
+			}
+			default: {
+				const _exhaustiveCheck: never = args;
+				throw new Error(`Unhandled event: ${_exhaustiveCheck}`);
+			}
+		}
+	},
+	generationComplete: async (args) => {
+		const requestId = getRequestId();
+		if (
+			args.generation.context.origin.type === "github-app" ||
+			args.generation.context.origin.type === "api"
+		) {
+			const team = await getWorkspaceTeam(
+				args.generation.context.origin.workspaceId,
+			);
+			await traceGenerationForTeam({
+				...args,
+				requestId,
+				userId:
+					args.generation.context.origin.type === "github-app"
+						? "github-app"
+						: "api",
+				team,
+				sessionId: args.generation.context.origin.taskId,
+			});
+			return;
+		}
+		const [currentUser, currentTeam] = await Promise.all([
+			fetchCurrentUser(),
+			fetchCurrentTeam(),
+		]);
+		await traceGenerationForTeam({
+			...args,
+			requestId,
+			userId: currentUser.id,
+			team: currentTeam,
+			sessionId: args.generation.context.origin.taskId,
+		});
+	},
+	generationError: async (args) => {
+		const requestId = getRequestId();
+		if (
+			args.generation.context.origin.type === "github-app" ||
+			args.generation.context.origin.type === "api"
+		) {
+			const team = await getWorkspaceTeam(
+				args.generation.context.origin.workspaceId,
+			);
+			await traceGenerationForTeam({
+				...args,
+				requestId,
+				userId:
+					args.generation.context.origin.type === "github-app"
+						? "github-app"
+						: "api",
+				team,
+			});
+			return;
+		}
+		const [currentUser, currentTeam] = await Promise.all([
+			fetchCurrentUser(),
+			fetchCurrentTeam(),
+		]);
+		await traceGenerationForTeam({
+			...args,
+			requestId,
+			userId: currentUser.id,
+			team: currentTeam,
+		});
+	},
+	embeddingComplete: async (args) => {
+		try {
+			if (runtimeEnv === "trigger.dev") {
+				const parsedMetadata = GenerationMetadata.parse(
+					args.generationMetadata,
+				);
+
+				await traceEmbeddingForTeam({
+					metrics: args.embeddingMetrics,
+					generation: args.generation,
+					queryContext: args.queryContext,
+					sessionId: args.generation.context.origin.taskId,
+					userId: parsedMetadata.userId,
+					team: {
+						id: parsedMetadata.team.id,
+						activeSubscriptionId: parsedMetadata.team.subscriptionId,
+						activeCustomerId: parsedMetadata.team.activeCustomerId,
+						plan: parsedMetadata.team.plan,
+					},
+				});
+				return;
+			}
+			switch (args.generation.context.origin.type) {
+				case "github-app": {
+					const team = await getWorkspaceTeam(
+						args.generation.context.origin.workspaceId,
+					);
+					await traceEmbeddingForTeam({
+						metrics: args.embeddingMetrics,
+						generation: args.generation,
+						queryContext: args.queryContext,
+						sessionId: args.generation.context.origin.taskId,
+						userId: "github-app",
+						team,
+					});
+					break;
+				}
+				case "api": {
+					const team = await getWorkspaceTeam(
+						args.generation.context.origin.workspaceId,
+					);
+					await traceEmbeddingForTeam({
+						metrics: args.embeddingMetrics,
+						generation: args.generation,
+						queryContext: args.queryContext,
+						sessionId: args.generation.context.origin.taskId,
+						userId: "api",
+						team,
+					});
+					break;
+				}
+				case "stage":
+				case "studio": {
+					const [currentUser, currentTeam] = await Promise.all([
+						fetchCurrentUser(),
+						fetchCurrentTeam(),
+					]);
+					await traceEmbeddingForTeam({
+						metrics: args.embeddingMetrics,
+						generation: args.generation,
+						queryContext: args.queryContext,
+						sessionId: args.generation.context.origin.taskId,
+						userId: currentUser.id,
+						team: currentTeam,
+					});
+					break;
+				}
+				default: {
+					const _exhaustiveCheck: never = args.generation.context.origin;
+					throw new Error(`Unhandled origin type: ${_exhaustiveCheck}`);
+				}
+			}
+		} catch (error) {
+			console.error("Embedding callback failed:", error);
+		}
+	},
+	taskCreate: async ({ task }) => {
+		let appDbId: number | undefined;
+
+		if (task.starter.type === "app") {
+			const appId = task.starter.appId;
+			const app = await db.query.apps.findFirst({
+				where: (apps, { eq }) => eq(apps.id, appId),
+				columns: {
+					dbId: true,
+				},
+			});
+			appDbId = app?.dbId;
+		}
+		if (
+			task.starter.type === "github-trigger" &&
+			task.starter.end.type === "endNode"
+		) {
+			const appId = task.starter.end.appId;
+			const app = await db.query.apps.findFirst({
+				where: (apps, { eq }) => eq(apps.id, appId),
+				columns: {
+					dbId: true,
+				},
+			});
+			appDbId = app?.dbId;
+		}
+
+		const workspace = await db.query.workspaces.findFirst({
+			where: (workspaces, { eq }) => eq(workspaces.id, task.workspaceId),
+			columns: {},
+			with: {
+				team: {
+					columns: {
+						dbId: true,
+					},
+				},
+			},
+		});
+		if (workspace === undefined) {
+			throw new Error(`Workspace not found for task ${task.id}`);
+		}
+
+		await db.insert(tasks).values({
+			id: task.id,
+			appDbId,
+			teamDbId: workspace.team.dbId,
+		});
+	},
+	buildAiGatewayHeaders: ({
+		metadata,
+		generation,
+	}: BuildAiGatewayHeadersArgs) => {
+		const parsedMetadata = GenerationMetadata.safeParse(metadata);
+		const stripeCustomerId = parsedMetadata.success
+			? (parsedMetadata.data.team.activeCustomerId ?? undefined)
+			: undefined;
+		const teamPlan = parsedMetadata.success
+			? parsedMetadata.data.team.plan
+			: undefined;
+		const aiGatewayHeaders: AiGatewayHeaders = {
+			"http-referer":
+				process.env.AI_GATEWAY_HTTP_REFERER ?? "https://giselles.ai",
+			"x-title": process.env.AI_GATEWAY_X_TITLE ?? "Giselle",
+		};
+		if (stripeCustomerId !== undefined) {
+			aiGatewayHeaders["stripe-customer-id"] = stripeCustomerId;
+			aiGatewayHeaders["stripe-restricted-access-key"] =
+				process.env.STRIPE_AI_GATEWAY_RESTRICTED_ACCESS_KEY ?? "";
+		} else if (teamPlan === "pro" || teamPlan === "team") {
+			logger.warn(
+				`Stripe customer ID not found for generation ${generation.id}`,
+			);
+		}
+		return aiGatewayHeaders;
+	},
+};
+
+export const githubWebhookCallbacks = {
+	onGenerationComplete: callbacks.generationComplete,
+	onGenerationError: callbacks.generationError,
+	onTaskCreate: callbacks.taskCreate,
+} as const;
+
 export const giselle = NextGiselle({
 	basePath: "/api/giselle",
 	storage,
 	llmProviders: ["openai", "anthropic", "google"],
+	apiSecretScrypt: {
+		params: {
+			n: parseEnvNumber(process.env.GISELLE_API_SECRET_SCRYPT_N, 16384),
+			r: parseEnvNumber(process.env.GISELLE_API_SECRET_SCRYPT_R, 8),
+			p: parseEnvNumber(process.env.GISELLE_API_SECRET_SCRYPT_P, 1),
+			keyLen: parseEnvNumber(process.env.GISELLE_API_SECRET_SCRYPT_KEY_LEN, 32),
+		},
+		saltBytes: parseEnvNumber(
+			process.env.GISELLE_API_SECRET_SCRYPT_SALT_BYTES,
+			16,
+		),
+		logDuration: process.env.GISELLE_API_SECRET_SCRYPT_LOG_DURATION === "1",
+	},
 	onConsumeAgentTime,
 	fetchUsageLimitsFn: fetchUsageLimits,
 	sampleAppWorkspaceIds,
@@ -190,199 +486,7 @@ export const giselle = NextGiselle({
 		githubPullRequest: gitHubPullRequestQueryService,
 		document: getDocumentVectorStoreQueryService(),
 	},
-	callbacks: {
-		appCreate: async ({ app }) => {
-			const currentTeam = await fetchCurrentTeam();
-			const workspace = await db.query.workspaces.findFirst({
-				where: (workspaces, { eq }) => eq(workspaces.id, app.workspaceId),
-			});
-			if (workspace === undefined) {
-				throw new Error(`Workspace not found for app ${app.id}`);
-			}
-			await db.insert(apps).values({
-				id: app.id,
-				appEntryNodeId: app.entryNodeId,
-				teamDbId: currentTeam.dbId,
-				workspaceDbId: workspace.dbId,
-			});
-		},
-		appDelete: async ({ appId }) => {
-			await db.delete(apps).where(eq(apps.id, appId));
-		},
-		generationComplete: async (args) => {
-			const requestId = getRequestId();
-			if (args.generation.context.origin.type === "github-app") {
-				const team = await getWorkspaceTeam(
-					args.generation.context.origin.workspaceId,
-				);
-				await traceGenerationForTeam({
-					...args,
-					requestId,
-					userId: "github-app",
-					team,
-					sessionId: args.generation.context.origin.taskId,
-				});
-				return;
-			}
-			const [currentUser, currentTeam] = await Promise.all([
-				fetchCurrentUser(),
-				fetchCurrentTeam(),
-			]);
-			await traceGenerationForTeam({
-				...args,
-				requestId,
-				userId: currentUser.id,
-				team: currentTeam,
-				sessionId: args.generation.context.origin.taskId,
-			});
-		},
-		generationError: async (args) => {
-			const requestId = getRequestId();
-			if (args.generation.context.origin.type === "github-app") {
-				const team = await getWorkspaceTeam(
-					args.generation.context.origin.workspaceId,
-				);
-				await traceGenerationForTeam({
-					...args,
-					requestId,
-					userId: "github-app",
-					team,
-				});
-				return;
-			}
-			const [currentUser, currentTeam] = await Promise.all([
-				fetchCurrentUser(),
-				fetchCurrentTeam(),
-			]);
-			await traceGenerationForTeam({
-				...args,
-				requestId,
-				userId: currentUser.id,
-				team: currentTeam,
-			});
-		},
-		embeddingComplete: async (args) => {
-			try {
-				if (runtimeEnv === "trigger.dev") {
-					const parsedMetadata = GenerationMetadata.parse(
-						args.generationMetadata,
-					);
-
-					await traceEmbeddingForTeam({
-						metrics: args.embeddingMetrics,
-						generation: args.generation,
-						queryContext: args.queryContext,
-						sessionId: args.generation.context.origin.taskId,
-						userId: parsedMetadata.userId,
-						team: {
-							id: parsedMetadata.team.id,
-							activeSubscriptionId: parsedMetadata.team.subscriptionId,
-							activeCustomerId: parsedMetadata.team.activeCustomerId,
-							plan: parsedMetadata.team.plan,
-						},
-					});
-					return;
-				}
-				switch (args.generation.context.origin.type) {
-					case "github-app": {
-						const team = await getWorkspaceTeam(
-							args.generation.context.origin.workspaceId,
-						);
-						await traceEmbeddingForTeam({
-							metrics: args.embeddingMetrics,
-							generation: args.generation,
-							queryContext: args.queryContext,
-							sessionId: args.generation.context.origin.taskId,
-							userId: "github-app",
-							team,
-						});
-						break;
-					}
-					case "stage":
-					case "studio": {
-						const [currentUser, currentTeam] = await Promise.all([
-							fetchCurrentUser(),
-							fetchCurrentTeam(),
-						]);
-						await traceEmbeddingForTeam({
-							metrics: args.embeddingMetrics,
-							generation: args.generation,
-							queryContext: args.queryContext,
-							sessionId: args.generation.context.origin.taskId,
-							userId: currentUser.id,
-							team: currentTeam,
-						});
-						break;
-					}
-					default: {
-						const _exhaustiveCheck: never = args.generation.context.origin;
-						throw new Error(`Unhandled origin type: ${_exhaustiveCheck}`);
-					}
-				}
-			} catch (error) {
-				console.error("Embedding callback failed:", error);
-			}
-		},
-		taskCreate: async ({ task }) => {
-			let appDbId: number | undefined;
-
-			if (task.starter.type === "app") {
-				const appId = task.starter.appId;
-				const app = await db.query.apps.findFirst({
-					where: (apps, { eq }) => eq(apps.id, appId),
-					columns: {
-						dbId: true,
-					},
-				});
-				appDbId = app?.dbId;
-			}
-
-			const workspace = await db.query.workspaces.findFirst({
-				where: (workspaces, { eq }) => eq(workspaces.id, task.workspaceId),
-				columns: {},
-				with: {
-					team: {
-						columns: {
-							dbId: true,
-						},
-					},
-				},
-			});
-			if (workspace === undefined) {
-				throw new Error(`Workspace not found for task ${task.id}`);
-			}
-
-			await db.insert(tasks).values({
-				id: task.id,
-				appDbId,
-				teamDbId: workspace.team.dbId,
-			});
-		},
-		buildAiGatewayHeaders: ({ metadata, generation }) => {
-			const parsedMetadata = GenerationMetadata.safeParse(metadata);
-			const stripeCustomerId = parsedMetadata.success
-				? (parsedMetadata.data.team.activeCustomerId ?? undefined)
-				: undefined;
-			const teamPlan = parsedMetadata.success
-				? parsedMetadata.data.team.plan
-				: undefined;
-			const aiGatewayHeaders: AiGatewayHeaders = {
-				"http-referer":
-					process.env.AI_GATEWAY_HTTP_REFERER ?? "https://giselles.ai",
-				"x-title": process.env.AI_GATEWAY_X_TITLE ?? "Giselle",
-			};
-			if (stripeCustomerId !== undefined) {
-				aiGatewayHeaders["stripe-customer-id"] = stripeCustomerId;
-				aiGatewayHeaders["stripe-restricted-access-key"] =
-					process.env.STRIPE_AI_GATEWAY_RESTRICTED_ACCESS_KEY ?? "";
-			} else if (teamPlan === "pro" || teamPlan === "team") {
-				logger.warn(
-					`Stripe customer ID not found for generation ${generation.id}`,
-				);
-			}
-			return aiGatewayHeaders;
-		},
-	},
+	callbacks,
 	logger,
 	async onRequest({ updateContext }) {
 		const useGenerateContentNode = await generateContentNodeFlag();
@@ -432,6 +536,23 @@ if (generateContentProcessor === "trigger.dev") {
 					generationId: generation.id,
 					requestId,
 					userId: "github-app",
+					team: {
+						id: team.id,
+						subscriptionId: team.activeSubscriptionId,
+						activeCustomerId: team.activeCustomerId,
+						plan: team.plan,
+					},
+				});
+				break;
+			}
+			case "api": {
+				const team = await getWorkspaceTeam(
+					generation.context.origin.workspaceId,
+				);
+				await jobs.trigger<typeof generateContentJob>("generate-content", {
+					generationId: generation.id,
+					requestId,
+					userId: "api",
 					team: {
 						id: team.id,
 						subscriptionId: team.activeSubscriptionId,
@@ -497,6 +618,22 @@ if (generateContentProcessor === "trigger.dev") {
 					taskId: task.id,
 					requestId,
 					userId: "github-app",
+					team: {
+						id: team.id,
+						subscriptionId: team.activeSubscriptionId,
+						activeCustomerId: team.activeCustomerId,
+						plan: team.plan,
+					},
+				});
+				break;
+			}
+			case "api": {
+				const team = await getWorkspaceTeam(task.workspaceId);
+
+				await jobs.trigger<typeof runTaskJob>("run-task-job", {
+					taskId: task.id,
+					requestId,
+					userId: "api",
 					team: {
 						id: team.id,
 						subscriptionId: team.activeSubscriptionId,

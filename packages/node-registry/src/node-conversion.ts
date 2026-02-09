@@ -14,30 +14,43 @@ import {
 } from "@giselles-ai/protocol";
 
 // Legacy model IDs that are no longer in the current schema but may exist in stored data
-type LegacyAnthropicModelId = "claude-opus-4-1-20250805";
+type LegacyAnthropicModelId =
+	| "claude-opus-4-1-20250805"
+	| "claude-sonnet-4-5-20250929"
+	| "claude-haiku-4-5-20251001";
+type LegacyOpenAiModelId = "gpt-5-codex";
 type TextGenerationModelIdWithLegacy =
 	| TextGenerationNode["content"]["llm"]["id"]
-	| LegacyAnthropicModelId;
+	| LegacyAnthropicModelId
+	| LegacyOpenAiModelId;
 
 function convertTextGenerationLanguageModelIdToContentGenerationLanguageModelId(
 	from: TextGenerationModelIdWithLegacy,
 ): LanguageModelId {
 	switch (from) {
+		case "claude-haiku-4.5":
 		case "claude-haiku-4-5-20251001":
-			return "anthropic/claude-haiku-4-5";
+			return "anthropic/claude-haiku-4.5";
 		case "claude-opus-4.5":
 		case "claude-opus-4-1-20250805":
 			return "anthropic/claude-opus-4.5";
+		case "claude-sonnet-4.5":
 		case "claude-sonnet-4-5-20250929":
-			return "anthropic/claude-sonnet-4-5";
+			return "anthropic/claude-sonnet-4.5";
 		case "gemini-2.5-flash":
 			return "google/gemini-2.5-flash";
 		case "gemini-2.5-flash-lite":
 			return "google/gemini-2.5-flash-lite";
 		case "gemini-3-pro-preview":
 			return "google/gemini-3-pro-preview";
+		case "gemini-3-flash":
+			return "google/gemini-3-flash";
 		case "gemini-2.5-pro":
 			return "google/gemini-2.5-pro";
+		case "gpt-5.2":
+			return "openai/gpt-5.2";
+		case "gpt-5.2-codex":
+			return "openai/gpt-5.2-codex";
 		case "gpt-5.1-thinking":
 			return "openai/gpt-5.1-thinking";
 		case "gpt-5":
@@ -47,7 +60,7 @@ function convertTextGenerationLanguageModelIdToContentGenerationLanguageModelId(
 		case "gpt-5.1-codex":
 			return "openai/gpt-5.1-codex";
 		case "gpt-5-codex":
-			return "openai/gpt-5-codex";
+			return "openai/gpt-5.1-codex";
 		case "gpt-5-nano":
 			return "openai/gpt-5-nano";
 		case "sonar":
@@ -66,20 +79,26 @@ function convertContentGenerationLanguageModelIdToTextGenerationLanguageModelId(
 	from: LanguageModelId,
 ): TextGenerationNode["content"]["llm"]["id"] {
 	switch (from) {
-		case "anthropic/claude-haiku-4-5":
-			return "claude-haiku-4-5-20251001";
+		case "anthropic/claude-haiku-4.5":
+			return "claude-haiku-4.5";
 		case "anthropic/claude-opus-4.5":
 			return "claude-opus-4.5";
-		case "anthropic/claude-sonnet-4-5":
-			return "claude-sonnet-4-5-20250929";
+		case "anthropic/claude-sonnet-4.5":
+			return "claude-sonnet-4.5";
 		case "google/gemini-2.5-flash":
 			return "gemini-2.5-flash";
 		case "google/gemini-2.5-flash-lite":
 			return "gemini-2.5-flash-lite";
 		case "google/gemini-3-pro-preview":
 			return "gemini-3-pro-preview";
+		case "google/gemini-3-flash":
+			return "gemini-3-flash";
 		case "google/gemini-2.5-pro":
 			return "gemini-2.5-pro";
+		case "openai/gpt-5.2":
+			return "gpt-5.2";
+		case "openai/gpt-5.2-codex":
+			return "gpt-5.2-codex";
 		case "openai/gpt-5.1-thinking":
 			return "gpt-5.1-thinking";
 		case "openai/gpt-5":
@@ -89,7 +108,7 @@ function convertContentGenerationLanguageModelIdToTextGenerationLanguageModelId(
 		case "openai/gpt-5.1-codex":
 			return "gpt-5.1-codex";
 		case "openai/gpt-5-codex":
-			return "gpt-5-codex";
+			return "gpt-5.1-codex";
 		case "openai/gpt-5-nano":
 			// When converting back, use gpt-5-nano (not sonar/sonar-pro)
 			// as we cannot determine the original source

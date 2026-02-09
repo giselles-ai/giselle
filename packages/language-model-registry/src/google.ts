@@ -52,6 +52,42 @@ export const google = {
 		},
 		url: "https://ai.google.dev/gemini-api/docs/models",
 	}),
+	"google/gemini-3-flash": defineLanguageModel({
+		provider: googleProvider,
+		id: "google/gemini-3-flash",
+		name: "Gemini 3 Flash Preview",
+		description:
+			"Our most intelligent model built for speed, combining frontier intelligence with superior search and grounding.",
+		contextWindow: 1_048_576,
+		maxOutputTokens: 65_536,
+		knowledgeCutoff: new Date(2025, 0, 31).getTime(),
+		pricing: {
+			input: definePricing(0.5),
+			output: definePricing(3.0),
+		},
+		requiredTier: "pro",
+		configurationOptions: {
+			temperature: {
+				description: "Controls the randomness of the output.",
+				schema: z.number().min(0.0).max(2.0),
+				ui: {
+					min: 0.0,
+					max: 2.0,
+					step: 0.05,
+				},
+			},
+			thinkingLevel: {
+				description:
+					"Control thinking behavior. 'minimal' minimizes latency for chat or high-throughput apps. 'low' for simple tasks. 'medium' for balanced thinking. 'high' for complex reasoning.",
+				schema: z.enum(["minimal", "low", "medium", "high"]),
+			},
+		},
+		defaultConfiguration: {
+			temperature: 1.0,
+			thinkingLevel: "high",
+		},
+		url: "https://ai.google.dev/gemini-api/docs/models",
+	}),
 	"google/gemini-2.5-pro": defineLanguageModel({
 		provider: googleProvider,
 		id: "google/gemini-2.5-pro",

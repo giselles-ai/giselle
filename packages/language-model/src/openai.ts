@@ -10,7 +10,7 @@ const OpenAILanguageModelConfigurations = z.object({
 	frequencyPenalty: z.number(),
 	textVerbosity: z.enum(["low", "medium", "high"]).optional().default("medium"),
 	reasoningEffort: z
-		.enum(["minimal", "low", "medium", "high"])
+		.enum(["none", "minimal", "low", "medium", "high", "xhigh"])
 		.optional()
 		.default("medium"),
 });
@@ -27,12 +27,31 @@ const defaultConfigurations: OpenAILanguageModelConfigurations = {
 	reasoningEffort: "medium",
 };
 
+/**
+ * GPT-5.2 and GPT-5.1-thinking default to "none" for lower latency.
+ * @see https://platform.openai.com/docs/guides/latest-model#gpt-5-2-parameter-compatibility
+ */
+const gpt52And51ThinkingConfigurations: OpenAILanguageModelConfigurations = {
+	...defaultConfigurations,
+	reasoningEffort: "none",
+};
+
+/**
+ * GPT-5.1-codex only supports reasoningEffort: low/medium/high and textVerbosity: medium.
+ */
+const gpt51CodexConfigurations: OpenAILanguageModelConfigurations = {
+	...defaultConfigurations,
+	reasoningEffort: "medium",
+	textVerbosity: "medium",
+};
+
 export const OpenAILanguageModelId = z
 	.enum([
+		"gpt-5.2",
+		"gpt-5.2-codex",
 		"gpt-5.1-thinking",
 		"gpt-5.1-codex",
 		"gpt-5",
-		"gpt-5-codex",
 		"gpt-5-mini",
 		"gpt-5-nano",
 	])
@@ -41,6 +60,14 @@ export const OpenAILanguageModelId = z
 			return "gpt-5-nano";
 		}
 		const v = ctx.value;
+
+		if (/^gpt-5\.2-codex(?:-.+)?$/.test(v)) {
+			return "gpt-5.2-codex";
+		}
+
+		if (/^gpt-5\.2(?:-.+)?$/.test(v)) {
+			return "gpt-5.2";
+		}
 
 		if (/^gpt-5\.1-thinking(?:-.+)?$/.test(v)) {
 			return "gpt-5.1-thinking";
@@ -51,7 +78,7 @@ export const OpenAILanguageModelId = z
 		}
 
 		if (/^gpt-5-codex(?:-.+)?$/.test(v)) {
-			return "gpt-5-codex";
+			return "gpt-5.1-codex";
 		}
 
 		// Fallback to gpt-5
@@ -93,6 +120,18 @@ const OpenAILanguageModel = LanguageModelBase.extend({
 });
 type OpenAILanguageModel = z.infer<typeof OpenAILanguageModel>;
 
+const gpt52: OpenAILanguageModel = {
+	provider: "openai",
+	id: "gpt-5.2",
+	capabilities:
+		Capability.ImageFileInput |
+		Capability.TextGeneration |
+		Capability.OptionalSearchGrounding |
+		Capability.Reasoning,
+	tier: Tier.enum.pro,
+	configurations: gpt52And51ThinkingConfigurations,
+};
+
 const gpt51Thinking: OpenAILanguageModel = {
 	provider: "openai",
 	id: "gpt-5.1-thinking",
@@ -102,7 +141,7 @@ const gpt51Thinking: OpenAILanguageModel = {
 		Capability.OptionalSearchGrounding |
 		Capability.Reasoning,
 	tier: Tier.enum.pro,
-	configurations: defaultConfigurations,
+	configurations: gpt52And51ThinkingConfigurations,
 };
 
 const gpt51codex: OpenAILanguageModel = {
@@ -114,24 +153,24 @@ const gpt51codex: OpenAILanguageModel = {
 		Capability.OptionalSearchGrounding |
 		Capability.Reasoning,
 	tier: Tier.enum.pro,
-	configurations: defaultConfigurations,
+	configurations: gpt51CodexConfigurations,
 };
 
-const gpt5: OpenAILanguageModel = {
+const gpt52codex: OpenAILanguageModel = {
 	provider: "openai",
-	id: "gpt-5",
+	id: "gpt-5.2-codex",
 	capabilities:
 		Capability.ImageFileInput |
 		Capability.TextGeneration |
 		Capability.OptionalSearchGrounding |
 		Capability.Reasoning,
 	tier: Tier.enum.pro,
-	configurations: defaultConfigurations,
+	configurations: gpt51CodexConfigurations,
 };
 
-const gpt5codex: OpenAILanguageModel = {
+const gpt5: OpenAILanguageModel = {
 	provider: "openai",
-	id: "gpt-5-codex",
+	id: "gpt-5",
 	capabilities:
 		Capability.ImageFileInput |
 		Capability.TextGeneration |
@@ -165,10 +204,11 @@ const gpt5nano: OpenAILanguageModel = {
 };
 
 export const models = [
+	gpt52,
+	gpt52codex,
 	gpt51Thinking,
 	gpt51codex,
 	gpt5,
-	gpt5codex,
 	gpt5mini,
 	gpt5nano,
 ];

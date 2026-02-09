@@ -7,6 +7,8 @@ import {
 	StartTaskInputs,
 } from "@giselles-ai/giselle";
 import {
+	DataStore,
+	DataStoreId,
 	FetchingWebPage,
 	FileId,
 	Generation,
@@ -286,6 +288,16 @@ export const jsonRoutes = {
 				return new Response(null, { status: 204 });
 			},
 		}),
+	executeDataQuery: (giselle: Giselle) =>
+		createHandler({
+			input: z.object({
+				generation: QueuedGeneration,
+			}),
+			handler: async ({ input }) => {
+				await giselle.executeDataQuery(input.generation);
+				return new Response(null, { status: 204 });
+			},
+		}),
 	addWebPage: (giselle: Giselle) =>
 		createHandler({
 			input: z.object({
@@ -312,7 +324,7 @@ export const jsonRoutes = {
 	addSecret: (giselle: Giselle) =>
 		createHandler({
 			input: z.object({
-				workspaceId: WorkspaceId.schema,
+				workspaceId: WorkspaceId.schema.optional(),
 				label: z.string(),
 				value: z.string(),
 				tags: z.array(z.string()).optional(),
@@ -363,7 +375,6 @@ export const jsonRoutes = {
 	deleteSecret: (giselle: Giselle) =>
 		createHandler({
 			input: z.object({
-				workspaceId: WorkspaceId.schema,
 				secretId: SecretId.schema,
 			}),
 			handler: async ({ input }) => {
@@ -471,6 +482,58 @@ export const jsonRoutes = {
 			handler: async ({ input }) => {
 				const app = await giselle.getApp(input);
 				return JsonResponse.json({ app });
+			},
+		}),
+	createDataStore: (giselle: Giselle) =>
+		createHandler({
+			input: z.object({
+				provider: DataStore.shape.provider,
+				configuration: DataStore.shape.configuration,
+			}),
+			handler: async ({ input }) => {
+				const dataStore = await giselle.createDataStore(input);
+				return JsonResponse.json({ dataStore });
+			},
+		}),
+	getDataStore: (giselle: Giselle) =>
+		createHandler({
+			input: z.object({
+				dataStoreId: DataStoreId.schema,
+			}),
+			handler: async ({ input }) => {
+				const dataStore = await giselle.getDataStore(input);
+				if (!dataStore) {
+					return JsonResponse.json(
+						{ error: `DataStore not found: ${input.dataStoreId}` },
+						{ status: 404 },
+					);
+				}
+				return JsonResponse.json({ dataStore });
+			},
+		}),
+	updateDataStore: (giselle: Giselle) =>
+		createHandler({
+			input: z.object({
+				dataStoreId: DataStoreId.schema,
+				configuration: DataStore.shape.configuration,
+			}),
+			handler: async ({ input }) => {
+				const dataStore = await giselle.updateDataStore(input);
+				return JsonResponse.json({ dataStore });
+			},
+		}),
+	deleteDataStore: (giselle: Giselle) =>
+		createHandler({
+			input: z.object({
+				dataStoreId: DataStoreId.schema,
+			}),
+			handler: async ({ input }) => {
+				const dataStore = await giselle.deleteDataStore(input);
+				if (!dataStore) {
+					// For idempotent DELETE, treat not found as success
+					return new Response(null, { status: 204 });
+				}
+				return JsonResponse.json({ dataStore });
 			},
 		}),
 } as const;

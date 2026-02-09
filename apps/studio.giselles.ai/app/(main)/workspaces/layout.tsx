@@ -11,7 +11,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 					<PageHeading glow>Workspaces</PageHeading>
 					<div className="flex items-center gap-4">
 						<DocsLink
-							href="https://docs.giselles.ai/en/guides/apps/teamapp"
+							href="https://docs.giselles.ai/en/guides/workspaces"
 							target="_blank"
 							rel="noopener noreferrer"
 						/>

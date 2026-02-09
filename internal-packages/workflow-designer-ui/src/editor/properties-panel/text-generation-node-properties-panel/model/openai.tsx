@@ -16,6 +16,40 @@ import {
 	TopPSlider,
 } from "./shared-model-controls";
 
+/**
+ * Returns the available reasoning effort options for the given OpenAI model.
+ *
+ * GPT-5.2 and GPT-5.1-thinking support: none/low/medium/high/xhigh
+ * GPT-5.2-codex supports: low/medium/high/xhigh
+ * GPT-5.1-codex supports: low/medium/high
+ * Older models (gpt-5, gpt-5-mini, gpt-5-nano) support: minimal/low/medium/high
+ *
+ * @see https://platform.openai.com/docs/guides/latest-model#gpt-5-2-parameter-compatibility
+ */
+function getReasoningEffortOptions(modelId: string): readonly string[] {
+	if (modelId === "gpt-5.2" || modelId === "gpt-5.1-thinking") {
+		return ["none", "low", "medium", "high", "xhigh"] as const;
+	}
+	if (modelId === "gpt-5.2-codex") {
+		return ["low", "medium", "high", "xhigh"] as const;
+	}
+	if (modelId === "gpt-5.1-codex") {
+		return ["low", "medium", "high"] as const;
+	}
+	return ["minimal", "low", "medium", "high"] as const;
+}
+
+/**
+ * Returns the available textVerbosity options for the given OpenAI model.
+ * Codex models only support verbosity: medium.
+ */
+function getTextVerbosityOptions(modelId: string): readonly string[] {
+	if (modelId === "gpt-5.1-codex" || modelId === "gpt-5.2-codex") {
+		return ["medium"] as const;
+	}
+	return ["low", "medium", "high"] as const;
+}
+
 export function OpenAIModelPanel({
 	openaiLanguageModel,
 	onModelChange,
@@ -68,10 +102,12 @@ export function OpenAIModelPanel({
 									}),
 								);
 							}}
-							options={["minimal", "low", "medium", "high"].map((v) => ({
-								value: v,
-								label: v,
-							}))}
+							options={getReasoningEffortOptions(openaiLanguageModel.id).map(
+								(v) => ({
+									value: v,
+									label: v,
+								}),
+							)}
 						/>
 					</SettingRow>
 
@@ -97,10 +133,12 @@ export function OpenAIModelPanel({
 									}),
 								);
 							}}
-							options={["low", "medium", "high"].map((v) => ({
-								value: v,
-								label: v,
-							}))}
+							options={getTextVerbosityOptions(openaiLanguageModel.id).map(
+								(v) => ({
+									value: v,
+									label: v,
+								}),
+							)}
 						/>
 					</SettingRow>
 				</div>

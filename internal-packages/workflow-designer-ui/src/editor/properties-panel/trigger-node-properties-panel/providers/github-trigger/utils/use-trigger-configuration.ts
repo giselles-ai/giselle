@@ -4,12 +4,16 @@ import {
 	OutputId,
 	type TriggerNode,
 } from "@giselles-ai/protocol";
-import { useGiselle, useWorkflowDesigner } from "@giselles-ai/react";
 import {
 	githubEvents,
 	githubEventToInputFields,
 } from "@giselles-ai/trigger-registry";
 import { useCallback, useTransition } from "react";
+import {
+	useAppDesignerStore,
+	useUpdateNodeData,
+} from "../../../../../../app-designer";
+import { useGiselle } from "../../../../../../app-designer/store/giselle-client-provider";
 import type {
 	InputCallsignStep,
 	InputLabelsStep,
@@ -28,7 +32,8 @@ export const useTriggerConfiguration = ({
 }: {
 	node: TriggerNode;
 }): UseTriggerConfigurationReturn => {
-	const { data: workspace, updateNodeData } = useWorkflowDesigner();
+	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
+	const updateNodeData = useUpdateNodeData();
 	const client = useGiselle();
 	const [isPending, startTransition] = useTransition();
 
@@ -41,13 +46,14 @@ export const useTriggerConfiguration = ({
 					const { triggerId } = await client.configureTrigger({
 						trigger: {
 							nodeId: node.id,
-							workspaceId: workspace.id,
+							workspaceId,
 							enable: false,
 							configuration: {
 								provider: "github",
 								repositoryNodeId: step.repoNodeId,
 								installationId: step.installationId,
 								event,
+								shouldPostInProgressComment: true,
 							},
 						},
 					});
@@ -76,7 +82,7 @@ export const useTriggerConfiguration = ({
 				}
 			});
 		},
-		[workspace.id, client, node, updateNodeData],
+		[client, node, updateNodeData, workspaceId],
 	);
 
 	return { configureTrigger, isPending };

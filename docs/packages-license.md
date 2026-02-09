@@ -2,12 +2,12 @@
 
 
 ## Summary
-* 894 MIT
-* 179 Apache 2.0
+* 920 MIT
+* 184 Apache 2.0
 * 41 ISC
 * 27 New BSD
 * 16 Simplified BSD
-* 6 BlueOak-1.0.0
+* 8 BlueOak-1.0.0
 * 2 MIT OR Apache-2.0
 * 2 MIT-0
 * 2 Mozilla Public License 2.0
@@ -84,7 +84,7 @@
 
 
 <a name="@ai-sdk/google"></a>
-### @ai-sdk/google v2.0.43
+### @ai-sdk/google v2.0.49
 #### 
 
 ##### Paths
@@ -260,7 +260,7 @@
 
 
 <a name="@aws-sdk/client-s3"></a>
-### @aws-sdk/client-s3 v3.842.0
+### @aws-sdk/client-s3 v3.980.0
 #### 
 
 ##### Paths
@@ -271,7 +271,7 @@
 
 
 <a name="@aws-sdk/client-sso"></a>
-### @aws-sdk/client-sso v3.840.0
+### @aws-sdk/client-sso v3.980.0
 #### 
 
 ##### Paths
@@ -282,7 +282,18 @@
 
 
 <a name="@aws-sdk/core"></a>
-### @aws-sdk/core v3.840.0
+### @aws-sdk/core v3.973.5
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
+
+
+
+<a name="@aws-sdk/crc64-nvme"></a>
+### @aws-sdk/crc64-nvme v3.972.0
 #### 
 
 ##### Paths
@@ -293,7 +304,7 @@
 
 
 <a name="@aws-sdk/credential-provider-env"></a>
-### @aws-sdk/credential-provider-env v3.840.0
+### @aws-sdk/credential-provider-env v3.972.3
 #### 
 
 ##### Paths
@@ -304,7 +315,7 @@
 
 
 <a name="@aws-sdk/credential-provider-http"></a>
-### @aws-sdk/credential-provider-http v3.840.0
+### @aws-sdk/credential-provider-http v3.972.5
 #### 
 
 ##### Paths
@@ -315,7 +326,18 @@
 
 
 <a name="@aws-sdk/credential-provider-ini"></a>
-### @aws-sdk/credential-provider-ini v3.840.0
+### @aws-sdk/credential-provider-ini v3.972.3
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
+
+
+
+<a name="@aws-sdk/credential-provider-login"></a>
+### @aws-sdk/credential-provider-login v3.972.3
 #### 
 
 ##### Paths
@@ -326,7 +348,7 @@
 
 
 <a name="@aws-sdk/credential-provider-node"></a>
-### @aws-sdk/credential-provider-node v3.840.0
+### @aws-sdk/credential-provider-node v3.972.4
 #### 
 
 ##### Paths
@@ -337,7 +359,7 @@
 
 
 <a name="@aws-sdk/credential-provider-process"></a>
-### @aws-sdk/credential-provider-process v3.840.0
+### @aws-sdk/credential-provider-process v3.972.3
 #### 
 
 ##### Paths
@@ -348,7 +370,7 @@
 
 
 <a name="@aws-sdk/credential-provider-sso"></a>
-### @aws-sdk/credential-provider-sso v3.840.0
+### @aws-sdk/credential-provider-sso v3.972.3
 #### 
 
 ##### Paths
@@ -359,7 +381,7 @@
 
 
 <a name="@aws-sdk/credential-provider-web-identity"></a>
-### @aws-sdk/credential-provider-web-identity v3.840.0
+### @aws-sdk/credential-provider-web-identity v3.972.3
 #### 
 
 ##### Paths
@@ -370,7 +392,7 @@
 
 
 <a name="@aws-sdk/middleware-bucket-endpoint"></a>
-### @aws-sdk/middleware-bucket-endpoint v3.840.0
+### @aws-sdk/middleware-bucket-endpoint v3.972.3
 #### 
 
 ##### Paths
@@ -381,7 +403,7 @@
 
 
 <a name="@aws-sdk/middleware-expect-continue"></a>
-### @aws-sdk/middleware-expect-continue v3.840.0
+### @aws-sdk/middleware-expect-continue v3.972.3
 #### 
 
 ##### Paths
@@ -392,7 +414,7 @@
 
 
 <a name="@aws-sdk/middleware-flexible-checksums"></a>
-### @aws-sdk/middleware-flexible-checksums v3.840.0
+### @aws-sdk/middleware-flexible-checksums v3.972.3
 #### 
 
 ##### Paths
@@ -403,7 +425,7 @@
 
 
 <a name="@aws-sdk/middleware-host-header"></a>
-### @aws-sdk/middleware-host-header v3.840.0
+### @aws-sdk/middleware-host-header v3.972.3
 #### 
 
 ##### Paths
@@ -414,7 +436,7 @@
 
 
 <a name="@aws-sdk/middleware-location-constraint"></a>
-### @aws-sdk/middleware-location-constraint v3.840.0
+### @aws-sdk/middleware-location-constraint v3.972.3
 #### 
 
 ##### Paths
@@ -425,7 +447,7 @@
 
 
 <a name="@aws-sdk/middleware-logger"></a>
-### @aws-sdk/middleware-logger v3.840.0
+### @aws-sdk/middleware-logger v3.972.3
 #### 
 
 ##### Paths
@@ -436,7 +458,7 @@
 
 
 <a name="@aws-sdk/middleware-recursion-detection"></a>
-### @aws-sdk/middleware-recursion-detection v3.840.0
+### @aws-sdk/middleware-recursion-detection v3.972.3
 #### 
 
 ##### Paths
@@ -447,7 +469,7 @@
 
 
 <a name="@aws-sdk/middleware-sdk-s3"></a>
-### @aws-sdk/middleware-sdk-s3 v3.840.0
+### @aws-sdk/middleware-sdk-s3 v3.972.5
 #### 
 
 ##### Paths
@@ -458,7 +480,7 @@
 
 
 <a name="@aws-sdk/middleware-ssec"></a>
-### @aws-sdk/middleware-ssec v3.840.0
+### @aws-sdk/middleware-ssec v3.972.3
 #### 
 
 ##### Paths
@@ -469,7 +491,7 @@
 
 
 <a name="@aws-sdk/middleware-user-agent"></a>
-### @aws-sdk/middleware-user-agent v3.840.0
+### @aws-sdk/middleware-user-agent v3.972.5
 #### 
 
 ##### Paths
@@ -480,7 +502,7 @@
 
 
 <a name="@aws-sdk/nested-clients"></a>
-### @aws-sdk/nested-clients v3.840.0
+### @aws-sdk/nested-clients v3.980.0
 #### 
 
 ##### Paths
@@ -491,7 +513,7 @@
 
 
 <a name="@aws-sdk/region-config-resolver"></a>
-### @aws-sdk/region-config-resolver v3.840.0
+### @aws-sdk/region-config-resolver v3.972.3
 #### 
 
 ##### Paths
@@ -502,7 +524,7 @@
 
 
 <a name="@aws-sdk/signature-v4-multi-region"></a>
-### @aws-sdk/signature-v4-multi-region v3.840.0
+### @aws-sdk/signature-v4-multi-region v3.980.0
 #### 
 
 ##### Paths
@@ -513,7 +535,7 @@
 
 
 <a name="@aws-sdk/token-providers"></a>
-### @aws-sdk/token-providers v3.840.0
+### @aws-sdk/token-providers v3.980.0
 #### 
 
 ##### Paths
@@ -524,7 +546,7 @@
 
 
 <a name="@aws-sdk/types"></a>
-### @aws-sdk/types v3.840.0
+### @aws-sdk/types v3.973.1
 #### 
 
 ##### Paths
@@ -535,7 +557,7 @@
 
 
 <a name="@aws-sdk/util-arn-parser"></a>
-### @aws-sdk/util-arn-parser v3.804.0
+### @aws-sdk/util-arn-parser v3.972.2
 #### 
 
 ##### Paths
@@ -546,7 +568,7 @@
 
 
 <a name="@aws-sdk/util-endpoints"></a>
-### @aws-sdk/util-endpoints v3.840.0
+### @aws-sdk/util-endpoints v3.980.0
 #### 
 
 ##### Paths
@@ -568,7 +590,7 @@
 
 
 <a name="@aws-sdk/util-user-agent-browser"></a>
-### @aws-sdk/util-user-agent-browser v3.840.0
+### @aws-sdk/util-user-agent-browser v3.972.3
 #### 
 
 ##### Paths
@@ -579,7 +601,7 @@
 
 
 <a name="@aws-sdk/util-user-agent-node"></a>
-### @aws-sdk/util-user-agent-node v3.840.0
+### @aws-sdk/util-user-agent-node v3.972.3
 #### 
 
 ##### Paths
@@ -590,7 +612,18 @@
 
 
 <a name="@aws-sdk/xml-builder"></a>
-### @aws-sdk/xml-builder v3.821.0
+### @aws-sdk/xml-builder v3.972.2
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
+
+
+
+<a name="@aws/lambda-invoke-store"></a>
+### @aws/lambda-invoke-store v0.2.3
 #### 
 
 ##### Paths
@@ -1150,17 +1183,6 @@ MIT-0 permitted
 
 
 
-<a name="@fastify/busboy"></a>
-### @fastify/busboy v2.1.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="@floating-ui/core"></a>
 ### @floating-ui/core v1.7.3
 #### 
@@ -1294,7 +1316,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@isaacs/brace-expansion"></a>
-### @isaacs/brace-expansion v5.0.0
+### @isaacs/brace-expansion v5.0.1
 #### 
 
 ##### Paths
@@ -1328,6 +1350,17 @@ LGPL-3.0-or-later permitted
 
 <a name="@jridgewell/gen-mapping"></a>
 ### @jridgewell/gen-mapping v0.3.13
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@jridgewell/remapping"></a>
+### @jridgewell/remapping v2.3.5
 #### 
 
 ##### Paths
@@ -1459,7 +1492,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@next/env"></a>
-### @next/env v16.0.7
+### @next/env v16.0.10
 #### 
 
 ##### Paths
@@ -1470,7 +1503,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@next/swc-linux-x64-gnu"></a>
-### @next/swc-linux-x64-gnu v16.0.7
+### @next/swc-linux-x64-gnu v16.1.5
 #### 
 
 ##### Paths
@@ -1481,7 +1514,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@next/third-parties"></a>
-### @next/third-parties v16.0.7
+### @next/third-parties v16.0.10
 #### 
 
 ##### Paths
@@ -3515,8 +3548,85 @@ LGPL-3.0-or-later permitted
 
 
 
+<a name="@shikijs/core"></a>
+### @shikijs/core v3.21.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@shikijs/engine-javascript"></a>
+### @shikijs/engine-javascript v3.21.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@shikijs/engine-oniguruma"></a>
+### @shikijs/engine-oniguruma v3.21.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@shikijs/langs"></a>
+### @shikijs/langs v3.21.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@shikijs/themes"></a>
+### @shikijs/themes v3.21.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@shikijs/types"></a>
+### @shikijs/types v3.21.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@shikijs/vscode-textmate"></a>
+### @shikijs/vscode-textmate v10.0.2
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="@smithy/abort-controller"></a>
-### @smithy/abort-controller v4.0.4
+### @smithy/abort-controller v4.2.8
 #### 
 
 ##### Paths
@@ -3527,7 +3637,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/chunked-blob-reader"></a>
-### @smithy/chunked-blob-reader v5.0.0
+### @smithy/chunked-blob-reader v5.2.0
 #### 
 
 ##### Paths
@@ -3538,7 +3648,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/chunked-blob-reader-native"></a>
-### @smithy/chunked-blob-reader-native v4.0.0
+### @smithy/chunked-blob-reader-native v4.2.1
 #### 
 
 ##### Paths
@@ -3549,7 +3659,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/config-resolver"></a>
-### @smithy/config-resolver v4.1.4
+### @smithy/config-resolver v4.4.6
 #### 
 
 ##### Paths
@@ -3560,7 +3670,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/core"></a>
-### @smithy/core v3.6.0
+### @smithy/core v3.22.0
 #### 
 
 ##### Paths
@@ -3571,7 +3681,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/credential-provider-imds"></a>
-### @smithy/credential-provider-imds v4.0.6
+### @smithy/credential-provider-imds v4.2.8
 #### 
 
 ##### Paths
@@ -3582,7 +3692,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/eventstream-codec"></a>
-### @smithy/eventstream-codec v4.0.4
+### @smithy/eventstream-codec v4.2.8
 #### 
 
 ##### Paths
@@ -3593,7 +3703,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/eventstream-serde-browser"></a>
-### @smithy/eventstream-serde-browser v4.0.4
+### @smithy/eventstream-serde-browser v4.2.8
 #### 
 
 ##### Paths
@@ -3604,7 +3714,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/eventstream-serde-config-resolver"></a>
-### @smithy/eventstream-serde-config-resolver v4.1.2
+### @smithy/eventstream-serde-config-resolver v4.3.8
 #### 
 
 ##### Paths
@@ -3615,7 +3725,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/eventstream-serde-node"></a>
-### @smithy/eventstream-serde-node v4.0.4
+### @smithy/eventstream-serde-node v4.2.8
 #### 
 
 ##### Paths
@@ -3626,7 +3736,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/eventstream-serde-universal"></a>
-### @smithy/eventstream-serde-universal v4.0.4
+### @smithy/eventstream-serde-universal v4.2.8
 #### 
 
 ##### Paths
@@ -3637,7 +3747,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/fetch-http-handler"></a>
-### @smithy/fetch-http-handler v5.0.4
+### @smithy/fetch-http-handler v5.3.9
 #### 
 
 ##### Paths
@@ -3648,7 +3758,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/hash-blob-browser"></a>
-### @smithy/hash-blob-browser v4.0.4
+### @smithy/hash-blob-browser v4.2.9
 #### 
 
 ##### Paths
@@ -3659,7 +3769,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/hash-node"></a>
-### @smithy/hash-node v4.0.4
+### @smithy/hash-node v4.2.8
 #### 
 
 ##### Paths
@@ -3670,7 +3780,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/hash-stream-node"></a>
-### @smithy/hash-stream-node v4.0.4
+### @smithy/hash-stream-node v4.2.8
 #### 
 
 ##### Paths
@@ -3681,7 +3791,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/invalid-dependency"></a>
-### @smithy/invalid-dependency v4.0.4
+### @smithy/invalid-dependency v4.2.8
 #### 
 
 ##### Paths
@@ -3703,7 +3813,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/md5-js"></a>
-### @smithy/md5-js v4.0.4
+### @smithy/md5-js v4.2.8
 #### 
 
 ##### Paths
@@ -3714,7 +3824,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/middleware-content-length"></a>
-### @smithy/middleware-content-length v4.0.4
+### @smithy/middleware-content-length v4.2.8
 #### 
 
 ##### Paths
@@ -3725,7 +3835,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/middleware-endpoint"></a>
-### @smithy/middleware-endpoint v4.1.13
+### @smithy/middleware-endpoint v4.4.12
 #### 
 
 ##### Paths
@@ -3736,7 +3846,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/middleware-retry"></a>
-### @smithy/middleware-retry v4.1.14
+### @smithy/middleware-retry v4.4.29
 #### 
 
 ##### Paths
@@ -3747,7 +3857,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/middleware-serde"></a>
-### @smithy/middleware-serde v4.0.8
+### @smithy/middleware-serde v4.2.9
 #### 
 
 ##### Paths
@@ -3758,7 +3868,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/middleware-stack"></a>
-### @smithy/middleware-stack v4.0.4
+### @smithy/middleware-stack v4.2.8
 #### 
 
 ##### Paths
@@ -3769,7 +3879,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/node-config-provider"></a>
-### @smithy/node-config-provider v4.1.3
+### @smithy/node-config-provider v4.3.8
 #### 
 
 ##### Paths
@@ -3780,7 +3890,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/node-http-handler"></a>
-### @smithy/node-http-handler v4.0.6
+### @smithy/node-http-handler v4.4.8
 #### 
 
 ##### Paths
@@ -3791,7 +3901,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/property-provider"></a>
-### @smithy/property-provider v4.0.4
+### @smithy/property-provider v4.2.8
 #### 
 
 ##### Paths
@@ -3802,7 +3912,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/protocol-http"></a>
-### @smithy/protocol-http v5.1.2
+### @smithy/protocol-http v5.3.8
 #### 
 
 ##### Paths
@@ -3813,7 +3923,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/querystring-builder"></a>
-### @smithy/querystring-builder v4.0.4
+### @smithy/querystring-builder v4.2.8
 #### 
 
 ##### Paths
@@ -3824,7 +3934,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/querystring-parser"></a>
-### @smithy/querystring-parser v4.0.4
+### @smithy/querystring-parser v4.2.8
 #### 
 
 ##### Paths
@@ -3835,7 +3945,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/service-error-classification"></a>
-### @smithy/service-error-classification v4.0.6
+### @smithy/service-error-classification v4.2.8
 #### 
 
 ##### Paths
@@ -3846,7 +3956,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/shared-ini-file-loader"></a>
-### @smithy/shared-ini-file-loader v4.0.4
+### @smithy/shared-ini-file-loader v4.4.3
 #### 
 
 ##### Paths
@@ -3857,7 +3967,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/signature-v4"></a>
-### @smithy/signature-v4 v5.1.2
+### @smithy/signature-v4 v5.3.8
 #### 
 
 ##### Paths
@@ -3868,7 +3978,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/smithy-client"></a>
-### @smithy/smithy-client v4.4.5
+### @smithy/smithy-client v4.11.1
 #### 
 
 ##### Paths
@@ -3879,7 +3989,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/types"></a>
-### @smithy/types v4.3.1
+### @smithy/types v4.12.0
 #### 
 
 ##### Paths
@@ -3890,7 +4000,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/url-parser"></a>
-### @smithy/url-parser v4.0.4
+### @smithy/url-parser v4.2.8
 #### 
 
 ##### Paths
@@ -3901,7 +4011,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/util-base64"></a>
-### @smithy/util-base64 v4.0.0
+### @smithy/util-base64 v4.3.0
 #### 
 
 ##### Paths
@@ -3912,7 +4022,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/util-body-length-browser"></a>
-### @smithy/util-body-length-browser v4.0.0
+### @smithy/util-body-length-browser v4.2.0
 #### 
 
 ##### Paths
@@ -3923,7 +4033,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/util-body-length-node"></a>
-### @smithy/util-body-length-node v4.0.0
+### @smithy/util-body-length-node v4.2.1
 #### 
 
 ##### Paths
@@ -3945,7 +4055,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/util-config-provider"></a>
-### @smithy/util-config-provider v4.0.0
+### @smithy/util-config-provider v4.2.0
 #### 
 
 ##### Paths
@@ -3956,7 +4066,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/util-defaults-mode-browser"></a>
-### @smithy/util-defaults-mode-browser v4.0.21
+### @smithy/util-defaults-mode-browser v4.3.28
 #### 
 
 ##### Paths
@@ -3967,7 +4077,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/util-defaults-mode-node"></a>
-### @smithy/util-defaults-mode-node v4.0.21
+### @smithy/util-defaults-mode-node v4.2.31
 #### 
 
 ##### Paths
@@ -3978,7 +4088,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/util-endpoints"></a>
-### @smithy/util-endpoints v3.0.6
+### @smithy/util-endpoints v3.2.8
 #### 
 
 ##### Paths
@@ -3989,7 +4099,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/util-hex-encoding"></a>
-### @smithy/util-hex-encoding v4.0.0
+### @smithy/util-hex-encoding v4.2.0
 #### 
 
 ##### Paths
@@ -4000,7 +4110,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/util-middleware"></a>
-### @smithy/util-middleware v4.0.4
+### @smithy/util-middleware v4.2.8
 #### 
 
 ##### Paths
@@ -4011,7 +4121,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/util-retry"></a>
-### @smithy/util-retry v4.0.6
+### @smithy/util-retry v4.2.8
 #### 
 
 ##### Paths
@@ -4022,7 +4132,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/util-stream"></a>
-### @smithy/util-stream v4.2.2
+### @smithy/util-stream v4.5.10
 #### 
 
 ##### Paths
@@ -4033,7 +4143,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/util-uri-escape"></a>
-### @smithy/util-uri-escape v4.0.0
+### @smithy/util-uri-escape v4.2.0
 #### 
 
 ##### Paths
@@ -4055,7 +4165,18 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@smithy/util-waiter"></a>
-### @smithy/util-waiter v4.0.6
+### @smithy/util-waiter v4.2.8
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
+
+
+
+<a name="@smithy/uuid"></a>
+### @smithy/uuid v1.1.0
 #### 
 
 ##### Paths
@@ -4187,7 +4308,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@tailwindcss/node"></a>
-### @tailwindcss/node v4.1.10
+### @tailwindcss/node v4.1.18
 #### 
 
 ##### Paths
@@ -4198,7 +4319,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@tailwindcss/oxide"></a>
-### @tailwindcss/oxide v4.1.10
+### @tailwindcss/oxide v4.1.18
 #### 
 
 ##### Paths
@@ -4209,7 +4330,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@tailwindcss/oxide-linux-x64-gnu"></a>
-### @tailwindcss/oxide-linux-x64-gnu v4.1.10
+### @tailwindcss/oxide-linux-x64-gnu v4.1.18
 #### 
 
 ##### Paths
@@ -4220,7 +4341,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@tailwindcss/postcss"></a>
-### @tailwindcss/postcss v4.1.10
+### @tailwindcss/postcss v4.1.18
 #### 
 
 ##### Paths
@@ -4561,7 +4682,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@trigger.dev/core"></a>
-### @trigger.dev/core v4.1.0
+### @trigger.dev/core v4.3.0
 #### 
 
 ##### Paths
@@ -4572,7 +4693,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@trigger.dev/sdk"></a>
-### @trigger.dev/sdk v4.1.0
+### @trigger.dev/sdk v4.3.0
 #### 
 
 ##### Paths
@@ -4791,6 +4912,17 @@ LGPL-3.0-or-later permitted
 
 
 
+<a name="@types/katex"></a>
+### @types/katex v0.16.7
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="@types/linkify-it"></a>
 ### @types/linkify-it v5.0.0
 #### 
@@ -4989,17 +5121,6 @@ LGPL-3.0-or-later permitted
 
 
 
-<a name="@types/uuid"></a>
-### @types/uuid v9.0.8
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="@types/whatwg-mimetype"></a>
 ### @types/whatwg-mimetype v3.0.2
 #### 
@@ -5041,17 +5162,6 @@ LGPL-3.0-or-later permitted
 * /home/runner/work/giselle/giselle
 
 <a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="@vercel/blob"></a>
-### @vercel/blob v0.27.3
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
 
 
 
@@ -5441,7 +5551,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="acorn"></a>
-### acorn v8.14.0
+### acorn v8.15.0
 #### 
 
 ##### Paths
@@ -5642,17 +5752,6 @@ Python-2.0 manually approved
 
 
 
-<a name="async-retry"></a>
-### async-retry v1.3.3
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="atomic-sleep"></a>
 ### atomic-sleep v1.0.0
 #### 
@@ -5720,7 +5819,7 @@ Python-2.0 manually approved
 
 
 <a name="baseline-browser-mapping"></a>
-### baseline-browser-mapping v2.8.23
+### baseline-browser-mapping v2.9.8
 #### 
 
 ##### Paths
@@ -5918,7 +6017,7 @@ Python-2.0 manually approved
 
 
 <a name="caniuse-lite"></a>
-### caniuse-lite v1.0.30001753
+### caniuse-lite v1.0.30001760
 #### 
 
 ##### Paths
@@ -6611,7 +6710,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="detect-libc"></a>
-### detect-libc v2.0.4
+### detect-libc v2.1.2
 #### 
 
 ##### Paths
@@ -6842,7 +6941,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="enhanced-resolve"></a>
-### enhanced-resolve v5.18.3
+### enhanced-resolve v5.18.4
 #### 
 
 ##### Paths
@@ -7249,7 +7348,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="fast-xml-parser"></a>
-### fast-xml-parser v4.4.1
+### fast-xml-parser v5.3.4
 #### 
 
 ##### Paths
@@ -7513,13 +7612,24 @@ BlueOak-1.0.0 permitted
 
 
 <a name="glob"></a>
-### glob v10.4.5
+### glob v10.5.0
 #### 
 
 ##### Paths
 * /home/runner/work/giselle/giselle
 
 <a href="http://en.wikipedia.org/wiki/ISC_license">ISC</a> permitted
+
+
+
+<a name="glob"></a>
+### glob v11.1.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+BlueOak-1.0.0 permitted
 
 
 
@@ -7710,8 +7820,52 @@ BlueOak-1.0.0 permitted
 
 
 
+<a name="hast-util-from-dom"></a>
+### hast-util-from-dom v5.0.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://en.wikipedia.org/wiki/ISC_license">ISC</a> permitted
+
+
+
+<a name="hast-util-from-html"></a>
+### hast-util-from-html v2.0.3
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="hast-util-from-html-isomorphic"></a>
+### hast-util-from-html-isomorphic v2.0.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="hast-util-from-parse5"></a>
 ### hast-util-from-parse5 v8.0.3
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="hast-util-is-element"></a>
+### hast-util-is-element v3.0.0
 #### 
 
 ##### Paths
@@ -7743,8 +7897,30 @@ BlueOak-1.0.0 permitted
 
 
 
+<a name="hast-util-sanitize"></a>
+### hast-util-sanitize v5.0.2
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="hast-util-to-html"></a>
+### hast-util-to-html v9.0.5
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="hast-util-to-jsx-runtime"></a>
-### hast-util-to-jsx-runtime v2.3.2
+### hast-util-to-jsx-runtime v2.3.6
 #### 
 
 ##### Paths
@@ -7756,6 +7932,17 @@ BlueOak-1.0.0 permitted
 
 <a name="hast-util-to-parse5"></a>
 ### hast-util-to-parse5 v8.0.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="hast-util-to-text"></a>
+### hast-util-to-text v4.0.2
 #### 
 
 ##### Paths
@@ -7975,7 +8162,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="inline-style-parser"></a>
-### inline-style-parser v0.2.4
+### inline-style-parser v0.2.7
 #### 
 
 ##### Paths
@@ -8020,17 +8207,6 @@ BlueOak-1.0.0 permitted
 
 <a name="is-binary-path"></a>
 ### is-binary-path v2.1.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="is-buffer"></a>
-### is-buffer v2.0.5
 #### 
 
 ##### Paths
@@ -8108,17 +8284,6 @@ BlueOak-1.0.0 permitted
 
 <a name="is-interactive"></a>
 ### is-interactive v2.0.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="is-node-process"></a>
-### is-node-process v1.2.0
 #### 
 
 ##### Paths
@@ -8437,7 +8602,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="jwa"></a>
-### jwa v2.0.0
+### jwa v2.0.1
 #### 
 
 ##### Paths
@@ -8448,7 +8613,18 @@ BlueOak-1.0.0 permitted
 
 
 <a name="jws"></a>
-### jws v4.0.0
+### jws v4.0.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="katex"></a>
+### katex v0.16.27
 #### 
 
 ##### Paths
@@ -8514,7 +8690,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="lightningcss"></a>
-### lightningcss v1.30.1
+### lightningcss v1.30.2
 #### 
 
 ##### Paths
@@ -8525,7 +8701,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="lightningcss-linux-x64-gnu"></a>
-### lightningcss-linux-x64-gnu v1.30.1
+### lightningcss-linux-x64-gnu v1.30.2
 #### 
 
 ##### Paths
@@ -8734,7 +8910,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="marked"></a>
-### marked v15.0.7
+### marked v15.0.12
 #### 
 
 ##### Paths
@@ -8845,6 +9021,17 @@ BlueOak-1.0.0 permitted
 
 <a name="mdast-util-gfm-task-list-item"></a>
 ### mdast-util-gfm-task-list-item v2.0.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="mdast-util-math"></a>
+### mdast-util-math v3.0.0
 #### 
 
 ##### Paths
@@ -8986,6 +9173,39 @@ BlueOak-1.0.0 permitted
 
 
 
+<a name="micromark-extension-cjk-friendly"></a>
+### micromark-extension-cjk-friendly v1.2.3
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="micromark-extension-cjk-friendly-gfm-strikethrough"></a>
+### micromark-extension-cjk-friendly-gfm-strikethrough v1.2.3
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="micromark-extension-cjk-friendly-util"></a>
+### micromark-extension-cjk-friendly-util v2.1.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="micromark-extension-gfm"></a>
 ### micromark-extension-gfm v3.0.0
 #### 
@@ -9054,6 +9274,17 @@ BlueOak-1.0.0 permitted
 
 <a name="micromark-extension-gfm-task-list-item"></a>
 ### micromark-extension-gfm-task-list-item v2.1.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="micromark-extension-math"></a>
+### micromark-extension-math v3.1.0
 #### 
 
 ##### Paths
@@ -9383,18 +9614,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="minizlib"></a>
-### minizlib v3.0.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="mkdirp"></a>
-### mkdirp v3.0.1
+### minizlib v3.1.0
 #### 
 
 ##### Paths
@@ -9405,7 +9625,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="module-details-from-path"></a>
-### module-details-from-path v1.0.3
+### module-details-from-path v1.0.4
 #### 
 
 ##### Paths
@@ -9537,7 +9757,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="next"></a>
-### next v16.0.7
+### next v16.1.5
 #### 
 
 ##### Paths
@@ -9714,6 +9934,28 @@ MIT-0 permitted
 
 <a name="onetime"></a>
 ### onetime v6.0.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="oniguruma-parser"></a>
+### oniguruma-parser v0.12.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="oniguruma-to-es"></a>
+### oniguruma-to-es v4.3.4
 #### 
 
 ##### Paths
@@ -10670,7 +10912,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="qs"></a>
-### qs v6.14.0
+### qs v6.14.1
 #### 
 
 ##### Paths
@@ -10768,17 +11010,6 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="react-markdown"></a>
-### react-markdown v9.0.3
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="react-remove-scroll"></a>
 ### react-remove-scroll v2.7.1
 #### 
@@ -10867,6 +11098,61 @@ BlueOak-1.0.0 permitted
 
 
 
+<a name="regex"></a>
+### regex v6.1.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="regex-recursion"></a>
+### regex-recursion v6.0.2
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="regex-utilities"></a>
+### regex-utilities v2.3.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="rehype-harden"></a>
+### rehype-harden v1.1.7
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="rehype-katex"></a>
+### rehype-katex v7.0.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="rehype-raw"></a>
 ### rehype-raw v7.0.0
 #### 
@@ -10878,8 +11164,52 @@ BlueOak-1.0.0 permitted
 
 
 
+<a name="rehype-sanitize"></a>
+### rehype-sanitize v6.0.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="remark-cjk-friendly"></a>
+### remark-cjk-friendly v1.2.3
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="remark-cjk-friendly-gfm-strikethrough"></a>
+### remark-cjk-friendly-gfm-strikethrough v1.2.3
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="remark-gfm"></a>
 ### remark-gfm v4.0.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="remark-math"></a>
+### remark-math v6.0.0
 #### 
 
 ##### Paths
@@ -10901,7 +11231,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="remark-rehype"></a>
-### remark-rehype v11.1.1
+### remark-rehype v11.1.2
 #### 
 
 ##### Paths
@@ -10919,6 +11249,17 @@ BlueOak-1.0.0 permitted
 * /home/runner/work/giselle/giselle
 
 <a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="remend"></a>
+### remend v1.0.2
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
 
 
 
@@ -10979,17 +11320,6 @@ BlueOak-1.0.0 permitted
 
 <a name="restore-cursor"></a>
 ### restore-cursor v5.1.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="retry"></a>
-### retry v0.13.1
 #### 
 
 ##### Paths
@@ -11199,6 +11529,17 @@ BlueOak-1.0.0 permitted
 
 <a name="shebang-regex"></a>
 ### shebang-regex v3.0.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="shiki"></a>
+### shiki v3.21.0
 #### 
 
 ##### Paths
@@ -11509,6 +11850,17 @@ Unknown manually approved
 
 
 
+<a name="streamdown"></a>
+### streamdown v2.0.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
+
+
+
 <a name="string-width"></a>
 ### string-width v4.2.3
 #### 
@@ -11587,7 +11939,7 @@ Unknown manually approved
 
 
 <a name="stripe"></a>
-### stripe v20.1.0-alpha.3
+### stripe v20.2.0-alpha.1
 #### 
 
 ##### Paths
@@ -11598,7 +11950,7 @@ Unknown manually approved
 
 
 <a name="strnum"></a>
-### strnum v1.1.2
+### strnum v2.1.2
 #### 
 
 ##### Paths
@@ -11630,8 +11982,19 @@ Unknown manually approved
 
 
 
+<a name="style-to-js"></a>
+### style-to-js v1.1.21
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="style-to-object"></a>
-### style-to-object v1.0.8
+### style-to-object v1.0.14
 #### 
 
 ##### Paths
@@ -11741,7 +12104,7 @@ Unknown manually approved
 
 
 <a name="tailwindcss"></a>
-### tailwindcss v4.1.10
+### tailwindcss v4.1.18
 #### 
 
 ##### Paths
@@ -11763,13 +12126,13 @@ Unknown manually approved
 
 
 <a name="tar"></a>
-### tar v7.4.3
+### tar v7.5.7
 #### 
 
 ##### Paths
 * /home/runner/work/giselle/giselle
 
-<a href="http://en.wikipedia.org/wiki/ISC_license">ISC</a> permitted
+BlueOak-1.0.0 permitted
 
 
 
@@ -11807,7 +12170,7 @@ Unknown manually approved
 
 
 <a name="terser"></a>
-### terser v5.44.0
+### terser v5.44.1
 #### 
 
 ##### Paths
@@ -11818,7 +12181,7 @@ Unknown manually approved
 
 
 <a name="terser-webpack-plugin"></a>
-### terser-webpack-plugin v5.3.14
+### terser-webpack-plugin v5.3.16
 #### 
 
 ##### Paths
@@ -11863,17 +12226,6 @@ Unknown manually approved
 
 <a name="thread-stream"></a>
 ### thread-stream v3.1.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="throttleit"></a>
-### throttleit v2.1.0
 #### 
 
 ##### Paths
@@ -12192,7 +12544,7 @@ Unknown manually approved
 
 
 <a name="turbo"></a>
-### turbo v2.4.2
+### turbo v2.7.3
 #### 
 
 ##### Paths
@@ -12203,7 +12555,7 @@ Unknown manually approved
 
 
 <a name="turbo-linux-64"></a>
-### turbo-linux-64 v2.4.2
+### turbo-linux-64 v2.7.3
 #### 
 
 ##### Paths
@@ -12290,17 +12642,6 @@ Unknown manually approved
 
 
 
-<a name="undici"></a>
-### undici v5.28.5
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="undici-types"></a>
 ### undici-types v6.21.0
 #### 
@@ -12323,6 +12664,17 @@ Unknown manually approved
 
 
 
+<a name="unist-util-find-after"></a>
+### unist-util-find-after v5.0.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="unist-util-is"></a>
 ### unist-util-is v6.0.0
 #### 
@@ -12336,6 +12688,17 @@ Unknown manually approved
 
 <a name="unist-util-position"></a>
 ### unist-util-position v5.0.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="unist-util-remove-position"></a>
+### unist-util-remove-position v5.0.0
 #### 
 
 ##### Paths

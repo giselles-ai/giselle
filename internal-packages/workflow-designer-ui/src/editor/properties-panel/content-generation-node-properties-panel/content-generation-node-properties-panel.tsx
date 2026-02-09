@@ -14,11 +14,17 @@ import {
 	type Generation,
 	Node,
 } from "@giselles-ai/protocol";
-import { useNodeGenerations, useWorkflowDesigner } from "@giselles-ai/react";
+import { useNodeGenerations } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import { PlusIcon, Settings2Icon, XIcon } from "lucide-react";
 import { Tooltip as TooltipPrimitive } from "radix-ui";
 import { useCallback, useMemo, useState } from "react";
+import {
+	useAppDesignerStore,
+	useDeleteNode,
+	useUpdateNodeData,
+	useUpdateNodeDataContent,
+} from "../../../app-designer";
 import ClipboardButton from "../../../ui/clipboard-button";
 import { GenerationView } from "../../../ui/generation-view";
 import { GenerateCtaButton, NodePanelHeader, PropertiesPanelRoot } from "../ui";
@@ -76,8 +82,10 @@ export function ContentGenerationNodePropertiesPanel({
 }: {
 	node: ContentGenerationNode;
 }) {
-	const { updateNodeData, updateNodeDataContent, deleteNode, data } =
-		useWorkflowDesigner();
+	const workspaceId = useAppDesignerStore((s) => s.workspaceId);
+	const updateNodeData = useUpdateNodeData();
+	const updateNodeDataContent = useUpdateNodeDataContent();
+	const deleteNode = useDeleteNode();
 	const languageModel = useMemo(
 		() => getEntry(node.content.languageModel.id),
 		[node.content.languageModel.id],
@@ -291,7 +299,7 @@ export function ContentGenerationNodePropertiesPanel({
 		currentGeneration,
 	} = useNodeGenerations({
 		nodeId: node.id,
-		origin: { type: "studio", workspaceId: data.id },
+		origin: { type: "studio", workspaceId },
 	});
 	const handleModelChange = useCallback(
 		(modelId: LanguageModelId) => {
@@ -318,7 +326,7 @@ export function ContentGenerationNodePropertiesPanel({
 		createAndStartGenerationRunner({
 			origin: {
 				type: "studio",
-				workspaceId: data.id,
+				workspaceId,
 			},
 			operationNode: node,
 			sourceNodes: connections
@@ -337,11 +345,11 @@ export function ContentGenerationNodePropertiesPanel({
 		});
 	}, [
 		createAndStartGenerationRunner,
-		data.id,
 		node,
 		connections,
 		isGenerating,
 		stopGenerationRunner,
+		workspaceId,
 	]);
 
 	return (

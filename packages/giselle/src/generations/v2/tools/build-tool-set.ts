@@ -5,7 +5,7 @@ import { octokit } from "@giselles-ai/github-tool";
 import { getLanguageModelTool } from "@giselles-ai/language-model-registry";
 import type { ContentGenerationContent } from "@giselles-ai/protocol";
 import { SecretId } from "@giselles-ai/protocol";
-import type { ToolSet } from "ai";
+import type { Tool, ToolSet } from "ai";
 import z from "zod/v4";
 import { decryptSecret } from "../../../secrets";
 import type { GiselleContext } from "../../../types";
@@ -106,7 +106,14 @@ export async function buildToolSet({
 				break;
 			}
 			case "google-web-search":
-				toolSet.google_search = google.tools.googleSearch({});
+				// Cast needed: googleSearch returns Tool<{}, any> but ToolSet expects Tool<any, any>.
+				// This is a type mismatch in AI SDK where {} is not assignable to the ToolSet union type.
+				toolSet.google_search = google.tools.googleSearch({}) as Tool<
+					// biome-ignore lint/suspicious/noExplicitAny: AI SDK type compatibility workaround
+					any,
+					// biome-ignore lint/suspicious/noExplicitAny: AI SDK type compatibility workaround
+					any
+				>;
 				break;
 			case "openai-web-search": {
 				const configurationOptionSchema = z.object({

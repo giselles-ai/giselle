@@ -3,11 +3,13 @@ import * as z from "zod/v4";
 import { AppId } from "../app";
 import { GenerationStatus } from "../generation";
 import { GenerationId } from "../generation/generation-id";
+import { NodeId } from "../node";
 import { TriggerId } from "../trigger";
 import { WorkspaceId } from "../workspace";
 import { TaskId } from "./task-id";
 
 export const SequenceId = createIdGenerator("sqn");
+export type SequenceId = z.infer<typeof SequenceId.schema>;
 
 export const StepId = createIdGenerator("stp");
 export type StepId = z.infer<typeof StepId.schema>;
@@ -56,6 +58,10 @@ const TaskStarter = z.union([
 	z.object({
 		type: z.literal("github-trigger"),
 		triggerId: TriggerId.schema,
+		end: z.union([
+			z.object({ type: z.literal("endNode"), appId: AppId.schema }),
+			z.object({ type: z.literal("none") }),
+		]),
 	}),
 	z.object({
 		type: z.literal("app"),
@@ -92,6 +98,7 @@ export const Task = z.object({
 	updatedAt: z.number(),
 	annotations: z.array(ActAnnotationObject).default([]),
 	sequences: z.array(Sequence),
+	nodeIdsConnectedToEnd: z.array(NodeId.schema).optional(),
 });
 export type Task = z.infer<typeof Task>;
 

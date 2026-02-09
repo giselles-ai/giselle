@@ -17,7 +17,7 @@ async function authorizeOAuth(provider: OAuthProvider, formData?: FormData) {
 	const { data, error } = await supabase.auth.signInWithOAuth({
 		provider,
 		options: {
-			redirectTo: await getAuthCallbackUrl({ provider, next: validReturnUrl }),
+			redirectTo: getAuthCallbackUrl({ provider, next: validReturnUrl }),
 		},
 	});
 	logger.debug(`authorized with ${provider}`);

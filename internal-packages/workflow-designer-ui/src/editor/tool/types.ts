@@ -25,35 +25,35 @@ export interface SelectFileNodeCategoryTool extends ToolBase {
 	action: "selectFileNodeCategory";
 }
 
-export interface SelectSourceCategoryTool extends ToolBase {
+export interface SelectContextTool extends ToolBase {
 	category: "edit";
-	action: "selectSourceCategory";
+	action: "selectContext";
 }
-export interface SelectTriggerTool extends ToolBase {
+interface SelectTriggerTool extends ToolBase {
 	category: "edit";
 	action: "selectTrigger";
 }
-export interface SelectEnviromentActionTool extends ToolBase {
+export interface SelectGitHubTriggerTool extends ToolBase {
 	category: "edit";
-	action: "selectAction";
+	action: "selectGithubTrigger";
+}
+export interface SelectIntegrationTool extends ToolBase {
+	category: "edit";
+	action: "selectIntegration";
 }
 export interface MoveTool extends ToolBase {
 	category: "move";
 	action: "move";
-}
-export interface SelectRetrievalCategoryTool extends ToolBase {
-	category: "edit";
-	action: "selectRetrievalCategory";
 }
 export type Tool =
 	| MoveTool
 	| AddNodeTool
 	| SelectFileNodeCategoryTool
 	| SelectLanguageModelTool
-	| SelectSourceCategoryTool
+	| SelectContextTool
 	| SelectTriggerTool
-	| SelectEnviromentActionTool
-	| SelectRetrievalCategoryTool
+	| SelectGitHubTriggerTool
+	| SelectIntegrationTool
 	| SelectLanguageModelV2Tool;
 
 type ToolAction = Tool["action"];
@@ -65,10 +65,10 @@ export function isToolAction(args: unknown): args is ToolAction {
 			args === "addNode" ||
 			args === "selectLanguageModel" ||
 			args === "selectFileNodeCategory" ||
-			args === "selectSourceCategory" ||
+			args === "selectContext" ||
 			args === "selectTrigger" ||
-			args === "selectAction" ||
-			args === "selectRetrievalCategory" ||
+			args === "selectGithubTrigger" ||
+			args === "selectIntegration" ||
 			args === "selectLanguageModelV2"
 		);
 	}
