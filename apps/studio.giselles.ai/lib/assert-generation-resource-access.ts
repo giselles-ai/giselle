@@ -15,6 +15,7 @@ import {
 	isGitHubRepositoryIndexOwnedByTeam,
 } from "@/lib/resource-ownership";
 import { getWorkspaceTeam } from "@/lib/workspaces/get-workspace-team";
+import type { DocumentVectorStoreId } from "@/packages/types";
 
 /**
  * Validates that all resource references (nodes, secrets, data stores,
@@ -43,10 +44,14 @@ export async function assertGenerationResourceAccess(generation: Generation) {
 	const secretIds = extractSecretIds(generation);
 	const secrets = await Promise.all(
 		secretIds.map((secretId) =>
-			storage.getJson({
-				path: `secrets/${secretId}/secret.json`,
-				schema: Secret,
-			}),
+			storage
+				.getJson({
+					path: `secrets/${secretId}/secret.json`,
+					schema: Secret,
+				})
+				.catch(() => {
+					throw new Error(`Secret ${secretId} not found — access denied`);
+				}),
 		),
 	);
 	for (const secret of secrets) {
@@ -135,7 +140,7 @@ function extractSecretIds(generation: Generation): SecretId[] {
 interface SourceNodeResources {
 	dataStoreIds: DataStoreId[];
 	githubVectorStores: { owner: string; repo: string }[];
-	documentVectorStoreIds: string[];
+	documentVectorStoreIds: DocumentVectorStoreId[];
 }
 
 function extractSourceNodeResources(
@@ -169,9 +174,11 @@ function extractSourceNodeResources(
 				source.provider === "document" &&
 				source.state.status === "configured"
 			) {
-				resources.documentVectorStoreIds.push(
-					source.state.documentVectorStoreId,
-				);
+				const id = source.state.documentVectorStoreId;
+				if (!id.startsWith("dvs_")) {
+					throw new Error("Invalid document vector store ID format");
+				}
+				resources.documentVectorStoreIds.push(id as DocumentVectorStoreId);
 			}
 		}
 	}

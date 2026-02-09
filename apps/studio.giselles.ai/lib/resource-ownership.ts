@@ -6,6 +6,11 @@ import {
 	documentVectorStores,
 	githubRepositoryIndex,
 } from "@/db";
+import {
+	isOfficialDocumentVectorStore,
+	isOfficialGitHubRepositoryIndex,
+	officialVectorStoreConfig,
+} from "@/lib/vector-stores/official-config";
 import type { DocumentVectorStoreId } from "@/packages/types";
 
 export async function isDataStoreOwnedByTeam(
@@ -36,11 +41,36 @@ export async function isGitHubRepositoryIndexOwnedByTeam(
 				eq(githubRepositoryIndex.teamDbId, teamDbId),
 			),
 		);
-	return row !== undefined;
+	if (row !== undefined) return true;
+
+	// Allow official GitHub repository indexes
+	if (officialVectorStoreConfig.teamDbId !== null) {
+		const [officialRow] = await db
+			.select({ id: githubRepositoryIndex.id })
+			.from(githubRepositoryIndex)
+			.where(
+				and(
+					eq(githubRepositoryIndex.owner, owner),
+					eq(githubRepositoryIndex.repo, repo),
+					eq(
+						githubRepositoryIndex.teamDbId,
+						officialVectorStoreConfig.teamDbId,
+					),
+				),
+			);
+		if (
+			officialRow !== undefined &&
+			isOfficialGitHubRepositoryIndex(officialRow.id)
+		) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 export async function isDocumentVectorStoreOwnedByTeam(
-	documentVectorStoreId: string,
+	documentVectorStoreId: DocumentVectorStoreId,
 	teamDbId: number,
 ): Promise<boolean> {
 	const [row] = await db
@@ -48,12 +78,16 @@ export async function isDocumentVectorStoreOwnedByTeam(
 		.from(documentVectorStores)
 		.where(
 			and(
-				eq(
-					documentVectorStores.id,
-					documentVectorStoreId as DocumentVectorStoreId,
-				),
+				eq(documentVectorStores.id, documentVectorStoreId),
 				eq(documentVectorStores.teamDbId, teamDbId),
 			),
 		);
-	return row !== undefined;
+	if (row !== undefined) return true;
+
+	// Allow official document vector stores
+	if (isOfficialDocumentVectorStore(documentVectorStoreId)) {
+		return true;
+	}
+
+	return false;
 }

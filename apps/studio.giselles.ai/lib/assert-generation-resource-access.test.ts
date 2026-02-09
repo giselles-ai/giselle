@@ -640,7 +640,7 @@ describe("assertGenerationResourceAccess", () => {
 									provider: "document",
 									state: {
 										status: "configured",
-										documentVectorStoreId: "doc-vs-123",
+										documentVectorStoreId: "dvs_test123",
 									},
 								},
 							},
@@ -689,7 +689,7 @@ describe("assertGenerationResourceAccess", () => {
 									provider: "document",
 									state: {
 										status: "configured",
-										documentVectorStoreId: "doc-vs-123",
+										documentVectorStoreId: "dvs_test123",
 									},
 								},
 							},
