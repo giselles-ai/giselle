@@ -8,7 +8,7 @@ import {
 	TextGenerationContent,
 	VectorStoreContent,
 } from "@giselles-ai/protocol";
-import { giselle, storage } from "@/app/giselle";
+import { storage } from "@/app/giselle";
 import {
 	isDataStoreOwnedByTeam,
 	isDocumentVectorStoreOwnedByTeam,
@@ -18,7 +18,7 @@ import { getWorkspaceTeam } from "@/lib/workspaces/get-workspace-team";
 import type { DocumentVectorStoreId } from "@/packages/types";
 
 /**
- * Validates that all resource references (nodes, secrets, data stores,
+ * Validates that all resource references (secrets, data stores,
  * vector stores) inside a generation context belong to the workspace / team
  * that owns the generation.
  * Call this **after** `assertWorkspaceAccess` so we know the caller may access
@@ -27,20 +27,7 @@ import type { DocumentVectorStoreId } from "@/packages/types";
 export async function assertGenerationResourceAccess(generation: Generation) {
 	const workspaceId = generation.context.origin.workspaceId;
 
-	// 1. Node-ID validation: every referenced node must exist in the workspace
-	const workspace = await giselle.getWorkspace(workspaceId);
-	const workspaceNodeIds = new Set(workspace.nodes.map((n) => n.id));
-
-	if (!workspaceNodeIds.has(generation.context.operationNode.id)) {
-		throw new Error("Operation node does not belong to this workspace");
-	}
-	for (const sourceNode of generation.context.sourceNodes) {
-		if (!workspaceNodeIds.has(sourceNode.id)) {
-			throw new Error("Source node does not belong to this workspace");
-		}
-	}
-
-	// 2. Secret-ID validation
+	// 1. Secret-ID validation
 	const secretIds = extractSecretIds(generation);
 	const secrets = await Promise.all(
 		secretIds.map((secretId) =>
@@ -65,7 +52,7 @@ export async function assertGenerationResourceAccess(generation: Generation) {
 		}
 	}
 
-	// 3. Team-scoped resource validation (dataStore, vectorStore)
+	// 2. Team-scoped resource validation (dataStore, vectorStore)
 	const sourceNodeResources = extractSourceNodeResources(generation);
 	const hasResources =
 		sourceNodeResources.dataStoreIds.length > 0 ||

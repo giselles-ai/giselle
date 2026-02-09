@@ -8,7 +8,7 @@ import {
 	WorkspaceId,
 } from "@giselles-ai/protocol";
 import { describe, expect, it, vi } from "vitest";
-import type { giselle, storage } from "@/app/giselle";
+import type { storage } from "@/app/giselle";
 import { assertGenerationResourceAccess } from "@/lib/assert-generation-resource-access";
 import type {
 	isDataStoreOwnedByTeam,
@@ -17,7 +17,6 @@ import type {
 } from "@/lib/resource-ownership";
 import type { getWorkspaceTeam } from "@/lib/workspaces/get-workspace-team";
 
-let mockGetWorkspaceFn: typeof giselle.getWorkspace;
 let mockGetJson: typeof storage.getJson;
 let mockGetWorkspaceTeamFn: typeof getWorkspaceTeam;
 let mockIsDataStoreOwnedByTeam: typeof isDataStoreOwnedByTeam;
@@ -25,10 +24,6 @@ let mockIsGitHubRepositoryIndexOwnedByTeam: typeof isGitHubRepositoryIndexOwnedB
 let mockIsDocumentVectorStoreOwnedByTeam: typeof isDocumentVectorStoreOwnedByTeam;
 
 vi.mock("@/app/giselle", () => ({
-	giselle: {
-		getWorkspace: (...args: Parameters<typeof giselle.getWorkspace>) =>
-			mockGetWorkspaceFn(...args),
-	},
 	storage: {
 		getJson: (...args: Parameters<typeof storage.getJson>) =>
 			mockGetJson(...args),
@@ -51,27 +46,6 @@ vi.mock("@/lib/resource-ownership", () => ({
 		...args: Parameters<typeof isDocumentVectorStoreOwnedByTeam>
 	) => mockIsDocumentVectorStoreOwnedByTeam(...args),
 }));
-
-function mockGetWorkspace(workspaceId: WorkspaceId, ...nodeIds: NodeId[]) {
-	mockGetWorkspaceFn = vi.fn().mockResolvedValue({
-		id: workspaceId,
-		schemaVersion: "20250221",
-		nodes: nodeIds.map((id) => ({
-			id,
-			type: "variable" as const,
-			inputs: [],
-			outputs: [],
-			content: { type: "text" as const, text: "" },
-		})),
-		connections: [],
-		ui: {
-			nodeState: {},
-			viewport: { x: 0, y: 0, zoom: 1 },
-			currentShortcutScope: "canvas",
-			selectedConnectionIds: [],
-		},
-	});
-}
 
 function mockGetWorkspaceTeam(dbId: number) {
 	mockGetWorkspaceTeamFn = vi.fn().mockResolvedValue({
@@ -99,120 +73,11 @@ const OPENAI_LLM = {
 };
 
 describe("assertGenerationResourceAccess", () => {
-	describe("node ID validation", () => {
-		it("throws error when operationNode is not in workspace", async () => {
-			const operationNodeId = NodeId.generate();
-			const unrelatedNodeId = NodeId.generate();
-			const workspaceId = WorkspaceId.generate();
-			// workspace does not contain operationNode
-			mockGetWorkspace(workspaceId, unrelatedNodeId);
-
-			const generation = {
-				id: GenerationId.generate(),
-				status: "created",
-				createdAt: Date.now(),
-				context: {
-					operationNode: {
-						id: operationNodeId,
-						type: "operation",
-						inputs: [],
-						outputs: [],
-						content: { type: "action" },
-					},
-					sourceNodes: [],
-					connections: [],
-					origin: { type: "studio", workspaceId },
-				},
-			} satisfies Generation;
-
-			await expect(assertGenerationResourceAccess(generation)).rejects.toThrow(
-				"Operation node does not belong to this workspace",
-			);
-		});
-
-		it("throws error when a sourceNode is not in workspace", async () => {
-			const operationNodeId = NodeId.generate();
-			const sourceNodeId = NodeId.generate();
-			const workspaceId = WorkspaceId.generate();
-			// workspace does not contain sourceNode
-			mockGetWorkspace(workspaceId, operationNodeId);
-
-			const generation = {
-				id: GenerationId.generate(),
-				status: "created",
-				createdAt: Date.now(),
-				context: {
-					operationNode: {
-						id: operationNodeId,
-						type: "operation",
-						inputs: [],
-						outputs: [],
-						content: { type: "action" },
-					},
-					sourceNodes: [
-						{
-							id: sourceNodeId,
-							type: "variable",
-							inputs: [],
-							outputs: [],
-							content: { type: "text" },
-						},
-					],
-					connections: [],
-					origin: { type: "studio", workspaceId },
-				},
-			} satisfies Generation;
-
-			await expect(assertGenerationResourceAccess(generation)).rejects.toThrow(
-				"Source node does not belong to this workspace",
-			);
-		});
-
-		it("passes when all nodes belong to workspace", async () => {
-			const operationNodeId = NodeId.generate();
-			const sourceNodeId = NodeId.generate();
-			const workspaceId = WorkspaceId.generate();
-			// workspace contains both operationNode and sourceNode
-			mockGetWorkspace(workspaceId, operationNodeId, sourceNodeId);
-
-			const generation = {
-				id: GenerationId.generate(),
-				status: "created",
-				createdAt: Date.now(),
-				context: {
-					operationNode: {
-						id: operationNodeId,
-						type: "operation",
-						inputs: [],
-						outputs: [],
-						content: { type: "action" },
-					},
-					sourceNodes: [
-						{
-							id: sourceNodeId,
-							type: "variable",
-							inputs: [],
-							outputs: [],
-							content: { type: "text" },
-						},
-					],
-					connections: [],
-					origin: { type: "studio", workspaceId },
-				},
-			} satisfies Generation;
-
-			await expect(
-				assertGenerationResourceAccess(generation),
-			).resolves.toBeUndefined();
-		});
-	});
-
 	describe("secret ID validation", () => {
 		it("throws error when secret has no workspaceId (fail closed)", async () => {
 			const operationNodeId = NodeId.generate();
 			const secretId = SecretId.generate();
 			const workspaceId = WorkspaceId.generate();
-			mockGetWorkspace(workspaceId, operationNodeId);
 			// secret has no workspaceId
 			mockGetJson = vi.fn().mockResolvedValue({
 				id: secretId,
@@ -258,7 +123,6 @@ describe("assertGenerationResourceAccess", () => {
 			const secretId = SecretId.generate();
 			const workspaceId = WorkspaceId.generate();
 			const differentWorkspaceId = WorkspaceId.generate();
-			mockGetWorkspace(workspaceId, operationNodeId);
 			// secret has workspaceId
 			mockGetJson = vi.fn().mockResolvedValue({
 				id: secretId,
@@ -304,7 +168,6 @@ describe("assertGenerationResourceAccess", () => {
 			const operationNodeId = NodeId.generate();
 			const secretId = SecretId.generate();
 			const workspaceId = WorkspaceId.generate();
-			mockGetWorkspace(workspaceId, operationNodeId);
 			// secret belongs to the same workspace
 			mockGetJson = vi.fn().mockResolvedValue({
 				id: secretId,
@@ -358,7 +221,6 @@ describe("assertGenerationResourceAccess", () => {
 			const secretId2 = SecretId.generate();
 			const workspaceId = WorkspaceId.generate();
 			const differentWorkspaceId = WorkspaceId.generate();
-			mockGetWorkspace(workspaceId, operationNodeId);
 
 			mockGetJson = vi
 				.fn()
@@ -422,7 +284,6 @@ describe("assertGenerationResourceAccess", () => {
 			const sourceNodeId = NodeId.generate();
 			const dataStoreId = DataStoreId.generate();
 			const workspaceId = WorkspaceId.generate();
-			mockGetWorkspace(workspaceId, operationNodeId, sourceNodeId);
 			mockGetWorkspaceTeam(1);
 			// data store is NOT owned by this team
 			mockIsDataStoreOwnedByTeam = vi.fn().mockResolvedValue(false);
@@ -466,7 +327,6 @@ describe("assertGenerationResourceAccess", () => {
 			const sourceNodeId = NodeId.generate();
 			const dataStoreId = DataStoreId.generate();
 			const workspaceId = WorkspaceId.generate();
-			mockGetWorkspace(workspaceId, operationNodeId, sourceNodeId);
 			mockGetWorkspaceTeam(1);
 			// data store is owned by this team
 			mockIsDataStoreOwnedByTeam = vi.fn().mockResolvedValue(true);
@@ -509,7 +369,6 @@ describe("assertGenerationResourceAccess", () => {
 			const operationNodeId = NodeId.generate();
 			const sourceNodeId = NodeId.generate();
 			const workspaceId = WorkspaceId.generate();
-			mockGetWorkspace(workspaceId, operationNodeId, sourceNodeId);
 			mockGetWorkspaceTeam(1);
 			// GitHub repository index is NOT owned by this team
 			mockIsGitHubRepositoryIndexOwnedByTeam = vi.fn().mockResolvedValue(false);
@@ -560,7 +419,6 @@ describe("assertGenerationResourceAccess", () => {
 			const operationNodeId = NodeId.generate();
 			const sourceNodeId = NodeId.generate();
 			const workspaceId = WorkspaceId.generate();
-			mockGetWorkspace(workspaceId, operationNodeId, sourceNodeId);
 			mockGetWorkspaceTeam(1);
 			// GitHub repository index is owned by this team
 			mockIsGitHubRepositoryIndexOwnedByTeam = vi.fn().mockResolvedValue(true);
@@ -611,7 +469,6 @@ describe("assertGenerationResourceAccess", () => {
 			const operationNodeId = NodeId.generate();
 			const sourceNodeId = NodeId.generate();
 			const workspaceId = WorkspaceId.generate();
-			mockGetWorkspace(workspaceId, operationNodeId, sourceNodeId);
 			mockGetWorkspaceTeam(1);
 			// document vector store is NOT owned by this team
 			mockIsDocumentVectorStoreOwnedByTeam = vi.fn().mockResolvedValue(false);
@@ -660,7 +517,6 @@ describe("assertGenerationResourceAccess", () => {
 			const operationNodeId = NodeId.generate();
 			const sourceNodeId = NodeId.generate();
 			const workspaceId = WorkspaceId.generate();
-			mockGetWorkspace(workspaceId, operationNodeId, sourceNodeId);
 			mockGetWorkspaceTeam(1);
 			// document vector store is owned by this team
 			mockIsDocumentVectorStoreOwnedByTeam = vi.fn().mockResolvedValue(true);
@@ -709,7 +565,6 @@ describe("assertGenerationResourceAccess", () => {
 			const operationNodeId = NodeId.generate();
 			const sourceNodeId = NodeId.generate();
 			const workspaceId = WorkspaceId.generate();
-			mockGetWorkspace(workspaceId, operationNodeId, sourceNodeId);
 			mockGetWorkspaceTeamFn = vi.fn();
 
 			const generation = {
@@ -750,7 +605,6 @@ describe("assertGenerationResourceAccess", () => {
 		it("passes for a generation with no resources at all", async () => {
 			const operationNodeId = NodeId.generate();
 			const workspaceId = WorkspaceId.generate();
-			mockGetWorkspace(workspaceId, operationNodeId);
 
 			await expect(
 				assertGenerationResourceAccess({
@@ -780,12 +634,6 @@ describe("assertGenerationResourceAccess", () => {
 			const secretId = SecretId.generate();
 			const dataStoreId = DataStoreId.generate();
 			const workspaceId = WorkspaceId.generate();
-			mockGetWorkspace(
-				workspaceId,
-				operationNodeId,
-				sourceNodeId,
-				sourceNodeId2,
-			);
 			mockGetWorkspaceTeam(1);
 
 			// secret belongs to the same workspace
