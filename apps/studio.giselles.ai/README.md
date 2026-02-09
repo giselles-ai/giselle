@@ -30,3 +30,16 @@ https://studio.giselles.ai/
     ```sh
     pnpm turbo dev
     ```
+
+## Optional environment variables
+
+### Internal User Configuration
+
+- **`INTERNAL_USER_EMAIL_DOMAIN`**: Email domain for internal users
+  - When set, users whose email domain exactly matches are treated as internal users
+  - Internal users receive `internal` team type instead of creating free teams
+  - Only exact domain matches are considered (subdomains do not match)
+  - Example: If set to `example.com`:
+    - `user@example.com` → internal user
+    - `user@sub.example.com` → external user (no match)
+  - If not set, all users are treated as external users
