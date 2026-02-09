@@ -10,7 +10,6 @@ import {
 	type UserId,
 	users,
 } from "@/db";
-import { updateGiselleSession } from "@/lib/giselle-session";
 import { logger } from "@/lib/logger";
 import { getUser } from "@/lib/supabase";
 import {
@@ -18,7 +17,7 @@ import {
 	disconnectIdentity,
 	reconnectIdentity,
 } from "@/services/accounts";
-import { isTeamId } from "@/services/teams";
+import { isTeamId, setCurrentTeam } from "@/services/teams";
 import { deleteTeamMember } from "../team/actions";
 import {
 	deleteAvatar,
@@ -142,7 +141,7 @@ export async function navigateWithChangeTeam(rawTeamId: string, path: string) {
 	if (!teamId) {
 		throw new Error("Invalid team ID");
 	}
-	await updateGiselleSession({ teamId });
+	await setCurrentTeam(teamId);
 	redirect(path);
 }
 
@@ -172,7 +171,7 @@ export async function leaveTeam(
 		throw new Error("Invalid role");
 	}
 
-	await updateGiselleSession({ teamId });
+	await setCurrentTeam(teamId);
 	const formData = new FormData();
 	formData.set("userId", userId);
 	formData.set("role", role);

@@ -23,10 +23,12 @@
 
 - `stage/showcase/[appId]/actions.ts`: replaced client-provided `teamId` with workspace's `teamDbId` from DB in `runWorkspaceApp` to ensure correct team association for `acts` records
 - `manage-billing.ts`: added `fetchCurrentTeam()` check to verify `subscriptionId` matches the current team's active subscription
+- `create-and-start-task.ts`: replaced local `assertCanAccessWorkspace` with shared `assertWorkspaceAccess` to eliminate duplication
+- `settings/account/actions.ts`: replaced `updateGiselleSession({ teamId })` with `setCurrentTeam(teamId)` in `navigateWithChangeTeam` and `leaveTeam` for consistency with team-switcher pattern and to prevent session pollution with unvalidated teamId
 
 ## State
 
-- Authorization audit complete for all Server Action files outside `internal-api`
+- All changes committed. Ready for PR / format / check-types / test.
 
 ## Done
 
@@ -35,24 +37,33 @@
 - Replaced untrusted `teamId` param with workspace's `teamDbId` from DB in `runWorkspaceApp`
 - Fixed `workspaceSaveAction` to validate against route's `workspaceId` (not client-provided `workspace.id`) and added mismatch check
 - Added `fetchCurrentTeam()` + subscription ID match check to `manageBilling` in `services/teams/actions/manage-billing.ts`
+- Refactored `create-and-start-task.ts` to use shared `assertWorkspaceAccess` (removed duplicated local implementation)
+- Replaced `updateGiselleSession({ teamId })` with `setCurrentTeam(teamId)` in `navigateWithChangeTeam` and `leaveTeam` (`settings/account/actions.ts`), removed unused `updateGiselleSession` import
+- Removed incorrect `"use server"` directives from `github-authentication.tsx` and `packages/lib/github.ts`
+- Removed unused `teamId` prop from `AppDetailClient` and `RunModal`
 
 ## Now
 
 - Run format / build-sdk / check-types / test
-- Update ledger
+- Create PR
 
 ## Next
 
-- Commit changes
-- Consider whether `navigateWithChangeTeam` in `settings/account/actions.ts` needs tightening (currently safe due to `fetchCurrentTeam()` membership validation, but sets arbitrary teamId in session)
+- N/A — all identified issues addressed
 
 ## Open questions (UNCONFIRMED if needed)
 
-- `navigateWithChangeTeam` in `settings/account/actions.ts` directly calls `updateGiselleSession({ teamId })` without membership check. While `fetchCurrentTeam()` handles the fallback, should we use `setCurrentTeam` for consistency?
+- None remaining. The `navigateWithChangeTeam` / `leaveTeam` session concern has been resolved by switching to `setCurrentTeam`.
 
 ## Working set (files/ids/commands)
 
+- `apps/studio.giselles.ai/app/(main)/lib/create-and-start-task.ts`
+- `apps/studio.giselles.ai/app/(main)/settings/account/actions.ts`
+- `apps/studio.giselles.ai/app/(main)/settings/account/github-authentication.tsx`
 - `apps/studio.giselles.ai/app/(main)/stage/showcase/[appId]/actions.ts`
+- `apps/studio.giselles.ai/app/(main)/stage/showcase/[appId]/app-detail-client.tsx`
+- `apps/studio.giselles.ai/app/(main)/stage/showcase/[appId]/components/run-modal.tsx`
+- `apps/studio.giselles.ai/app/(main)/stage/showcase/[appId]/page.tsx`
+- `apps/studio.giselles.ai/app/workspaces/[workspaceId]/page.tsx`
+- `apps/studio.giselles.ai/packages/lib/github.ts`
 - `apps/studio.giselles.ai/services/teams/actions/manage-billing.ts`
-- `apps/studio.giselles.ai/app/workspaces/[workspaceId]/page.tsx` (already fixed in prior session)
-- `apps/studio.giselles.ai/lib/internal-api/generations.ts` (already fixed in prior session)
