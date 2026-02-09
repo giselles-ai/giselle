@@ -26,7 +26,6 @@ interface RunModalProps {
 	onClose: () => void;
 	appName: string;
 	workspaceId?: string | null;
-	teamId: string;
 }
 
 export function RunModal({
@@ -34,7 +33,6 @@ export function RunModal({
 	onClose,
 	appName,
 	workspaceId,
-	teamId,
 }: RunModalProps) {
 	const [flowTriggerData, setFlowTriggerData] = useState<{
 		flowTrigger: Trigger;
@@ -89,18 +87,14 @@ export function RunModal({
 					},
 				});
 
-				await runWorkspaceApp(
-					teamId,
-					flowTriggerData.flowTrigger,
-					parameterItems,
-				);
+				await runWorkspaceApp(flowTriggerData.flowTrigger, parameterItems);
 				onClose();
 			} catch (error) {
 				console.error("Failed to run app:", error);
 			}
 			return null;
 		},
-		[inputs, flowTriggerData, teamId, onClose, client],
+		[inputs, flowTriggerData, onClose, client],
 	);
 
 	const [, action, isPending] = useActionState(formAction, null);

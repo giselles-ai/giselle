@@ -103,7 +103,6 @@ async function getAppDetails(unsafeAppId: string) {
 				workspaceId: agents.workspaceId,
 				createdAt: agents.createdAt,
 				teamName: teams.name,
-				teamId: teams.id,
 				creatorName: users.displayName,
 				creatorAvatarUrl: users.avatarUrl,
 			})
@@ -208,7 +207,6 @@ async function getAppDetails(unsafeAppId: string) {
 			llm: await extractLLMLabels(agentData.workspaceId),
 			isFavorite: false,
 			favoriteCount: DEFAULT_VALUES.favoriteCount,
-			teamId: agentData.teamId || "",
 			workspaceId: agentData.workspaceId || "",
 			creator: {
 				name: agentData.creatorName || DEFAULT_VALUES.creatorName,

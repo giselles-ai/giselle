@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import invariant from "tiny-invariant";
 import { stripe } from "@/services/external/stripe";
+import { fetchCurrentTeam } from "@/services/teams";
 
 /**
  * Opens the Stripe billing portal for a subscription
@@ -13,6 +14,11 @@ import { stripe } from "@/services/external/stripe";
 export async function manageBilling(subscriptionId: string) {
 	const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 	invariant(siteUrl, "NEXT_PUBLIC_SITE_URL is not set");
+
+	const team = await fetchCurrentTeam();
+	if (team.activeSubscriptionId !== subscriptionId) {
+		throw new Error("Not authorized to manage this subscription");
+	}
 
 	// Detect v2 pricing plan subscription (bpps_xxx format)
 	const isV2Subscription = subscriptionId.startsWith("bpps_");

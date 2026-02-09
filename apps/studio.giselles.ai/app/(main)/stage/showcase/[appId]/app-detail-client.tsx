@@ -23,7 +23,6 @@ interface AppDetails {
 	llm: string;
 	isFavorite: boolean;
 	favoriteCount: number;
-	teamId: string;
 	workspaceId: string;
 	creator: {
 		name: string;
@@ -332,7 +331,6 @@ export function AppDetailClient({ appDetails }: AppDetailClientProps) {
 				onClose={() => setIsRunModalOpen(false)}
 				appName={appDetails.name}
 				workspaceId={appDetails.workspaceId}
-				teamId={appDetails.teamId}
 			/>
 		</div>
 	);
