@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 920 MIT
+* 912 MIT
 * 184 Apache 2.0
 * 41 ISC
 * 27 New BSD
@@ -5232,7 +5232,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@vitest/expect"></a>
-### @vitest/expect v3.2.4
+### @vitest/expect v4.0.18
 #### 
 
 ##### Paths
@@ -5243,7 +5243,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@vitest/mocker"></a>
-### @vitest/mocker v3.2.4
+### @vitest/mocker v4.0.18
 #### 
 
 ##### Paths
@@ -5254,7 +5254,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@vitest/pretty-format"></a>
-### @vitest/pretty-format v3.2.4
+### @vitest/pretty-format v4.0.18
 #### 
 
 ##### Paths
@@ -5265,7 +5265,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@vitest/runner"></a>
-### @vitest/runner v3.2.4
+### @vitest/runner v4.0.18
 #### 
 
 ##### Paths
@@ -5276,7 +5276,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@vitest/snapshot"></a>
-### @vitest/snapshot v3.2.4
+### @vitest/snapshot v4.0.18
 #### 
 
 ##### Paths
@@ -5287,7 +5287,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@vitest/spy"></a>
-### @vitest/spy v3.2.4
+### @vitest/spy v4.0.18
 #### 
 
 ##### Paths
@@ -5298,7 +5298,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@vitest/utils"></a>
-### @vitest/utils v3.2.4
+### @vitest/utils v4.0.18
 #### 
 
 ##### Paths
@@ -5741,17 +5741,6 @@ Python-2.0 manually approved
 
 
 
-<a name="assertion-error"></a>
-### assertion-error v2.0.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="atomic-sleep"></a>
 ### atomic-sleep v1.0.0
 #### 
@@ -6039,7 +6028,7 @@ CC-BY-4.0 permitted
 
 
 <a name="chai"></a>
-### chai v5.2.0
+### chai v6.2.2
 #### 
 
 ##### Paths
@@ -6106,17 +6095,6 @@ CC-BY-4.0 permitted
 
 <a name="chardet"></a>
 ### chardet v0.7.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="check-error"></a>
-### check-error v2.1.1
 #### 
 
 ##### Paths
@@ -6645,17 +6623,6 @@ BlueOak-1.0.0 permitted
 
 <a name="decode-named-character-reference"></a>
 ### decode-named-character-reference v1.0.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="deep-eql"></a>
-### deep-eql v5.0.2
 #### 
 
 ##### Paths
@@ -7194,7 +7161,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="expect-type"></a>
-### expect-type v1.2.1
+### expect-type v1.3.0
 #### 
 
 ##### Paths
@@ -8832,17 +8799,6 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="loupe"></a>
-### loupe v3.1.4
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="lowlight"></a>
 ### lowlight v3.3.0
 #### 
@@ -9910,6 +9866,17 @@ MIT-0 permitted
 
 
 
+<a name="obug"></a>
+### obug v2.1.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="on-exit-leak-free"></a>
 ### on-exit-leak-free v2.1.2
 #### 
@@ -10209,17 +10176,6 @@ BlueOak-1.0.0 permitted
 
 <a name="pathe"></a>
 ### pathe v2.0.3
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="pathval"></a>
-### pathval v2.0.0
 #### 
 
 ##### Paths
@@ -11927,17 +11883,6 @@ Unknown manually approved
 
 
 
-<a name="strip-literal"></a>
-### strip-literal v3.0.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="stripe"></a>
 ### stripe v20.2.0-alpha.1
 #### 
@@ -12290,30 +12235,8 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="tinypool"></a>
-### tinypool v1.1.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="tinyrainbow"></a>
-### tinyrainbow v2.0.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="tinyspy"></a>
-### tinyspy v4.0.3
+### tinyrainbow v3.0.3
 #### 
 
 ##### Paths
@@ -12944,18 +12867,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="vite"></a>
-### vite v7.1.3
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="vite-node"></a>
-### vite-node v3.2.4
+### vite v7.3.1
 #### 
 
 ##### Paths
@@ -12966,7 +12878,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="vite-tsconfig-paths"></a>
-### vite-tsconfig-paths v5.1.4
+### vite-tsconfig-paths v6.1.0
 #### 
 
 ##### Paths
@@ -12977,7 +12889,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="vitest"></a>
-### vitest v3.2.4
+### vitest v4.0.18
 #### 
 
 ##### Paths
