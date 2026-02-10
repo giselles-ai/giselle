@@ -96,7 +96,6 @@ function createStagePart(isStageV2Enabled: boolean): SidebarPart {
 
 function createBaseSidebarParts(
 	isApiPublishingEnabled: boolean,
-	isDataStoreEnabled: boolean,
 ): SidebarPart[] {
 	return [
 		{
@@ -123,16 +122,12 @@ function createBaseSidebarParts(
 					href: "/settings/team/vector-stores",
 					activeMatchPattern: "/settings/team/vector-stores*",
 				},
-				...(isDataStoreEnabled
-					? [
-							{
-								id: "data-stores",
-								label: "Data Stores",
-								href: "/settings/team/data-stores",
-								activeMatchPattern: "/settings/team/data-stores*",
-							},
-						]
-					: []),
+				{
+					id: "data-stores",
+					label: "Data Stores",
+					href: "/settings/team/data-stores",
+					activeMatchPattern: "/settings/team/data-stores*",
+				},
 			],
 		},
 		{ type: "divider", id: "divider1" },
@@ -173,7 +168,7 @@ function createBaseSidebarParts(
 						"!/settings/team/members*",
 						"!/settings/team/integrations*",
 						"!/settings/team/vector-stores*",
-						...(isDataStoreEnabled ? ["!/settings/team/data-stores*"] : []),
+						"!/settings/team/data-stores*",
 						"!/settings/team/usage*",
 						"!/settings/team/api-keys*",
 					],
@@ -189,11 +184,7 @@ export async function Sidebar() {
 		fetchCurrentTeam(),
 	]);
 	const isApiPublishingEnabled = isInternalPlan(team);
-	const canAccessDataStore = isInternalPlan(team);
-	const baseSidebarParts = createBaseSidebarParts(
-		isApiPublishingEnabled,
-		canAccessDataStore,
-	);
+	const baseSidebarParts = createBaseSidebarParts(isApiPublishingEnabled);
 	const sidebarParts = [createStagePart(isStageV2Enabled), ...baseSidebarParts];
 
 	return (
