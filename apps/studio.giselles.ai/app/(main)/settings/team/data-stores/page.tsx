@@ -6,11 +6,11 @@ import { DataStoresPageClient } from "./page.client";
 export default async function DataStoresPage() {
 	const team = await fetchCurrentTeam();
 	const quota = getDataStoreQuota(team.plan);
-	const dataStores = await getDataStores();
-	const usageCount = dataStores.length;
 	const hasAccess = quota.isAvailable;
+	const dataStores = hasAccess ? await getDataStores() : [];
+	const usageCount = dataStores.length;
 	const hasReachedLimit = hasAccess && usageCount >= quota.maxStores;
-	const createDisabled = !hasAccess || hasReachedLimit;
+	const isCreateDisabled = !hasAccess || hasReachedLimit;
 	const createDisabledReason = !hasAccess
 		? "Data Stores are only available with the Pro or Team plans."
 		: hasReachedLimit
@@ -23,7 +23,7 @@ export default async function DataStoresPage() {
 			hasAccess={hasAccess}
 			maxStores={quota.maxStores}
 			teamPlan={team.plan}
-			createDisabled={createDisabled}
+			isCreateDisabled={isCreateDisabled}
 			createDisabledReason={createDisabledReason}
 		/>
 	);

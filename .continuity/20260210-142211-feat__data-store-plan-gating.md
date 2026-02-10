@@ -53,6 +53,10 @@ This section is intentionally stable: do not overwrite it when updating the ledg
 - Branch rename and continuity update request are complete.
 - Confirmed where `const dataStore = canUseDataStore(workspaceTeam.plan)` is consumed.
 - Sidebar now exposes `Data Stores` for all plans; gating remains inside the Data Stores page and workspace toolbar.
+- Added team-row `FOR UPDATE` locking in Data Store creation to serialize quota enforcement under concurrency.
+- Updated Data Stores page to skip `getDataStores()` when the plan does not include Data Stores (`dataStores: []` for locked state).
+- Renamed booleans to convention-compliant names: `createDisabled` → `isCreateDisabled`, `limitReached` → `isLimitReached`.
+- Replaced the single-quoted `EmptyState` description with a double-quote-compliant JSX expression.
 
 ## Next
 

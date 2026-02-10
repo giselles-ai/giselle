@@ -22,7 +22,7 @@ type DataStoresPageClientProps = {
 	hasAccess: boolean;
 	maxStores: number;
 	teamPlan: TeamPlan;
-	createDisabled: boolean;
+	isCreateDisabled: boolean;
 	createDisabledReason?: string;
 };
 
@@ -37,7 +37,7 @@ export function DataStoresPageClient({
 	hasAccess,
 	maxStores,
 	teamPlan,
-	createDisabled,
+	isCreateDisabled,
 	createDisabledReason,
 }: DataStoresPageClientProps) {
 	const [modalState, setModalState] = useState<ModalState>({ type: "closed" });
@@ -71,7 +71,7 @@ export function DataStoresPageClient({
 				<GlassButton
 					type="button"
 					onClick={handleCreateClick}
-					disabled={createDisabled}
+					disabled={isCreateDisabled}
 					title={createDisabledReason}
 				>
 					<span className="grid place-items-center rounded-full size-4 bg-primary-200 opacity-50">
@@ -184,7 +184,7 @@ function DataStoreUsageNotice({
 	}
 
 	const remaining = Math.max(maxStores - usageCount, 0);
-	const limitReached = remaining === 0;
+	const isLimitReached = remaining === 0;
 
 	return (
 		<div className="rounded-lg border border-white/10 bg-white/5 px-4 py-3">
@@ -195,11 +195,11 @@ function DataStoreUsageNotice({
 				</span>
 			</div>
 			<p className="mt-1 text-[12px] text-text/60">
-				{limitReached
+				{isLimitReached
 					? `You've used all Data Stores included in your ${getPlanLabel(teamPlan)} plan.`
 					: `${remaining} Data ${remaining === 1 ? "Store" : "Stores"} remaining in your ${getPlanLabel(teamPlan)} plan.`}
 			</p>
-			{limitReached && (
+			{isLimitReached && (
 				<Alert
 					variant="destructive"
 					className="mt-3 border-error-900/40 bg-error-900/10 text-error-900"
@@ -245,7 +245,7 @@ function EmptyDataStoreCard() {
 		<div className="text-center py-16 bg-surface rounded-lg">
 			<EmptyState
 				title="No data stores yet."
-				description='Please create a data store using the "New Data Store" button.'
+				description={"Please create a data store using the \"New Data Store\" button."}
 			/>
 		</div>
 	);

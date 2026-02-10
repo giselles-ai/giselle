@@ -5,7 +5,7 @@ import { type DataStoreId, SecretId } from "@giselles-ai/protocol";
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { giselle } from "@/app/giselle";
-import { dataStores, db } from "@/db";
+import { dataStores, db, teams } from "@/db";
 import { fetchCurrentTeam } from "@/services/teams";
 import { getDataStoreQuota } from "@/services/teams/plan-features/data-store";
 import type { ActionResult, DataStoreListItem } from "./types";
@@ -169,6 +169,14 @@ export async function createDataStore(
 		let creationResult: ActionResult;
 		try {
 			creationResult = await db.transaction<ActionResult>(async (tx) => {
+				// Serialize quota enforcement by locking the owning team row.
+				await tx
+					.select({ dbId: teams.dbId })
+					.from(teams)
+					.where(eq(teams.dbId, team.dbId))
+					.limit(1)
+					.for("update");
+
 				const existingStores = await tx
 					.select({ dbId: dataStores.dbId })
 					.from(dataStores)
