@@ -48,10 +48,18 @@
 - Updated `apps/studio.giselles.ai/app/(main)/settings/team/actions.ts`:
   - added admin check in `sendInvitationsAction`
   - adjusted loading to `Promise.all` including `getCurrentUserRole`.
+  - separated permission-check failure and non-admin failure into different return messages in `sendInvitationsAction`.
+- Updated `apps/studio.giselles.ai/app/(main)/settings/team/page.tsx`:
+  - pass rendered `team.id` into `UpgradeButton` and bind it into the server action call.
+- Updated `apps/studio.giselles.ai/services/teams/actions/upgrade-current-team.ts`:
+  - accept `expectedTeamId` and compare it with `fetchCurrentTeam().id` before creating checkout.
+  - abort checkout with a clear error message when team context changed.
+  - added server-side eligibility guard to reject non-Free plans before checkout creation.
 
 ## Now
 
-- Changes are ready for review and optional commit.
+- Changes include stale-team guard and non-Free eligibility guard for upgrade checkout flow.
+- Invitation action now returns distinct error messages for permission-check failure vs non-admin role.
 
 ## Next
 
@@ -63,6 +71,7 @@
 ## Open questions (UNCONFIRMED if needed)
 
 - Should unauthorized invite responses keep `unknown_error`, or should we add a dedicated status (e.g. `forbidden`) in `SendInvitationsResult`?
+- If the expected team id mismatches current team id, should we show a dedicated user-facing UI message instead of a thrown action error?
 
 ## Working set (files/ids/commands)
 

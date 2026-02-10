@@ -616,10 +616,19 @@ export async function sendInvitationsAction(
 		fetchCurrentTeam(),
 		getCurrentUserRole(),
 	]);
-	if (
-		!currentUserRoleResult.success ||
-		currentUserRoleResult.data !== "admin"
-	) {
+	if (!currentUserRoleResult.success) {
+		return {
+			overallStatus: "failure",
+			results: emails.map((email) => ({
+				email,
+				status: "unknown_error",
+				error:
+					currentUserRoleResult.error ?? "Failed to verify user permissions",
+			})),
+		};
+	}
+
+	if (currentUserRoleResult.data !== "admin") {
 		return {
 			overallStatus: "failure",
 			results: emails.map((email) => ({
