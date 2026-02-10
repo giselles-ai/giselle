@@ -1,7 +1,7 @@
 "use client";
 
 import { AppIcon } from "@giselle-internal/ui/app-icon";
-import type { Trigger } from "@giselles-ai/protocol";
+import type { Trigger, WorkspaceId } from "@giselles-ai/protocol";
 import { useGiselle } from "@giselles-ai/react";
 import { X } from "lucide-react";
 import {
@@ -25,8 +25,7 @@ interface RunModalProps {
 	isOpen: boolean;
 	onClose: () => void;
 	appName: string;
-	workspaceId?: string | null;
-	teamId: string;
+	workspaceId: WorkspaceId | null;
 }
 
 export function RunModal({
@@ -34,7 +33,6 @@ export function RunModal({
 	onClose,
 	appName,
 	workspaceId,
-	teamId,
 }: RunModalProps) {
 	const [flowTriggerData, setFlowTriggerData] = useState<{
 		flowTrigger: Trigger;
@@ -89,18 +87,14 @@ export function RunModal({
 					},
 				});
 
-				await runWorkspaceApp(
-					teamId,
-					flowTriggerData.flowTrigger,
-					parameterItems,
-				);
+				await runWorkspaceApp(flowTriggerData.flowTrigger, parameterItems);
 				onClose();
 			} catch (error) {
 				console.error("Failed to run app:", error);
 			}
 			return null;
 		},
-		[inputs, flowTriggerData, teamId, onClose, client],
+		[inputs, flowTriggerData, onClose, client],
 	);
 
 	const [, action, isPending] = useActionState(formAction, null);

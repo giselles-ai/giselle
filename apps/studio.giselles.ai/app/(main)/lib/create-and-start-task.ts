@@ -1,32 +1,8 @@
 "use server";
 
 import type { CreateAndStartTaskInputs } from "@giselles-ai/giselle";
-import type { WorkspaceId } from "@giselles-ai/protocol";
 import { giselle } from "@/app/giselle";
-import { db } from "@/db";
-import { fetchCurrentUser } from "@/services/accounts";
-import { isMemberOfTeam } from "@/services/teams";
-
-async function assertCanAccessWorkspace(workspaceId: WorkspaceId) {
-	const [user, workspace] = await Promise.all([
-		fetchCurrentUser(),
-		db.query.workspaces.findFirst({
-			where: (workspaceTable, { eq }) => eq(workspaceTable.id, workspaceId),
-			columns: {
-				teamDbId: true,
-			},
-		}),
-	]);
-
-	if (!workspace) {
-		throw new Error("Workspace not found");
-	}
-
-	const hasAccess = await isMemberOfTeam(user.dbId, workspace.teamDbId);
-	if (!hasAccess) {
-		throw new Error("You are not authorized to run tasks for this workspace");
-	}
-}
+import { assertWorkspaceAccess } from "@/lib/assert-workspace-access";
 
 export async function createAndStartTask(input: CreateAndStartTaskInputs) {
 	const workspaceId = input.workspaceId ?? input.workspace?.id;
@@ -35,7 +11,7 @@ export async function createAndStartTask(input: CreateAndStartTaskInputs) {
 		throw new Error("Workspace ID is required");
 	}
 
-	await assertCanAccessWorkspace(workspaceId);
+	await assertWorkspaceAccess(workspaceId);
 
 	const { task } = await giselle.createTask(input);
 	await giselle.startTask({ taskId: task.id, generationOriginType: "stage" });

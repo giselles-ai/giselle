@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { giselle } from "@/app/giselle";
 import { agents, db, flowTriggers, workspaces } from "@/db";
 import { generateContentNodeFlag } from "@/flags";
+import { assertWorkspaceAccess } from "@/lib/assert-workspace-access";
 import { logger } from "@/lib/logger";
 import { getGitHubIntegrationState } from "@/packages/lib/github";
 import { dataLoader } from "./data-loader";
@@ -46,6 +47,7 @@ export default async function ({
 				integrationRefreshAction={async () => {
 					"use server";
 
+					await assertWorkspaceAccess(workspaceId);
 					const agent = await db.query.agents.findFirst({
 						where: (agents, { eq }) => eq(agents.workspaceId, workspaceId),
 					});
@@ -58,6 +60,10 @@ export default async function ({
 				triggerUpdateAction={async (flowTrigger) => {
 					"use server";
 
+					await assertWorkspaceAccess(workspaceId);
+					if (flowTrigger.workspaceId !== workspaceId) {
+						throw new Error("Workspace ID mismatch");
+					}
 					const workspace = await db.query.workspaces.findFirst({
 						where: (workspaces, { eq }) => eq(workspaces.id, workspaceId),
 					});
@@ -87,6 +93,7 @@ export default async function ({
 				workspaceNameUpdateAction={async (name: string) => {
 					"use server";
 
+					await assertWorkspaceAccess(workspaceId);
 					await db
 						.update(agents)
 						.set({ name })
@@ -99,6 +106,10 @@ export default async function ({
 				workspaceSaveAction={async (workspace: Workspace) => {
 					"use server";
 
+					await assertWorkspaceAccess(workspaceId);
+					if (workspace.id !== workspaceId) {
+						throw new Error("Workspace ID mismatch");
+					}
 					await giselle.updateWorkspace(workspace);
 				}}
 			/>

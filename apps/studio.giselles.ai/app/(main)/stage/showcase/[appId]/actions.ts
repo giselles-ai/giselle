@@ -1,23 +1,28 @@
 "use server";
 
-import type {
-	ParameterItem,
-	Trigger,
-	WorkspaceId,
+import {
+	isTriggerNode,
+	type ParameterItem,
+	type Trigger,
+	type WorkspaceId,
 } from "@giselles-ai/protocol";
-import { isTriggerNode } from "@giselles-ai/protocol";
 import { revalidatePath } from "next/cache";
 import { giselle } from "@/app/giselle";
 import { acts as actsSchema, db } from "@/db";
-import { fetchCurrentUser } from "@/services/accounts";
-import type { TeamId } from "@/services/teams";
+import { assertWorkspaceAccess } from "@/lib/assert-workspace-access";
+import { getCurrentUser } from "@/lib/get-current-user";
+import { getWorkspaceTeam } from "@/lib/workspaces/get-workspace-team";
 
-export async function fetchWorkspaceFlowTrigger(workspaceId: string): Promise<{
+export async function fetchWorkspaceFlowTrigger(
+	workspaceId: WorkspaceId,
+): Promise<{
 	flowTrigger: Trigger;
 	workspaceName: string;
 } | null> {
+	await assertWorkspaceAccess(workspaceId);
+
 	try {
-		const workspace = await giselle.getWorkspace(workspaceId as WorkspaceId);
+		const workspace = await giselle.getWorkspace(workspaceId);
 
 		// Find trigger node
 		const triggerNode = workspace.nodes.find(
@@ -52,12 +57,16 @@ export async function fetchWorkspaceFlowTrigger(workspaceId: string): Promise<{
 }
 
 export async function runWorkspaceApp(
-	teamId: string,
 	flowTrigger: Trigger,
 	parameterItems: ParameterItem[],
 ): Promise<void> {
+	await assertWorkspaceAccess(flowTrigger.workspaceId);
 	try {
-		const user = await fetchCurrentUser();
+		const [user, workspaceTeam] = await Promise.all([
+			getCurrentUser(),
+			getWorkspaceTeam(flowTrigger.workspaceId),
+		]);
+
 		const { task } = await giselle.createTask({
 			workspaceId: flowTrigger.workspaceId,
 			nodeId: flowTrigger.nodeId,
@@ -70,15 +79,8 @@ export async function runWorkspaceApp(
 			generationOriginType: "stage",
 		});
 
-		const team = await db.query.teams.findFirst({
-			where: (teams, { eq }) => eq(teams.id, teamId as TeamId),
-		});
-		if (team === undefined) {
-			throw new Error("Team not found");
-		}
-
 		await db.insert(actsSchema).values({
-			teamDbId: team.dbId,
+			teamDbId: workspaceTeam.dbId,
 			directorDbId: user.dbId,
 			sdkActId: task.id,
 			sdkFlowTriggerId: flowTrigger.id,

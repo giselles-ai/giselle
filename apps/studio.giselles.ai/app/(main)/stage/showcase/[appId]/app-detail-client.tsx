@@ -1,6 +1,7 @@
 "use client";
 
 import { StatusBadge } from "@giselle-internal/ui/status-badge";
+import type { WorkspaceId } from "@giselles-ai/protocol";
 import { Play, Star } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -23,8 +24,7 @@ interface AppDetails {
 	llm: string;
 	isFavorite: boolean;
 	favoriteCount: number;
-	teamId: string;
-	workspaceId: string;
+	workspaceId: WorkspaceId | null;
 	creator: {
 		name: string;
 		avatarUrl?: string;
@@ -332,7 +332,6 @@ export function AppDetailClient({ appDetails }: AppDetailClientProps) {
 				onClose={() => setIsRunModalOpen(false)}
 				appName={appDetails.name}
 				workspaceId={appDetails.workspaceId}
-				teamId={appDetails.teamId}
 			/>
 		</div>
 	);
