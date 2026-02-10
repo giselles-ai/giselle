@@ -245,7 +245,9 @@ function EmptyDataStoreCard() {
 		<div className="text-center py-16 bg-surface rounded-lg">
 			<EmptyState
 				title="No data stores yet."
-				description={"Please create a data store using the \"New Data Store\" button."}
+				description={
+					'Please create a data store using the "New Data Store" button.'
+				}
 			/>
 		</div>
 	);
