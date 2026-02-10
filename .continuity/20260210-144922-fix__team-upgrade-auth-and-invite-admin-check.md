@@ -22,11 +22,11 @@
 
 ## Key decisions
 
-- Use `upgradeCurrentTeam` from the settings page upgrade button instead of `upgradeTeam.bind(null, team)`.
-- Add a defensive authorization check in `upgradeTeam`:
-  - load `fetchCurrentTeam()`
-  - compare with `team.dbId`
-  - throw when mismatched.
+- Use `upgradeCurrentTeam` directly as the server action from UI (no wrapper action file).
+- Rename action file/symbol to `current`:
+  - `upgrade-team.ts` -> `upgrade-current-team.ts`
+  - `upgradeTeam` -> `upgradeCurrentTeam`
+- `upgradeCurrentTeam` resolves the current team internally via `fetchCurrentTeam()` and builds checkout metadata from that team only.
 - Add admin-role guard to `sendInvitationsAction` and return structured `failure` for unauthorized attempts.
 - Use `Promise.all([getCurrentUser(), fetchCurrentTeam(), getCurrentUserRole()])` in `sendInvitationsAction`.
 
@@ -41,8 +41,10 @@
 
 - Updated `apps/studio.giselles.ai/app/(main)/settings/team/page.tsx`:
   - replaced upgrade action binding with `upgradeCurrentTeam`.
-- Updated `apps/studio.giselles.ai/services/teams/actions/upgrade-team.ts`:
-  - added current-team DB ID authorization check.
+- Added `apps/studio.giselles.ai/services/teams/actions/upgrade-current-team.ts`:
+  - `"use server"` action `upgradeCurrentTeam()`
+  - team resolution inside action via `fetchCurrentTeam()`.
+- Deleted `apps/studio.giselles.ai/services/teams/actions/upgrade-team.ts` after symbol/file consolidation.
 - Updated `apps/studio.giselles.ai/app/(main)/settings/team/actions.ts`:
   - added admin check in `sendInvitationsAction`
   - adjusted loading to `Promise.all` including `getCurrentUserRole`.
@@ -66,6 +68,6 @@
 
 - `apps/studio.giselles.ai/app/(main)/settings/team/actions.ts`
 - `apps/studio.giselles.ai/app/(main)/settings/team/page.tsx`
-- `apps/studio.giselles.ai/services/teams/actions/upgrade-team.ts`
+- `apps/studio.giselles.ai/services/teams/actions/upgrade-current-team.ts`
 - `git branch -m fix/team-upgrade-auth-and-invite-admin-check`
 
