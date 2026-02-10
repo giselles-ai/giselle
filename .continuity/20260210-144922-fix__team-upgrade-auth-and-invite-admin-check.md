@@ -55,11 +55,15 @@
   - accept `expectedTeamId` and compare it with `fetchCurrentTeam().id` before creating checkout.
   - abort checkout with a clear error message when team context changed.
   - added server-side eligibility guard to reject non-Free plans before checkout creation.
+- Updated `apps/studio.giselles.ai/app/(main)/ui/header/upgrade-button.tsx`:
+  - include `teamId` in header upgrade context.
+  - bind `upgradeCurrentTeam` with the expected team id to avoid FormData being passed as the first argument.
 
 ## Now
 
 - Changes include stale-team guard and non-Free eligibility guard for upgrade checkout flow.
 - Invitation action now returns distinct error messages for permission-check failure vs non-admin role.
+- Header upgrade button now uses the same expected-team-id binding as the team settings page.
 
 ## Next
 
