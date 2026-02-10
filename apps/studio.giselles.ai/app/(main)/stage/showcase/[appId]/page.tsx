@@ -207,7 +207,7 @@ async function getAppDetails(unsafeAppId: string) {
 			llm: await extractLLMLabels(agentData.workspaceId),
 			isFavorite: false,
 			favoriteCount: DEFAULT_VALUES.favoriteCount,
-			workspaceId: agentData.workspaceId || "",
+			workspaceId: agentData.workspaceId,
 			creator: {
 				name: agentData.creatorName || DEFAULT_VALUES.creatorName,
 				avatarUrl: agentData.creatorAvatarUrl || undefined,

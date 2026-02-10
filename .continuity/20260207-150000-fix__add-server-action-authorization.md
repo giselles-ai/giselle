@@ -32,6 +32,9 @@
 
 ## Done
 
+- (Review fix) Moved `assertWorkspaceAccess` outside `try` block in `fetchWorkspaceFlowTrigger` so auth errors propagate instead of being swallowed as `null`
+- (Review fix) Changed `fetchWorkspaceFlowTrigger` param from `string` to `WorkspaceId`; updated `AppDetails` / `RunModalProps` / `page.tsx` to pass `WorkspaceId | null` instead of `string`
+- (Review fix) Added `setCurrentTeamOrThrow` — strict variant that throws when teamId not found instead of fallback; used in `leaveTeam` to prevent operating on wrong team
 - Audited all `"use server"` files in `apps/studio.giselles.ai`
 - Added `assertWorkspaceAccess` to `fetchWorkspaceFlowTrigger` and `runWorkspaceApp` in `stage/showcase/[appId]/actions.ts`
 - Replaced untrusted `teamId` param with workspace's `teamDbId` from DB in `runWorkspaceApp`
@@ -44,8 +47,7 @@
 
 ## Now
 
-- Run format / build-sdk / check-types / test
-- Create PR
+- Address remaining review feedback if needed
 
 ## Next
 

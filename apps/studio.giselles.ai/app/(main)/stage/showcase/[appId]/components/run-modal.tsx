@@ -1,7 +1,7 @@
 "use client";
 
 import { AppIcon } from "@giselle-internal/ui/app-icon";
-import type { Trigger } from "@giselles-ai/protocol";
+import type { Trigger, WorkspaceId } from "@giselles-ai/protocol";
 import { useGiselle } from "@giselles-ai/react";
 import { X } from "lucide-react";
 import {
@@ -25,7 +25,7 @@ interface RunModalProps {
 	isOpen: boolean;
 	onClose: () => void;
 	appName: string;
-	workspaceId?: string | null;
+	workspaceId: WorkspaceId | null;
 }
 
 export function RunModal({

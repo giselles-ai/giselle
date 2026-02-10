@@ -1,24 +1,28 @@
 "use server";
 
-import type {
-	ParameterItem,
-	Trigger,
-	WorkspaceId,
+import {
+	isTriggerNode,
+	type ParameterItem,
+	type Trigger,
+	type WorkspaceId,
 } from "@giselles-ai/protocol";
-import { isTriggerNode } from "@giselles-ai/protocol";
 import { revalidatePath } from "next/cache";
 import { giselle } from "@/app/giselle";
 import { acts as actsSchema, db } from "@/db";
 import { assertWorkspaceAccess } from "@/lib/assert-workspace-access";
 import { getCurrentUser } from "@/lib/get-current-user";
+import { getWorkspaceTeam } from "@/lib/workspaces/get-workspace-team";
 
-export async function fetchWorkspaceFlowTrigger(workspaceId: string): Promise<{
+export async function fetchWorkspaceFlowTrigger(
+	workspaceId: WorkspaceId,
+): Promise<{
 	flowTrigger: Trigger;
 	workspaceName: string;
 } | null> {
+	await assertWorkspaceAccess(workspaceId);
+
 	try {
-		await assertWorkspaceAccess(workspaceId as WorkspaceId);
-		const workspace = await giselle.getWorkspace(workspaceId as WorkspaceId);
+		const workspace = await giselle.getWorkspace(workspaceId);
 
 		// Find trigger node
 		const triggerNode = workspace.nodes.find(
@@ -56,17 +60,12 @@ export async function runWorkspaceApp(
 	flowTrigger: Trigger,
 	parameterItems: ParameterItem[],
 ): Promise<void> {
+	await assertWorkspaceAccess(flowTrigger.workspaceId);
 	try {
-		await assertWorkspaceAccess(flowTrigger.workspaceId);
-		const user = await getCurrentUser();
-
-		const workspace = await db.query.workspaces.findFirst({
-			where: (workspaces, { eq }) => eq(workspaces.id, flowTrigger.workspaceId),
-			columns: { teamDbId: true },
-		});
-		if (!workspace) {
-			throw new Error("Workspace not found");
-		}
+		const [user, workspaceTeam] = await Promise.all([
+			getCurrentUser(),
+			getWorkspaceTeam(flowTrigger.workspaceId),
+		]);
 
 		const { task } = await giselle.createTask({
 			workspaceId: flowTrigger.workspaceId,
@@ -81,7 +80,7 @@ export async function runWorkspaceApp(
 		});
 
 		await db.insert(actsSchema).values({
-			teamDbId: workspace.teamDbId,
+			teamDbId: workspaceTeam.dbId,
 			directorDbId: user.dbId,
 			sdkActId: task.id,
 			sdkFlowTriggerId: flowTrigger.id,

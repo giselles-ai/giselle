@@ -17,7 +17,11 @@ import {
 	disconnectIdentity,
 	reconnectIdentity,
 } from "@/services/accounts";
-import { isTeamId, setCurrentTeam } from "@/services/teams";
+import {
+	isTeamId,
+	setCurrentTeam,
+	setCurrentTeamOrThrow,
+} from "@/services/teams";
 import { deleteTeamMember } from "../team/actions";
 import {
 	deleteAvatar,
@@ -171,7 +175,7 @@ export async function leaveTeam(
 		throw new Error("Invalid role");
 	}
 
-	await setCurrentTeam(teamId);
+	await setCurrentTeamOrThrow(teamId);
 	const formData = new FormData();
 	formData.set("userId", userId);
 	formData.set("role", role);

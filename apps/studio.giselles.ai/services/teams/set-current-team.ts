@@ -13,3 +13,12 @@ export async function setCurrentTeam(teamId: string) {
 	}
 	await updateGiselleSession({ teamId: team.id });
 }
+
+export async function setCurrentTeamOrThrow(teamId: string) {
+	const teams = await fetchUserTeams();
+	const team = teams.find((t) => t.id === teamId);
+	if (team == null) {
+		throw new Error(`User is not a member of team: ${teamId}`);
+	}
+	await updateGiselleSession({ teamId: team.id });
+}
