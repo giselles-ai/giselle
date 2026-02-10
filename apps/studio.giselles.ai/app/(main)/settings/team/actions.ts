@@ -16,9 +16,9 @@ import {
 	type UserId,
 	users,
 } from "@/db";
+import { getCurrentUser } from "@/lib/get-current-user";
 import { updateGiselleSession } from "@/lib/giselle-session";
 import { getUser } from "@/lib/supabase";
-
 import { fetchCurrentUser } from "@/services/accounts";
 import { fetchCurrentTeam, isProPlan } from "@/services/teams";
 import { handleMemberChange } from "@/services/teams/member-change";
@@ -611,8 +611,25 @@ export async function sendInvitationsAction(
 	emails: string[],
 	role: TeamRole,
 ): Promise<SendInvitationsResult> {
-	const currentUser = await fetchCurrentUser();
-	const currentTeam = await fetchCurrentTeam();
+	const [currentUser, currentTeam, currentUserRoleResult] = await Promise.all([
+		getCurrentUser(),
+		fetchCurrentTeam(),
+		getCurrentUserRole(),
+	]);
+	if (
+		!currentUserRoleResult.success ||
+		currentUserRoleResult.data !== "admin"
+	) {
+		return {
+			overallStatus: "failure",
+			results: emails.map((email) => ({
+				email,
+				status: "unknown_error",
+				error: "Only admin users can send invitations",
+			})),
+		};
+	}
+
 	const quota = getTeamMemberQuota(currentTeam.plan);
 	if (!canManageTeamMembers(currentTeam.plan) || !quota.isAvailable) {
 		return {

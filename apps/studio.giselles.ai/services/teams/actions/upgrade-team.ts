@@ -2,11 +2,17 @@
 
 import { redirect } from "next/navigation";
 import invariant from "tiny-invariant";
+import { fetchCurrentTeam } from "@/services/teams";
 import { UPGRADING_TEAM_DB_ID_KEY } from "../constants";
 import type { CurrentTeam } from "../types";
 import { createCheckoutSessionV2 } from "./create-checkout-session-v2";
 
 export async function upgradeTeam(team: CurrentTeam) {
+	const currentTeam = await fetchCurrentTeam();
+	if (currentTeam.dbId !== team.dbId) {
+		throw new Error("Not authorized to upgrade this team");
+	}
+
 	const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 	invariant(siteUrl, "NEXT_PUBLIC_SITE_URL is not set");
 
