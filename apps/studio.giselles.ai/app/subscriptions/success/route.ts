@@ -51,6 +51,7 @@ export async function GET(_request: Request) {
 	} catch (error) {
 		// fallback
 		captureException(error);
+		await updateGiselleSession({ checkoutSessionId: undefined });
 	}
 
 	redirect("/settings/team");
