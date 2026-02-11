@@ -343,9 +343,9 @@ export async function deleteTeamMember(formData: FormData) {
 			throw new Error("User not found");
 		}
 
-		// 2. Get target user's team membership in current team
+		// 3. Get target user's team membership in current team
 		const targetMembership = await db.query.teamMemberships.findFirst({
-			columns: { userDbId: true, role: true },
+			columns: { role: true },
 			where: (membershipsTable, { and, eq }) =>
 				and(
 					eq(membershipsTable.teamDbId, currentTeam.dbId),
@@ -357,7 +357,7 @@ export async function deleteTeamMember(formData: FormData) {
 			throw new Error("User not found in current team");
 		}
 
-		// 3. Ensure the team will still have at least one member
+		// 4. Ensure the team will still have at least one member
 		const memberCount = await db
 			.select({ count: count() })
 			.from(teamMemberships)
@@ -367,7 +367,7 @@ export async function deleteTeamMember(formData: FormData) {
 			throw new Error("Cannot remove the last member from the team");
 		}
 
-		// 4. Check if target user is an admin and if they are the last admin
+		// 5. Check if target user is an admin and if they are the last admin
 		if (targetMembership.role === "admin") {
 			const adminCount = await db
 				.select({
@@ -386,7 +386,7 @@ export async function deleteTeamMember(formData: FormData) {
 			}
 		}
 
-		// 5. If deleting self, check if user has other teams
+		// 6. If deleting self, check if user has other teams
 		if (isDeletingSelf) {
 			const teamCount = await db
 				.select({
@@ -405,7 +405,7 @@ export async function deleteTeamMember(formData: FormData) {
 			}
 		}
 
-		// 6. Delete team membership
+		// 7. Delete team membership
 		await db
 			.delete(teamMemberships)
 			.where(

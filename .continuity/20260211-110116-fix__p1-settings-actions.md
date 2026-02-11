@@ -42,7 +42,7 @@
 
 ## Now
 
-- Changes are ready for user review and optional runtime verification.
+- Addressed Copilot PR review feedback: fixed step numbering (1-7) and removed unused `userDbId` from `targetMembership` columns in `deleteTeamMember`.
 
 ## Next
 
