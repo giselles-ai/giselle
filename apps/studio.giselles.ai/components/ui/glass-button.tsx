@@ -68,15 +68,6 @@ const GlassButton = React.forwardRef<HTMLButtonElement, GlassButtonProps>(
 					style={{ backgroundColor: "#6B8FF0", opacity: 0.08 }}
 				/>
 
-				{/* Main glass background */}
-				{/*<div
-					className="absolute inset-0 rounded-lg backdrop-blur-md"
-					style={{
-						background:
-							"linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(107,143,240,0.1) 50%, rgba(107,143,240,0.2) 100%)",
-					}}
-				/>*/}
-
 				{/* Top reflection */}
 				<div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-white/60 to-transparent" />
 
