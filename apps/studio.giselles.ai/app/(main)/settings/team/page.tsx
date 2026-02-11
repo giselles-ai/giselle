@@ -6,8 +6,8 @@ import { formatTimestamp } from "@/packages/lib/utils";
 import { getLatestSubscriptionV2 } from "@/services/subscriptions/get-latest-subscription-v2";
 import { fetchCurrentTeam, formatPlanName, isProPlan } from "@/services/teams";
 import { manageBilling } from "@/services/teams/actions/manage-billing";
-import { upgradeTeam } from "@/services/teams/actions/upgrade-team";
-import type { CurrentTeam } from "@/services/teams/types";
+import { upgradeCurrentTeam } from "@/services/teams/actions/upgrade-current-team";
+import type { CurrentTeam, TeamId } from "@/services/teams/types";
 import { Button } from "../components/button";
 import { Card } from "../components/card";
 import { CancelSubscriptionButton } from "./cancel-subscription-button";
@@ -101,7 +101,7 @@ function BillingInfoForFreePlan({ team }: BillingInfoProps) {
 			</div>
 			<form>
 				<Suspense fallback={<Skeleton className="h-10 w-[120px] rounded-md" />}>
-					<UpgradeButton team={team} />
+					<UpgradeButton teamId={team.id} />
 				</Suspense>
 			</form>
 		</div>
@@ -168,11 +168,18 @@ async function BillingInfoForProPlan({ team }: BillingInfoProps) {
 	);
 }
 
-function UpgradeButton({ team }: { team: CurrentTeam }) {
-	const upgradeTeamWithTeam = upgradeTeam.bind(null, team);
+function UpgradeButton({ teamId }: { teamId: TeamId }) {
+	const upgradeCurrentTeamWithExpectedTeamId = upgradeCurrentTeam.bind(
+		null,
+		teamId,
+	);
 
 	return (
-		<Button formAction={upgradeTeamWithTeam} variant="primary" className="px-4">
+		<Button
+			formAction={upgradeCurrentTeamWithExpectedTeamId}
+			variant="primary"
+			className="px-4"
+		>
 			Upgrade to Pro
 		</Button>
 	);
