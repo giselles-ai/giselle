@@ -36,10 +36,12 @@
 - Removed `subscription` from `app/proxy.ts` matcher exclusions.
 - Added this branch-specific continuity ledger.
 - Assessed P1 concern for `subscriptions/success` CSRF semantics: membership/auth protections were added, but the route still uses `GET` with `updateGiselleSession` side effects.
+- Replaced `getCurrentUser()` with direct Supabase client (`createClient()` + `auth.getUser()`) in `generated-images` route to fix 401 caused by proxy matcher skipping `.png` URLs (no middleware token refresh). Also queries `supabaseUserMappings` directly for DB user lookup.
+- Discovered root cause: `next/image` `<Image>` optimizer makes internal server-to-server requests without browser cookies, so cookie-based auth always fails. Replaced `<Image>` with `<img>` in `ImageCard` and `Lightbox` so the browser fetches directly with cookies.
 
 ## Now
 
-- Run lint/type checks for changed files and confirm no regressions from the added guards.
+- Verify generated-images display correctly after switching from `next/image` to `<img>` in ImageCard and Lightbox.
 
 ## Next
 
