@@ -2,9 +2,11 @@ import { captureException } from "@sentry/nextjs";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { db, teams } from "@/db";
+import { getCurrentUser } from "@/lib/get-current-user";
 import { getGiselleSession, updateGiselleSession } from "@/lib/giselle-session";
 import { stripe } from "@/services/external/stripe";
 import { getLatestSubscriptionV2 } from "@/services/subscriptions/get-latest-subscription-v2";
+import { isMemberOfTeam } from "@/services/teams";
 
 export async function GET(_request: Request) {
 	const session = await getGiselleSession();
@@ -34,16 +36,27 @@ export async function GET(_request: Request) {
 			throw new Error("Subscription ID not found in checkout session");
 		}
 
-		const teamId = await getTeamIdFromSubscription(subscriptionId);
-		await updateGiselleSession({ teamId, checkoutSessionId: undefined });
+		const [currentUser, team] = await Promise.all([
+			getCurrentUser(),
+			getTeamFromSubscription(subscriptionId),
+		]);
+		const isCurrentUserMember = await isMemberOfTeam(
+			currentUser.dbId,
+			team.teamDbId,
+		);
+		await updateGiselleSession({
+			checkoutSessionId: undefined,
+			...(isCurrentUserMember ? { teamId: team.teamId } : {}),
+		});
 	} catch (error) {
 		// fallback
 		captureException(error);
 	}
+
 	redirect("/settings/team");
 }
 
-async function getTeamIdFromSubscription(subscriptionId: string) {
+async function getTeamFromSubscription(subscriptionId: string) {
 	const result = await getLatestSubscriptionV2(subscriptionId);
 	if (!result) {
 		throw new Error("Subscription not found");
@@ -60,5 +73,8 @@ async function getTeamIdFromSubscription(subscriptionId: string) {
 	if (!team) {
 		throw new Error("Team not found");
 	}
-	return team.teamId;
+	return {
+		teamId: team.teamId,
+		teamDbId: result.subscription.teamDbId,
+	};
 }
