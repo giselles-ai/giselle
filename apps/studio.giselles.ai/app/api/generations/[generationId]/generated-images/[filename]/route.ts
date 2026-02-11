@@ -1,10 +1,12 @@
 import { GenerationId } from "@giselles-ai/protocol";
 import type { NextRequest } from "next/server";
 import { giselle } from "@/app/giselle";
+import { verifyApiSecretForTeam } from "@/lib/api-keys/api-secrets";
 import { assertWorkspaceAccess } from "@/lib/assert-workspace-access";
+import { getWorkspaceTeam } from "@/lib/workspaces/get-workspace-team";
 
 export async function GET(
-	_request: NextRequest,
+	request: NextRequest,
 	{
 		params,
 	}: {
@@ -18,7 +20,20 @@ export async function GET(
 	const parsedGenerationId = GenerationId.parse(generationId);
 	const generation = await giselle.getGeneration(parsedGenerationId);
 
-	await assertWorkspaceAccess(generation.context.origin.workspaceId);
+	const workspaceId = generation.context.origin.workspaceId;
+
+	try {
+		await assertWorkspaceAccess(workspaceId);
+	} catch {
+		const team = await getWorkspaceTeam(workspaceId);
+		const verifyResult = await verifyApiSecretForTeam({
+			teamDbId: team.dbId,
+			authorizationHeader: request.headers.get("authorization"),
+		});
+		if (!verifyResult.ok) {
+			return new Response("Unauthorized", { status: 401 });
+		}
+	}
 
 	const file = await giselle.getGeneratedImage(parsedGenerationId, filename);
 
