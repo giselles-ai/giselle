@@ -5,8 +5,9 @@ import { type DataStoreId, SecretId } from "@giselles-ai/protocol";
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { giselle } from "@/app/giselle";
-import { dataStores, db } from "@/db";
+import { dataStores, db, teams } from "@/db";
 import { fetchCurrentTeam } from "@/services/teams";
+import { getDataStoreQuota } from "@/services/teams/plan-features/data-store";
 import type { ActionResult, DataStoreListItem } from "./types";
 import { validateConnectionStringForSSRF } from "./validate-connection-string";
 
@@ -142,19 +143,19 @@ export async function createDataStore(
 
 	try {
 		const team = await fetchCurrentTeam();
+		const quota = getDataStoreQuota(team.plan);
+		if (!quota.isAvailable) {
+			return {
+				success: false,
+				error: "Data Stores are not included in your plan.",
+			};
+		}
+
 		const { secretId, dataStoreId } = await createGiselleDataStoreWithSecret(
 			trimmedName,
 			trimmedConnectionString,
 		);
-
-		try {
-			await db.insert(dataStores).values({
-				id: dataStoreId,
-				teamDbId: team.dbId,
-				name: trimmedName,
-			});
-		} catch (dbError) {
-			// Rollback: delete secret and data store if DB insert failed
+		const rollbackCreatedResources = async () => {
 			await Promise.all([
 				giselle.deleteSecret({ secretId }).catch((e) => {
 					console.error("Failed to rollback secret:", e);
@@ -163,7 +164,51 @@ export async function createDataStore(
 					console.error("Failed to rollback data store:", e);
 				}),
 			]);
+		};
+
+		let creationResult: ActionResult;
+		try {
+			creationResult = await db.transaction<ActionResult>(async (tx) => {
+				// Serialize quota enforcement by locking the owning team row.
+				await tx
+					.select({ dbId: teams.dbId })
+					.from(teams)
+					.where(eq(teams.dbId, team.dbId))
+					.limit(1)
+					.for("update");
+
+				const existingStores = await tx
+					.select({ dbId: dataStores.dbId })
+					.from(dataStores)
+					.where(eq(dataStores.teamDbId, team.dbId))
+					.limit(quota.maxStores)
+					.for("update");
+
+				if (existingStores.length >= quota.maxStores) {
+					return {
+						success: false,
+						error:
+							"You've reached the maximum number of Data Stores included in your plan.",
+					};
+				}
+
+				await tx.insert(dataStores).values({
+					id: dataStoreId,
+					teamDbId: team.dbId,
+					name: trimmedName,
+				});
+
+				return { success: true };
+			});
+		} catch (dbError) {
+			await rollbackCreatedResources();
 			throw dbError;
+		}
+
+		if (!creationResult.success) {
+			// Rollback Giselle storage since DB insert was rejected
+			await rollbackCreatedResources();
+			return creationResult;
 		}
 
 		revalidatePath("/settings/team/data-stores");

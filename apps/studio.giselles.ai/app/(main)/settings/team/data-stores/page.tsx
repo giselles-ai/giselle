@@ -1,16 +1,30 @@
-import { notFound } from "next/navigation";
 import { fetchCurrentTeam } from "@/services/teams";
-import { isInternalPlan } from "@/services/teams/utils";
+import { getDataStoreQuota } from "@/services/teams/plan-features/data-store";
 import { getDataStores } from "./actions";
-import { DataStoresPageClient } from "./page-client";
+import { DataStoresPageClient } from "./page.client";
 
 export default async function DataStoresPage() {
 	const team = await fetchCurrentTeam();
-	if (!isInternalPlan(team)) {
-		notFound();
-	}
+	const quota = getDataStoreQuota(team.plan);
+	const hasAccess = quota.isAvailable;
+	const dataStores = hasAccess ? await getDataStores() : [];
+	const usageCount = dataStores.length;
+	const hasReachedLimit = hasAccess && usageCount >= quota.maxStores;
+	const isCreateDisabled = !hasAccess || hasReachedLimit;
+	const createDisabledReason = !hasAccess
+		? "Data Stores are only available with the Pro or Team plans."
+		: hasReachedLimit
+			? "You've reached the maximum number of Data Stores included in your plan."
+			: undefined;
 
-	const dataStores = await getDataStores();
-
-	return <DataStoresPageClient dataStores={dataStores} />;
+	return (
+		<DataStoresPageClient
+			dataStores={dataStores}
+			hasAccess={hasAccess}
+			maxStores={quota.maxStores}
+			teamPlan={team.plan}
+			isCreateDisabled={isCreateDisabled}
+			createDisabledReason={createDisabledReason}
+		/>
+	);
 }
