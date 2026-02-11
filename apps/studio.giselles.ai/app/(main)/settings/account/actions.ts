@@ -3,13 +3,9 @@
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import {
-	db,
-	supabaseUserMappings,
-	type TeamRole,
-	type UserId,
-	users,
-} from "@/db";
+import { isValidReturnUrl } from "@/app/(auth)/lib/validate-return-url";
+import { db, supabaseUserMappings, users } from "@/db";
+import { getCurrentUser } from "@/lib/get-current-user";
 import { logger } from "@/lib/logger";
 import { getUser } from "@/lib/supabase";
 import {
@@ -146,39 +142,21 @@ export async function navigateWithChangeTeam(rawTeamId: string, path: string) {
 		throw new Error("Invalid team ID");
 	}
 	await setCurrentTeam(teamId);
-	redirect(path);
+	const safePath = isValidReturnUrl(path) ? path : "/settings/account";
+	redirect(safePath);
 }
 
-export async function leaveTeam(
-	rawTeamId: string,
-	rawUserId: string,
-	rawRole: string,
-) {
+export async function leaveTeam(rawTeamId: string) {
 	const teamId = isTeamId(rawTeamId) ? rawTeamId : null;
 	if (!teamId) {
 		throw new Error("Invalid team ID");
 	}
-	const isUserId = (value: string): value is UserId => {
-		return value.length > 0 && value.startsWith("usr_");
-	};
-	const userId = isUserId(rawUserId) ? rawUserId : null;
-	if (!userId) {
-		throw new Error("Invalid user ID");
-	}
-
-	const isRole = (value: string): value is TeamRole => {
-		return value === "admin" || value === "member";
-	};
-	const role = isRole(rawRole.toLowerCase()) ? rawRole.toLowerCase() : null;
-	if (!role) {
-		console.error("Invalid role", rawRole);
-		throw new Error("Invalid role");
-	}
-
 	await setCurrentTeamOrThrow(teamId);
+
+	const currentUser = await getCurrentUser();
+
 	const formData = new FormData();
-	formData.set("userId", userId);
-	formData.set("role", role);
+	formData.set("userId", currentUser.id);
 	const result = await deleteTeamMember(formData);
 
 	if (result.success) {

@@ -1,6 +1,5 @@
 import { Plus } from "lucide-react";
 import { GlassButton } from "@/components/ui/glass-button";
-import { fetchCurrentUser } from "@/services/accounts";
 import { fetchUserTeams } from "@/services/teams";
 import TeamCreation from "@/services/teams/components/team-creation";
 import { isProPlan } from "@/services/teams/utils";
@@ -18,8 +17,6 @@ export default async function AccountSettingPage() {
 		plan: team.plan,
 		isPro: isProPlan(team),
 	}));
-
-	const currentUser = await fetchCurrentUser();
 
 	return (
 		<div className="flex flex-col gap-[12px]">
@@ -47,10 +44,7 @@ export default async function AccountSettingPage() {
 							</TeamCreation>
 						</div>
 					</div>
-					<UserTeams
-						teams={teamsWithProInfo}
-						currentUser={{ id: currentUser.id }}
-					/>
+					<UserTeams teams={teamsWithProInfo} />
 				</div>
 			</div>
 		</div>

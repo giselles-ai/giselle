@@ -312,29 +312,15 @@ export async function updateTeamMemberRole(formData: FormData) {
 export async function deleteTeamMember(formData: FormData) {
 	try {
 		const userId = formData.get("userId") as string;
-		const role = formData.get("role") as string;
 
 		if (!isUserId(userId)) {
 			throw new Error("Invalid user ID");
 		}
 
-		if (!isTeamRole(role)) {
-			throw new Error("Invalid role");
-		}
-
 		// 1. Get current team and current user info
-		const currentTeam = await fetchCurrentTeam();
-		const currentUserRoleResult = await getCurrentUserRole();
-		const supabaseUser = await getUser();
-		const [currentUser] = await db
-			.select({ id: users.id, dbId: users.dbId })
-			.from(users)
-			.innerJoin(
-				supabaseUserMappings,
-				eq(users.dbId, supabaseUserMappings.userDbId),
-			)
-			.where(eq(supabaseUserMappings.supabaseUserId, supabaseUser.id))
-			.limit(1);
+		const [currentTeam, currentUserRoleResult, currentUser] = await Promise.all(
+			[fetchCurrentTeam(), getCurrentUserRole(), getCurrentUser()],
+		);
 
 		const isDeletingSelf = currentUser.id === userId;
 
@@ -357,6 +343,20 @@ export async function deleteTeamMember(formData: FormData) {
 			throw new Error("User not found");
 		}
 
+		// 2. Get target user's team membership in current team
+		const targetMembership = await db.query.teamMemberships.findFirst({
+			columns: { userDbId: true, role: true },
+			where: (membershipsTable, { and, eq }) =>
+				and(
+					eq(membershipsTable.teamDbId, currentTeam.dbId),
+					eq(membershipsTable.userDbId, user[0].dbId),
+				),
+		});
+
+		if (!targetMembership) {
+			throw new Error("User not found in current team");
+		}
+
 		// 3. Ensure the team will still have at least one member
 		const memberCount = await db
 			.select({ count: count() })
@@ -367,8 +367,8 @@ export async function deleteTeamMember(formData: FormData) {
 			throw new Error("Cannot remove the last member from the team");
 		}
 
-		// 4. Check if user is an admin and if they are the last admin
-		if (role === "admin") {
+		// 4. Check if target user is an admin and if they are the last admin
+		if (targetMembership.role === "admin") {
 			const adminCount = await db
 				.select({
 					count: count(),

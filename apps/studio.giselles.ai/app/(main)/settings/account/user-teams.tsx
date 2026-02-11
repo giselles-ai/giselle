@@ -23,7 +23,6 @@ const roles = {
 
 export default function UserTeams({
 	teams,
-	currentUser,
 }: {
 	teams: {
 		id: string;
@@ -32,9 +31,6 @@ export default function UserTeams({
 		avatarUrl?: typeof teamsTable.$inferSelect.avatarUrl;
 		isPro?: boolean;
 	}[];
-	currentUser: {
-		id: string;
-	};
 }) {
 	const [teamName, setTeamName] = useState("");
 
@@ -78,7 +74,6 @@ export default function UserTeams({
 						avatarUrl={team.avatarUrl}
 						role={roles[team.role]}
 						isPro={team.isPro}
-						currentUserId={currentUser.id}
 					/>
 				))}
 			</div>
@@ -92,7 +87,6 @@ function UserTeamsItem({
 	avatarUrl,
 	role,
 	isPro = false,
-	currentUserId,
 	className,
 }: {
 	teamId: string;
@@ -100,20 +94,19 @@ function UserTeamsItem({
 	avatarUrl?: typeof teamsTable.$inferSelect.avatarUrl;
 	role: string;
 	isPro?: boolean;
-	currentUserId: string;
 	className?: string;
 }) {
 	const { toast } = useToasts();
 
 	const handleLeaveTeam = useCallback(async () => {
-		const result = await leaveTeam(teamId, currentUserId, role);
+		const result = await leaveTeam(teamId);
 		if (!result.success) {
 			toast(`Error: ${result.error}`, {
 				type: "error",
 				preserve: false,
 			});
 		}
-	}, [currentUserId, role, teamId, toast]);
+	}, [teamId, toast]);
 	return (
 		<div
 			className={cn("flex items-center justify-between gap-4 p-4", className)}
