@@ -1,14 +1,34 @@
 import "./mobile-scroll.css";
 import { TaskId } from "@giselles-ai/protocol";
+import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { TaskLayout } from "@/components/task/task-layout";
+import { db, tasks } from "@/db";
+import { getCurrentUser } from "@/lib/get-current-user";
 import { logger } from "@/lib/logger";
+import { isMemberOfTeam } from "@/services/teams";
 import { createAndStartTask } from "../../lib/create-and-start-task";
 import { loadStageAppsData } from "../../lib/stage-apps";
 import { TaskClient } from "./ui/task-client";
 import { getTaskAppId, getTaskData } from "./ui/task-data";
 import { TaskOverlayReset } from "./ui/task-overlay-reset";
 import { TaskStageInput } from "./ui/task-stage-input.client";
+
+type TaskAccessLookupResult =
+	| { found: true; teamDbId: number }
+	| { found: false };
+
+async function getTask(taskId: TaskId): Promise<TaskAccessLookupResult> {
+	const task = await db
+		.select({ teamDbId: tasks.teamDbId })
+		.from(tasks)
+		.where(eq(tasks.id, taskId))
+		.limit(1);
+	if (task.length === 0) {
+		return { found: false };
+	}
+	return { found: true, teamDbId: task[0].teamDbId };
+}
 
 export default async function ({
 	params,
@@ -22,6 +42,20 @@ export default async function ({
 		notFound();
 	}
 	const taskId = result.data;
+
+	const [currentUser, task] = await Promise.all([
+		getCurrentUser(),
+		getTask(taskId),
+	]);
+	if (!task.found) {
+		notFound();
+	}
+
+	const canAccessTask = await isMemberOfTeam(currentUser.dbId, task.teamDbId);
+	if (!canAccessTask) {
+		notFound();
+	}
+
 	const [taskData, stageAppsData, taskAppId] = await Promise.all([
 		getTaskData(taskId),
 		loadStageAppsData(),
@@ -31,7 +65,19 @@ export default async function ({
 	async function refreshAction() {
 		"use server";
 
-		return await getTaskData(taskId);
+		const [currentUser, task] = await Promise.all([
+			getCurrentUser(),
+			getTask(taskId),
+		]);
+		if (!task.found) {
+			return { success: false as const, error: `Task not found: ${taskId}` };
+		}
+		const canAccessTask = await isMemberOfTeam(currentUser.dbId, task.teamDbId);
+		if (!canAccessTask) {
+			return { success: false as const, error: "authorization error" };
+		}
+
+		return { success: true as const, data: await getTaskData(taskId) };
 	}
 
 	return (
