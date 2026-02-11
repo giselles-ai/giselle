@@ -14,20 +14,16 @@ import { getTaskAppId, getTaskData } from "./ui/task-data";
 import { TaskOverlayReset } from "./ui/task-overlay-reset";
 import { TaskStageInput } from "./ui/task-stage-input.client";
 
-type TaskAccessLookupResult =
-	| { found: true; teamDbId: number }
-	| { found: false };
-
-async function getTask(taskId: TaskId): Promise<TaskAccessLookupResult> {
+async function getTaskTeamDbId(taskId: TaskId) {
 	const task = await db
 		.select({ teamDbId: tasks.teamDbId })
 		.from(tasks)
 		.where(eq(tasks.id, taskId))
 		.limit(1);
 	if (task.length === 0) {
-		return { found: false };
+		return undefined;
 	}
-	return { found: true, teamDbId: task[0].teamDbId };
+	return task[0].teamDbId;
 }
 
 export default async function ({
@@ -43,15 +39,15 @@ export default async function ({
 	}
 	const taskId = result.data;
 
-	const [currentUser, task] = await Promise.all([
+	const [currentUser, taskTeamDbId] = await Promise.all([
 		getCurrentUser(),
-		getTask(taskId),
+		getTaskTeamDbId(taskId),
 	]);
-	if (!task.found) {
+	if (taskTeamDbId === undefined) {
 		notFound();
 	}
 
-	const canAccessTask = await isMemberOfTeam(currentUser.dbId, task.teamDbId);
+	const canAccessTask = await isMemberOfTeam(currentUser.dbId, taskTeamDbId);
 	if (!canAccessTask) {
 		notFound();
 	}
@@ -65,14 +61,14 @@ export default async function ({
 	async function refreshAction() {
 		"use server";
 
-		const [currentUser, task] = await Promise.all([
+		const [currentUser, taskTeamDbId] = await Promise.all([
 			getCurrentUser(),
-			getTask(taskId),
+			getTaskTeamDbId(taskId),
 		]);
-		if (!task.found) {
+		if (taskTeamDbId === undefined) {
 			return { success: false as const, error: `Task not found: ${taskId}` };
 		}
-		const canAccessTask = await isMemberOfTeam(currentUser.dbId, task.teamDbId);
+		const canAccessTask = await isMemberOfTeam(currentUser.dbId, taskTeamDbId);
 		if (!canAccessTask) {
 			return { success: false as const, error: "authorization error" };
 		}
