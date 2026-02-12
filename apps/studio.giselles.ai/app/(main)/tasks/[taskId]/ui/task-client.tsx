@@ -1,5 +1,7 @@
 "use client";
 
+import { useToasts } from "@giselle-internal/ui/toast";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { TaskHeader } from "@/components/task/task-header";
 import { FinalStepOutput } from "./final-step-output";
@@ -7,6 +9,10 @@ import { StepsSection } from "./steps-section";
 import type { UITask } from "./task-data";
 
 const isDebugEnabled = process.env.NODE_ENV !== "production";
+const AUTHORIZATION_ERROR_MESSAGE = "authorization error";
+type RefreshTaskActionResult =
+	| { success: true; data: UITask }
+	| { success: false; error: string };
 
 function isTerminalTaskStatus(status: UITask["status"]) {
 	return (
@@ -19,10 +25,12 @@ export function TaskClient({
 	refreshAction,
 }: {
 	initial: UITask;
-	refreshAction: () => Promise<UITask>;
+	refreshAction: () => Promise<RefreshTaskActionResult>;
 }) {
 	const [data, setData] = useState<UITask>(initial);
 	const refreshActionRef = useRef(refreshAction);
+	const { toast } = useToasts();
+	const router = useRouter();
 
 	useEffect(() => {
 		refreshActionRef.current = refreshAction;
@@ -46,7 +54,37 @@ export function TaskClient({
 
 			let latest: UITask | null = null;
 			try {
-				latest = await refreshActionRef.current();
+				const result = await refreshActionRef.current();
+				if (!result.success) {
+					if (isDebugEnabled) {
+						console.debug(
+							"[task-page] refreshAction returned an error result",
+							{
+								error: result.error,
+							},
+						);
+					}
+
+					if (result.error === AUTHORIZATION_ERROR_MESSAGE) {
+						if (cancelled) {
+							return;
+						}
+						toast("You do not have permission to view this task.", {
+							type: "error",
+							preserve: false,
+						});
+						router.replace("/tasks");
+						return;
+					}
+
+					// Keep polling even if refresh fails (useful while debugging).
+					if (!cancelled) {
+						timer = window.setTimeout(tick, 3000);
+					}
+					return;
+				}
+
+				latest = result.data;
 				if (isDebugEnabled) {
 					console.debug("[task-page] refreshAction resolved", {
 						status: latest.status,
@@ -110,7 +148,7 @@ export function TaskClient({
 			cancelled = true;
 			if (timer) window.clearTimeout(timer);
 		};
-	}, [initial.status]);
+	}, [initial.status, router, toast]);
 
 	return (
 		<>
