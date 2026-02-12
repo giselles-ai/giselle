@@ -105,7 +105,6 @@ export function TeamMemberListItem({
 			setIsLoading(true);
 			const formData = new FormData();
 			formData.append("userId", user);
-			formData.append("role", role);
 			const result = await deleteTeamMember(formData);
 			if (!result?.success) {
 				const msg = result?.error || "Failed to delete member";
