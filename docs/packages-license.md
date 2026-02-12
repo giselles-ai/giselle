@@ -9042,7 +9042,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="mdast-util-to-hast"></a>
-### mdast-util-to-hast v13.2.0
+### mdast-util-to-hast v13.2.1
 #### 
 
 ##### Paths
@@ -12115,7 +12115,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="terser"></a>
-### terser v5.44.1
+### terser v5.46.0
 #### 
 
 ##### Paths
@@ -12933,7 +12933,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="watchpack"></a>
-### watchpack v2.4.4
+### watchpack v2.5.1
 #### 
 
 ##### Paths
