@@ -44,6 +44,20 @@ function isNoSuchKeyError(error: unknown) {
 	return error instanceof Error && error.name === "NoSuchKey";
 }
 
+function enforceStudioOriginForCreation(generation: Generation): Generation {
+	const { workspaceId } = generation.context.origin;
+	return {
+		...generation,
+		context: {
+			...generation.context,
+			origin: {
+				type: "studio",
+				workspaceId,
+			},
+		},
+	};
+}
+
 export async function setGeneration(input: { generation: Generation }) {
 	let existingGeneration:
 		| Awaited<ReturnType<typeof giselle.getGeneration>>
@@ -54,10 +68,15 @@ export async function setGeneration(input: { generation: Generation }) {
 		if (!isNoSuchKeyError(error)) {
 			throw error;
 		}
+		const generationForCreation = enforceStudioOriginForCreation(
+			input.generation,
+		);
 		// Generation doesn't exist, verify access to the target workspace for new generation creation
-		await assertWorkspaceAccess(input.generation.context.origin.workspaceId);
-		await assertGenerationResourceAccess(input.generation);
-		await giselle.setGeneration(input.generation);
+		await assertWorkspaceAccess(
+			generationForCreation.context.origin.workspaceId,
+		);
+		await assertGenerationResourceAccess(generationForCreation);
+		await giselle.setGeneration(generationForCreation);
 		return;
 	}
 
@@ -95,10 +114,17 @@ export async function startContentGeneration(input: {
 		if (!isNoSuchKeyError(error)) {
 			throw error;
 		}
+		const generationForCreation = enforceStudioOriginForCreation(
+			input.generation,
+		);
 		// Generation doesn't exist, verify access to the target workspace for new generation creation
-		await assertWorkspaceAccess(input.generation.context.origin.workspaceId);
-		await assertGenerationResourceAccess(input.generation);
-		const generation = await giselle.startContentGeneration(input);
+		await assertWorkspaceAccess(
+			generationForCreation.context.origin.workspaceId,
+		);
+		await assertGenerationResourceAccess(generationForCreation);
+		const generation = await giselle.startContentGeneration({
+			generation: generationForCreation,
+		});
 		return { generation };
 	}
 
