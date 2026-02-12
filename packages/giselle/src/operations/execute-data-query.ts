@@ -200,9 +200,6 @@ export function executeDataQuery(args: {
 					connectionTimeoutMillis: 10000,
 					query_timeout: 65000,
 					statement_timeout: 60000,
-					ssl: {
-						rejectUnauthorized: false,
-					},
 				});
 
 				const executor = createPollingQueryExecutor({
