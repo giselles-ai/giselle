@@ -24,7 +24,9 @@ async function assertGitHubInstallationAccess(installationId: number) {
 	}
 }
 
-function enforceStudioOriginForCreation<T extends Generation>(generation: T): T {
+function enforceStudioOriginForCreation<T extends Generation>(
+	generation: T,
+): T {
 	const { workspaceId } = generation.context.origin;
 	return {
 		...generation,
