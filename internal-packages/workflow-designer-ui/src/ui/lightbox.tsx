@@ -36,10 +36,13 @@ export function Lightbox({
 				<X className="w-6 h-6" />
 			</button>
 			<div className="relative max-w-[95vw] max-h-[95vh] w-[95vw] h-[95vh]">
+				{/* unoptimized: bypass the image optimizer so the browser fetches
+				    the src directly with cookies (needed for cookie-based auth) */}
 				<Image
 					src={src}
 					alt="Generated content"
 					fill
+					unoptimized
 					style={{ objectFit: "contain" }}
 				/>
 			</div>
