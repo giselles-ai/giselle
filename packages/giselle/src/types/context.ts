@@ -30,6 +30,19 @@ type GenerateContentProcess =
 	| { type: "self" }
 	| { type: "external"; process: (args: GenerateContentArgs) => Promise<void> };
 
+export type SetExecuteDataQueryProcessArgs = {
+	context: GiselleContext;
+	generation: RunningGeneration;
+	metadata?: GenerationMetadata;
+};
+
+type ExecuteDataQueryProcess =
+	| { type: "self" }
+	| {
+			type: "external";
+			process: (args: SetExecuteDataQueryProcessArgs) => Promise<void>;
+	  };
+
 export type SetRunTaskProcessArgs = {
 	context: GiselleContext;
 	task: Task;
@@ -69,6 +82,7 @@ export interface GiselleContext {
 	logger: GiselleLogger;
 	waitUntil: WaitUntil;
 	generateContentProcess: GenerateContentProcess;
+	executeDataQueryProcess: ExecuteDataQueryProcess;
 	runTaskProcess: RunTaskProcess;
 	experimental_contentGenerationNode: boolean;
 }

@@ -79,7 +79,9 @@ export interface GiselleClient {
 	}>;
 	executeAction(input: Parameters<Giselle["executeAction"]>[0]): Promise<void>;
 	executeQuery(input: { generation: QueuedGeneration }): Promise<void>;
-	executeDataQuery(input: { generation: QueuedGeneration }): Promise<void>;
+	startDataQueryExecution(
+		input: Parameters<Giselle["startDataQueryExecution"]>[0],
+	): Promise<void>;
 	getGitHubRepositoryFullname(
 		input: Parameters<Giselle["getGitHubRepositoryFullname"]>[0],
 	): Promise<{

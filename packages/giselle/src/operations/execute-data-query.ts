@@ -125,7 +125,7 @@ function createPollingQueryExecutor({
 
 export function executeDataQuery(args: {
 	context: GiselleContext;
-	generation: QueuedGeneration;
+	generation: QueuedGeneration | RunningGeneration;
 	metadata?: GenerationMetadata;
 }) {
 	return useGenerationExecutor({

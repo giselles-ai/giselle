@@ -50,7 +50,11 @@ import {
 	getGitHubRepositoryFullname,
 	handleGitHubWebhookV2,
 } from "./github";
-import { executeAction, executeDataQuery } from "./operations";
+import {
+	executeAction,
+	executeDataQuery,
+	startDataQueryExecution,
+} from "./operations";
 import { executeQuery } from "./operations/execute-query";
 import { addSecret, deleteSecret, getWorkspaceSecrets } from "./secrets";
 import { addWebPage } from "./sources";
@@ -83,6 +87,7 @@ import {
 import type {
 	GiselleConfig,
 	GiselleContext,
+	SetExecuteDataQueryProcessArgs,
 	SetRunTaskProcessArgs,
 	WaitUntil,
 } from "./types";
@@ -115,6 +120,7 @@ export function Giselle(config: GiselleConfig) {
 		logger: config.logger ?? noopLogger,
 		waitUntil: config.waitUntil ?? defaultWaitUntil,
 		generateContentProcess: { type: "self" },
+		executeDataQueryProcess: { type: "self" },
 		runTaskProcess: { type: "self" },
 		experimental_contentGenerationNode:
 			config.experimental_contentGenerationNode ?? false,
@@ -303,8 +309,9 @@ export function Giselle(config: GiselleConfig) {
 		}) => handleGitHubWebhookV2({ ...args, context }),
 		executeQuery: async (generation: QueuedGeneration) =>
 			executeQuery({ context, generation }),
-		executeDataQuery: async (generation: QueuedGeneration) =>
-			executeDataQuery({ context, generation }),
+		executeDataQuery: async (
+			generation: QueuedGeneration | RunningGeneration,
+		) => executeDataQuery({ context, generation }),
 		addWebPage: async (args: {
 			workspaceId: WorkspaceId;
 			webpage: FetchingWebPage;
@@ -395,6 +402,15 @@ export function Giselle(config: GiselleConfig) {
 				context,
 			});
 		},
+		startDataQueryExecution(args: {
+			generation: QueuedGeneration;
+			metadata?: GenerationMetadata;
+		}) {
+			return startDataQueryExecution({
+				...args,
+				context,
+			});
+		},
 		setGenerateContentProcess(
 			process: (args: {
 				context: GiselleContext;
@@ -403,6 +419,11 @@ export function Giselle(config: GiselleConfig) {
 			}) => Promise<void>,
 		) {
 			context.generateContentProcess = { type: "external", process };
+		},
+		setExecuteDataQueryProcess(
+			process: (args: SetExecuteDataQueryProcessArgs) => Promise<void>,
+		) {
+			context.executeDataQueryProcess = { type: "external", process };
 		},
 		getWorkspaceInprogressTask(args: { workspaceId: WorkspaceId }) {
 			return getWorkspaceInprogressTask({ ...args, context });
