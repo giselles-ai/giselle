@@ -45,7 +45,7 @@ catalog:
   "@turbo/gen": 2.3.3
   "@types/fast-levenshtein": 0.0.4
   "@types/node": 24.10.4
-  "@types/pg": 8.11.13
+  "@types/pg": 8.16.0
   "@types/pluralize": 0.0.33
   "@types/pngjs": 6.0.5
   "@types/react": 19.2.7
@@ -76,7 +76,7 @@ catalog:
   node-loader: 2.1.0
   nuqs: 2.6.0
   openai: 5.11.0
-  pg: 8.14.1
+  pg: 8.18.0
   pgvector: 0.2.1
   pino: 9.9.0
   pluralize: 8.0.0

@@ -10197,7 +10197,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="pg"></a>
-### pg v8.14.1
+### pg v8.18.0
 #### 
 
 ##### Paths
@@ -10208,7 +10208,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="pg-cloudflare"></a>
-### pg-cloudflare v1.1.1
+### pg-cloudflare v1.3.0
 #### 
 
 ##### Paths
@@ -10219,7 +10219,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="pg-connection-string"></a>
-### pg-connection-string v2.7.0
+### pg-connection-string v2.11.0
 #### 
 
 ##### Paths
@@ -10252,7 +10252,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="pg-pool"></a>
-### pg-pool v3.8.0
+### pg-pool v3.11.0
 #### 
 
 ##### Paths
