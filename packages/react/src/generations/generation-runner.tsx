@@ -1,8 +1,10 @@
 import {
 	type Generation,
 	GenerationContext,
+	isCancelledGeneration,
 	isCompletedGeneration,
 	isContentGenerationNode,
+	isFailedGeneration,
 	isQueuedGeneration,
 	isTextGenerationNode,
 	type RunningGeneration,
@@ -267,42 +269,37 @@ function DataQueryRunner({ generation }: { generation: Generation }) {
 		}
 		addStopHandler(generation.id, stop);
 		client
-			.setGeneration({
+			.startDataQueryExecution({
 				generation,
 			})
 			.then(() => {
 				updateGenerationStatusToRunning(generation.id);
-				client
-					.executeDataQuery({
-						generation,
-					})
-					.then(async () => {
-						// client.executeDataQuery catches DataQueryError and doesn't re-throw.
-						// Check the persisted generation status to determine outcome.
-						let persistedGeneration: Generation;
-						try {
-							persistedGeneration = await client.getGeneration({
-								generationId: generation.id,
-							});
-						} catch (error) {
-							console.error("Failed to get generation result:", error);
+				const pollStatus = async () => {
+					while (true) {
+						const persistedGeneration = await client.getGeneration({
+							generationId: generation.id,
+						});
+						if (isCompletedGeneration(persistedGeneration)) {
+							updateGenerationStatusToComplete(generation.id);
+							return;
+						}
+						if (isFailedGeneration(persistedGeneration)) {
 							updateGenerationStatusToFailure(generation.id);
 							return;
 						}
-						if (isCompletedGeneration(persistedGeneration)) {
-							updateGenerationStatusToComplete(generation.id);
-						} else {
-							updateGenerationStatusToFailure(generation.id);
+						if (isCancelledGeneration(persistedGeneration)) {
+							return;
 						}
-					})
-					.catch((error) => {
-						// Only unexpected errors (network, etc.) reach here
-						console.error("Data query execution failed:", error);
-						updateGenerationStatusToFailure(generation.id);
-					});
+						await new Promise((resolve) => setTimeout(resolve, 1000));
+					}
+				};
+				pollStatus().catch((error) => {
+					console.error("Failed to poll data query result:", error);
+					updateGenerationStatusToFailure(generation.id);
+				});
 			})
 			.catch((error) => {
-				console.error("Failed to set generation:", error);
+				console.error("Failed to start data query execution:", error);
 				updateGenerationStatusToFailure(generation.id);
 			});
 	});

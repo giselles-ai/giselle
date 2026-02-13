@@ -1,13 +1,13 @@
 "use server";
-
-import { DataQueryError } from "@giselles-ai/giselle";
 import {
+	type Generation,
 	isQueuedGeneration,
 	type QueuedGeneration,
 	type Trigger,
 	type TriggerId,
 } from "@giselles-ai/protocol";
 import { giselle } from "@/app/giselle";
+import { assertGenerationResourceAccess } from "@/lib/assert-generation-resource-access";
 import { assertWorkspaceAccess } from "@/lib/assert-workspace-access";
 import { getGitHubIdentityState } from "@/services/accounts";
 
@@ -22,6 +22,20 @@ async function assertGitHubInstallationAccess(installationId: number) {
 	if (!hasAccess) {
 		throw new Error("Installation not found");
 	}
+}
+
+function enforceStudioOriginForCreation<T extends Generation>(generation: T): T {
+	const { workspaceId } = generation.context.origin;
+	return {
+		...generation,
+		context: {
+			...generation.context,
+			origin: {
+				type: "studio",
+				workspaceId,
+			},
+		},
+	};
 }
 
 export async function resolveTrigger(input: { generation: QueuedGeneration }) {
@@ -118,24 +132,16 @@ export async function executeQuery(input: { generation: QueuedGeneration }) {
 	await giselle.executeQuery(storedGeneration);
 }
 
-export async function executeDataQuery(input: {
+// Unlike executeAction/executeQuery, this does NOT fetch the stored generation first.
+// The generation has not been persisted to storage yet at this point —
+// startDataQueryExecution handles both persistence and execution initiation.
+export async function startDataQueryExecution(input: {
 	generation: QueuedGeneration;
 }) {
-	const storedGeneration = await giselle.getGeneration(input.generation.id);
-	if (!isQueuedGeneration(storedGeneration)) {
-		throw new Error("Generation is not queued");
-	}
-	await assertWorkspaceAccess(storedGeneration.context.origin.workspaceId);
-	try {
-		await giselle.executeDataQuery(storedGeneration);
-	} catch (error) {
-		if (error instanceof DataQueryError) {
-			// User-caused errors (SQL syntax, connection issues, etc.) should not go to Sentry.
-			// The generation status is already persisted as "failed" by execute-data-query.ts.
-			return;
-		}
-		throw error;
-	}
+	const generation = enforceStudioOriginForCreation(input.generation);
+	await assertWorkspaceAccess(generation.context.origin.workspaceId);
+	await assertGenerationResourceAccess(generation);
+	await giselle.startDataQueryExecution({ generation });
 }
 
 export async function getGitHubRepositoryFullname(

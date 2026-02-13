@@ -17,6 +17,7 @@ import { eq } from "drizzle-orm";
 import { apps, db, tasks } from "@/db";
 import { generateContentNodeFlag } from "@/flags";
 import { GenerationMetadata } from "@/lib/generation-metadata";
+import { getCurrentUser } from "@/lib/get-current-user";
 import { logger } from "@/lib/logger";
 import { traceGenerationForTeam } from "@/lib/trace";
 import { getWorkspaceTeam } from "@/lib/workspaces/get-workspace-team";
@@ -24,6 +25,7 @@ import { fetchUsageLimits } from "@/packages/lib/fetch-usage-limits";
 import { onConsumeAgentTime } from "@/packages/lib/on-consume-agent-time";
 import { fetchCurrentUser } from "@/services/accounts";
 import { type CurrentTeam, fetchCurrentTeam } from "@/services/teams";
+import type { executeDataQueryJob } from "@/trigger/execute-data-query-job";
 import type { runTaskJob } from "@/trigger/run-task-job";
 import { getDocumentVectorStoreQueryService } from "../lib/vector-stores/document/query/service";
 import {
@@ -592,6 +594,106 @@ if (generateContentProcessor === "trigger.dev") {
 							requestId,
 							...parsedMetadata,
 						});
+						break;
+					}
+					default: {
+						const _exhaustiveCheck: never = runtimeEnv;
+						throw new Error(`Unhandled runtimeEnv: ${_exhaustiveCheck}`);
+					}
+				}
+				break;
+			}
+			default: {
+				const _exhaustiveCheck: never = generation.context.origin;
+				throw new Error(`Unhandled origin type: ${_exhaustiveCheck}`);
+			}
+		}
+	});
+
+	giselle.setExecuteDataQueryProcess(async ({ generation, metadata }) => {
+		const requestId = getRequestId();
+		switch (generation.context.origin.type) {
+			case "github-app": {
+				const {
+					id,
+					activeSubscriptionId: subscriptionId,
+					activeCustomerId,
+					plan,
+				} = await getWorkspaceTeam(generation.context.origin.workspaceId);
+				await jobs.trigger<typeof executeDataQueryJob>("execute-data-query", {
+					generationId: generation.id,
+					requestId,
+					userId: "github-app",
+					team: {
+						id,
+						subscriptionId,
+						activeCustomerId,
+						plan,
+					},
+				});
+				break;
+			}
+			case "api": {
+				const {
+					id,
+					activeSubscriptionId: subscriptionId,
+					activeCustomerId,
+					plan,
+				} = await getWorkspaceTeam(generation.context.origin.workspaceId);
+				await jobs.trigger<typeof executeDataQueryJob>("execute-data-query", {
+					generationId: generation.id,
+					requestId,
+					userId: "api",
+					team: {
+						id,
+						subscriptionId,
+						activeCustomerId,
+						plan,
+					},
+				});
+				break;
+			}
+			case "stage":
+			case "studio": {
+				switch (runtimeEnv) {
+					case "local":
+					case "vercel":
+					case "unknown": {
+						const [
+							currentUser,
+							{
+								id,
+								activeSubscriptionId: subscriptionId,
+								activeCustomerId,
+								plan,
+							},
+						] = await Promise.all([getCurrentUser(), fetchCurrentTeam()]);
+						await jobs.trigger<typeof executeDataQueryJob>(
+							"execute-data-query",
+							{
+								generationId: generation.id,
+								requestId,
+								userId: currentUser.id,
+								team: {
+									id,
+									subscriptionId,
+									activeCustomerId,
+									plan,
+								},
+							},
+						);
+						break;
+					}
+					case "trigger.dev": {
+						const parsedMetadata = GenerationMetadata.parse(metadata);
+						await jobs.trigger<typeof executeDataQueryJob>(
+							"execute-data-query",
+							{
+								generationId: generation.id,
+								requestId,
+								...parsedMetadata,
+							},
+						);
 						break;
 					}
 					default: {
