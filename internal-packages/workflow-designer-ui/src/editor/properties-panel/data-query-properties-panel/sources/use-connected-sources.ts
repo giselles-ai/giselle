@@ -147,6 +147,14 @@ export function useConnectedSources(node: DataQueryNode) {
 				}
 			}
 
+			// Data Store connections are shown as header chips, not as @ mention suggestions
+			if (
+				outputNode.type === "variable" &&
+				outputNode.content.type === "dataStore"
+			) {
+				continue;
+			}
+
 			uiConnections.push({
 				id: connection.id,
 				output,
