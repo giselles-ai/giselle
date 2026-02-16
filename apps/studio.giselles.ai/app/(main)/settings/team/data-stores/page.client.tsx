@@ -1,5 +1,6 @@
 "use client";
 
+import { DocsLink } from "@giselle-internal/ui/docs-link";
 import { EmptyState } from "@giselle-internal/ui/empty-state";
 import { PageHeading } from "@giselle-internal/ui/page-heading";
 import { Pencil, Plus, Trash } from "lucide-react";
@@ -68,17 +69,26 @@ export function DataStoresPageClient({
 				<PageHeading as="h1" glow>
 					Data Stores
 				</PageHeading>
-				<GlassButton
-					type="button"
-					onClick={handleCreateClick}
-					disabled={isCreateDisabled}
-					title={createDisabledReason}
-				>
-					<span className="grid place-items-center rounded-full size-4 bg-primary-200 opacity-50">
-						<Plus className="size-3 text-link-muted" />
-					</span>
-					New Data Store
-				</GlassButton>
+				<div className="flex items-center gap-3">
+					<DocsLink
+						href="https://docs.giselles.ai/en/guides/settings/team/data-stores"
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						About Data Stores
+					</DocsLink>
+					<GlassButton
+						type="button"
+						onClick={handleCreateClick}
+						disabled={isCreateDisabled}
+						title={createDisabledReason}
+					>
+						<span className="grid place-items-center rounded-full size-4 bg-primary-200 opacity-50">
+							<Plus className="size-3 text-link-muted" />
+						</span>
+						New Data Store
+					</GlassButton>
+				</div>
 			</div>
 
 			<Card className="rounded-[8px] bg-transparent p-6 border-0">
