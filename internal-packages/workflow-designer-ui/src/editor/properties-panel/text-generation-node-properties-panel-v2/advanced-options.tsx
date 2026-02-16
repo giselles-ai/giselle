@@ -1,6 +1,7 @@
 import type { ContentGenerationNode } from "@giselles-ai/protocol";
 import { ChevronRightIcon } from "lucide-react";
 import { useState } from "react";
+import { OutputFormat } from "../text-generation-node-properties-panel/output-format";
 import { SettingDetail, SettingLabel } from "../ui/setting-label";
 import { ToolsPanel } from "./tools";
 
@@ -21,9 +22,12 @@ export function AdvancedOptions({ node }: { node: ContentGenerationNode }) {
 				</SettingLabel>
 			</button>
 			{isAdvancedOpen && (
-				<div className="mt-[12px]">
-					<SettingDetail className="mb-[6px]">Tools</SettingDetail>
-					<ToolsPanel node={node} />
+				<div className="mt-[12px] flex flex-col gap-[12px]">
+					<div>
+						<SettingDetail className="mb-[6px]">Tools</SettingDetail>
+						<ToolsPanel node={node} />
+					</div>
+					<OutputFormat />
 				</div>
 			)}
 		</div>

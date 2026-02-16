@@ -24,6 +24,7 @@ export function createInternalGiselleClient(): GiselleClient {
 		setGeneration: internalApi.setGeneration,
 		generateImage: internalApi.generateImage,
 		startContentGeneration: internalApi.startContentGeneration,
+		generateJsonSchema: internalApi.generateJsonSchema,
 		getGenerationMessageChunks: internalApi.getGenerationMessageChunks,
 
 		// triggers + ops

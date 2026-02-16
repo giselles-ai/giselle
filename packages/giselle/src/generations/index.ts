@@ -1,6 +1,7 @@
 export * from "./cancel-generation";
 export * from "./generate-content";
 export * from "./generate-image";
+export * from "./generate-json-schema";
 export * from "./get-generated-image";
 export * from "./get-generation";
 export * from "./get-generation-message-chunks";

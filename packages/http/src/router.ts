@@ -436,6 +436,14 @@ export const jsonRoutes = {
 				return JsonResponse.json({ generation: runningGeneration });
 			},
 		}),
+	generateJsonSchema: (giselle: Giselle) =>
+		createHandler({
+			input: giselle.generateJsonSchema.inputSchema,
+			handler: async ({ input }) => {
+				const result = await giselle.generateJsonSchema(input);
+				return JsonResponse.json(result);
+			},
+		}),
 	getWorkspaceInprogressTask: (giselle: Giselle) =>
 		createHandler({
 			input: z.object({

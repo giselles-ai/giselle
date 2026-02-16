@@ -148,3 +148,7 @@ export async function getGenerationMessageChunks(input: {
 		startByte: input.startByte,
 	});
 }
+
+export async function generateJsonSchema(input: { description: string }) {
+	return await giselle.generateJsonSchema(input);
+}

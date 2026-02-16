@@ -34,6 +34,7 @@ import {
 	type GenerationMetadata,
 	generateContent,
 	generateImage,
+	generateJsonSchema,
 	getGeneratedImage,
 	getGeneration,
 	getGenerationMessageChunkss,
@@ -431,6 +432,7 @@ export function Giselle(config: GiselleConfig) {
 		saveApp: bindGiselleFunction(saveApp, context),
 		deleteApp: bindGiselleFunction(deleteApp, context),
 		getApp: bindGiselleFunction(getApp, context),
+		generateJsonSchema: bindGiselleFunction(generateJsonSchema, context),
 
 		// Data Store CRUD
 		async createDataStore(args: {

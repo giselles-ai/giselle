@@ -52,6 +52,9 @@ export interface GiselleClient {
 	): Promise<{
 		generation: Awaited<ReturnType<Giselle["startContentGeneration"]>>;
 	}>;
+	generateJsonSchema(
+		input: Parameters<Giselle["generateJsonSchema"]>[0],
+	): Promise<Awaited<ReturnType<Giselle["generateJsonSchema"]>>>;
 	getGenerationMessageChunks(
 		input: Omit<
 			Parameters<Giselle["getGenerationMessageChunks"]>[0],
