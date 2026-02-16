@@ -122,7 +122,8 @@ export function useConnectedSources(node: DataQueryNode) {
 								node: outputNode as DataStoreNode,
 								connection,
 							});
-							break;
+							// Data Store nodes should not appear as @ mention candidates
+							continue;
 						case "text":
 							connectedVariableSources.push({
 								output,
