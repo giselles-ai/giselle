@@ -59,10 +59,10 @@ export function useAddWebPages() {
 				}
 
 				const existingUrls = new Set(
-					node.content.webpages.map((w) => w.url),
+					node.content.webpages.map((w) => normalizeHttpsUrl(w.url) ?? w.url),
 				);
 				if (batchSeen.has(url) || existingUrls.has(url)) {
-					args.onError?.(`Duplicate URL: ${url}`);
+					args.onError?.(`duplicate URL: ${url}`);
 					continue;
 				}
 				batchSeen.add(url);
