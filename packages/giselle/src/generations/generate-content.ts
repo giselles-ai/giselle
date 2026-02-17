@@ -305,7 +305,7 @@ export function generateContent({
 				operationNode.content.jsonSchema
 			) {
 				try {
-					const parsed = JSON.parse(operationNode.content.jsonSchema) as object;
+					const parsed = JSON.parse(operationNode.content.jsonSchema);
 					outputOption = AiOutput.object({ schema: jsonSchema(parsed) });
 				} catch {
 					logger.warn(
@@ -672,7 +672,7 @@ function generateContentV2({
 				operationNode.content.jsonSchema
 			) {
 				try {
-					const parsed = JSON.parse(operationNode.content.jsonSchema) as object;
+					const parsed = JSON.parse(operationNode.content.jsonSchema);
 					outputOption = AiOutput.object({ schema: jsonSchema(parsed) });
 				} catch {
 					logger.warn(
