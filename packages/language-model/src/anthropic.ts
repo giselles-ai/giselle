@@ -19,12 +19,20 @@ const defaultConfigurations: AnthropicLanguageModelConfigurations = {
 };
 
 export const AnthropicLanguageModelId = z
-	.enum(["claude-opus-4.5", "claude-sonnet-4.5", "claude-haiku-4.5"])
+	.enum([
+		"claude-opus-4.6",
+		"claude-opus-4.5",
+		"claude-sonnet-4.5",
+		"claude-haiku-4.5",
+	])
 	.catch((ctx) => {
 		if (typeof ctx.value !== "string") {
 			return "claude-haiku-4.5";
 		}
 		const v = ctx.value;
+		if (/^claude-opus-4[.-]6(?:-.+)?$/.test(v)) {
+			return "claude-opus-4.6";
+		}
 		if (/^claude-opus-4[.-]5(?:-.+)?$/.test(v)) {
 			return "claude-opus-4.5";
 		}
@@ -74,6 +82,18 @@ const AnthropicLanguageModel = LanguageModelBase.extend({
 });
 type AnthropicLanguageModel = z.infer<typeof AnthropicLanguageModel>;
 
+const claude46Opus: AnthropicLanguageModel = {
+	provider: "anthropic",
+	id: "claude-opus-4.6",
+	capabilities:
+		Capability.TextGeneration |
+		Capability.Reasoning |
+		Capability.PdfFileInput |
+		Capability.ImageFileInput,
+	tier: Tier.enum.pro,
+	configurations: defaultConfigurations,
+};
+
 const claude45Opus: AnthropicLanguageModel = {
 	provider: "anthropic",
 	id: "claude-opus-4.5",
@@ -110,7 +130,12 @@ const claude45Sonnet: AnthropicLanguageModel = {
 	configurations: defaultConfigurations,
 };
 
-export const models = [claude45Opus, claude45Sonnet, claude45Haiku];
+export const models = [
+	claude46Opus,
+	claude45Opus,
+	claude45Sonnet,
+	claude45Haiku,
+];
 
 export const LanguageModel = AnthropicLanguageModel;
 export type LanguageModel = AnthropicLanguageModel;
