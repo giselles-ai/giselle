@@ -16,6 +16,41 @@ const anthropicProvider = {
 } as const satisfies LanguageModelProviderDefinition<"anthropic">;
 
 export const anthropic = {
+	"anthropic/claude-opus-4.6": defineLanguageModel({
+		provider: anthropicProvider,
+		id: "anthropic/claude-opus-4.6",
+		name: "Claude Opus 4.6",
+		description:
+			"Claude Opus 4.6 is Anthropic's most intelligent model, offering industry-leading performance in coding, agentic tasks, and complex reasoning with a 128K max output.",
+		contextWindow: 1_000_000,
+		maxOutputTokens: 128_000,
+		knowledgeCutoff: new Date(2025, 4, 31).getTime(),
+		pricing: {
+			input: definePricing(5.0),
+			output: definePricing(25.0),
+		},
+		requiredTier: "pro",
+		configurationOptions: {
+			temperature: {
+				description: "Amount of randomness injected into the response.",
+				schema: z.number().min(0).max(1),
+				ui: {
+					min: 0.0,
+					max: 1.0,
+					step: 0.1,
+				},
+			},
+			thinking: {
+				description: "Whether to include reasoning text in the response.",
+				schema: z.boolean(),
+			},
+		},
+		defaultConfiguration: {
+			temperature: 1.0,
+			thinking: false,
+		},
+		url: "https://www.anthropic.com/claude/opus",
+	}),
 	"anthropic/claude-opus-4.5": defineLanguageModel({
 		provider: anthropicProvider,
 		id: "anthropic/claude-opus-4.5",

@@ -28,6 +28,8 @@ function convertTextGenerationLanguageModelIdToContentGenerationLanguageModelId(
 	from: TextGenerationModelIdWithLegacy,
 ): LanguageModelId {
 	switch (from) {
+		case "claude-opus-4.6":
+			return "anthropic/claude-opus-4.6";
 		case "claude-haiku-4.5":
 		case "claude-haiku-4-5-20251001":
 			return "anthropic/claude-haiku-4.5";
@@ -79,6 +81,8 @@ function convertContentGenerationLanguageModelIdToTextGenerationLanguageModelId(
 	from: LanguageModelId,
 ): TextGenerationNode["content"]["llm"]["id"] {
 	switch (from) {
+		case "anthropic/claude-opus-4.6":
+			return "claude-opus-4.6";
 		case "anthropic/claude-haiku-4.5":
 			return "claude-haiku-4.5";
 		case "anthropic/claude-opus-4.5":
