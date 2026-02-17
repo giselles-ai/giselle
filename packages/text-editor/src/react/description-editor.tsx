@@ -42,6 +42,7 @@ export function DescriptionEditor({
 			handleKeyDown: (_view, event) => {
 				if (event.key === "Enter" && event.metaKey && onSubmit) {
 					event.preventDefault();
+					event.stopPropagation();
 					onSubmit();
 					return true;
 				}

@@ -71,15 +71,28 @@ export function EndNodeOutputFormat({ node }: { node: EndNode }) {
 	return (
 		<div>
 			<SettingDetail className="mb-[6px]">Structured Output</SettingDetail>
-			<button
-				type="button"
-				onClick={() => setIsDialogOpen(true)}
-				className="w-full rounded-[8px] border border-white/10 bg-white/5 px-[12px] py-[8px] text-[13px] text-inverse/80 hover:text-inverse hover:bg-white/10 transition-colors text-left"
-			>
-				{node.content.outputSchema
-					? "Edit Structured Output"
-					: "Set Structured Output"}
-			</button>
+			<div className="flex gap-[6px]">
+				<button
+					type="button"
+					onClick={() => setIsDialogOpen(true)}
+					className="flex-1 rounded-[8px] border border-white/10 bg-white/5 px-[12px] py-[8px] text-[13px] text-inverse/80 hover:text-inverse hover:bg-white/10 transition-colors text-left"
+				>
+					{node.content.outputSchema
+						? "Edit Structured Output"
+						: "Set Structured Output"}
+				</button>
+				{node.content.outputSchema && (
+					<button
+						type="button"
+						onClick={() => {
+							updateNodeDataContent(node, { outputSchema: undefined });
+						}}
+						className="rounded-[8px] border border-error-900/40 bg-white/5 px-[10px] py-[8px] text-[13px] text-error-900 hover:text-error-200 hover:bg-error-900/10 transition-colors"
+					>
+						Remove
+					</button>
+				)}
+			</div>
 			{node.content.outputSchema && (
 				<pre className="mt-[4px] rounded-[6px] bg-black/20 p-[8px] text-[11px] text-text/50 font-mono overflow-auto max-h-[100px]">
 					{node.content.outputSchema}
@@ -92,7 +105,7 @@ export function EndNodeOutputFormat({ node }: { node: EndNode }) {
 				description={
 					<>
 						Define a JSON Schema for the app output. Use{" "}
-						<strong>@</strong> to reference upstream node schemas.
+						<strong className="text-text/80">@</strong> to reference upstream node schemas.
 					</>
 				}
 				initialSchema={node.content.outputSchema ?? defaultSchema}
