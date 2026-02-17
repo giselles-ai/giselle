@@ -22,7 +22,7 @@ export const anthropic = {
 		name: "Claude Opus 4.6",
 		description:
 			"Claude Opus 4.6 is Anthropic's most intelligent model, offering industry-leading performance in coding, agentic tasks, and complex reasoning with a 128K max output.",
-		contextWindow: 200_000,
+		contextWindow: 1_000_000,
 		maxOutputTokens: 128_000,
 		knowledgeCutoff: new Date(2025, 4, 31).getTime(),
 		pricing: {
