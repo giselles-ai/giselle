@@ -105,7 +105,8 @@ export function EndNodeOutputFormat({ node }: { node: EndNode }) {
 				description={
 					<>
 						Define a JSON Schema for the app output. Use{" "}
-						<strong className="text-text/80">@</strong> to reference upstream node schemas.
+						<strong className="text-text/80">@</strong> to reference upstream
+						node schemas.
 					</>
 				}
 				initialSchema={node.content.outputSchema ?? defaultSchema}
