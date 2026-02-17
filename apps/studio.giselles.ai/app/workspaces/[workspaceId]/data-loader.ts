@@ -9,6 +9,7 @@ import {
 	googleUrlContextFlag,
 	layoutV3Flag,
 	privatePreviewToolsFlag,
+	structuredOutputFlag,
 	webSearchActionFlag,
 } from "@/flags";
 import { getTeamDataStores } from "@/lib/data-stores/queries";
@@ -65,6 +66,7 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 	const data = await giselle.getWorkspace(workspaceId);
 	const generateContentNode = await generateContentNodeFlag();
 	const privatePreviewTools = await privatePreviewToolsFlag();
+	const structuredOutput = await structuredOutputFlag();
 	const dataStore = canUseDataStore(workspaceTeam.plan);
 	const [teamGitHubRepositoryIndexes, officialGitHubRepositoryIndexes] =
 		await Promise.all([
@@ -133,6 +135,7 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 			googleUrlContext,
 			generateContentNode,
 			privatePreviewTools,
+			structuredOutput,
 			dataStore,
 			sdkAvailability,
 		},

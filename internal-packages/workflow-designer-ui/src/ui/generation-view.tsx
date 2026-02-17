@@ -1,6 +1,10 @@
 "use client";
 
-import type { Generation } from "@giselles-ai/protocol";
+import {
+	type Generation,
+	isContentGenerationNode,
+	isTextGenerationNode,
+} from "@giselles-ai/protocol";
 import type { UIMessage } from "ai";
 import { ChevronRightIcon } from "lucide-react";
 import { Accordion } from "radix-ui";
@@ -360,6 +364,21 @@ export function GenerationView({ generation }: { generation: Generation }) {
 		return [];
 	}, [generation]);
 
+	const operationNode = generation.context.operationNode;
+	const isJsonOutputFormat = (() => {
+		if (isTextGenerationNode(operationNode))
+			return (
+				operationNode.content.outputFormat === "json" &&
+				Boolean(operationNode.content.jsonSchema)
+			);
+		if (isContentGenerationNode(operationNode))
+			return (
+				operationNode.content.outputFormat === "json" &&
+				Boolean(operationNode.content.jsonSchema)
+			);
+		return false;
+	})();
+
 	if (generation.status === "failed") {
 		return (
 			<div>
@@ -484,14 +503,18 @@ export function GenerationView({ generation }: { generation: Generation }) {
 									</Accordion.Root>
 								);
 
-							case "text":
+							case "text": {
+								const displayText = isJsonOutputFormat
+									? `\`\`\`json\n${part.text}\n\`\`\``
+									: part.text;
 								return (
 									<div key={partKey} id={partKey}>
 										<Streamdown className="markdown-renderer">
-											{part.text}
+											{displayText}
 										</Streamdown>
 									</div>
 								);
+							}
 							default: {
 								console.warn("unsupport part type:", part);
 								return null;

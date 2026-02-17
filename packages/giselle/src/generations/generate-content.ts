@@ -25,7 +25,9 @@ import {
 } from "@giselles-ai/protocol";
 import {
 	AISDKError,
+	Output as AiOutput,
 	type AsyncIterableStream,
+	jsonSchema,
 	type ModelMessage,
 	smoothStream,
 	stepCountIs,
@@ -297,13 +299,34 @@ export function generateContent({
 
 			const abortController = new AbortController();
 
+			let outputOption: ReturnType<typeof AiOutput.object> | undefined;
+			if (
+				operationNode.content.outputFormat === "json" &&
+				operationNode.content.jsonSchema
+			) {
+				try {
+					const parsed = JSON.parse(operationNode.content.jsonSchema) as object;
+					outputOption = AiOutput.object({ schema: jsonSchema(parsed) });
+				} catch {
+					logger.warn(
+						{ nodeId: operationNode.id },
+						"Invalid JSON schema for structured output; falling back to text",
+					);
+				}
+			}
+
 			const streamTextResult = streamText({
+				experimental_output: outputOption,
 				abortSignal: abortController.signal,
 				model,
 				providerOptions,
 				messages,
 				tools: preparedToolSet.toolSet,
-				stopWhen: stepCountIs(Object.keys(preparedToolSet.toolSet).length + 1),
+				stopWhen: stepCountIs(
+					Object.keys(preparedToolSet.toolSet).length +
+						1 +
+						(outputOption ? 1 : 0),
+				),
 				onChunk: async () => {
 					const currentGeneration = await getGeneration({
 						storage: context.storage,
@@ -643,8 +666,25 @@ function generateContentV2({
 			let generationError: unknown | undefined;
 			const textGenerationStartTime = Date.now();
 
+			let outputOption: ReturnType<typeof AiOutput.object> | undefined;
+			if (
+				operationNode.content.outputFormat === "json" &&
+				operationNode.content.jsonSchema
+			) {
+				try {
+					const parsed = JSON.parse(operationNode.content.jsonSchema) as object;
+					outputOption = AiOutput.object({ schema: jsonSchema(parsed) });
+				} catch {
+					logger.warn(
+						{ nodeId: operationNode.id },
+						"Invalid JSON schema for structured output; falling back to text",
+					);
+				}
+			}
+
 			const streamTextResult = streamText({
 				...callOptions,
+				experimental_output: outputOption,
 				abortSignal: abortController.signal,
 				model: gateway(operationNode.content.languageModel.id),
 				messages,

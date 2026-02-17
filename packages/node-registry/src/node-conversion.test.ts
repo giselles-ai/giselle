@@ -42,6 +42,7 @@ function createOpenAITextNode(
 					reasoningEffort: "medium",
 				},
 			},
+			outputFormat: "text",
 			prompt: "test",
 		},
 	};

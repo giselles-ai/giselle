@@ -25,6 +25,8 @@ export const ContentGenerationContent = z.object({
 		}),
 	),
 	prompt: z.string(),
+	outputFormat: z.enum(["text", "json"]).default("text"),
+	jsonSchema: z.string().optional(),
 });
 
 export type ContentGenerationContent = z.infer<typeof ContentGenerationContent>;

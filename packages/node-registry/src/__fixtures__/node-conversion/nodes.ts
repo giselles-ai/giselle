@@ -29,6 +29,7 @@ export const openAI_1 = {
 				reasoningEffort: "medium",
 			},
 		},
+		outputFormat: "text",
 		prompt:
 			'{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"京都市右京区太秦、太映通り商店街に「アララ」という洋食店はありますか？Webを検索し"}]},{"type":"paragraph","content":[{"type":"text","text":"Yes/Noのみを出力してください。"}]}]}',
 		tools: { openaiWebSearch: { searchContextSize: "medium" } },
@@ -61,6 +62,7 @@ export const openAIWithGitHubTool = {
 				reasoningEffort: "medium",
 			},
 		},
+		outputFormat: "text",
 		prompt:
 			'{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"https://github.com/toyamarinyon/raula/issues/36 "}]}]}',
 		tools: {
@@ -98,6 +100,7 @@ export const openAIWithoutTools = {
 				reasoningEffort: "minimal",
 			},
 		},
+		outputFormat: "text",
 		prompt:
 			'{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"hello"}]}]}',
 	},
@@ -128,6 +131,7 @@ export const openAIWithEmptyTools = {
 				reasoningEffort: "minimal",
 			},
 		},
+		outputFormat: "text",
 		prompt:
 			'{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Please tell me React.js"}]}]}',
 		tools: {},
@@ -157,6 +161,7 @@ export const anthropicClaudeSonnet = {
 				reasoningText: false,
 			},
 		},
+		outputFormat: "text",
 		prompt:
 			'{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","marks":[{"type":"bold"}],"text":"前提条件"},{"type":"text","text":"："},{"type":"text","marks":[{"type":"bold"}],"text":"Nは100〜250の整数"},{"type":"text","text":"。"}]},{"type":"bulletList","content":[{"type":"listItem","content":[{"type":"paragraph","content":[{"type":"text","text":"(a) "},{"type":"text","marks":[{"type":"bold"}],"text":"9の倍数"},{"type":"text","text":"。"}]}]},{"type":"listItem","content":[{"type":"paragraph","content":[{"type":"text","text":"(b) "},{"type":"text","marks":[{"type":"bold"}],"text":"5の倍数"},{"type":"text","text":"。"}]}]},{"type":"listItem","content":[{"type":"paragraph","content":[{"type":"text","text":"(c) "},{"type":"text","marks":[{"type":"bold"}],"text":"7進表記で回文（3桁）"},{"type":"text","text":"、すなわち "},{"type":"text","marks":[{"type":"bold"}],"text":"N = 50a + 7b"},{"type":"text","text":"（a∈{2,3,4}, b∈{0..6}）。"}]}]}]},{"type":"paragraph","content":[{"type":"text","marks":[{"type":"bold"}],"text":"問"},{"type":"text","text":"：Nを求めよ。"}]},{"type":"paragraph"},{"type":"paragraph","content":[{"type":"text","text":"You must outputs number only"}]}]}',
 	},
@@ -185,6 +190,7 @@ export const anthropicClaudeOpus45 = {
 				reasoningText: true,
 			},
 		},
+		outputFormat: "text",
 		prompt:
 			'{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Solve x^2 + 4x + 4 = 0."}]}]}',
 	},
@@ -219,6 +225,7 @@ export const googleGemini = {
 				urlContext: false,
 			},
 		},
+		outputFormat: "text",
 		prompt:
 			'{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"京都市右京区太秦、太映通り商店街に「アララ」という洋食店はありますか？Webを検索し"}]},{"type":"paragraph","content":[{"type":"text","text":"Yes/Noのみを出力してください。"}]}]}',
 	},
