@@ -27,7 +27,7 @@ export function AdvancedOptions({ node }: { node: ContentGenerationNode }) {
 						<SettingDetail className="mb-[6px]">Tools</SettingDetail>
 						<ToolsPanel node={node} />
 					</div>
-					<OutputFormat />
+					<OutputFormat node={node} />
 				</div>
 			)}
 		</div>

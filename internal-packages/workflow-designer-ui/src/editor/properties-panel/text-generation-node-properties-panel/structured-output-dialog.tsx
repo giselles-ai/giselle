@@ -36,8 +36,9 @@ import {
 	DialogTitle,
 } from "@giselle-internal/ui/dialog";
 import { useToasts } from "@giselle-internal/ui/toast";
+import { DescriptionEditor } from "@giselles-ai/text-editor/react-internal";
 import { Popover as PopoverPrimitive } from "radix-ui";
-import { useCallback, useRef, useState } from "react";
+import { type ReactNode, useCallback, useRef, useState } from "react";
 import { useGiselle } from "../../../app-designer/store/giselle-client-provider";
 import { HighlightedJson } from "../../../ui/highlighted-json";
 
@@ -69,32 +70,52 @@ function createCompletionSource(suggestions: Suggestion[]) {
 }
 
 /**
- * Replace {{var}} with "__MERGE_N__": "__PLACEHOLDER_N__" key-value pairs
- * to make the text parseable as valid JSON.
+ * Replace {{var}} placeholders to make the text parseable as valid JSON.
+ * - Property position (standalone): {{var}} → "__MERGE_N__": "__PLACEHOLDER_N__"
+ * - Value position (after ":"): {{var}} → "__VREF_N__"
  */
 function replaceVariablesForParsing(text: string): {
 	safeJson: string;
 	variableNames: string[];
+	variableTypes: ("merge" | "vref")[];
 } {
 	const variableNames: string[] = [];
-	const safeJson = text.replace(/\{\{([^}]+)\}\}/g, (_, key: string) => {
-		const index = variableNames.length;
-		variableNames.push(key);
-		return `"__MERGE_${index}__": "__PLACEHOLDER_${index}__"`;
-	});
-	return { safeJson, variableNames };
+	const variableTypes: ("merge" | "vref")[] = [];
+	const safeJson = text.replace(
+		/:\s*\{\{([^}]+)\}\}|\{\{([^}]+)\}\}/g,
+		(_match, valueKey: string | undefined, mergeKey: string | undefined) => {
+			const index = variableNames.length;
+			if (valueKey !== undefined) {
+				variableNames.push(valueKey);
+				variableTypes.push("vref");
+				return `: "__VREF_${index}__"`;
+			}
+			variableNames.push(mergeKey as string);
+			variableTypes.push("merge");
+			return `"__MERGE_${index}__": "__PLACEHOLDER_${index}__"`;
+		},
+	);
+	return { safeJson, variableNames, variableTypes };
 }
 
 /**
- * Reverse the preprocess: restore "__MERGE_N__": "__PLACEHOLDER_N__" back to {{var}}.
+ * Reverse the preprocess: restore placeholders back to {{var}}.
  */
-function restoreVariables(text: string, variableNames: string[]): string {
+function restoreVariables(
+	text: string,
+	variableNames: string[],
+	variableTypes: ("merge" | "vref")[],
+): string {
 	let result = text;
 	for (let i = 0; i < variableNames.length; i++) {
-		result = result.replace(
-			`"__MERGE_${i}__": "__PLACEHOLDER_${i}__"`,
-			`{{${variableNames[i]}}}`,
-		);
+		if (variableTypes[i] === "vref") {
+			result = result.replace(`"__VREF_${i}__"`, `{{${variableNames[i]}}}`);
+		} else {
+			result = result.replace(
+				`"__MERGE_${i}__": "__PLACEHOLDER_${i}__"`,
+				`{{${variableNames[i]}}}`,
+			);
+		}
 	}
 	return result;
 }
@@ -102,6 +123,36 @@ function restoreVariables(text: string, variableNames: string[]): string {
 type MergeResult =
 	| { ok: true; schema: Record<string, unknown> }
 	| { ok: false; error: string };
+
+function resolveValue(
+	value: unknown,
+	variableNames: string[],
+	variables: Record<string, string>,
+): { resolved: unknown; error?: string } {
+	if (typeof value === "string") {
+		const vrefMatch = value.match(/^__VREF_(\d+)__$/);
+		if (vrefMatch) {
+			const index = Number(vrefMatch[1]);
+			const variableName = variableNames[index];
+			const variableValue = variables[variableName];
+			if (variableValue == null) {
+				return {
+					resolved: value,
+					error: `Variable "${variableName}" is not defined`,
+				};
+			}
+			try {
+				return { resolved: JSON.parse(variableValue) };
+			} catch {
+				return {
+					resolved: value,
+					error: `Variable "${variableName}" is not valid JSON`,
+				};
+			}
+		}
+	}
+	return { resolved: value };
+}
 
 function processSchemaNode(
 	node: Record<string, unknown>,
@@ -187,20 +238,25 @@ function processSchemaNode(
 				};
 			}
 
+			const { resolved, error } = resolveValue(value, variableNames, variables);
+			if (error) {
+				return { ok: false, error };
+			}
+
 			if (
-				typeof value === "object" &&
-				value !== null &&
-				!Array.isArray(value)
+				typeof resolved === "object" &&
+				resolved !== null &&
+				!Array.isArray(resolved)
 			) {
 				const recursed = processSchemaNode(
-					value as Record<string, unknown>,
+					resolved as Record<string, unknown>,
 					variableNames,
 					variables,
 				);
 				if (!recursed.ok) return recursed;
 				mergedProperties[key] = recursed.schema;
 			} else {
-				mergedProperties[key] = value;
+				mergedProperties[key] = resolved;
 			}
 			keySource[key] = "parent schema";
 		}
@@ -492,7 +548,7 @@ export type StructuredOutputDialogProps = {
 	isOpen: boolean;
 	onOpenChange: (open: boolean) => void;
 	title: string;
-	description: string;
+	description: ReactNode;
 	initialSchema?: string;
 	onSave?: (schema: string) => void;
 	suggestions?: Suggestion[];
@@ -527,12 +583,14 @@ export function StructuredOutputDialog({
 	const formatEditor = useCallback((view: EditorView) => {
 		try {
 			const raw = view.state.doc.toString();
-			const { safeJson, variableNames } = replaceVariablesForParsing(raw);
+			const { safeJson, variableNames, variableTypes } =
+				replaceVariablesForParsing(raw);
 
 			const parsed = JSON.parse(safeJson);
 			const formatted = restoreVariables(
 				JSON.stringify(parsed, null, 2),
 				variableNames,
+				variableTypes,
 			);
 
 			view.dispatch({
@@ -729,25 +787,26 @@ export function StructuredOutputDialog({
 												className="z-[100] w-[560px] rounded-lg border border-white/15 bg-[#1a1a2e] p-4 shadow-xl"
 											>
 												<p className="mb-2 text-[12px] text-text/60">
-													Describe the schema you want to generate
+													Describe the schema you want to generate.
+													{suggestions.length > 0 && (
+														<>
+															{" "}
+															Use <strong className="text-text/80">@</strong> to
+															reference upstream node schemas.
+														</>
+													)}
 												</p>
-												<textarea
-													value={schemaDescription}
-													onChange={(e) => setSchemaDescription(e.target.value)}
-													onKeyDown={(e) => {
-														if (
-															e.key === "Enter" &&
-															e.metaKey &&
-															!isGeneratingSchema
-														) {
-															e.preventDefault();
-															handleGenerateSchema();
-														}
-													}}
+												<DescriptionEditor
+													onValueChange={setSchemaDescription}
+													onSubmit={
+														isGeneratingSchema
+															? undefined
+															: handleGenerateSchema
+													}
 													placeholder="e.g. Extract title and summary from blog posts"
-													rows={10}
-													className="w-full rounded-md border border-white/15 bg-black/30 px-3 py-2 text-[13px] text-inverse/80 placeholder:text-text/40 focus:outline-none focus:border-white/25 resize-none"
+													className="w-full min-h-[200px] rounded-md border border-white/15 bg-black/30 px-3 py-2 text-[13px] text-inverse/80 focus:outline-none focus:border-white/25"
 													autoFocus
+													suggestions={suggestions}
 												/>
 												<button
 													type="button"
@@ -770,38 +829,12 @@ export function StructuredOutputDialog({
 							</div>
 							<div ref={editorContainerRef} className="flex-1 min-h-0" />
 						</div>
-						{showPreview ? (
-							<div className="rounded-lg border border-white/10 bg-white/5 p-4 flex flex-col">
-								<div className="flex items-center mb-2 min-h-[34px]">
-									<span className="text-[11px] text-text/40">
-										{Object.keys(variables).length > 0
-											? "Merged Schema"
-											: "Parsed Schema"}
-									</span>
-								</div>
-								{(() => {
-									const result = mergeReferencedSchemas(code, variables);
-									if (!result.ok) {
-										return (
-											<pre className="rounded-[8px] bg-black/30 p-3 text-[12px] text-error-900 font-mono overflow-auto flex-1 min-h-0">
-												{`Error: ${result.error}`}
-											</pre>
-										);
-									}
-									return (
-										<pre className="rounded-[8px] bg-black/30 p-3 text-[12px] text-text/60 font-mono overflow-auto flex-1 min-h-0">
-											{JSON.stringify(result.schema, null, 2)}
-										</pre>
-									);
-								})()}
+						<div className="rounded-lg border border-white/10 bg-white/5 p-4 flex flex-col">
+							<div className="flex items-center mb-2 min-h-[34px]">
+								<span className="text-[11px] text-text/40">
+									Sample JSON from Schema
+								</span>
 							</div>
-						) : (
-							<div className="rounded-lg border border-white/10 bg-white/5 p-4 flex flex-col">
-								<div className="flex items-center mb-2 min-h-[34px]">
-									<span className="text-[11px] text-text/40">
-										Sample JSON from Schema
-									</span>
-								</div>
 							{(() => {
 								const sampleJson = generateSampleJson(code, variables);
 								const isError = sampleJson.startsWith("Error:");
@@ -816,29 +849,32 @@ export function StructuredOutputDialog({
 								);
 							})()}
 						</div>
-					)}
-				</div>
+					</div>
 					{showPreview && (
 						<div className="mt-4">
 							<div className="rounded-lg border border-white/10 bg-white/5 p-4">
 								<div className="text-[11px] text-text/40 mb-2">
-									Sample JSON from Schema
+									{Object.keys(variables).length > 0
+										? "Variables Resolved JSON Schema"
+										: "Parsed Schema"}
 								</div>
-							{(() => {
-								const sampleJson = generateSampleJson(code, variables);
-								const isError = sampleJson.startsWith("Error:");
-								return isError ? (
-									<pre className="rounded-[8px] bg-black/30 p-3 text-[12px] font-mono overflow-auto max-h-[300px] text-error-900">
-										{sampleJson}
-									</pre>
-								) : (
-									<HighlightedJson className="rounded-[8px] bg-black/30 p-3 text-[12px] font-mono overflow-auto max-h-[300px]">
-										{sampleJson}
-									</HighlightedJson>
-								);
-							})()}
+								{(() => {
+									const result = mergeReferencedSchemas(code, variables);
+									if (!result.ok) {
+										return (
+											<pre className="rounded-[8px] bg-black/30 p-3 text-[12px] text-error-900 font-mono overflow-auto max-h-[300px]">
+												{`Error: ${result.error}`}
+											</pre>
+										);
+									}
+									return (
+										<HighlightedJson className="rounded-[8px] bg-black/30 p-3 text-[12px] font-mono overflow-auto max-h-[300px]">
+											{JSON.stringify(result.schema, null, 2)}
+										</HighlightedJson>
+									);
+								})()}
+							</div>
 						</div>
-					</div>
 					)}
 					{onSave && (
 						<div className="mt-4 flex justify-end">

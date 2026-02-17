@@ -5,5 +5,5 @@ export * from "./icons";
 export { NodeIcon } from "./icons/node";
 export * from "./new-editor";
 export * from "./ui/background";
-export * from "./ui/tooltip";
 export { HighlightedJson } from "./ui/highlighted-json";
+export * from "./ui/tooltip";

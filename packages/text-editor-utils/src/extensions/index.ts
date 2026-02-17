@@ -5,6 +5,7 @@ import ts from "highlight.js/lib/languages/typescript";
 import html from "highlight.js/lib/languages/xml";
 import { createLowlight } from "lowlight";
 
+export * from "./description-mention-extension";
 export * from "./source-extension";
 
 const lowlight = createLowlight();

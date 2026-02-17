@@ -2,6 +2,7 @@ import * as z from "zod/v4";
 
 export const EndContent = z.object({
 	type: z.literal("end"),
+	outputSchema: z.optional(z.string()),
 });
 export type EndContent = z.infer<typeof EndContent>;
 

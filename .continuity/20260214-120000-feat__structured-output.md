@@ -68,12 +68,31 @@ This section is intentionally stable: do not overwrite it when updating the ledg
 - Integrated `OutputFormat` into both V1 (`TextGenerationNodePropertiesPanel`) and V2 (`TextGenerationNodePropertiesPanelV2`) between AdvancedOptions and Output sections.
 - Added `generateJsonSchema` API for schema generation with AI (platform-paid path): new Giselle method (`packages/giselle/src/generations/generate-json-schema.ts`), HTTP route (`packages/http/src/router.ts`), React client interface (`packages/react/src/giselle-client.ts`), and Studio internal API wiring (`apps/studio.giselles.ai/lib/internal-api/generations.ts`, `create-giselle-client.ts`).
 - Updated reusable `StructuredOutputDialog` UI to include a schema description input and `Generate With AI` button next to `Format`; generated schema replaces editor content in one shot with loading/error handling.
+- Added `outputSchema` to `EndContent` protocol schema (optional string field).
+- Created `EndNodeOutputFormat` component with `@` references: derives `suggestions` and `variables` from connected upstream text generation nodes' `outputSchema` content. Integrated into End Node properties panel between Outputs list and Try Playground button.
+- Replaced `TextareaWithMentions` in StructuredOutputDialog's "Generate With AI" popover with TipTap-based `DescriptionEditor`:
+  - Created `DescriptionEditor` component in `@giselles-ai/text-editor` (`description-editor.tsx`) using TipTap with Mention extension, Placeholder, and minimal StarterKit.
+  - Created `description-suggestion.ts` (suggestion adapter for `Suggestion[]` format) and `description-suggestion-list.tsx` (dropdown UI) in the same package.
+  - Added `@tiptap/starter-kit` dependency to `@giselles-ai/text-editor/package.json`.
+  - Exported `DescriptionEditor` and `Suggestion` type from `@giselles-ai/text-editor`.
+  - Mention chips render inline with purple background (#c4b5fd text, rgba(139,92,246,0.25) bg).
+  - Editor returns plain text via `onValueChange`; supports `Cmd+Enter` via `onSubmit`.
+  - Removed ~190-line `TextareaWithMentions` component from `structured-output-dialog.tsx`.
+  - Added `.description-editor` placeholder CSS to `workflow-designer-ui/src/style.css`.
 
 ## Now
 
 - Structured output UI integrated into text generation properties panels. Schema editing is functional in the UI but not yet persisted.
 - `Generate With AI` for JSON Schema is available in `StructuredOutputDialog` and calls the new `generateJsonSchema` API (no usage-limit attribution).
 - Fixed: schema description input field was non-interactive because default props `suggestions = []` and `variables = {}` created new references on each render, causing `editorContainerRef` callback to recreate CodeMirror editor on every keystroke (stealing focus). Replaced with module-level constants `EMPTY_SUGGESTIONS` / `EMPTY_VARIABLES`.
+- End Node now has structured output support with `@` references to upstream node schemas:
+  - `EndContent` protocol extended with optional `outputSchema: string` field.
+  - `EndNodeOutputFormat` component created in `end-node-properties-panel/output-format.tsx`.
+  - Reuses `StructuredOutputDialog` with `suggestions` and `variables` derived from connected upstream text generation nodes that have `outputSchema` set.
+  - `@` completion suggests `{NodeName} / Schema` labels; selecting inserts `{{NodeName / Schema}}` which merges the referenced schema's properties flat into the parent.
+  - Schema is persisted to End Node content via `useUpdateNodeDataContent`.
+  - Preview pane shows merged schema and sample JSON.
+- "Generate With AI" description editor is now TipTap-based (`DescriptionEditor` from `@giselles-ai/text-editor`), with proper `@` mention support matching other editors in the codebase.
 
 ## Next
 
@@ -83,7 +102,6 @@ This section is intentionally stable: do not overwrite it when updating the ledg
 - Persist schema from OutputFormat component to node data via `updateNodeDataContent`.
 - Decide whether to expose `Generate With AI` behind a feature flag before rollout (currently available where the dialog is used).
 - Add `outputSchemas` DB table and storage CRUD for team-level schema reuse.
-- Update end node to support structured output property selection (using flat merge logic).
 - Update App API response to include `generated-object` outputs.
 
 ## Open questions (UNCONFIRMED if needed)
@@ -96,9 +114,18 @@ This section is intentionally stable: do not overwrite it when updating the ledg
 
 - `apps/studio.giselles.ai/app/(main)/structured-output/page.client.tsx` — playground with flat schema merging
 - `internal-packages/workflow-designer-ui/src/editor/properties-panel/text-generation-node-properties-panel/structured-output-dialog.tsx` — reusable StructuredOutputDialog component
-- `internal-packages/workflow-designer-ui/src/editor/properties-panel/text-generation-node-properties-panel/output-format.tsx` — OutputFormat toggle + button section
+- `internal-packages/workflow-designer-ui/src/editor/properties-panel/text-generation-node-properties-panel/output-format.tsx` — OutputFormat toggle + button section (text gen)
 - `internal-packages/workflow-designer-ui/src/editor/properties-panel/text-generation-node-properties-panel/index.tsx` — V1 panel (integrated OutputFormat)
 - `internal-packages/workflow-designer-ui/src/editor/properties-panel/text-generation-node-properties-panel-v2/index.tsx` — V2 panel (integrated OutputFormat)
+- `internal-packages/workflow-designer-ui/src/editor/properties-panel/end-node-properties-panel/output-format.tsx` — End node OutputFormat with @ references
+- `internal-packages/workflow-designer-ui/src/editor/properties-panel/end-node-properties-panel/index.tsx` — End node panel (integrated EndNodeOutputFormat)
+- `internal-packages/workflow-designer-ui/src/style.css` — description-editor placeholder CSS
+- `packages/text-editor/src/react/description-editor.tsx` — TipTap DescriptionEditor component
+- `packages/text-editor/src/react/description-suggestion.ts` — Suggestion adapter for TipTap Mention
+- `packages/text-editor/src/react/description-suggestion-list.tsx` — Suggestion dropdown UI
+- `packages/text-editor/src/react/index.ts` — DescriptionEditor export
+- `packages/text-editor/package.json` — added @tiptap/starter-kit dependency
+- `packages/protocol/src/node/operations/end.ts` — EndContent with optional `outputSchema`
 - `packages/protocol/src/generation/output.ts` — add `GeneratedObjectContentOutput`
 - `packages/protocol/src/node/` — add `outputSchema` to text generation content
 - `packages/giselle/src/generations/generate-content.ts` — wire `experimental_output`

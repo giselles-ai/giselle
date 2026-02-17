@@ -38,7 +38,7 @@ import {
 	DialogTitle,
 } from "@giselle-internal/ui/dialog";
 import { HighlightedJson } from "@giselle-internal/workflow-designer-ui";
-import { type ReactNode, useCallback, useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 /**
  * Create a completion source triggered by `@`.
@@ -707,11 +707,11 @@ function StructuredOutputDialog({
 										</pre>
 									);
 								}
-							return (
-								<HighlightedJson className="rounded-[8px] bg-black/30 p-3 text-[12px] font-mono overflow-auto flex-1 min-h-0">
-									{JSON.stringify(result.schema, null, 2)}
-								</HighlightedJson>
-							);
+								return (
+									<HighlightedJson className="rounded-[8px] bg-black/30 p-3 text-[12px] font-mono overflow-auto flex-1 min-h-0">
+										{JSON.stringify(result.schema, null, 2)}
+									</HighlightedJson>
+								);
 							})()}
 						</div>
 					</div>
@@ -720,19 +720,19 @@ function StructuredOutputDialog({
 							<div className="text-[11px] text-text/40 mb-2">
 								Sample JSON from Schema
 							</div>
-						{(() => {
-							const sampleJson = generateSampleJson(code, SAMPLE_VARIABLES);
-							const isError = sampleJson.startsWith("Error:");
-							return isError ? (
-								<pre className="rounded-[8px] bg-black/30 p-3 text-[12px] font-mono overflow-auto max-h-[300px] text-error-900">
-									{sampleJson}
-								</pre>
-							) : (
-								<HighlightedJson className="rounded-[8px] bg-black/30 p-3 text-[12px] font-mono overflow-auto max-h-[300px]">
-									{sampleJson}
-								</HighlightedJson>
-							);
-						})()}
+							{(() => {
+								const sampleJson = generateSampleJson(code, SAMPLE_VARIABLES);
+								const isError = sampleJson.startsWith("Error:");
+								return isError ? (
+									<pre className="rounded-[8px] bg-black/30 p-3 text-[12px] font-mono overflow-auto max-h-[300px] text-error-900">
+										{sampleJson}
+									</pre>
+								) : (
+									<HighlightedJson className="rounded-[8px] bg-black/30 p-3 text-[12px] font-mono overflow-auto max-h-[300px]">
+										{sampleJson}
+									</HighlightedJson>
+								);
+							})()}
 						</div>
 					</div>
 				</DialogBody>

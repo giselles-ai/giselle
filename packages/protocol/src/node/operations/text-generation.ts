@@ -121,6 +121,7 @@ export const TextGenerationContent = z.object({
 	llm: TextGenerationLanguageModelData,
 	prompt: z.string().optional(),
 	tools: z.optional(ToolSet),
+	outputSchema: z.optional(z.string()),
 });
 export type TextGenerationContent = z.infer<typeof TextGenerationContent>;
 

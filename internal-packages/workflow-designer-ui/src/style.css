@@ -48,6 +48,19 @@
 	pointer-events: none;
 }
 
+/* description-editor placeholder (inside popover portal, needs explicit style) */
+.description-editor p.is-editor-empty:first-child::before {
+	color: rgba(255, 255, 255, 0.25);
+	content: attr(data-placeholder);
+	float: left;
+	height: 0;
+	pointer-events: none;
+}
+
+.description-editor:focus {
+	outline: none;
+}
+
 @theme {
 	--animate-pop-pop-1: pop-pop 2.1s steps(1) infinite;
 	--animate-pop-pop-2: pop-pop 2.1s steps(1) 0.7s infinite;

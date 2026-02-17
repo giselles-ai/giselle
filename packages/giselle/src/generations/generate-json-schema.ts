@@ -28,7 +28,7 @@ export const generateJsonSchema = createGiselleFunction({
 					'The root schema must be {"type":"object", ...}.',
 					"Do not use $ref or definitions. Inline all types directly.",
 					"Add descriptions for non-obvious properties.",
-				"Prefer clear property names and include required fields when confidence is high.",
+					"Prefer clear property names and include required fields when confidence is high.",
 				].join(" "),
 				prompt: `Create a JSON Schema for this requirement:\n${input.description}`,
 			});

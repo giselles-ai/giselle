@@ -1,14 +1,20 @@
 import { useMemo } from "react";
 
-type TokenType = "key" | "string" | "number" | "boolean" | "null" | "punctuation";
+type TokenType =
+	| "key"
+	| "string"
+	| "number"
+	| "boolean"
+	| "null"
+	| "punctuation";
 
 const tokenColors: Record<TokenType, string> = {
-	key: "text-purple-400",
-	string: "text-green-400",
-	number: "text-blue-400",
-	boolean: "text-orange-400",
-	null: "text-orange-400",
-	punctuation: "text-text/40",
+	key: "text-[#e06c75]",
+	string: "text-[#98c379]",
+	number: "text-[#98c379]",
+	boolean: "text-[#98c379]",
+	null: "text-[#98c379]",
+	punctuation: "text-[#e8a0bf]",
 };
 
 /**
@@ -47,7 +53,15 @@ function highlightJson(json: string): React.ReactNode[] {
 			nodes.push(json.slice(lastIndex, index));
 		}
 
-		const [, keyMatch, stringMatch, numberMatch, booleanMatch, nullMatch, punctuationMatch] = match;
+		const [
+			,
+			keyMatch,
+			stringMatch,
+			numberMatch,
+			booleanMatch,
+			nullMatch,
+			punctuationMatch,
+		] = match;
 
 		let type: TokenType;
 		let text: string;

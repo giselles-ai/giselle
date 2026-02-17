@@ -37,6 +37,7 @@ import {
 	PropertiesPanelRoot,
 } from "../ui";
 import { SettingLabel } from "../ui/setting-label";
+import { EndNodeOutputFormat } from "./output-format";
 
 function AddOutputButton({
 	availableNodes,
@@ -282,6 +283,8 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 							</ul>
 						)}
 					</div>
+
+					<EndNodeOutputFormat node={node} />
 
 					<TryPlaygroundSection
 						isDisabled={isTryAppInStageDisabled}
