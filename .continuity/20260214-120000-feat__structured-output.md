@@ -85,6 +85,7 @@ This section is intentionally stable: do not overwrite it when updating the ledg
 - Structured output UI integrated into text generation properties panels. Schema editing is functional in the UI but not yet persisted.
 - `Generate With AI` for JSON Schema is available in `StructuredOutputDialog` and calls the new `generateJsonSchema` API (no usage-limit attribution).
 - Fixed: schema description input field was non-interactive because default props `suggestions = []` and `variables = {}` created new references on each render, causing `editorContainerRef` callback to recreate CodeMirror editor on every keystroke (stealing focus). Replaced with module-level constants `EMPTY_SUGGESTIONS` / `EMPTY_VARIABLES`.
+- Fixed: CodeMirror editor showed stale content after dialog close/reopen. Root cause: `initialSchemaRef` (useRef) and `code` (useState) captured initial values and never updated when `initialSchema` prop changed or dialog reopened. Fix: keep `initialSchemaRef.current` in sync with prop in render body, and reset `code` state via useEffect when dialog transitions from closed to open.
 - End Node now has structured output support with `@` references to upstream node schemas:
   - `EndContent` protocol extended with optional `outputSchema: string` field.
   - `EndNodeOutputFormat` component created in `end-node-properties-panel/output-format.tsx`.

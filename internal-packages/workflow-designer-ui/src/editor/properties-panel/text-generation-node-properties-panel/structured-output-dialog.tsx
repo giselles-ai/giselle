@@ -575,6 +575,15 @@ export function StructuredOutputDialog({
 	const [isGeneratePopoverOpen, setIsGeneratePopoverOpen] = useState(false);
 	const viewRef = useRef<EditorView | null>(null);
 	const initialSchemaRef = useRef(initialSchema);
+	initialSchemaRef.current = initialSchema;
+
+	const [prevIsOpen, setPrevIsOpen] = useState(false);
+	if (isOpen !== prevIsOpen) {
+		setPrevIsOpen(isOpen);
+		if (isOpen) {
+			setCode(initialSchema);
+		}
+	}
 
 	const handleChange = useCallback((value: string) => {
 		setCode(value);
