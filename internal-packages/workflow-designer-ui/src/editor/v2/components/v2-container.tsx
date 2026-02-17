@@ -403,7 +403,7 @@ function V2NodeCanvas() {
 						);
 						if (removeConnection === undefined) {
 							console.warn(`Connection with id ${change.id} not found`);
-							return;
+							continue;
 						}
 						disconnectNodes(
 							removeConnection.outputNode.id,
