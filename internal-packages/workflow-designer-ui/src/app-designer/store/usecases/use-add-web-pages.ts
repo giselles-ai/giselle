@@ -48,6 +48,8 @@ export function useAddWebPages() {
 				normalizedUrls.push(normalized);
 			}
 
+			const batchSeen = new Set<string>();
+
 			for (const url of normalizedUrls) {
 				const node = store.getState().nodes.find((n) => n.id === args.nodeId) as
 					| WebPageNode
@@ -55,6 +57,15 @@ export function useAddWebPages() {
 				if (!node || node.content.type !== "webPage") {
 					return;
 				}
+
+				const existingUrls = new Set(
+					node.content.webpages.map((w) => w.url),
+				);
+				if (batchSeen.has(url) || existingUrls.has(url)) {
+					args.onError?.(`Duplicate URL: ${url}`);
+					continue;
+				}
+				batchSeen.add(url);
 
 				const newWebPage: WebPage = {
 					id: WebPageId.generate(),
