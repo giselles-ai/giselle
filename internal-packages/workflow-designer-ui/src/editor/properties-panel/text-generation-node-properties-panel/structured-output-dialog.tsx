@@ -544,7 +544,7 @@ const DEFAULT_SCHEMA = `{
 const EMPTY_SUGGESTIONS: Suggestion[] = [];
 const EMPTY_VARIABLES: Record<string, string> = {};
 
-export type StructuredOutputDialogProps = {
+type StructuredOutputDialogProps = {
 	isOpen: boolean;
 	onOpenChange: (open: boolean) => void;
 	title: string;

@@ -38,7 +38,7 @@ import {
 	DialogTitle,
 } from "@giselle-internal/ui/dialog";
 import { HighlightedJson } from "@giselle-internal/workflow-designer-ui";
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 /**
  * Create a completion source triggered by `@`.
