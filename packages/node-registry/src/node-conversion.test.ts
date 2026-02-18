@@ -43,6 +43,7 @@ function createOpenAITextNode(
 				},
 			},
 			prompt: "test",
+			outputFormat: "text",
 		},
 	};
 }
