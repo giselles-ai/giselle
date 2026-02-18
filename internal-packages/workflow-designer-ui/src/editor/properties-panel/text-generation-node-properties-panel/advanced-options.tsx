@@ -1,5 +1,8 @@
 import { Select } from "@giselle-internal/ui/select";
-import type { TextGenerationNode } from "@giselles-ai/protocol";
+import {
+	TextGenerationContent,
+	type TextGenerationNode,
+} from "@giselles-ai/protocol";
 import { useFeatureFlag } from "@giselles-ai/react";
 import { ChevronRightIcon } from "lucide-react";
 import { useState } from "react";
@@ -12,19 +15,16 @@ const outputFormatOptions = [
 	{ value: "json", label: "JSON" },
 ];
 
-const defaultJsonSchema = JSON.stringify(
-	{
-		type: "object",
-		properties: {
-			title: { type: "string" },
-			body: { type: "string" },
-		},
-		required: ["title", "body"],
-		additionalProperties: false,
+const defaultJsonSchema = {
+	type: "object" as const,
+	properties: {
+		title: { type: "string" },
+		body: { type: "string" },
 	},
-	null,
-	2,
-);
+	required: ["title", "body"],
+	additionalProperties: false as const,
+	title: "output",
+};
 
 export function AdvancedOptions({ node }: { node: TextGenerationNode }) {
 	const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
@@ -32,6 +32,11 @@ export function AdvancedOptions({ node }: { node: TextGenerationNode }) {
 	const { structuredOutput } = useFeatureFlag();
 	const outputFormat = node.content.outputFormat;
 	const isJsonFormat = outputFormat === "json";
+
+	const schemaObject = node.content.jsonSchema ?? defaultJsonSchema;
+	const [schemaText, setSchemaText] = useState(
+		JSON.stringify(schemaObject, null, 2),
+	);
 
 	return (
 		<div className="col-span-2 rounded-[8px] bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_5%,transparent)] px-[8px] py-[8px] mt-[8px]">
@@ -76,10 +81,22 @@ export function AdvancedOptions({ node }: { node: TextGenerationNode }) {
 						<div>
 							<SettingDetail className="mb-[6px]">JSON Schema</SettingDetail>
 							<textarea
-								value={node.content.jsonSchema ?? defaultJsonSchema}
-								onChange={(e) =>
-									updateNodeDataContent(node, { jsonSchema: e.target.value })
-								}
+								value={schemaText}
+								onChange={(e) => setSchemaText(e.target.value)}
+								onBlur={() => {
+									try {
+										const parsed = JSON.parse(schemaText);
+										const result =
+											TextGenerationContent.shape.jsonSchema.safeParse(parsed);
+										if (result.success && result.data) {
+											updateNodeDataContent(node, {
+												jsonSchema: result.data,
+											});
+										}
+									} catch {
+										// keep local state as-is on invalid JSON
+									}
+								}}
 								placeholder='{"type":"object","properties":{...}}'
 								rows={6}
 								className="w-full rounded-[6px] border border-[var(--color-border)] bg-[var(--color-bg)] px-[8px] py-[6px] font-mono text-[13px] text-inverse"

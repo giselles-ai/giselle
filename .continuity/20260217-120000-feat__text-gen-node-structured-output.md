@@ -38,10 +38,17 @@
   - `generation-view.tsx`: Deduplicated `isJsonOutputFormat` branches; added `JSON.parse` validation so JSON fences are only applied when schema is actually valid; refactored from IIFE to plain `let` + if statements.
   - `generate-content.ts`: Extracted `buildOutputOption` helper to eliminate V1/V2 duplication; included caught error in `logger.warn` for better diagnosability.
   - `text-generation-node-properties-panel-v2/advanced-options.tsx`: Added structured output UI (output format selector + JSON schema textarea) gated by `structuredOutput` feature flag, matching V1 parity.
+- **Strict jsonSchema typing (2026-02-18):**
+  - Protocol: Changed `jsonSchema` from `z.string().optional()` to `z.object({ type, properties, additionalProperties, required, title }).optional()` in both `TextGenerationContent` and `ContentGenerationContent`.
+  - UI (both `advanced-options.tsx`): `defaultJsonSchema` is now an object literal with `title: "output"`; textarea uses local string state with `onBlur` validation to convert back to a typed object.
+  - `buildOutputOption`: Removed `JSON.parse()` and logger/nodeId params since schema is already validated at protocol level.
+  - `generation-view.tsx`: Simplified `isJsonOutputFormat` to a plain boolean expression (no more `JSON.parse` try/catch).
+- **UI onBlur validation via protocol schema (2026-02-18):**
+  - Both `advanced-options.tsx`: Replaced manual field-by-field if-check with `ContentGenerationContent.shape.jsonSchema.safeParse()` / `TextGenerationContent.shape.jsonSchema.safeParse()` so validation is delegated to the protocol Zod schema.
 
 ## Now
 
-- Moved `buildOutputOption` from `generate-content.ts` to `utils.ts` for reusability.
+- Completed: onBlur validation refactored to use protocol schema.
 
 ## Next
 

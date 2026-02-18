@@ -300,8 +300,6 @@ export function generateContent({
 			const outputOption = buildOutputOption(
 				operationNode.content.outputFormat,
 				operationNode.content.jsonSchema,
-				logger,
-				operationNode.id,
 			);
 
 			const streamTextResult = streamText({
@@ -658,8 +656,6 @@ function generateContentV2({
 			const outputOption = buildOutputOption(
 				operationNode.content.outputFormat,
 				operationNode.content.jsonSchema,
-				logger,
-				operationNode.id,
 			);
 
 			const streamTextResult = streamText({

@@ -122,7 +122,15 @@ export const TextGenerationContent = z.object({
 	prompt: z.string().optional(),
 	tools: z.optional(ToolSet),
 	outputFormat: z.enum(["text", "json"]).default("text"),
-	jsonSchema: z.string().optional(),
+	jsonSchema: z
+		.object({
+			title: z.string(),
+			type: z.literal("object"),
+			properties: z.record(z.string(), z.any()),
+			additionalProperties: z.literal(false),
+			required: z.array(z.string()),
+		})
+		.optional(),
 });
 export type TextGenerationContent = z.infer<typeof TextGenerationContent>;
 

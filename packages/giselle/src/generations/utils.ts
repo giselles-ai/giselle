@@ -1,5 +1,4 @@
 import { hasTierAccess, languageModels } from "@giselles-ai/language-model";
-import type { GiselleLogger } from "@giselles-ai/logger";
 import {
 	type CompletedGeneration,
 	type ContentGenerationContent,
@@ -1209,19 +1208,8 @@ async function buildGenerationMessageForContentGeneration({
 
 export function buildOutputOption(
 	outputFormat: ContentGenerationContent["outputFormat"],
-	jsonSchemaStr: ContentGenerationContent["jsonSchema"],
-	logger: GiselleLogger,
-	nodeId: NodeId,
+	schema: ContentGenerationContent["jsonSchema"],
 ): ReturnType<typeof AiOutput.object> | undefined {
-	if (outputFormat !== "json" || !jsonSchemaStr) return undefined;
-	try {
-		const parsed = JSON.parse(jsonSchemaStr);
-		return AiOutput.object({ schema: jsonSchema(parsed) });
-	} catch (error) {
-		logger.warn(
-			{ nodeId, error },
-			"Invalid JSON schema for structured output; falling back to text",
-		);
-		return undefined;
-	}
+	if (outputFormat !== "json" || !schema) return undefined;
+	return AiOutput.object({ schema: jsonSchema(schema) });
 }
