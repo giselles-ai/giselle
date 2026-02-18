@@ -21,6 +21,7 @@
 ## State
 
 - Feature flag wired; structured output (text + content nodes) implemented; JSON display formatted via code fences; parity between TextGeneration and ContentGeneration for outputFormat.
+- PR #2737 review feedback addressed.
 
 ## Done
 
@@ -33,10 +34,14 @@
 - Node-registry: conversion and factories set `outputFormat` (and `jsonSchema` where applicable); fixtures and tests updated.
 - React test: `createContentGenerationNode` and `createTextGenerationNode` include `outputFormat: "text"`.
 - Verified: `pnpm format`, `pnpm build-sdk`, `pnpm check-types`, `pnpm tidy` pass.
+- **PR review fixes (2026-02-18):**
+  - `generation-view.tsx`: Deduplicated `isJsonOutputFormat` branches; added `JSON.parse` validation so JSON fences are only applied when schema is actually valid; refactored from IIFE to plain `let` + if statements.
+  - `generate-content.ts`: Extracted `buildOutputOption` helper to eliminate V1/V2 duplication; included caught error in `logger.warn` for better diagnosability.
+  - `text-generation-node-properties-panel-v2/advanced-options.tsx`: Added structured output UI (output format selector + JSON schema textarea) gated by `structuredOutput` feature flag, matching V1 parity.
 
 ## Now
 
-- Complete. Ready for local testing with `STRUCTURED_OUTPUT_FLAG=true`.
+- Moved `buildOutputOption` from `generate-content.ts` to `utils.ts` for reusability.
 
 ## Next
 

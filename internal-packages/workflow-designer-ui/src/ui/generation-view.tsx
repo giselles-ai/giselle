@@ -366,17 +366,22 @@ export function GenerationView({ generation }: { generation: Generation }) {
 
 	const operationNode = generation.context.operationNode;
 	const isJsonOutputFormat = (() => {
-		if (isTextGenerationNode(operationNode))
-			return (
-				operationNode.content.outputFormat === "json" &&
-				Boolean(operationNode.content.jsonSchema)
-			);
-		if (isContentGenerationNode(operationNode))
-			return (
-				operationNode.content.outputFormat === "json" &&
-				Boolean(operationNode.content.jsonSchema)
-			);
-		return false;
+		if (
+			!isTextGenerationNode(operationNode) &&
+			!isContentGenerationNode(operationNode)
+		)
+			return false;
+		if (
+			operationNode.content.outputFormat !== "json" ||
+			!operationNode.content.jsonSchema
+		)
+			return false;
+		try {
+			JSON.parse(operationNode.content.jsonSchema);
+			return true;
+		} catch {
+			return false;
+		}
 	})();
 
 	if (generation.status === "failed") {

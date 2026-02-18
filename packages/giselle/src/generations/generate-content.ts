@@ -25,9 +25,7 @@ import {
 } from "@giselles-ai/protocol";
 import {
 	AISDKError,
-	Output as AiOutput,
 	type AsyncIterableStream,
-	jsonSchema,
 	type ModelMessage,
 	smoothStream,
 	stepCountIs,
@@ -46,7 +44,7 @@ import {
 } from "./internal/use-generation-executor";
 import { createPostgresTools } from "./tools/postgres";
 import type { GenerationMetadata, PreparedToolSet } from "./types";
-import { buildMessageObject, getGeneration } from "./utils";
+import { buildMessageObject, buildOutputOption, getGeneration } from "./utils";
 import { transformGiselleLanguageModelToAiSdkLanguageModelCallOptions } from "./v2/language-model";
 import { buildToolSet } from "./v2/tools";
 
@@ -299,21 +297,12 @@ export function generateContent({
 
 			const abortController = new AbortController();
 
-			let outputOption: ReturnType<typeof AiOutput.object> | undefined;
-			if (
-				operationNode.content.outputFormat === "json" &&
-				operationNode.content.jsonSchema
-			) {
-				try {
-					const parsed = JSON.parse(operationNode.content.jsonSchema);
-					outputOption = AiOutput.object({ schema: jsonSchema(parsed) });
-				} catch {
-					logger.warn(
-						{ nodeId: operationNode.id },
-						"Invalid JSON schema for structured output; falling back to text",
-					);
-				}
-			}
+			const outputOption = buildOutputOption(
+				operationNode.content.outputFormat,
+				operationNode.content.jsonSchema,
+				logger,
+				operationNode.id,
+			);
 
 			const streamTextResult = streamText({
 				experimental_output: outputOption,
@@ -666,21 +655,12 @@ function generateContentV2({
 			let generationError: unknown | undefined;
 			const textGenerationStartTime = Date.now();
 
-			let outputOption: ReturnType<typeof AiOutput.object> | undefined;
-			if (
-				operationNode.content.outputFormat === "json" &&
-				operationNode.content.jsonSchema
-			) {
-				try {
-					const parsed = JSON.parse(operationNode.content.jsonSchema);
-					outputOption = AiOutput.object({ schema: jsonSchema(parsed) });
-				} catch {
-					logger.warn(
-						{ nodeId: operationNode.id },
-						"Invalid JSON schema for structured output; falling back to text",
-					);
-				}
-			}
+			const outputOption = buildOutputOption(
+				operationNode.content.outputFormat,
+				operationNode.content.jsonSchema,
+				logger,
+				operationNode.id,
+			);
 
 			const streamTextResult = streamText({
 				...callOptions,

@@ -1,6 +1,8 @@
 import { hasTierAccess, languageModels } from "@giselles-ai/language-model";
+import type { GiselleLogger } from "@giselles-ai/logger";
 import {
 	type CompletedGeneration,
+	type ContentGenerationContent,
 	type ContentGenerationNode,
 	type DataQueryResultOutput,
 	type DataStoreId,
@@ -27,7 +29,14 @@ import {
 	isJsonContent,
 	jsonContentToText,
 } from "@giselles-ai/text-editor-utils";
-import type { DataContent, FilePart, ImagePart, ModelMessage } from "ai";
+import {
+	Output as AiOutput,
+	type DataContent,
+	type FilePart,
+	type ImagePart,
+	jsonSchema,
+	type ModelMessage,
+} from "ai";
 import type { GiselleContext } from "../types";
 import type { AppEntryResolver } from "./types";
 
@@ -1196,4 +1205,23 @@ async function buildGenerationMessageForContentGeneration({
 			],
 		},
 	];
+}
+
+export function buildOutputOption(
+	outputFormat: ContentGenerationContent["outputFormat"],
+	jsonSchemaStr: ContentGenerationContent["jsonSchema"],
+	logger: GiselleLogger,
+	nodeId: NodeId,
+): ReturnType<typeof AiOutput.object> | undefined {
+	if (outputFormat !== "json" || !jsonSchemaStr) return undefined;
+	try {
+		const parsed = JSON.parse(jsonSchemaStr);
+		return AiOutput.object({ schema: jsonSchema(parsed) });
+	} catch (error) {
+		logger.warn(
+			{ nodeId, error },
+			"Invalid JSON schema for structured output; falling back to text",
+		);
+		return undefined;
+	}
 }

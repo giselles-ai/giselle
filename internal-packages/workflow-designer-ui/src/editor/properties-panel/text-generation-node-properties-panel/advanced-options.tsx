@@ -30,7 +30,7 @@ export function AdvancedOptions({ node }: { node: TextGenerationNode }) {
 	const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
 	const updateNodeDataContent = useUpdateNodeDataContent();
 	const { structuredOutput } = useFeatureFlag();
-	const outputFormat = node.content.outputFormat ?? "text";
+	const outputFormat = node.content.outputFormat;
 	const isJsonFormat = outputFormat === "json";
 
 	return (
