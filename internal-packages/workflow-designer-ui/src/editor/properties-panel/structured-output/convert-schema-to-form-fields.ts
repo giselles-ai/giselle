@@ -15,13 +15,14 @@ function convertSubSchemaToFormField(
 	key: string,
 	subSchema: SubSchema,
 ): FormField {
+	const id = generateFieldId();
 	const description = subSchema.description ?? "";
 
 	switch (subSchema.type) {
 		case "string": {
 			if (subSchema.enum && subSchema.enum.length > 0) {
 				return {
-					id: generateFieldId(),
+					id,
 					name: key,
 					type: "enum",
 					description,
@@ -29,7 +30,7 @@ function convertSubSchemaToFormField(
 				};
 			}
 			return {
-				id: generateFieldId(),
+				id,
 				name: key,
 				type: "string",
 				description,
@@ -37,21 +38,21 @@ function convertSubSchemaToFormField(
 		}
 		case "number":
 			return {
-				id: generateFieldId(),
+				id,
 				name: key,
 				type: "number",
 				description,
 			};
 		case "boolean":
 			return {
-				id: generateFieldId(),
+				id,
 				name: key,
 				type: "boolean",
 				description,
 			};
 		case "object":
 			return {
-				id: generateFieldId(),
+				id,
 				name: key,
 				type: "object",
 				description,
@@ -62,7 +63,7 @@ function convertSubSchemaToFormField(
 			};
 		case "array":
 			return {
-				id: generateFieldId(),
+				id,
 				name: key,
 				type: "array",
 				description,
