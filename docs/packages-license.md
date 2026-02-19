@@ -2,12 +2,12 @@
 
 
 ## Summary
-* 912 MIT
+* 910 MIT
 * 184 Apache 2.0
-* 41 ISC
+* 40 ISC
 * 27 New BSD
 * 16 Simplified BSD
-* 8 BlueOak-1.0.0
+* 9 BlueOak-1.0.0
 * 2 MIT OR Apache-2.0
 * 2 MIT-0
 * 2 Mozilla Public License 2.0
@@ -1304,28 +1304,6 @@ LGPL-3.0-or-later permitted
 
 
 
-<a name="@isaacs/balanced-match"></a>
-### @isaacs/balanced-match v4.0.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="@isaacs/brace-expansion"></a>
-### @isaacs/brace-expansion v5.0.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="@isaacs/cliui"></a>
 ### @isaacs/cliui v8.0.2
 #### 
@@ -1334,6 +1312,17 @@ LGPL-3.0-or-later permitted
 * /home/runner/work/giselle/giselle
 
 <a href="http://en.wikipedia.org/wiki/ISC_license">ISC</a> permitted
+
+
+
+<a name="@isaacs/cliui"></a>
+### @isaacs/cliui v9.0.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+BlueOak-1.0.0 permitted
 
 
 
@@ -5775,7 +5764,7 @@ Python-2.0 manually approved
 
 
 <a name="balanced-match"></a>
-### balanced-match v1.0.2
+### balanced-match v4.0.2
 #### 
 
 ##### Paths
@@ -5896,7 +5885,7 @@ Python-2.0 manually approved
 
 
 <a name="brace-expansion"></a>
-### brace-expansion v2.0.1
+### brace-expansion v5.0.2
 #### 
 
 ##### Paths
@@ -9526,24 +9515,13 @@ BlueOak-1.0.0 permitted
 
 
 <a name="minimatch"></a>
-### minimatch v10.1.1
+### minimatch v10.2.1
 #### 
 
 ##### Paths
 * /home/runner/work/giselle/giselle
 
 BlueOak-1.0.0 permitted
-
-
-
-<a name="minimatch"></a>
-### minimatch v9.0.5
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://en.wikipedia.org/wiki/ISC_license">ISC</a> permitted
 
 
 
