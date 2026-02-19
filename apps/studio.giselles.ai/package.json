@@ -39,6 +39,7 @@
 		"@giselles-ai/protocol": "workspace:*",
 		"@giselles-ai/rag": "workspace:*",
 		"@giselles-ai/react": "workspace:*",
+		"@giselles-ai/sandbox-agent-core": "0.1.3",
 		"@giselles-ai/supabase-driver": "workspace:*",
 		"@giselles-ai/utils": "workspace:*",
 		"@icons-pack/react-simple-icons": "10.0.0",

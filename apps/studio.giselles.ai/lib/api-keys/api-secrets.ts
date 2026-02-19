@@ -258,6 +258,79 @@ export async function revokeApiSecret(args: {
 	return { revoked: true };
 }
 
+export async function verifyApiSecret(args: {
+	authorizationHeader: string | null;
+}): Promise<
+	| {
+			ok: true;
+			apiKeyId: ApiKeyId;
+			record: ApiSecretRecord;
+			teamDbId: number;
+	  }
+	| { ok: false; reason: "missing" | "invalid" | "revoked" }
+> {
+	const parsed = parseAuthorizationHeader(args.authorizationHeader);
+	if (!parsed) {
+		return {
+			ok: false,
+			reason: args.authorizationHeader ? "invalid" : "missing",
+		};
+	}
+
+	const apiKeyId = ApiKeyId.safeParse(parsed.apiKeyId);
+	if (!apiKeyId.success) {
+		return { ok: false, reason: "invalid" };
+	}
+
+	const record = await db.query.apiKeys.findFirst({
+		where: (records, { eq }) => eq(records.id, apiKeyId.data),
+	});
+
+	if (!record) {
+		return { ok: false, reason: "invalid" };
+	}
+
+	if (record.revokedAt) {
+		return { ok: false, reason: "revoked" };
+	}
+
+	if (record.kdfType !== "scrypt") {
+		return { ok: false, reason: "invalid" };
+	}
+
+	const config = getApiSecretScryptConfig();
+	const computed = await computeScryptHashWithOptionalLogging({
+		purpose: "verify",
+		secret: parsed.secret,
+		saltBase64: record.kdfSalt,
+		config: {
+			...config,
+			params: buildScryptParamsFromRecord(record),
+		},
+	});
+
+	if (!constantTimeEqualBase64(computed, record.secretHash)) {
+		return { ok: false, reason: "invalid" };
+	}
+
+	try {
+		const now = new Date();
+		await db
+			.update(apiKeys)
+			.set({ lastUsedAt: now })
+			.where(eq(apiKeys.id, record.id));
+	} catch (error) {
+		logger.warn({ error }, "failed to update api secret lastUsedAt");
+	}
+
+	return {
+		ok: true,
+		apiKeyId: apiKeyId.data,
+		record,
+		teamDbId: record.teamDbId,
+	};
+}
+
 export async function verifyApiSecretForTeam(args: {
 	teamDbId: number;
 	authorizationHeader: string | null;
