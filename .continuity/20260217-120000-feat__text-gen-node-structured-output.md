@@ -45,10 +45,18 @@
   - `generation-view.tsx`: Simplified `isJsonOutputFormat` to a plain boolean expression (no more `JSON.parse` try/catch).
 - **UI onBlur validation via protocol schema (2026-02-18):**
   - Both `advanced-options.tsx`: Replaced manual field-by-field if-check with `ContentGenerationContent.shape.jsonSchema.safeParse()` / `TextGenerationContent.shape.jsonSchema.safeParse()` so validation is delegated to the protocol Zod schema.
+- **Adapted to main's `Output` discriminated union (2026-02-19):**
+  - Main replaced `outputFormat`/`jsonSchema` with a single `output: Output` field (discriminated union: `{ format: "text" }` | `{ format: "object", schema: Schema }`).
+  - Updated `buildOutputOption` in `utils.ts` to accept `TextGenerationContent["output"]` instead of two separate args.
+  - Updated two call sites in `generate-content.ts` to pass `operationNode.content.output`.
+  - Updated `generation-view.tsx` to check `output.format === "object"` instead of `outputFormat === "json" && !!jsonSchema`.
+  - Updated both `advanced-options.tsx` (v1/v2) to use `output` field with `Schema` import for validation.
+  - Removed stale `outputFormat` fields from node-conversion test fixtures.
+  - All checks pass: format, build-sdk, check-types, tidy, test.
 
 ## Now
 
-- Completed: onBlur validation refactored to use protocol schema.
+- Completed: adapted to main's `Output` discriminated union changes.
 
 ## Next
 

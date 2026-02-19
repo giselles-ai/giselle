@@ -1,8 +1,5 @@
 import { Select } from "@giselle-internal/ui/select";
-import {
-	ContentGenerationContent,
-	type ContentGenerationNode,
-} from "@giselles-ai/protocol";
+import { type ContentGenerationNode, Schema } from "@giselles-ai/protocol";
 import { useFeatureFlag } from "@giselles-ai/react";
 import { ChevronRightIcon } from "lucide-react";
 import { useState } from "react";
@@ -12,17 +9,17 @@ import { ToolsPanel } from "./tools";
 
 const outputFormatOptions = [
 	{ value: "text", label: "Text" },
-	{ value: "json", label: "JSON" },
+	{ value: "object", label: "JSON" },
 ];
 
-const defaultJsonSchema = {
-	type: "object" as const,
+const defaultSchema: Schema = {
+	type: "object",
 	properties: {
 		title: { type: "string" },
 		body: { type: "string" },
 	},
 	required: ["title", "body"],
-	additionalProperties: false as const,
+	additionalProperties: false,
 	title: "output",
 };
 
@@ -30,10 +27,10 @@ export function AdvancedOptions({ node }: { node: ContentGenerationNode }) {
 	const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
 	const updateNodeDataContent = useUpdateNodeDataContent();
 	const { structuredOutput } = useFeatureFlag();
-	const outputFormat = node.content.outputFormat;
-	const isJsonFormat = outputFormat === "json";
+	const output = node.content.output;
+	const isObjectFormat = output.format === "object";
 
-	const schemaObject = node.content.jsonSchema ?? defaultJsonSchema;
+	const schemaObject = isObjectFormat ? output.schema : defaultSchema;
 	const [schemaText, setSchemaText] = useState(
 		JSON.stringify(schemaObject, null, 2),
 	);
@@ -60,24 +57,25 @@ export function AdvancedOptions({ node }: { node: ContentGenerationNode }) {
 							<Select
 								options={outputFormatOptions}
 								placeholder="Select format"
-								value={outputFormat}
+								value={output.format}
 								onValueChange={(value) => {
-									if (value === "json") {
+									if (value === "object") {
+										const schema = isObjectFormat
+											? output.schema
+											: defaultSchema;
 										updateNodeDataContent(node, {
-											outputFormat: "json",
-											jsonSchema: node.content.jsonSchema ?? defaultJsonSchema,
+											output: { format: "object", schema },
 										});
 									} else {
 										updateNodeDataContent(node, {
-											outputFormat: "text",
-											jsonSchema: undefined,
+											output: { format: "text" },
 										});
 									}
 								}}
 							/>
 						</div>
 					)}
-					{structuredOutput && isJsonFormat && (
+					{structuredOutput && isObjectFormat && (
 						<div>
 							<SettingDetail className="mb-[6px]">JSON Schema</SettingDetail>
 							<textarea
@@ -86,13 +84,10 @@ export function AdvancedOptions({ node }: { node: ContentGenerationNode }) {
 								onBlur={() => {
 									try {
 										const parsed = JSON.parse(schemaText);
-										const result =
-											ContentGenerationContent.shape.jsonSchema.safeParse(
-												parsed,
-											);
+										const result = Schema.safeParse(parsed);
 										if (result.success && result.data) {
 											updateNodeDataContent(node, {
-												jsonSchema: result.data,
+												output: { format: "object", schema: result.data },
 											});
 										}
 									} catch {

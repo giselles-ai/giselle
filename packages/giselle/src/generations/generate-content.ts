@@ -297,10 +297,7 @@ export function generateContent({
 
 			const abortController = new AbortController();
 
-			const outputOption = buildOutputOption(
-				operationNode.content.outputFormat,
-				operationNode.content.jsonSchema,
-			);
+			const outputOption = buildOutputOption(operationNode.content.output);
 
 			const streamTextResult = streamText({
 				experimental_output: outputOption,
@@ -653,10 +650,7 @@ function generateContentV2({
 			let generationError: unknown | undefined;
 			const textGenerationStartTime = Date.now();
 
-			const outputOption = buildOutputOption(
-				operationNode.content.outputFormat,
-				operationNode.content.jsonSchema,
-			);
+			const outputOption = buildOutputOption(operationNode.content.output);
 
 			const streamTextResult = streamText({
 				...callOptions,

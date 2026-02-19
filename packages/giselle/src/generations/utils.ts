@@ -1,7 +1,6 @@
 import { hasTierAccess, languageModels } from "@giselles-ai/language-model";
 import {
 	type CompletedGeneration,
-	type ContentGenerationContent,
 	type ContentGenerationNode,
 	type DataQueryResultOutput,
 	type DataStoreId,
@@ -19,6 +18,7 @@ import {
 	NodeId,
 	type OperationNode,
 	OutputId,
+	type TextGenerationContent,
 	type TextGenerationNode,
 	type WebPageContent,
 	type WorkspaceId,
@@ -1207,9 +1207,8 @@ async function buildGenerationMessageForContentGeneration({
 }
 
 export function buildOutputOption(
-	outputFormat: ContentGenerationContent["outputFormat"],
-	schema: ContentGenerationContent["jsonSchema"],
+	output: TextGenerationContent["output"],
 ): ReturnType<typeof AiOutput.object> | undefined {
-	if (outputFormat !== "json" || !schema) return undefined;
-	return AiOutput.object({ schema: jsonSchema(schema) });
+	if (output.format !== "object") return undefined;
+	return AiOutput.object({ schema: jsonSchema(output.schema) });
 }

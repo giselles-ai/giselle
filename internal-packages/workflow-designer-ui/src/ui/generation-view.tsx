@@ -365,11 +365,10 @@ export function GenerationView({ generation }: { generation: Generation }) {
 	}, [generation]);
 
 	const operationNode = generation.context.operationNode;
-	const isJsonOutputFormat =
+	const isStructuredOutput =
 		(isTextGenerationNode(operationNode) ||
 			isContentGenerationNode(operationNode)) &&
-		operationNode.content.outputFormat === "json" &&
-		!!operationNode.content.jsonSchema;
+		operationNode.content.output.format === "object";
 
 	if (generation.status === "failed") {
 		return (
@@ -496,7 +495,7 @@ export function GenerationView({ generation }: { generation: Generation }) {
 								);
 
 							case "text": {
-								const displayText = isJsonOutputFormat
+								const displayText = isStructuredOutput
 									? `\`\`\`json\n${part.text}\n\`\`\``
 									: part.text;
 								return (
