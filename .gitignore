@@ -53,3 +53,6 @@ app/fonts/
 /worktrees/
 
 .mise.toml
+
+# opensrc - source code for packages
+opensrc/
