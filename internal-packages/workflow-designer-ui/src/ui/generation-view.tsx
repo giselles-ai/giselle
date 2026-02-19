@@ -365,7 +365,7 @@ export function GenerationView({ generation }: { generation: Generation }) {
 	}, [generation]);
 
 	const operationNode = generation.context.operationNode;
-	const isStructuredOutput =
+	const shouldDisplayAsJson =
 		(isTextGenerationNode(operationNode) ||
 			isContentGenerationNode(operationNode)) &&
 		operationNode.content.output.format === "object";
@@ -495,9 +495,16 @@ export function GenerationView({ generation }: { generation: Generation }) {
 								);
 
 							case "text": {
-								const displayText = isStructuredOutput
-									? `\`\`\`json\n${part.text}\n\`\`\``
-									: part.text;
+								let displayText = part.text;
+								if (shouldDisplayAsJson) {
+									let json = part.text;
+									try {
+										json = JSON.stringify(JSON.parse(part.text), null, 2);
+									} catch {
+										// keep raw text during streaming or if incomplete
+									}
+									displayText = `\`\`\`json\n${json}\n\`\`\``;
+								}
 								return (
 									<div key={partKey} id={partKey}>
 										<Streamdown className="markdown-renderer">
