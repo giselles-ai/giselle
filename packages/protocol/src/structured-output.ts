@@ -62,5 +62,13 @@ export const StructuredOutputSchema = z.object({
 	additionalProperties: z.literal(false),
 	required: z.array(z.string()),
 });
-
 export type StructuredOutputSchema = z.infer<typeof StructuredOutputSchema>;
+
+export const OutputConfiguration = z.discriminatedUnion("outputFormat", [
+	z.object({ outputFormat: z.literal("text") }),
+	z.object({
+		outputFormat: z.literal("json"),
+		structuredOutputSchema: StructuredOutputSchema,
+	}),
+]);
+export type OutputConfiguration = z.infer<typeof OutputConfiguration>;

@@ -7,7 +7,7 @@ import {
 	type LanguageModelToolName,
 } from "@giselles-ai/language-model-registry";
 import * as z from "zod/v4";
-import { StructuredOutputSchema } from "../../structured-output";
+import { OutputConfiguration } from "../../structured-output";
 
 export const ContentGenerationContent = z.object({
 	type: z.literal("contentGeneration"),
@@ -26,8 +26,7 @@ export const ContentGenerationContent = z.object({
 		}),
 	),
 	prompt: z.string(),
-	outputFormat: z.enum(["text", "json"]).default("text"),
-	structuredOutputSchema: StructuredOutputSchema.optional(),
+	outputConfiguration: OutputConfiguration,
 });
 
 export type ContentGenerationContent = z.infer<typeof ContentGenerationContent>;

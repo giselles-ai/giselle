@@ -43,7 +43,7 @@ function createOpenAITextNode(
 				},
 			},
 			prompt: "test",
-			outputFormat: "text",
+			outputConfiguration: { outputFormat: "text" },
 		},
 	};
 }
@@ -357,8 +357,8 @@ describe("node-conversion", () => {
 			);
 			expect(convertedBack.content.llm?.id).toBe(originalNode.content.llm.id);
 			expect(convertedBack.content.prompt).toBe(originalNode.content.prompt);
-			expect(convertedBack.content.outputFormat).toBe(
-				originalNode.content.outputFormat,
+			expect(convertedBack.content.outputConfiguration).toEqual(
+				originalNode.content.outputConfiguration,
 			);
 			expect(convertedBack.content.tools?.openaiWebSearch).toBeDefined();
 		});
@@ -377,8 +377,8 @@ describe("node-conversion", () => {
 			);
 			expect(convertedBack.content.llm?.id).toBe(originalNode.content.llm.id);
 			expect(convertedBack.content.prompt).toBe(originalNode.content.prompt);
-			expect(convertedBack.content.outputFormat).toBe(
-				originalNode.content.outputFormat,
+			expect(convertedBack.content.outputConfiguration).toEqual(
+				originalNode.content.outputConfiguration,
 			);
 			expect(convertedBack.content.tools?.github).toBeDefined();
 			expect(convertedBack.content.tools?.github?.auth.type).toBe("secret");
@@ -406,8 +406,8 @@ describe("node-conversion", () => {
 			);
 			expect(convertedBack.content.llm?.id).toBe(originalNode.content.llm.id);
 			expect(convertedBack.content.prompt).toBe(originalNode.content.prompt);
-			expect(convertedBack.content.outputFormat).toBe(
-				originalNode.content.outputFormat,
+			expect(convertedBack.content.outputConfiguration).toEqual(
+				originalNode.content.outputConfiguration,
 			);
 			expect(convertedBack.content.tools).toBeUndefined();
 		});
@@ -426,8 +426,8 @@ describe("node-conversion", () => {
 			);
 			expect(convertedBack.content.llm?.id).toBe(originalNode.content.llm.id);
 			expect(convertedBack.content.prompt).toBe(originalNode.content.prompt);
-			expect(convertedBack.content.outputFormat).toBe(
-				originalNode.content.outputFormat,
+			expect(convertedBack.content.outputConfiguration).toEqual(
+				originalNode.content.outputConfiguration,
 			);
 		});
 
@@ -445,8 +445,8 @@ describe("node-conversion", () => {
 			);
 			expect(convertedBack.content.llm?.id).toBe(originalNode.content.llm.id);
 			expect(convertedBack.content.prompt).toBe(originalNode.content.prompt);
-			expect(convertedBack.content.outputFormat).toBe(
-				originalNode.content.outputFormat,
+			expect(convertedBack.content.outputConfiguration).toEqual(
+				originalNode.content.outputConfiguration,
 			);
 		});
 
@@ -464,8 +464,8 @@ describe("node-conversion", () => {
 			);
 			expect(convertedBack.content.llm?.id).toBe(originalNode.content.llm.id);
 			expect(convertedBack.content.prompt).toBe(originalNode.content.prompt);
-			expect(convertedBack.content.outputFormat).toBe(
-				originalNode.content.outputFormat,
+			expect(convertedBack.content.outputConfiguration).toEqual(
+				originalNode.content.outputConfiguration,
 			);
 		});
 
@@ -485,8 +485,8 @@ describe("node-conversion", () => {
 			);
 			expect(convertedBack.content.llm?.id).toBe(originalNode.content.llm.id);
 			expect(convertedBack.content.prompt).toBe(originalNode.content.prompt);
-			expect(convertedBack.content.outputFormat).toBe(
-				originalNode.content.outputFormat,
+			expect(convertedBack.content.outputConfiguration).toEqual(
+				originalNode.content.outputConfiguration,
 			);
 		});
 
@@ -505,8 +505,8 @@ describe("node-conversion", () => {
 			);
 			expect(convertedBack.content.llm?.id).toBe(originalNode.content.llm.id);
 			expect(convertedBack.content.prompt).toBe(originalNode.content.prompt);
-			expect(convertedBack.content.outputFormat).toBe(
-				originalNode.content.outputFormat,
+			expect(convertedBack.content.outputConfiguration).toEqual(
+				originalNode.content.outputConfiguration,
 			);
 			expect(convertedBack.content.llm?.id).toBe("gpt-5.1-thinking");
 		});
