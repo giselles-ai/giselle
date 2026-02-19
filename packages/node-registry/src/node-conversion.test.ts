@@ -43,7 +43,7 @@ function createOpenAITextNode(
 				},
 			},
 			prompt: "test",
-			outputConfiguration: { outputFormat: "text" },
+			output: { format: "text" },
 		},
 	};
 }
@@ -357,9 +357,7 @@ describe("node-conversion", () => {
 			);
 			expect(convertedBack.content.llm?.id).toBe(originalNode.content.llm.id);
 			expect(convertedBack.content.prompt).toBe(originalNode.content.prompt);
-			expect(convertedBack.content.outputConfiguration).toEqual(
-				originalNode.content.outputConfiguration,
-			);
+			expect(convertedBack.content.output).toEqual(originalNode.content.output);
 			expect(convertedBack.content.tools?.openaiWebSearch).toBeDefined();
 		});
 
@@ -377,9 +375,7 @@ describe("node-conversion", () => {
 			);
 			expect(convertedBack.content.llm?.id).toBe(originalNode.content.llm.id);
 			expect(convertedBack.content.prompt).toBe(originalNode.content.prompt);
-			expect(convertedBack.content.outputConfiguration).toEqual(
-				originalNode.content.outputConfiguration,
-			);
+			expect(convertedBack.content.output).toEqual(originalNode.content.output);
 			expect(convertedBack.content.tools?.github).toBeDefined();
 			expect(convertedBack.content.tools?.github?.auth.type).toBe("secret");
 			// @ts-expect-error - Test file: fixture may have type mismatch
@@ -406,9 +402,7 @@ describe("node-conversion", () => {
 			);
 			expect(convertedBack.content.llm?.id).toBe(originalNode.content.llm.id);
 			expect(convertedBack.content.prompt).toBe(originalNode.content.prompt);
-			expect(convertedBack.content.outputConfiguration).toEqual(
-				originalNode.content.outputConfiguration,
-			);
+			expect(convertedBack.content.output).toEqual(originalNode.content.output);
 			expect(convertedBack.content.tools).toBeUndefined();
 		});
 
@@ -426,9 +420,7 @@ describe("node-conversion", () => {
 			);
 			expect(convertedBack.content.llm?.id).toBe(originalNode.content.llm.id);
 			expect(convertedBack.content.prompt).toBe(originalNode.content.prompt);
-			expect(convertedBack.content.outputConfiguration).toEqual(
-				originalNode.content.outputConfiguration,
-			);
+			expect(convertedBack.content.output).toEqual(originalNode.content.output);
 		});
 
 		it("should preserve data through round-trip conversion with Anthropic Claude Opus 4.5", () => {
@@ -445,9 +437,7 @@ describe("node-conversion", () => {
 			);
 			expect(convertedBack.content.llm?.id).toBe(originalNode.content.llm.id);
 			expect(convertedBack.content.prompt).toBe(originalNode.content.prompt);
-			expect(convertedBack.content.outputConfiguration).toEqual(
-				originalNode.content.outputConfiguration,
-			);
+			expect(convertedBack.content.output).toEqual(originalNode.content.output);
 		});
 
 		it("should preserve data through round-trip conversion with Google Gemini", () => {
@@ -464,9 +454,7 @@ describe("node-conversion", () => {
 			);
 			expect(convertedBack.content.llm?.id).toBe(originalNode.content.llm.id);
 			expect(convertedBack.content.prompt).toBe(originalNode.content.prompt);
-			expect(convertedBack.content.outputConfiguration).toEqual(
-				originalNode.content.outputConfiguration,
-			);
+			expect(convertedBack.content.output).toEqual(originalNode.content.output);
 		});
 
 		it("should preserve data through round-trip conversion with Google Gemini 3 Pro Preview", () => {
@@ -485,9 +473,7 @@ describe("node-conversion", () => {
 			);
 			expect(convertedBack.content.llm?.id).toBe(originalNode.content.llm.id);
 			expect(convertedBack.content.prompt).toBe(originalNode.content.prompt);
-			expect(convertedBack.content.outputConfiguration).toEqual(
-				originalNode.content.outputConfiguration,
-			);
+			expect(convertedBack.content.output).toEqual(originalNode.content.output);
 		});
 
 		it("should preserve data through round-trip conversion for GPT-5.1 models", () => {
@@ -505,9 +491,7 @@ describe("node-conversion", () => {
 			);
 			expect(convertedBack.content.llm?.id).toBe(originalNode.content.llm.id);
 			expect(convertedBack.content.prompt).toBe(originalNode.content.prompt);
-			expect(convertedBack.content.outputConfiguration).toEqual(
-				originalNode.content.outputConfiguration,
-			);
+			expect(convertedBack.content.output).toEqual(originalNode.content.output);
 			expect(convertedBack.content.llm?.id).toBe("gpt-5.1-thinking");
 		});
 	});

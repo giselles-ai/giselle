@@ -200,7 +200,7 @@ export function convertTextGenerationToContentGeneration(
 			languageModel,
 			tools,
 			prompt: textGenerationContent.prompt ?? "",
-			outputConfiguration: textGenerationContent.outputConfiguration,
+			output: textGenerationContent.output,
 		},
 	};
 }
@@ -341,7 +341,7 @@ export function convertContentGenerationToTextGeneration(
 			llm,
 			prompt: contentGenerationContent.prompt,
 			tools: toolsToInclude,
-			outputConfiguration: contentGenerationContent.outputConfiguration,
+			output: contentGenerationContent.output,
 		},
 	};
 }

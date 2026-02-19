@@ -55,20 +55,20 @@ const StructuredOutputProperty: z.ZodType<StructuredOutputPropertyType> =
 		}),
 	]);
 
-export const StructuredOutputSchema = z.object({
+export const Schema = z.object({
 	title: z.string(),
 	type: z.literal("object"),
 	properties: z.record(z.string(), StructuredOutputProperty),
 	additionalProperties: z.literal(false),
 	required: z.array(z.string()),
 });
-export type StructuredOutputSchema = z.infer<typeof StructuredOutputSchema>;
+export type Schema = z.infer<typeof Schema>;
 
-export const OutputConfiguration = z.discriminatedUnion("outputFormat", [
-	z.object({ outputFormat: z.literal("text") }),
+export const Output = z.discriminatedUnion("format", [
+	z.object({ format: z.literal("text") }),
 	z.object({
-		outputFormat: z.literal("json"),
-		structuredOutputSchema: StructuredOutputSchema,
+		format: z.literal("object"),
+		schema: Schema,
 	}),
 ]);
-export type OutputConfiguration = z.infer<typeof OutputConfiguration>;
+export type Output = z.infer<typeof Output>;
