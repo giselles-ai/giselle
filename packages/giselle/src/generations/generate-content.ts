@@ -44,7 +44,7 @@ import {
 } from "./internal/use-generation-executor";
 import { createPostgresTools } from "./tools/postgres";
 import type { GenerationMetadata, PreparedToolSet } from "./types";
-import { buildMessageObject, getGeneration } from "./utils";
+import { buildMessageObject, buildOutputOption, getGeneration } from "./utils";
 import { transformGiselleLanguageModelToAiSdkLanguageModelCallOptions } from "./v2/language-model";
 import { buildToolSet } from "./v2/tools";
 
@@ -297,13 +297,20 @@ export function generateContent({
 
 			const abortController = new AbortController();
 
+			const outputOption = buildOutputOption(operationNode.content.output);
+
 			const streamTextResult = streamText({
+				experimental_output: outputOption,
 				abortSignal: abortController.signal,
 				model,
 				providerOptions,
 				messages,
 				tools: preparedToolSet.toolSet,
-				stopWhen: stepCountIs(Object.keys(preparedToolSet.toolSet).length + 1),
+				stopWhen: stepCountIs(
+					Object.keys(preparedToolSet.toolSet).length +
+						1 +
+						(outputOption ? 1 : 0),
+				),
 				onChunk: async () => {
 					const currentGeneration = await getGeneration({
 						storage: context.storage,
@@ -643,8 +650,11 @@ function generateContentV2({
 			let generationError: unknown | undefined;
 			const textGenerationStartTime = Date.now();
 
+			const outputOption = buildOutputOption(operationNode.content.output);
+
 			const streamTextResult = streamText({
 				...callOptions,
+				experimental_output: outputOption,
 				abortSignal: abortController.signal,
 				model: gateway(operationNode.content.languageModel.id),
 				messages,

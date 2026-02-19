@@ -18,6 +18,7 @@ import {
 	NodeId,
 	type OperationNode,
 	OutputId,
+	type TextGenerationContent,
 	type TextGenerationNode,
 	type WebPageContent,
 	type WorkspaceId,
@@ -27,7 +28,14 @@ import {
 	isJsonContent,
 	jsonContentToText,
 } from "@giselles-ai/text-editor-utils";
-import type { DataContent, FilePart, ImagePart, ModelMessage } from "ai";
+import {
+	Output as AiOutput,
+	type DataContent,
+	type FilePart,
+	type ImagePart,
+	jsonSchema,
+	type ModelMessage,
+} from "ai";
 import type { GiselleContext } from "../types";
 import type { AppEntryResolver } from "./types";
 
@@ -1196,4 +1204,11 @@ async function buildGenerationMessageForContentGeneration({
 			],
 		},
 	];
+}
+
+export function buildOutputOption(
+	output: TextGenerationContent["output"],
+): ReturnType<typeof AiOutput.object> | undefined {
+	if (output.format !== "object") return undefined;
+	return AiOutput.object({ schema: jsonSchema(output.schema) });
 }
