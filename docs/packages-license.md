@@ -7315,7 +7315,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="fast-xml-parser"></a>
-### fast-xml-parser v5.3.4
+### fast-xml-parser v5.3.6
 #### 
 
 ##### Paths
