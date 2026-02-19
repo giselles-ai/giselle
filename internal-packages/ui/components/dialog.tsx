@@ -8,7 +8,7 @@ export const DialogPortal = DialogPrimitive.Portal;
 export const DialogTrigger = DialogPrimitive.Trigger;
 export const DialogClose = DialogPrimitive.Close;
 
-export type DialogSize = "default" | "wide";
+export type DialogSize = "default" | "wide" | "extra-wide";
 export type DialogVariant = "default" | "glass" | "destructive";
 
 export type DialogContentProps = ComponentPropsWithoutRef<
@@ -37,8 +37,12 @@ export function DialogContent({
 				<div className="fixed inset-0 z-50 flex items-center justify-center p-4">
 					<DialogPrimitive.Content
 						{...props}
+						data-size={size}
 						className={clsx(
-							"relative z-10 w-[90vw] max-w-[600px] max-h-[85vh] rounded-[12px] p-6 flex flex-col",
+							"relative z-10 w-[90vw] max-h-[85vh] rounded-[12px] p-6 flex flex-col",
+							"data-[size=default]:max-w-[600px]",
+							"data-[size=wide]:max-w-[800px]",
+							"data-[size=extra-wide]:max-w-[1000px]",
 							"shadow-xl focus:outline-none",
 							className,
 						)}
@@ -70,6 +74,7 @@ export function DialogContent({
 						"fixed left-[50%] top-[50%] translate-y-[-50%] translate-x-[-50%] z-50 overflow-hidden outline-none",
 						"data-[size=default]:w-[500px] data-[size=default]:max-h-[85%]",
 						"data-[size=wide]:w-[800px] data-[size=wide]:max-h-[85%]",
+						"data-[size=extra-wide]:w-[1000px] data-[size=extra-wide]:max-h-[85%]",
 						"bg-transparent shadow-xl text-text",
 						"p-6 rounded-[12px]",
 						className,

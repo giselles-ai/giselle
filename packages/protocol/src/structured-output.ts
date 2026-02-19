@@ -1,64 +1,62 @@
 import * as z from "zod/v4";
 
-const StringProperty = z.object({
+const StringSchema = z.object({
 	type: z.literal("string"),
 	description: z.string().optional(),
 	enum: z.array(z.string()).optional(),
 });
 
-const NumberProperty = z.object({
+const NumberSchema = z.object({
 	type: z.literal("number"),
 	description: z.string().optional(),
 });
 
-const BooleanProperty = z.object({
+const BooleanSchema = z.object({
 	type: z.literal("boolean"),
 	description: z.string().optional(),
 });
 
-type StructuredOutputPropertyType =
-	| z.infer<typeof StringProperty>
-	| z.infer<typeof NumberProperty>
-	| z.infer<typeof BooleanProperty>
+export type SubSchema =
+	| z.infer<typeof StringSchema>
+	| z.infer<typeof NumberSchema>
+	| z.infer<typeof BooleanSchema>
 	| {
 			type: "object";
 			description?: string;
-			properties: Record<string, StructuredOutputPropertyType>;
+			properties: Record<string, SubSchema>;
 			required: string[];
 			additionalProperties: false;
 	  }
 	| {
 			type: "array";
 			description?: string;
-			items: StructuredOutputPropertyType;
+			items: SubSchema;
 	  };
-
-const StructuredOutputProperty: z.ZodType<StructuredOutputPropertyType> =
-	z.discriminatedUnion("type", [
-		StringProperty,
-		NumberProperty,
-		BooleanProperty,
-		z.object({
-			type: z.literal("object"),
-			description: z.string().optional(),
-			properties: z.record(
-				z.string(),
-				z.lazy(() => StructuredOutputProperty),
-			),
-			required: z.array(z.string()),
-			additionalProperties: z.literal(false),
-		}),
-		z.object({
-			type: z.literal("array"),
-			description: z.string().optional(),
-			items: z.lazy(() => StructuredOutputProperty),
-		}),
-	]);
+const SubSchema: z.ZodType<SubSchema> = z.discriminatedUnion("type", [
+	StringSchema,
+	NumberSchema,
+	BooleanSchema,
+	z.object({
+		type: z.literal("object"),
+		description: z.string().optional(),
+		properties: z.record(
+			z.string(),
+			z.lazy(() => SubSchema),
+		),
+		required: z.array(z.string()),
+		additionalProperties: z.literal(false),
+	}),
+	z.object({
+		type: z.literal("array"),
+		description: z.string().optional(),
+		items: z.lazy(() => SubSchema),
+	}),
+]);
 
 export const Schema = z.object({
 	title: z.string(),
 	type: z.literal("object"),
-	properties: z.record(z.string(), StructuredOutputProperty),
+	properties: z.record(z.string(), SubSchema),
 	additionalProperties: z.literal(false),
 	required: z.array(z.string()),
 });

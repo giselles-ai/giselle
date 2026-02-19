@@ -1,7 +1,8 @@
+import { Button } from "@giselle-internal/ui/button";
 import { Select } from "@giselle-internal/ui/select";
-import { Schema, type TextGenerationContent } from "@giselles-ai/protocol";
-import { useState } from "react";
-import { SettingDetail } from "./setting-label";
+import type { Schema, TextGenerationContent } from "@giselles-ai/protocol";
+import { Braces, Plus } from "lucide-react";
+import { StructuredOutputDialog } from "../structured-output/structured-output-dialog";
 
 const outputFormatOptions = [
 	{ value: "text", label: "Text" },
@@ -9,14 +10,11 @@ const outputFormatOptions = [
 ];
 
 const defaultSchema: Schema = {
+	title: "response",
 	type: "object",
-	properties: {
-		title: { type: "string" },
-		body: { type: "string" },
-	},
-	required: ["title", "body"],
+	properties: {},
+	required: [],
 	additionalProperties: false,
-	title: "output",
 };
 
 type Output = TextGenerationContent["output"];
@@ -29,11 +27,8 @@ export function OutputFormatPanel({
 	onOutputChange: (output: Output) => void;
 }) {
 	const hasOutputSchema = output.format === "object";
-
 	const schemaObject = hasOutputSchema ? output.schema : defaultSchema;
-	const [schemaText, setSchemaText] = useState(
-		JSON.stringify(schemaObject, null, 2),
-	);
+	const isSchemaConfigured = Object.keys(schemaObject.properties).length > 0;
 
 	return (
 		<>
@@ -51,28 +46,25 @@ export function OutputFormatPanel({
 				}}
 			/>
 			{hasOutputSchema && (
-				<div className="mt-[8px]">
-					<SettingDetail className="mb-[6px]">JSON Schema</SettingDetail>
-					<textarea
-						value={schemaText}
-						onChange={(e) => setSchemaText(e.target.value)}
-						onBlur={() => {
-							try {
-								const parsed = JSON.parse(schemaText);
-								const result = Schema.safeParse(parsed);
-								if (result.success && result.data) {
-									onOutputChange({
-										format: "object",
-										schema: result.data,
-									});
-								}
-							} catch {
-								// keep local state as-is on invalid JSON
-							}
-						}}
-						placeholder='{"type":"object","properties":{...}}'
-						rows={6}
-						className="w-full rounded-[6px] border border-[var(--color-border)] bg-[var(--color-bg)] px-[8px] py-[6px] font-mono text-[13px] text-inverse"
+				<div className="mt-[8px] flex justify-end">
+					<StructuredOutputDialog
+						schema={schemaObject}
+						onUpdate={(schema) => onOutputChange({ format: "object", schema })}
+						trigger={
+							isSchemaConfigured ? (
+								<Button
+									variant="solid"
+									size="large"
+									leftIcon={<Braces className="text-blue-300" />}
+								>
+									{schemaObject.title}
+								</Button>
+							) : (
+								<Button variant="solid" size="large" leftIcon={<Plus />}>
+									Set Schema
+								</Button>
+							)
+						}
 					/>
 				</div>
 			)}
