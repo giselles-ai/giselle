@@ -24,29 +24,29 @@ interface BaseFormField {
 	description: string;
 }
 
-export interface StringFormField extends BaseFormField {
+interface StringFormField extends BaseFormField {
 	type: "string";
 }
 
-export interface NumberFormField extends BaseFormField {
+interface NumberFormField extends BaseFormField {
 	type: "number";
 }
 
-export interface BooleanFormField extends BaseFormField {
+interface BooleanFormField extends BaseFormField {
 	type: "boolean";
 }
 
-export interface EnumFormField extends BaseFormField {
+interface EnumFormField extends BaseFormField {
 	type: "enum";
 	enumValues: string[];
 }
 
-export interface ObjectFormField extends BaseFormField {
+interface ObjectFormField extends BaseFormField {
 	type: "object";
 	children: FormField[];
 }
 
-export interface ArrayFormField extends BaseFormField {
+interface ArrayFormField extends BaseFormField {
 	type: "array";
 	items: FormField;
 }
