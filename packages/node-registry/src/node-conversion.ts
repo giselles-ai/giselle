@@ -304,8 +304,8 @@ export function convertContentGenerationToTextGeneration(
 					continue;
 				}
 				tools.postgres = {
-					secretId: tool.configuration.secretId,
-					tools: (tool.configuration.useTools as string[]) ?? [],
+					secretId: result.data,
+					tools: useTools,
 				};
 				break;
 			}
