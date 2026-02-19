@@ -6,6 +6,7 @@ import {
 } from "@giselles-ai/language-model";
 import * as z from "zod/v4";
 import { SecretId } from "../../secret";
+import { Output } from "../../structured-output";
 
 export const AnthropicLanguageModelData = AnthropicLanguageModel.pick({
 	provider: true,
@@ -121,16 +122,7 @@ export const TextGenerationContent = z.object({
 	llm: TextGenerationLanguageModelData,
 	prompt: z.string().optional(),
 	tools: z.optional(ToolSet),
-	outputFormat: z.enum(["text", "json"]).default("text"),
-	jsonSchema: z
-		.object({
-			title: z.string(),
-			type: z.literal("object"),
-			properties: z.record(z.string(), z.any()),
-			additionalProperties: z.literal(false),
-			required: z.array(z.string()),
-		})
-		.optional(),
+	output: Output.default({ format: "text" }),
 });
 export type TextGenerationContent = z.infer<typeof TextGenerationContent>;
 

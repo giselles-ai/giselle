@@ -194,7 +194,7 @@ const textGenerationFactoryImpl = {
 			content: {
 				type: "textGeneration",
 				llm,
-				outputFormat: "text",
+				output: { format: "text" },
 			},
 			inputs: [],
 			outputs,
@@ -832,7 +832,7 @@ const contentGenerationFactoryImpl = {
 					configuration: languageModel.defaultConfiguration,
 				},
 				tools: [],
-				outputFormat: "text",
+				output: { format: "text" },
 			},
 			inputs: [],
 			outputs,
