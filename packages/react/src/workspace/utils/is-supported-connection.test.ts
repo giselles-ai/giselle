@@ -42,6 +42,7 @@ describe("isSupportedConnection", () => {
 			content: {
 				type: "textGeneration",
 				llm,
+				output: { format: "text" },
 			},
 		}) satisfies TextGenerationNode;
 	const createImageGenerationNode = (
@@ -219,6 +220,7 @@ describe("isSupportedConnection", () => {
 				configuration: {},
 			},
 			tools: [],
+			output: { format: "text" },
 		},
 	});
 
