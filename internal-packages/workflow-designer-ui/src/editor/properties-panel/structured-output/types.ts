@@ -41,7 +41,7 @@ interface EnumFormField extends BaseFormField {
 	enumValues: string[];
 }
 
-interface ObjectFormField extends BaseFormField {
+export interface ObjectFormField extends BaseFormField {
 	type: "object";
 	children: FormField[];
 }
