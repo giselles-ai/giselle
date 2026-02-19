@@ -1,0 +1,242 @@
+---
+description: Vercel AI SDK v6 patterns — prevents common hallucinations of legacy APIs
+globs: *.tsx,*.ts
+alwaysApply: false
+---
+
+# Vercel AI SDK — Correct v6 Patterns
+
+LLMs frequently hallucinate legacy AI SDK APIs. Follow these rules strictly.
+
+## 1. `toolContext` → `experimental_context`
+
+**NEVER** use `toolContext`. It was removed.
+
+```typescript
+// ✅ CORRECT
+import { tool } from 'ai';
+import { z } from 'zod';
+
+const myTool = tool({
+  description: 'Do something with user context',
+  inputSchema: z.object({
+    query: z.string().describe('The search query'),
+  }),
+  execute: async (input, { experimental_context }) => {
+    const ctx = experimental_context as { userId: string };
+    // use ctx.userId
+  },
+});
+
+// Pass context at the call site:
+const result = await generateText({
+  model,
+  tools: { myTool },
+  experimental_context: { userId: '123' },
+  // ...
+});
+```
+
+```typescript
+// ❌ WRONG — v5 pattern, will fail silently
+execute: async (args, { toolContext }) => { ... }
+```
+
+**Source:** https://sdk.vercel.ai/docs/ai-sdk-core/tools-and-tool-calling#context-experimental
+
+---
+
+## 2. `generateObject` is Legacy → use `Output.object()`
+
+`generateObject` and `streamObject` are **deprecated**. Use `generateText` / `streamText` with the `output` property instead.
+
+```typescript
+// ✅ CORRECT
+import { generateText, Output } from 'ai';
+import { z } from 'zod';
+
+const { output } = await generateText({
+  model,
+  output: Output.object({
+    schema: z.object({
+      name: z.string(),
+      ingredients: z.array(z.object({ name: z.string(), amount: z.string() })),
+    }),
+  }),
+  prompt: 'Generate a lasagna recipe.',
+});
+```
+
+```typescript
+// ❌ WRONG — Legacy API
+import { generateObject } from 'ai';
+const { object } = await generateObject({ model, schema, prompt });
+```
+
+**Source:** https://sdk.vercel.ai/docs/ai-sdk-core/generating-structured-data#generateobject-and-streamobject-legacy
+
+---
+
+## 3. `parameters` → `inputSchema`
+
+The `tool()` function property for defining input is `inputSchema`, not `parameters`.
+
+```typescript
+// ✅ CORRECT
+tool({
+  description: 'Get weather',
+  inputSchema: z.object({
+    location: z.string().describe('City name'),
+  }),
+  execute: async ({ location }) => { ... },
+});
+```
+
+```typescript
+// ❌ WRONG — old property name
+tool({
+  parameters: z.object({ ... }), // Does not exist
+});
+```
+
+**Source:** https://sdk.vercel.ai/docs/ai-sdk-core/tools-and-tool-calling#tool-calling
+
+---
+
+## 4. `strict: true` is a Tool Option (not Zod)
+
+`strict` is a **top-level property on the tool**, not a method on the Zod schema. Always add `.describe()` to every field.
+
+```typescript
+// ✅ CORRECT
+tool({
+  description: 'Get weather',
+  inputSchema: z.object({
+    location: z.string().describe('City name, e.g. London'),
+  }),
+  strict: true,  // <-- top-level tool option
+  execute: async ({ location }) => { ... },
+});
+```
+
+```typescript
+// ❌ WRONG — .strict() is a Zod method, not the SDK's strict mode
+inputSchema: z.object({ ... }).strict(),
+```
+
+**Source:** https://sdk.vercel.ai/docs/ai-sdk-core/tools-and-tool-calling#strict-mode
+
+---
+
+## 5. `toDataStreamResponse()` → `toUIMessageStreamResponse()`
+
+The streaming response helper has been renamed.
+
+```typescript
+// ✅ CORRECT
+return result.toUIMessageStreamResponse();
+```
+
+```typescript
+// ❌ WRONG — old helper name
+return result.toDataStreamResponse();
+```
+
+**Source:** https://sdk.vercel.ai/docs/getting-started/nextjs-app-router#create-a-route-handler
+
+---
+
+## 6. `maxSteps` → `stopWhen: stepCountIs(N)`
+
+Multi-step tool calls no longer use `maxSteps`. Import `stepCountIs` from `'ai'`.
+
+```typescript
+// ✅ CORRECT
+import { streamText, stepCountIs } from 'ai';
+
+const result = streamText({
+  model,
+  stopWhen: stepCountIs(5),
+  tools: { ... },
+});
+```
+
+```typescript
+// ❌ WRONG — deprecated option
+streamText({ maxSteps: 5, ... });
+```
+
+**Source:** https://sdk.vercel.ai/docs/ai-sdk-core/tools-and-tool-calling#multi-step-calls-using-stopwhen
+
+---
+
+## 7. Messages: `UIMessage` + `convertToModelMessages()`
+
+Client messages are `UIMessage` type. You must convert them before passing to the model. `convertToModelMessages` is async.
+
+```typescript
+// ✅ CORRECT
+import { streamText, UIMessage, convertToModelMessages } from 'ai';
+
+export async function POST(req: Request) {
+  const { messages }: { messages: UIMessage[] } = await req.json();
+
+  const result = streamText({
+    model,
+    messages: await convertToModelMessages(messages),
+    // ...
+  });
+
+  return result.toUIMessageStreamResponse();
+}
+```
+
+```typescript
+// ❌ WRONG — passing raw messages without conversion or type
+const { messages } = await req.json();
+streamText({ messages, ... }); // Missing UIMessage type and conversion
+```
+
+**Source:** https://sdk.vercel.ai/docs/getting-started/nextjs-app-router#create-a-route-handler
+
+---
+
+## Reference: Canonical Route Handler
+
+A complete, correct `app/api/chat/route.ts` applying all rules above:
+
+```typescript
+import {
+  streamText,
+  UIMessage,
+  convertToModelMessages,
+  tool,
+  stepCountIs,
+} from 'ai';
+import { z } from 'zod';
+
+export async function POST(req: Request) {
+  const { messages }: { messages: UIMessage[] } = await req.json();
+
+  const result = streamText({
+    model: 'anthropic/claude-sonnet-4.5',
+    messages: await convertToModelMessages(messages),
+    stopWhen: stepCountIs(5),
+    tools: {
+      weather: tool({
+        description: 'Get the weather in a location (fahrenheit)',
+        inputSchema: z.object({
+          location: z.string().describe('The location to get the weather for'),
+        }),
+        strict: true,
+        execute: async ({ location }) => ({
+          location,
+          temperature: Math.round(Math.random() * (90 - 32) + 32),
+        }),
+      }),
+    },
+  });
+
+  return result.toUIMessageStreamResponse();
+}
+```
