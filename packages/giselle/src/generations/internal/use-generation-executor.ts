@@ -567,11 +567,19 @@ export async function useGenerationExecutor<T>(args: {
 							case "image/jpeg":
 							case "image/png":
 							case "image/gif":
-							case "image/svg+xml":
+							case "image/webp":
 								return {
 									type: "image",
 									image: blob,
 								} as ImagePart;
+
+							case "image/svg+xml":
+								args.context.logger.warn(
+									{ id: fileParameter.id, type: fileParameter.type, name: fileParameter.name },
+									"SVG is not supported for vision input. Please upload PNG/JPEG/GIF/WebP instead.",
+								);
+								return undefined;
+								
 							case "application/pdf":
 								return {
 									type: "file",
