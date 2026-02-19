@@ -122,7 +122,7 @@ export const TextGenerationContent = z.object({
 	llm: TextGenerationLanguageModelData,
 	prompt: z.string().optional(),
 	tools: z.optional(ToolSet),
-	outputConfiguration: OutputConfiguration,
+	outputConfiguration: OutputConfiguration.default({ outputFormat: "text" }),
 });
 export type TextGenerationContent = z.infer<typeof TextGenerationContent>;
 

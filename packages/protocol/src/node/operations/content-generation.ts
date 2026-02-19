@@ -26,7 +26,7 @@ export const ContentGenerationContent = z.object({
 		}),
 	),
 	prompt: z.string(),
-	outputConfiguration: OutputConfiguration,
+	outputConfiguration: OutputConfiguration.default({ outputFormat: "text" }),
 });
 
 export type ContentGenerationContent = z.infer<typeof ContentGenerationContent>;
