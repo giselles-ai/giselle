@@ -302,8 +302,8 @@ importers:
         specifier: workspace:*
         version: link:../../internal-packages/workflow-designer-ui
       '@giselles-ai/browser-tool':
-        specifier: 0.1.7
-        version: 0.1.7(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
+        specifier: 0.1.8
+        version: 0.1.8(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       '@giselles-ai/data-store-registry':
         specifier: workspace:*
         version: link:../../packages/data-store-registry
@@ -338,8 +338,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/react
       '@giselles-ai/sandbox-agent':
-        specifier: 0.1.7
-        version: 0.1.7(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
+        specifier: 0.1.8
+        version: 0.1.8(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       '@giselles-ai/supabase-driver':
         specifier: workspace:*
         version: link:../../packages/supabase-driver
@@ -2838,14 +2838,14 @@ packages:
   '@floating-ui/utils@0.2.10':
     resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
 
-  '@giselles-ai/browser-tool@0.1.7':
-    resolution: {integrity: sha512-5o/pZuXQEXh1dLdIs5YyzuxYO72V7Zdd/lCnsV+0ICd/VacEOfeejBwkJHmmPqEI5Z/WMUYjiX5cTP2Fa0UQbA==}
+  '@giselles-ai/browser-tool@0.1.8':
+    resolution: {integrity: sha512-ZYTMS30RGt/PKwNqGglE8nc7f+1A8feHQMahPX1D6FqbDk8Bm/EEfqpMyyWWPzW4k+w9iZFIoIzP1elFVbS2Qg==}
     peerDependencies:
       react: '>=19.0.0'
       react-dom: '>=19.0.0'
 
-  '@giselles-ai/sandbox-agent@0.1.7':
-    resolution: {integrity: sha512-2Re25E54JFZt0A3MOcG3JgKLrpRE5m6WpALBuKt36btB5ReA/0Ocx5NFCH9vPzuxy0LIPe83SkPdXzLALS3tOA==}
+  '@giselles-ai/sandbox-agent@0.1.8':
+    resolution: {integrity: sha512-UDR8qtN7ppxxFW5WtKJCBTZ1pxnEOhHNaCt5x2J6WFxLyPYiGiyt317i72xl7VF4ywVbAeSONZJCiG3PiXpMdA==}
     peerDependencies:
       react: '>=19.0.0'
       react-dom: '>=19.0.0'
@@ -9534,7 +9534,7 @@ snapshots:
   '@apm-js-collab/tracing-hooks@0.3.1':
     dependencies:
       '@apm-js-collab/code-transformer': 0.8.2
-      debug: 4.4.1
+      debug: 4.4.3
       module-details-from-path: 1.0.4
     transitivePeerDependencies:
       - supports-color
@@ -10053,7 +10053,7 @@ snapshots:
       '@babel/traverse': 7.28.5
       '@babel/types': 7.28.5
       convert-source-map: 2.0.0
-      debug: 4.4.1
+      debug: 4.4.3
       gensync: 1.0.0-beta.2
       json5: 2.2.3
       semver: 6.3.1
@@ -10127,7 +10127,7 @@ snapshots:
       '@babel/parser': 7.28.5
       '@babel/template': 7.27.2
       '@babel/types': 7.28.5
-      debug: 4.4.1
+      debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
 
@@ -10767,7 +10767,7 @@ snapshots:
 
   '@floating-ui/utils@0.2.10': {}
 
-  '@giselles-ai/browser-tool@0.1.7(react-dom@19.2.1(react@19.2.1))(react@19.2.1)':
+  '@giselles-ai/browser-tool@0.1.8(react-dom@19.2.1(react@19.2.1))(react@19.2.1)':
     dependencies:
       '@modelcontextprotocol/sdk': 1.26.0(zod@4.3.6)
       ioredis: 5.9.3
@@ -10778,7 +10778,7 @@ snapshots:
       - '@cfworker/json-schema'
       - supports-color
 
-  '@giselles-ai/sandbox-agent@0.1.7(react-dom@19.2.1(react@19.2.1))(react@19.2.1)':
+  '@giselles-ai/sandbox-agent@0.1.8(react-dom@19.2.1(react@19.2.1))(react@19.2.1)':
     dependencies:
       '@vercel/sandbox': 1.6.0
       react: 19.2.1
@@ -13896,7 +13896,7 @@ snapshots:
 
   agent-base@6.0.2:
     dependencies:
-      debug: 4.4.1
+      debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
 
@@ -13919,10 +13919,6 @@ snapshots:
       zod: 4.3.6
 
   ajv-formats@2.1.1(ajv@8.18.0):
-    optionalDependencies:
-      ajv: 8.18.0
-
-  ajv-formats@3.0.1(ajv@8.18.0):
     optionalDependencies:
       ajv: 8.18.0
 
@@ -15212,14 +15208,14 @@ snapshots:
   http-proxy-agent@7.0.2:
     dependencies:
       agent-base: 7.1.3
-      debug: 4.4.1
+      debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
 
   https-proxy-agent@5.0.1:
     dependencies:
       agent-base: 6.0.2
-      debug: 4.4.1
+      debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
 
@@ -16024,7 +16020,7 @@ snapshots:
   micromark@4.0.1:
     dependencies:
       '@types/debug': 4.1.12
-      debug: 4.4.1
+      debug: 4.4.3
       decode-named-character-reference: 1.0.2
       devlop: 1.1.0
       micromark-core-commonmark: 2.0.2
@@ -16953,7 +16949,7 @@ snapshots:
 
   require-in-the-middle@7.5.2:
     dependencies:
-      debug: 4.4.1
+      debug: 4.4.3
       module-details-from-path: 1.0.4
       resolve: 1.22.10
     transitivePeerDependencies:
