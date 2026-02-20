@@ -6,7 +6,7 @@ export * from "./generation";
 export * from "./integrations";
 export * from "./node";
 export * from "./secret";
-export { Schema } from "./structured-output";
+export { Schema, type SubSchema } from "./structured-output";
 export * from "./task";
 export * from "./trigger";
 export * from "./workspace";
