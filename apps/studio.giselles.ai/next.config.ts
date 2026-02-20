@@ -33,6 +33,7 @@ const pdfiumTracingConfig = {
 };
 
 const nextConfig: NextConfig = {
+	outputFileTracingRoot: join(__dirname, "../../"),
 	turbopack: {
 		root: join(__dirname, "../../"),
 	},
