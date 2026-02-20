@@ -49,6 +49,22 @@ function hasFieldEmptyNames(field: FormField): boolean {
 	return false;
 }
 
+function hasEmptyEnumValues(fields: FormField[]): boolean {
+	return fields.some((f) => {
+		if (f.type === "enum") return f.enumValues.length === 0;
+		if (f.type === "object") return hasEmptyEnumValues(f.children);
+		if (f.type === "array") return hasFieldEmptyEnumValues(f.items);
+		return false;
+	});
+}
+
+function hasFieldEmptyEnumValues(field: FormField): boolean {
+	if (field.type === "enum") return field.enumValues.length === 0;
+	if (field.type === "object") return hasEmptyEnumValues(field.children);
+	if (field.type === "array") return hasFieldEmptyEnumValues(field.items);
+	return false;
+}
+
 interface StructuredOutputDialogProps {
 	schema: Schema;
 	onUpdate: (schema: Schema) => void;
@@ -92,6 +108,10 @@ export function StructuredOutputDialog({
 			}
 			if (hasDuplicateNames(fields)) {
 				setErrorMessage("Duplicate property names are not allowed.");
+				return;
+			}
+			if (hasEmptyEnumValues(fields)) {
+				setErrorMessage("Enum fields must have at least one value.");
 				return;
 			}
 			const schema = convertFormFieldsToSchema(trimmedTitle, fields);

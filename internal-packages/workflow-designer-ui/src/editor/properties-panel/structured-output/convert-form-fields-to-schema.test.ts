@@ -59,25 +59,22 @@ describe("convertFormFieldsToSchema", () => {
 			type: "object",
 			properties: {
 				title: { type: "string", description: "The title" },
-				count: { type: "number", description: "" },
+				count: { type: "number" },
 				status: {
 					type: "string",
-					description: "",
 					enum: ["active", "inactive"],
 				},
 				address: {
 					type: "object",
-					description: "",
 					properties: {
-						city: { type: "string", description: "" },
+						city: { type: "string" },
 					},
 					required: ["city"],
 					additionalProperties: false,
 				},
 				tags: {
 					type: "array",
-					description: "",
-					items: { type: "string", description: "" },
+					items: { type: "string" },
 				},
 			},
 			required: ["title", "count", "status", "address", "tags"],

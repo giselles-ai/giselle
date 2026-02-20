@@ -190,7 +190,7 @@ export function FormFieldRow({
 			)}
 
 			{field.type === "array" && (
-				<ArrayItemsEditor
+				<ArrayItems
 					items={field.items}
 					onItemsChange={(updated) => onChange({ ...field, items: updated })}
 					depth={depth}
@@ -313,7 +313,7 @@ function ObjectChildren({
 	);
 }
 
-function ArrayItemsEditor({
+function ArrayItems({
 	items,
 	onItemsChange,
 	depth,
@@ -375,46 +375,16 @@ function ArrayItemsEditor({
 			)}
 
 			{items.type === "object" && (
-				<div className="mt-[2px]">
-					{items.children.map((child, index) => (
-						<FormFieldRow
-							key={child.id}
-							field={child}
-							onChange={(updated) => {
-								const next = [...items.children];
-								next[index] = updated;
-								onItemsChange({ ...items, children: next });
-							}}
-							onDelete={() =>
-								onItemsChange({
-									...items,
-									children: items.children.filter((_, i) => i !== index),
-								})
-							}
-							depth={1}
-							arrayDepth={arrayDepth + 1}
-						/>
-					))}
-					<div style={{ paddingLeft: 24 }}>
-						<button
-							type="button"
-							onClick={() =>
-								onItemsChange({
-									...items,
-									children: [...items.children, createEmptyFormField()],
-								})
-							}
-							className="flex items-center gap-[4px] mt-[4px] mb-[4px] text-[14px] text-white/40 hover:text-white/60 transition-colors cursor-pointer"
-						>
-							<Plus className="size-[14px]" />
-							Add property
-						</button>
-					</div>
-				</div>
+				<ObjectChildren
+					field={items}
+					onChange={(updated) => onItemsChange(updated)}
+					depth={depth + 1}
+					arrayDepth={arrayDepth + 1}
+				/>
 			)}
 
 			{items.type === "array" && (
-				<ArrayItemsEditor
+				<ArrayItems
 					items={items.items}
 					onItemsChange={(updated) =>
 						onItemsChange({ ...items, items: updated })

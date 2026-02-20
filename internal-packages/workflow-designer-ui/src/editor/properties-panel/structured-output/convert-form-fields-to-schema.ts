@@ -23,11 +23,19 @@ export function convertFormFieldsToSchema(
 }
 
 function convertFormFieldToSubSchema(field: FormField): SubSchema {
+	const base = createBaseSubSchema(field);
+	const description = field.description.trim();
+	if (description) {
+		base.description = description;
+	}
+	return base;
+}
+
+function createBaseSubSchema(field: FormField): SubSchema {
 	switch (field.type) {
 		case "enum":
 			return {
 				type: "string",
-				description: field.description,
 				enum: field.enumValues,
 			};
 		case "object": {
@@ -39,7 +47,6 @@ function convertFormFieldToSubSchema(field: FormField): SubSchema {
 			}
 			return {
 				type: "object",
-				description: field.description,
 				properties,
 				required,
 				additionalProperties: false,
@@ -48,24 +55,14 @@ function convertFormFieldToSubSchema(field: FormField): SubSchema {
 		case "array":
 			return {
 				type: "array",
-				description: field.description,
 				items: convertFormFieldToSubSchema(field.items),
 			};
 		case "string":
-			return {
-				type: "string",
-				description: field.description,
-			};
+			return { type: "string" };
 		case "number":
-			return {
-				type: "number",
-				description: field.description,
-			};
+			return { type: "number" };
 		case "boolean":
-			return {
-				type: "boolean",
-				description: field.description,
-			};
+			return { type: "boolean" };
 		default: {
 			const _exhaustiveCheck: never = field;
 			throw new Error(`Unhandled field type: ${_exhaustiveCheck}`);
