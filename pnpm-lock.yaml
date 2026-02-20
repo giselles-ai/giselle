@@ -301,6 +301,9 @@ importers:
       '@giselle-internal/workflow-designer-ui':
         specifier: workspace:*
         version: link:../../internal-packages/workflow-designer-ui
+      '@giselles-ai/browser-tool':
+        specifier: 0.1.7
+        version: 0.1.7(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       '@giselles-ai/data-store-registry':
         specifier: workspace:*
         version: link:../../packages/data-store-registry
@@ -334,9 +337,9 @@ importers:
       '@giselles-ai/react':
         specifier: workspace:*
         version: link:../../packages/react
-      '@giselles-ai/sandbox-agent-core':
-        specifier: 0.1.3
-        version: 0.1.3
+      '@giselles-ai/sandbox-agent':
+        specifier: 0.1.7
+        version: 0.1.7(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       '@giselles-ai/supabase-driver':
         specifier: workspace:*
         version: link:../../packages/supabase-driver
@@ -2835,11 +2838,17 @@ packages:
   '@floating-ui/utils@0.2.10':
     resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
 
-  '@giselles-ai/browser-tool@0.1.3':
-    resolution: {integrity: sha512-3zrlUmSyl27gQpJ3q88zy8BE/uwPFyBh5oqlibFT/7Z/6gMrpWIuSTNx5lyvJmzAtybVDS2cmWy7mcUQF8ZphA==}
+  '@giselles-ai/browser-tool@0.1.7':
+    resolution: {integrity: sha512-5o/pZuXQEXh1dLdIs5YyzuxYO72V7Zdd/lCnsV+0ICd/VacEOfeejBwkJHmmPqEI5Z/WMUYjiX5cTP2Fa0UQbA==}
+    peerDependencies:
+      react: '>=19.0.0'
+      react-dom: '>=19.0.0'
 
-  '@giselles-ai/sandbox-agent-core@0.1.3':
-    resolution: {integrity: sha512-i9o4hEE1WerEdlRetm3f1rHsFCLxtpgwsY8P+FEuuWzAmWa2gEQkrGQA1REs6cYUH9UgJ8XObP3aevz0u1UW9Q==}
+  '@giselles-ai/sandbox-agent@0.1.7':
+    resolution: {integrity: sha512-2Re25E54JFZt0A3MOcG3JgKLrpRE5m6WpALBuKt36btB5ReA/0Ocx5NFCH9vPzuxy0LIPe83SkPdXzLALS3tOA==}
+    peerDependencies:
+      react: '>=19.0.0'
+      react-dom: '>=19.0.0'
 
   '@google-cloud/precise-date@4.0.0':
     resolution: {integrity: sha512-1TUx3KdaU3cN7nfCdNf+UVqA/PSX29Cjcox3fZZBtINlRrXVTmUkQnCKv2MbBUbCopbK4olAT1IHl76uZyCiVA==}
@@ -10758,25 +10767,26 @@ snapshots:
 
   '@floating-ui/utils@0.2.10': {}
 
-  '@giselles-ai/browser-tool@0.1.3':
+  '@giselles-ai/browser-tool@0.1.7(react-dom@19.2.1(react@19.2.1))(react@19.2.1)':
     dependencies:
       '@modelcontextprotocol/sdk': 1.26.0(zod@4.3.6)
+      ioredis: 5.9.3
+      react: 19.2.1
+      react-dom: 19.2.1(react@19.2.1)
       zod: 4.3.6
     transitivePeerDependencies:
       - '@cfworker/json-schema'
       - supports-color
 
-  '@giselles-ai/sandbox-agent-core@0.1.3':
+  '@giselles-ai/sandbox-agent@0.1.7(react-dom@19.2.1(react@19.2.1))(react@19.2.1)':
     dependencies:
-      '@giselles-ai/browser-tool': 0.1.3
       '@vercel/sandbox': 1.6.0
-      ioredis: 5.9.3
+      react: 19.2.1
+      react-dom: 19.2.1(react@19.2.1)
       zod: 4.3.6
     transitivePeerDependencies:
-      - '@cfworker/json-schema'
       - bare-abort-controller
       - react-native-b4a
-      - supports-color
 
   '@google-cloud/precise-date@4.0.0': {}
 
@@ -13871,7 +13881,7 @@ snapshots:
 
   accepts@2.0.0:
     dependencies:
-      mime-types: 3.0.1
+      mime-types: 3.0.2
       negotiator: 1.0.0
 
   acorn-import-attributes@1.9.5(acorn@8.15.0):
@@ -14706,7 +14716,7 @@ snapshots:
       content-type: 1.0.5
       cookie: 1.0.2
       cookie-signature: 1.2.2
-      debug: 4.4.1
+      debug: 4.4.3
       depd: 2.0.0
       encodeurl: 2.0.0
       escape-html: 1.0.3
@@ -14715,7 +14725,7 @@ snapshots:
       fresh: 2.0.0
       http-errors: 2.0.1
       merge-descriptors: 2.0.0
-      mime-types: 3.0.1
+      mime-types: 3.0.2
       on-finished: 2.4.1
       once: 1.4.0
       parseurl: 1.3.3
@@ -14797,7 +14807,7 @@ snapshots:
 
   finalhandler@2.1.1:
     dependencies:
-      debug: 4.4.1
+      debug: 4.4.3
       encodeurl: 2.0.0
       escape-html: 1.0.3
       on-finished: 2.4.1
@@ -15267,7 +15277,7 @@ snapshots:
     dependencies:
       '@ioredis/commands': 1.5.0
       cluster-key-slot: 1.1.2
-      debug: 4.4.1
+      debug: 4.4.3
       denque: 2.1.0
       lodash.defaults: 4.2.0
       lodash.isarguments: 3.1.0
@@ -17011,7 +17021,7 @@ snapshots:
 
   router@2.2.0:
     dependencies:
-      debug: 4.4.1
+      debug: 4.4.3
       depd: 2.0.0
       is-promise: 4.0.0
       parseurl: 1.3.3
@@ -17657,7 +17667,7 @@ snapshots:
     dependencies:
       content-type: 1.0.5
       media-typer: 1.1.0
-      mime-types: 3.0.1
+      mime-types: 3.0.2
 
   typescript@5.7.3: {}
 

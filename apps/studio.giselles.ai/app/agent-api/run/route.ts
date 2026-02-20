@@ -1,7 +1,8 @@
+import { createRelaySession } from "@giselles-ai/browser-tool/relay";
 import {
-	createBridgeSession,
-	createGeminiChatHandler,
-} from "@giselles-ai/sandbox-agent-core";
+	createGeminiAgent,
+	runChat,
+} from "@giselles-ai/sandbox-agent";
 import { eq } from "drizzle-orm";
 import type { NextRequest } from "next/server";
 import * as z from "zod/v4";
@@ -20,27 +21,27 @@ const requestSchema = z.object({
 	sandbox_id: z.string().min(1).optional(),
 });
 
-function mergeBridgeSessionStream(input: {
+function mergeRelaySessionStream(input: {
 	chatResponse: Response;
 	session: { sessionId: string; token: string; expiresAt: number };
-	bridgeUrl: string;
+	relayUrl: string;
 }): Response {
 	if (!input.chatResponse.body) {
 		return input.chatResponse;
 	}
 
 	const encoder = new TextEncoder();
-	const bridgeSessionEvent = `${JSON.stringify({
-		type: "bridge.session",
+	const relaySessionEvent = `${JSON.stringify({
+		type: "relay.session",
 		sessionId: input.session.sessionId,
 		token: input.session.token,
 		expiresAt: input.session.expiresAt,
-		bridgeUrl: input.bridgeUrl,
+		relayUrl: input.relayUrl,
 	})}\n`;
 
 	const stream = new ReadableStream<Uint8Array>({
 		start(controller) {
-			controller.enqueue(encoder.encode(bridgeSessionEvent));
+			controller.enqueue(encoder.encode(relaySessionEvent));
 			const reader = input.chatResponse.body?.getReader();
 			if (!reader) {
 				controller.close();
@@ -136,42 +137,48 @@ export async function POST(request: NextRequest) {
 		});
 	}
 
-	const session = await createBridgeSession();
+	const requestUrl = new URL(request.url);
+	const relayUrl = `${requestUrl.origin}/agent-api/relay`;
+
+	const session = await createRelaySession();
 
 	const trimmedDocument = parsed.data.document?.trim();
 	const message = trimmedDocument
 		? `${parsed.data.message.trim()}\n\nDocument:\n${trimmedDocument}`
 		: parsed.data.message.trim();
 
-	const chatHandler = createGeminiChatHandler();
-	const chatHeaders = new Headers({ "content-type": "application/json" });
 	const oidcToken = request.headers.get("x-vercel-oidc-token");
-	if (oidcToken) {
-		chatHeaders.set("x-vercel-oidc-token", oidcToken);
-	}
 
-	const chatRequest = new Request(request.url, {
-		method: "POST",
-		headers: chatHeaders,
-		body: JSON.stringify({
+	const agent = createGeminiAgent({
+		env: {
+			GEMINI_API_KEY: process.env.GEMINI_API_KEY ?? "",
+			SANDBOX_SNAPSHOT_ID: process.env.SANDBOX_SNAPSHOT_ID ?? "",
+			BROWSER_TOOL_RELAY_URL: relayUrl,
+			BROWSER_TOOL_RELAY_SESSION_ID: session.sessionId,
+			BROWSER_TOOL_RELAY_TOKEN: session.token,
+			...(oidcToken ? { VERCEL_OIDC_TOKEN: oidcToken } : {}),
+		},
+		tools: {
+			browser: { relayUrl },
+		},
+	});
+
+	const chatResponse = await runChat({
+		agent,
+		signal: request.signal,
+		input: {
 			message,
 			session_id: parsed.data.session_id,
 			sandbox_id: parsed.data.sandbox_id,
-			bridge_session_id: session.sessionId,
-			bridge_token: session.token,
-		}),
-		signal: request.signal,
+			relay_session_id: session.sessionId,
+			relay_token: session.token,
+		},
 	});
 
-	const chatResponse = await chatHandler(chatRequest);
-
-	const requestUrl = new URL(request.url);
-	const bridgeUrl = `${requestUrl.origin}/agent-api/bridge`;
-
-	const response = mergeBridgeSessionStream({
+	const response = mergeRelaySessionStream({
 		chatResponse,
 		session,
-		bridgeUrl,
+		relayUrl,
 	});
 
 	for (const [key, value] of rateLimitHeaders.entries()) {

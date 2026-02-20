@@ -111,5 +111,5 @@ minimumReleaseAgeExclude:
   - next
   - "@next/env"
   - "@next/third-parties"
-  - "@giselles-ai/sandbox-agent-core"
+  - "@giselles-ai/sandbox-agent"
   - "@giselles-ai/browser-tool"
