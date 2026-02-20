@@ -8272,7 +8272,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="hono"></a>
-### hono v4.11.9
+### hono v4.11.10
 #### 
 
 ##### Paths
