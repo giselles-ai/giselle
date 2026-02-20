@@ -117,7 +117,6 @@ interface FormFieldRowProps {
 	onChange: (updated: FormField) => void;
 	onDelete: () => void;
 	depth?: number;
-	arrayDepth?: number;
 }
 
 export function FormFieldRow({
@@ -125,7 +124,6 @@ export function FormFieldRow({
 	onChange,
 	onDelete,
 	depth = 0,
-	arrayDepth = 0,
 }: FormFieldRowProps) {
 	const config = typeConfig[field.type];
 
@@ -181,12 +179,7 @@ export function FormFieldRow({
 			)}
 
 			{field.type === "object" && (
-				<ObjectChildren
-					field={field}
-					onChange={onChange}
-					depth={depth}
-					arrayDepth={arrayDepth}
-				/>
+				<ObjectFields field={field} onChange={onChange} depth={depth} />
 			)}
 
 			{field.type === "array" && (
@@ -194,7 +187,6 @@ export function FormFieldRow({
 					items={field.items}
 					onItemsChange={(updated) => onChange({ ...field, items: updated })}
 					depth={depth}
-					arrayDepth={arrayDepth}
 				/>
 			)}
 		</div>
@@ -262,16 +254,14 @@ function EnumValuesInput({
 	);
 }
 
-function ObjectChildren({
+function ObjectFields({
 	field,
 	onChange,
 	depth,
-	arrayDepth,
 }: {
 	field: ObjectFormField;
 	onChange: (updated: ObjectFormField) => void;
 	depth: number;
-	arrayDepth: number;
 }) {
 	return (
 		<div className="mt-[2px]">
@@ -291,7 +281,6 @@ function ObjectChildren({
 						})
 					}
 					depth={depth + 1}
-					arrayDepth={arrayDepth}
 				/>
 			))}
 			<div style={{ paddingLeft: (depth + 1) * 24 }}>
@@ -317,18 +306,12 @@ function ArrayItems({
 	items,
 	onItemsChange,
 	depth,
-	arrayDepth,
 }: {
 	items: FormField;
 	onItemsChange: (updated: FormField) => void;
 	depth: number;
-	arrayDepth: number;
 }) {
 	const itemConfig = typeConfig[items.type];
-	const availableTypeOptions =
-		arrayDepth >= 2
-			? typeOptions.filter((o) => o.value !== "array")
-			: typeOptions;
 
 	return (
 		<div style={{ paddingLeft: (depth + 1) * 24 }} className="mt-[2px]">
@@ -340,7 +323,7 @@ function ArrayItems({
 					Array items
 				</span>
 				<Select
-					options={availableTypeOptions}
+					options={typeOptions}
 					value={items.type}
 					onValueChange={(newType) =>
 						handleFormFieldTypeChange(items, newType, onItemsChange)
@@ -375,11 +358,10 @@ function ArrayItems({
 			)}
 
 			{items.type === "object" && (
-				<ObjectChildren
+				<ObjectFields
 					field={items}
 					onChange={(updated) => onItemsChange(updated)}
 					depth={depth + 1}
-					arrayDepth={arrayDepth + 1}
 				/>
 			)}
 
@@ -390,7 +372,6 @@ function ArrayItems({
 						onItemsChange({ ...items, items: updated })
 					}
 					depth={depth + 1}
-					arrayDepth={arrayDepth + 1}
 				/>
 			)}
 		</div>
