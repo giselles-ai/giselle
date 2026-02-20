@@ -3,5 +3,6 @@ export {
 	createApiSecret,
 	listApiSecretRecordsForTeam,
 	revokeApiSecret,
+	verifyApiSecret,
 	verifyApiSecretForTeam,
 } from "./api-secrets";
