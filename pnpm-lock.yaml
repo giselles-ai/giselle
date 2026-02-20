@@ -303,8 +303,8 @@ importers:
         specifier: workspace:*
         version: link:../../internal-packages/workflow-designer-ui
       '@giselles-ai/browser-tool':
-        specifier: 0.1.8
-        version: 0.1.8(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
+        specifier: 0.1.9
+        version: 0.1.9(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       '@giselles-ai/data-store-registry':
         specifier: workspace:*
         version: link:../../packages/data-store-registry
@@ -339,8 +339,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/react
       '@giselles-ai/sandbox-agent':
-        specifier: 0.1.8
-        version: 0.1.8(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
+        specifier: 0.1.9
+        version: 0.1.9(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       '@giselles-ai/supabase-driver':
         specifier: workspace:*
         version: link:../../packages/supabase-driver
@@ -2839,14 +2839,14 @@ packages:
   '@floating-ui/utils@0.2.10':
     resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
 
-  '@giselles-ai/browser-tool@0.1.8':
-    resolution: {integrity: sha512-ZYTMS30RGt/PKwNqGglE8nc7f+1A8feHQMahPX1D6FqbDk8Bm/EEfqpMyyWWPzW4k+w9iZFIoIzP1elFVbS2Qg==}
+  '@giselles-ai/browser-tool@0.1.9':
+    resolution: {integrity: sha512-9Yqz0qqf2mFPC79ylARstFSvg9Ug/6XKzLYV/GcUhwDIh2FJBSct0e9/XIz5Nv3uOc/oTkHhqpMd10OnwA5MgA==}
     peerDependencies:
       react: '>=19.0.0'
       react-dom: '>=19.0.0'
 
-  '@giselles-ai/sandbox-agent@0.1.8':
-    resolution: {integrity: sha512-UDR8qtN7ppxxFW5WtKJCBTZ1pxnEOhHNaCt5x2J6WFxLyPYiGiyt317i72xl7VF4ywVbAeSONZJCiG3PiXpMdA==}
+  '@giselles-ai/sandbox-agent@0.1.9':
+    resolution: {integrity: sha512-QtoBEtXZIoftW6L6sH5G/OQAj2K8kjhWyq4S042Ib5BMKZsC57M9FzbbOzVrO+Y3XKfm+0q1+d6ZFPSn9cPTlg==}
     peerDependencies:
       react: '>=19.0.0'
       react-dom: '>=19.0.0'
@@ -10768,7 +10768,7 @@ snapshots:
 
   '@floating-ui/utils@0.2.10': {}
 
-  '@giselles-ai/browser-tool@0.1.8(react-dom@19.2.1(react@19.2.1))(react@19.2.1)':
+  '@giselles-ai/browser-tool@0.1.9(react-dom@19.2.1(react@19.2.1))(react@19.2.1)':
     dependencies:
       '@modelcontextprotocol/sdk': 1.26.0(zod@4.3.6)
       ioredis: 5.9.3
@@ -10779,7 +10779,7 @@ snapshots:
       - '@cfworker/json-schema'
       - supports-color
 
-  '@giselles-ai/sandbox-agent@0.1.8(react-dom@19.2.1(react@19.2.1))(react@19.2.1)':
+  '@giselles-ai/sandbox-agent@0.1.9(react-dom@19.2.1(react@19.2.1))(react@19.2.1)':
     dependencies:
       '@vercel/sandbox': 1.6.0
       react: 19.2.1
