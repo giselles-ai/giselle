@@ -128,7 +128,7 @@ export function FormFieldRow({
 	const config = typeConfig[field.type];
 
 	return (
-		<div style={{ paddingLeft: depth * 24 }}>
+		<div className={depth > 0 ? "pl-[24px]" : ""}>
 			<div className="flex items-center gap-[8px] py-[4px]">
 				<div className={`shrink-0 ${config.colorClass}`}>{config.icon}</div>
 				<Input
@@ -174,7 +174,6 @@ export function FormFieldRow({
 				<EnumValuesInput
 					values={field.enumValues}
 					onChange={(enumValues) => onChange({ ...field, enumValues })}
-					depth={depth}
 				/>
 			)}
 
@@ -196,11 +195,9 @@ export function FormFieldRow({
 function EnumValuesInput({
 	values,
 	onChange,
-	depth,
 }: {
 	values: string[];
 	onChange: (values: string[]) => void;
-	depth: number;
 }) {
 	const [input, setInput] = useState("");
 
@@ -216,7 +213,7 @@ function EnumValuesInput({
 	};
 
 	return (
-		<div style={{ paddingLeft: depth * 24 + 22 }} className="mt-[4px] mb-[4px]">
+		<div className="pl-[22px] mt-[4px] mb-[4px]">
 			{values.length > 0 && (
 				<div className="flex flex-wrap gap-[4px] mb-[4px]">
 					{values.map((value) => (
@@ -283,7 +280,7 @@ function ObjectFields({
 					depth={depth + 1}
 				/>
 			))}
-			<div style={{ paddingLeft: (depth + 1) * 24 }}>
+			<div className="pl-[24px]">
 				<button
 					type="button"
 					onClick={() =>
@@ -314,7 +311,7 @@ function ArrayItems({
 	const itemConfig = typeConfig[items.type];
 
 	return (
-		<div style={{ paddingLeft: (depth + 1) * 24 }} className="mt-[2px]">
+		<div className="pl-[24px] mt-[2px]">
 			<div className="flex items-center gap-[8px] py-[4px]">
 				<div className={`shrink-0 ${itemConfig.colorClass}`}>
 					{itemConfig.icon}
@@ -353,7 +350,6 @@ function ArrayItems({
 				<EnumValuesInput
 					values={items.enumValues}
 					onChange={(enumValues) => onItemsChange({ ...items, enumValues })}
-					depth={0}
 				/>
 			)}
 
