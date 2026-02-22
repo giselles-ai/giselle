@@ -1,12 +1,14 @@
 ---
-description: Vercel AI SDK v6 patterns — prevents common hallucinations of legacy APIs
-globs: *.tsx,*.ts
+description: Correct AI SDK patterns for this project — prevents hallucination of outdated APIs
+globs: packages/giselle/src/generations/**/*.ts
 alwaysApply: false
 ---
 
-# Vercel AI SDK — Correct v6 Patterns
+# AI SDK — Correct Patterns for This Project
 
-LLMs frequently hallucinate legacy AI SDK APIs. Follow these rules strictly.
+> **How this rule differs from `update-ai-sdk.mdc`:** That rule covers *upgrading SDK versions* (running `pnpm outdated`, updating the catalog). This rule covers *writing correct code* against the current pinned SDK version.
+
+LLMs frequently hallucinate outdated AI SDK APIs. Follow these rules strictly.
 
 ## 1. `toolContext` → `experimental_context`
 
@@ -14,13 +16,13 @@ LLMs frequently hallucinate legacy AI SDK APIs. Follow these rules strictly.
 
 ```typescript
 // ✅ CORRECT
-import { tool } from 'ai';
-import { z } from 'zod';
+import { tool } from "ai";
+import { z } from "zod";
 
 const myTool = tool({
-  description: 'Do something with user context',
+  description: "Do something with user context",
   inputSchema: z.object({
-    query: z.string().describe('The search query'),
+    query: z.string().describe("The search query"),
   }),
   execute: async (input, { experimental_context }) => {
     const ctx = experimental_context as { userId: string };
@@ -29,16 +31,16 @@ const myTool = tool({
 });
 
 // Pass context at the call site:
-const result = await generateText({
+const result = streamText({
   model,
   tools: { myTool },
-  experimental_context: { userId: '123' },
+  experimental_context: { userId: "123" },
   // ...
 });
 ```
 
 ```typescript
-// ❌ WRONG — v5 pattern, will fail silently
+// ❌ WRONG — removed API, will fail silently
 execute: async (args, { toolContext }) => { ... }
 ```
 
@@ -46,47 +48,16 @@ execute: async (args, { toolContext }) => { ... }
 
 ---
 
-## 2. `generateObject` is Legacy → use `Output.object()`
-
-`generateObject` and `streamObject` are **deprecated**. Use `generateText` / `streamText` with the `output` property instead.
-
-```typescript
-// ✅ CORRECT
-import { generateText, Output } from 'ai';
-import { z } from 'zod';
-
-const { output } = await generateText({
-  model,
-  output: Output.object({
-    schema: z.object({
-      name: z.string(),
-      ingredients: z.array(z.object({ name: z.string(), amount: z.string() })),
-    }),
-  }),
-  prompt: 'Generate a lasagna recipe.',
-});
-```
-
-```typescript
-// ❌ WRONG — Legacy API
-import { generateObject } from 'ai';
-const { object } = await generateObject({ model, schema, prompt });
-```
-
-**Source:** https://sdk.vercel.ai/docs/ai-sdk-core/generating-structured-data#generateobject-and-streamobject-legacy
-
----
-
-## 3. `parameters` → `inputSchema`
+## 2. `parameters` → `inputSchema`
 
 The `tool()` function property for defining input is `inputSchema`, not `parameters`.
 
 ```typescript
 // ✅ CORRECT
 tool({
-  description: 'Get weather',
+  description: "Get weather",
   inputSchema: z.object({
-    location: z.string().describe('City name'),
+    location: z.string().describe("City name"),
   }),
   execute: async ({ location }) => { ... },
 });
@@ -103,16 +74,16 @@ tool({
 
 ---
 
-## 4. `strict: true` is a Tool Option (not Zod)
+## 3. `strict: true` is a Tool Option (not Zod)
 
 `strict` is a **top-level property on the tool**, not a method on the Zod schema. Always add `.describe()` to every field.
 
 ```typescript
 // ✅ CORRECT
 tool({
-  description: 'Get weather',
+  description: "Get weather",
   inputSchema: z.object({
-    location: z.string().describe('City name, e.g. London'),
+    location: z.string().describe("City name, e.g. London"),
   }),
   strict: true,  // <-- top-level tool option
   execute: async ({ location }) => { ... },
@@ -128,37 +99,46 @@ inputSchema: z.object({ ... }).strict(),
 
 ---
 
-## 5. `toDataStreamResponse()` → `toUIMessageStreamResponse()`
+## 4. `toDataStreamResponse()` → `toUIMessageStream()`
 
-The streaming response helper has been renamed.
+This project uses `toUIMessageStream()` — not `toDataStreamResponse()` or `toUIMessageStreamResponse()`.
 
 ```typescript
-// ✅ CORRECT
-return result.toUIMessageStreamResponse();
+// ✅ CORRECT — what this project uses
+const uiMessageStream = streamTextResult.toUIMessageStream({
+  onFinish: async ({ messages }) => {
+    // handle completion
+  },
+});
 ```
 
 ```typescript
-// ❌ WRONG — old helper name
-return result.toDataStreamResponse();
+// ❌ WRONG — outdated helpers
+result.toDataStreamResponse();
+result.toUIMessageStreamResponse();
 ```
-
-**Source:** https://sdk.vercel.ai/docs/getting-started/nextjs-app-router#create-a-route-handler
 
 ---
 
-## 6. `maxSteps` → `stopWhen: stepCountIs(N)`
+## 5. `maxSteps` → `stopWhen`
 
-Multi-step tool calls no longer use `maxSteps`. Import `stepCountIs` from `'ai'`.
+Multi-step tool calls use `stopWhen`, not `maxSteps`. Import `stepCountIs` from `"ai"` for simple step limits, or use a custom function.
 
 ```typescript
-// ✅ CORRECT
-import { streamText, stepCountIs } from 'ai';
+// ✅ CORRECT — simple step limit
+import { streamText, stepCountIs } from "ai";
 
 const result = streamText({
   model,
   stopWhen: stepCountIs(5),
   tools: { ... },
 });
+
+// ✅ CORRECT — custom stop condition (used in this project)
+stopWhen: ({ steps }) => {
+  const lastStep = steps[steps.length - 1];
+  return lastStep.finishReason !== "tool-calls";
+},
 ```
 
 ```typescript
@@ -170,73 +150,81 @@ streamText({ maxSteps: 5, ... });
 
 ---
 
-## 7. Messages: `UIMessage` + `convertToModelMessages()`
+## 6. Messages: `UIMessage` + `ModelMessage`
 
-Client messages are `UIMessage` type. You must convert them before passing to the model. `convertToModelMessages` is async.
+Client messages are `UIMessage` type. Model calls expect `ModelMessage`. Use `convertToModelMessages()` to convert between them.
 
 ```typescript
 // ✅ CORRECT
-import { streamText, UIMessage, convertToModelMessages } from 'ai';
-
-export async function POST(req: Request) {
-  const { messages }: { messages: UIMessage[] } = await req.json();
-
-  const result = streamText({
-    model,
-    messages: await convertToModelMessages(messages),
-    // ...
-  });
-
-  return result.toUIMessageStreamResponse();
-}
+import { streamText, type UIMessage, type ModelMessage } from "ai";
 ```
 
 ```typescript
-// ❌ WRONG — passing raw messages without conversion or type
+// ❌ WRONG — using untyped message arrays
 const { messages } = await req.json();
-streamText({ messages, ... }); // Missing UIMessage type and conversion
+streamText({ messages, ... }); // Missing type safety
 ```
 
 **Source:** https://sdk.vercel.ai/docs/getting-started/nextjs-app-router#create-a-route-handler
 
 ---
 
-## Reference: Canonical Route Handler
+## 7. `generateObject` — Heads-Up for Future Migration
 
-A complete, correct `app/api/chat/route.ts` applying all rules above:
+> **Note:** This project currently uses `generateObject` which is valid for our pinned SDK version. However, upstream AI SDK v6 has deprecated `generateObject` and `streamObject` in favor of `generateText` / `streamText` with `Output.object({ schema })`. Keep this in mind for the next SDK upgrade.
+
+```typescript
+// Current (v5) — valid for this project
+import { generateObject } from "ai";
+const { object } = await generateObject({ model, schema, prompt });
+
+// Future (v6) — for when the project upgrades
+import { generateText, Output } from "ai";
+const { output } = await generateText({
+  model,
+  output: Output.object({ schema }),
+  prompt,
+});
+```
+
+**Source:** https://sdk.vercel.ai/docs/ai-sdk-core/generating-structured-data#generateobject-and-streamobject-legacy
+
+---
+
+## Reference: Canonical Streaming Pattern
+
+A correct streaming setup following this project's conventions:
 
 ```typescript
 import {
   streamText,
-  UIMessage,
-  convertToModelMessages,
-  tool,
   stepCountIs,
-} from 'ai';
-import { z } from 'zod';
+  smoothStream,
+  type UIMessage,
+} from "ai";
+import { createGateway } from "@ai-sdk/gateway";
 
-export async function POST(req: Request) {
-  const { messages }: { messages: UIMessage[] } = await req.json();
+const gateway = createGateway({
+  headers: aiGatewayHeaders,
+});
 
-  const result = streamText({
-    model: 'anthropic/claude-sonnet-4.5',
-    messages: await convertToModelMessages(messages),
-    stopWhen: stepCountIs(5),
-    tools: {
-      weather: tool({
-        description: 'Get the weather in a location (fahrenheit)',
-        inputSchema: z.object({
-          location: z.string().describe('The location to get the weather for'),
-        }),
-        strict: true,
-        execute: async ({ location }) => ({
-          location,
-          temperature: Math.round(Math.random() * (90 - 32) + 32),
-        }),
-      }),
-    },
-  });
+const streamTextResult = streamText({
+  model: gateway("openai/gpt-4o"),
+  messages,
+  tools: toolSet,
+  stopWhen: stepCountIs(5),
+  experimental_transform: smoothStream({
+    delayInMs: 1000,
+    chunking: "line",
+  }),
+  onError: ({ error }) => {
+    // handle error
+  },
+});
 
-  return result.toUIMessageStreamResponse();
-}
+const uiMessageStream = streamTextResult.toUIMessageStream({
+  onFinish: async ({ messages: generateMessages }) => {
+    // handle completion
+  },
+});
 ```
