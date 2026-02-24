@@ -314,7 +314,10 @@ export function OutputSourcePicker({
 									onChange={(e) => setQuery(e.target.value)}
 								/>
 							</div>
-							<div className="max-h-[240px] overflow-y-auto mx-[4px]">
+							<div
+								className="max-h-[240px] overflow-y-auto mx-[4px]"
+								onWheel={(e) => e.stopPropagation()}
+							>
 								{filteredGroups.length === 0 ? (
 									<p className="text-[12px] text-text-muted px-[8px] py-[6px]">
 										No results found
