@@ -290,14 +290,14 @@ function ArrayItems({
 				)}
 			</div>
 
-			{items.type === "enum" && (
+			{!itemTypeLocked && items.type === "enum" && (
 				<EnumValuesInput
 					values={items.enumValues}
 					onChange={(enumValues) => onItemsChange({ ...items, enumValues })}
 				/>
 			)}
 
-			{items.type === "object" && (
+			{!itemTypeLocked && items.type === "object" && (
 				<ObjectFields
 					field={items}
 					onChange={(updated) => onItemsChange(updated)}
@@ -307,7 +307,7 @@ function ArrayItems({
 				/>
 			)}
 
-			{items.type === "array" && (
+			{!itemTypeLocked && items.type === "array" && (
 				<ArrayItems
 					items={items.items}
 					onItemsChange={(updated) =>
