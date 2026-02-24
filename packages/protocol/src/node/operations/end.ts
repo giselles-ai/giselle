@@ -10,7 +10,7 @@ const Source = z.object({
 export type Source = z.infer<typeof Source>;
 
 const PropertyMapping = z.object({
-	propertyPath: z.array(z.string()),
+	path: z.array(z.string()),
 	source: Source,
 });
 export type PropertyMapping = z.infer<typeof PropertyMapping>;
