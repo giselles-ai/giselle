@@ -23,6 +23,7 @@ const Output = z.discriminatedUnion("format", [
 		mappings: z.array(PropertyMapping),
 	}),
 ]);
+export type EndOutput = z.infer<typeof Output>;
 
 export const EndContent = z.object({
 	type: z.literal("end"),
