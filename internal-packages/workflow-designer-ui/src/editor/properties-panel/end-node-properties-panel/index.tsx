@@ -11,24 +11,34 @@
 
 import { Button } from "@giselle-internal/ui/button";
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
+import { Select } from "@giselle-internal/ui/select";
 import { defaultName } from "@giselles-ai/node-registry";
 import type {
 	Connection,
 	EndNode,
 	NodeId,
 	NodeLike,
+	Schema,
 } from "@giselles-ai/protocol";
 import { isAppEntryNode } from "@giselles-ai/protocol";
 import clsx from "clsx/lite";
-import { PlusIcon, SquareArrowOutUpRightIcon, TrashIcon } from "lucide-react";
+import {
+	Braces,
+	Plus,
+	PlusIcon,
+	SquareArrowOutUpRightIcon,
+	TrashIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
+
 import {
 	useAppDesignerStore,
 	useConnectNodes,
 	useDeleteNode,
 	useDisconnectNodes,
 	useUpdateNodeData,
+	useUpdateNodeDataContent,
 } from "../../../app-designer";
 import { NodeIcon } from "../../../icons/node";
 import {
@@ -37,6 +47,20 @@ import {
 	PropertiesPanelRoot,
 } from "../ui";
 import { SettingLabel } from "../ui/setting-label";
+import { StructuredOutputDialog } from "./structured-output-dialog";
+
+const outputFormatOptions = [
+	{ value: "passthrough", label: "Raw" },
+	{ value: "object", label: "JSON" },
+];
+
+const defaultSchema: Schema = {
+	title: "response",
+	type: "object",
+	properties: {},
+	required: [],
+	additionalProperties: false,
+};
 
 function AddOutputButton({
 	availableNodes,
@@ -84,6 +108,7 @@ function AddOutputButton({
 export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 	const deleteNode = useDeleteNode();
 	const updateNodeData = useUpdateNodeData();
+	const updateNodeDataContent = useUpdateNodeDataContent();
 	const connectNodes = useConnectNodes();
 	const disconnectNodes = useDisconnectNodes();
 	const { nodes, connections } = useAppDesignerStore((s) => ({
@@ -100,6 +125,8 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 		if (appEntryNode.content.status !== "configured") return undefined;
 		return appEntryNode.content.appId;
 	}, [nodes]);
+
+	const outputFormat = node.content.output.format;
 
 	const helperTextClassName = "text-[11px] text-text-muted/50";
 	const emptyStateHelperTextClassName = "text-[11px] text-text-muted/70";
@@ -182,106 +209,179 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 			<PropertiesPanelContent>
 				<div className="flex flex-col gap-[16px]">
 					<div className="space-y-0">
-						<div className="flex items-center justify-between gap-[12px]">
-							<SettingLabel className="mb-0">Outputs</SettingLabel>
-							<AddOutputButton
-								availableNodes={availableOutputSourceNodes}
-								endNodeId={node.id}
-								onConnectNodes={connectNodes}
-							/>
-						</div>
+						<SettingLabel className="mb-0">Outputs</SettingLabel>
 						<p className={helperTextClassName}>
 							These outputs will determine the results of your app.
 						</p>
 					</div>
 
-					<div className={listClassName}>
-						{connectedOutputsByOutputNode.length === 0 ? (
-							<div className="rounded-[12px] bg-error-900/10 px-[12px] py-[10px]">
-								<p className="text-[12px] text-error-900">
-									This node doesn't have any outputs yet.
-								</p>
-								{availableOutputSourceNodes.length === 0 && (
-									<p
-										className={clsx("mt-[6px]", emptyStateHelperTextClassName)}
-									>
-										Add a node as an output first.
-									</p>
+					<div className="flex items-center justify-between gap-[12px]">
+						<SettingLabel className="mb-0">Output Format</SettingLabel>
+						<Select
+							options={outputFormatOptions}
+							placeholder="Select format"
+							value={outputFormat}
+							onValueChange={(value) => {
+								if (value === "object") {
+									updateNodeDataContent(node, {
+										output: {
+											format: "object",
+											schema: defaultSchema,
+											mappings: [],
+										},
+									});
+								} else if (value === "passthrough") {
+									updateNodeDataContent(node, {
+										output: { format: "passthrough" },
+									});
+								}
+							}}
+							widthClassName="w-[100px]"
+						/>
+					</div>
+
+					{outputFormat === "passthrough" ? (
+						<>
+							<div className="flex items-center justify-end">
+								<AddOutputButton
+									availableNodes={availableOutputSourceNodes}
+									endNodeId={node.id}
+									onConnectNodes={connectNodes}
+								/>
+							</div>
+							<div className={listClassName}>
+								{connectedOutputsByOutputNode.length === 0 ? (
+									<div className="rounded-[12px] bg-error-900/10 px-[12px] py-[10px]">
+										<p className="text-[12px] text-error-900">
+											This node doesn't have any outputs yet.
+										</p>
+										{availableOutputSourceNodes.length === 0 && (
+											<p
+												className={clsx(
+													"mt-[6px]",
+													emptyStateHelperTextClassName,
+												)}
+											>
+												Add a node as an output first.
+											</p>
+										)}
+									</div>
+								) : (
+									<ul className={listClassName}>
+										{connectedOutputsByOutputNode.map((group) => {
+											const hasMultipleOutputs = group.items.length >= 2;
+											return (
+												<li
+													key={group.outputNodeId}
+													className={clsx(
+														connectedRowBaseClassName,
+														hasMultipleOutputs ? "items-start" : "items-center",
+													)}
+												>
+													{group.outputNode ? (
+														<div
+															className={clsx(
+																"flex size-[24px] shrink-0 items-center justify-center",
+																hasMultipleOutputs && "mt-[2px]",
+															)}
+														>
+															<NodeIcon
+																node={group.outputNode}
+																className="size-[14px] stroke-current fill-none text-text"
+															/>
+														</div>
+													) : (
+														<div
+															className={clsx(
+																"flex size-[24px] shrink-0 items-center justify-center text-[10px] text-text-muted",
+																hasMultipleOutputs && "mt-[2px]",
+															)}
+														>
+															?
+														</div>
+													)}
+													<div className="min-w-0 flex-1">
+														<p className="text-[13px] font-medium text-text leading-[1.2] truncate">
+															{group.outputNode
+																? defaultName(group.outputNode)
+																: group.outputNodeId}
+														</p>
+														{hasMultipleOutputs && (
+															<ul className="mt-[6px] flex flex-col gap-[2px]">
+																{group.items.map((item) => (
+																	<li
+																		key={item.connection.id}
+																		className="text-[11px] text-text-muted/80 leading-[1.2] truncate"
+																	>
+																		{item.outputLabel}
+																	</li>
+																))}
+															</ul>
+														)}
+													</div>
+													<Button
+														type="button"
+														size="compact"
+														className={clsx(
+															"shrink-0 opacity-0 transition-opacity pointer-events-none group-hover:pointer-events-auto group-hover:opacity-100 focus:opacity-100 focus:pointer-events-auto",
+															hasMultipleOutputs && "mt-[2px]",
+														)}
+														onClick={() => {
+															disconnectNodes(group.outputNodeId, node.id);
+														}}
+														aria-label="Disconnect this node from the App output"
+													>
+														<TrashIcon
+															className="size-[14px]"
+															aria-hidden="true"
+														/>
+													</Button>
+												</li>
+											);
+										})}
+									</ul>
 								)}
 							</div>
-						) : (
-							<ul className={listClassName}>
-								{connectedOutputsByOutputNode.map((group) => {
-									const hasMultipleOutputs = group.items.length >= 2;
-									return (
-										<li
-											key={group.outputNodeId}
-											className={clsx(
-												connectedRowBaseClassName,
-												hasMultipleOutputs ? "items-start" : "items-center",
-											)}
+						</>
+					) : (
+						<div className="flex justify-end">
+							<StructuredOutputDialog
+								schema={
+									node.content.output.format === "object"
+										? node.content.output.schema
+										: defaultSchema
+								}
+								mappings={
+									node.content.output.format === "object"
+										? node.content.output.mappings
+										: []
+								}
+								nodes={connectedOutputsByOutputNode.map((g) => g.outputNode)}
+								onUpdate={(schema, mappings) => {
+									updateNodeDataContent(node, {
+										output: { format: "object", schema, mappings },
+									});
+								}}
+								trigger={
+									node.content.output.format === "object" &&
+									Object.keys(node.content.output.schema.properties).length >
+										0 ? (
+										<Button
+											variant="solid"
+											size="large"
+											leftIcon={<Braces className="text-blue-300" />}
 										>
-											{group.outputNode ? (
-												<div
-													className={clsx(
-														"flex size-[24px] shrink-0 items-center justify-center",
-														hasMultipleOutputs && "mt-[2px]",
-													)}
-												>
-													<NodeIcon
-														node={group.outputNode}
-														className="size-[14px] stroke-current fill-none text-text"
-													/>
-												</div>
-											) : (
-												<div
-													className={clsx(
-														"flex size-[24px] shrink-0 items-center justify-center text-[10px] text-text-muted",
-														hasMultipleOutputs && "mt-[2px]",
-													)}
-												>
-													?
-												</div>
-											)}
-											<div className="min-w-0 flex-1">
-												<p className="text-[13px] font-medium text-text leading-[1.2] truncate">
-													{group.outputNode
-														? defaultName(group.outputNode)
-														: group.outputNodeId}
-												</p>
-												{hasMultipleOutputs && (
-													<ul className="mt-[6px] flex flex-col gap-[2px]">
-														{group.items.map((item) => (
-															<li
-																key={item.connection.id}
-																className="text-[11px] text-text-muted/80 leading-[1.2] truncate"
-															>
-																{item.outputLabel}
-															</li>
-														))}
-													</ul>
-												)}
-											</div>
-											<Button
-												type="button"
-												size="compact"
-												className={clsx(
-													"shrink-0 opacity-0 transition-opacity pointer-events-none group-hover:pointer-events-auto group-hover:opacity-100 focus:opacity-100 focus:pointer-events-auto",
-													hasMultipleOutputs && "mt-[2px]",
-												)}
-												onClick={() => {
-													disconnectNodes(group.outputNodeId, node.id);
-												}}
-												aria-label="Disconnect this node from the App output"
-											>
-												<TrashIcon className="size-[14px]" aria-hidden="true" />
-											</Button>
-										</li>
-									);
-								})}
-							</ul>
-						)}
-					</div>
+											{node.content.output.schema.title}
+										</Button>
+									) : (
+										<Button variant="solid" size="large" leftIcon={<Plus />}>
+											Set Schema
+										</Button>
+									)
+								}
+							/>
+						</div>
+					)}
 
 					<TryPlaygroundSection
 						isDisabled={isTryAppInStageDisabled}

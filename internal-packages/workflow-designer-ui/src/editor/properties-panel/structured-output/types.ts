@@ -67,3 +67,41 @@ export function createEmptyFormField(): StringFormField {
 		description: "",
 	};
 }
+
+export function changeFieldType(
+	field: FormField,
+	newType: FieldType,
+): FormField {
+	if (field.type === newType) return field;
+	const base = {
+		id: field.id,
+		name: field.name,
+		description: field.description,
+	};
+	switch (newType) {
+		case "string":
+			return { ...base, type: "string" };
+		case "number":
+			return { ...base, type: "number" };
+		case "boolean":
+			return { ...base, type: "boolean" };
+		case "enum":
+			return {
+				...base,
+				type: "enum",
+				enumValues: field.type === "enum" ? field.enumValues : [],
+			};
+		case "object":
+			return {
+				...base,
+				type: "object",
+				children: field.type === "object" ? field.children : [],
+			};
+		case "array":
+			return {
+				...base,
+				type: "array",
+				items: field.type === "array" ? field.items : createEmptyFormField(),
+			};
+	}
+}
