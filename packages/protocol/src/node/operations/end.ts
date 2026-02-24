@@ -2,16 +2,13 @@ import * as z from "zod/v4";
 import { Schema } from "../../structured-output";
 import { NodeId, OutputId } from "../base";
 
-const Source = z.object({
-	nodeId: NodeId.schema,
-	outputId: OutputId.schema,
-	path: z.array(z.string()),
-});
-export type Source = z.infer<typeof Source>;
-
 const PropertyMapping = z.object({
-	path: z.array(z.string()),
-	source: Source,
+	path: z.array(z.string()).nonempty(),
+	source: z.object({
+		nodeId: NodeId.schema,
+		outputId: OutputId.schema,
+		path: z.array(z.string()),
+	}),
 });
 export type PropertyMapping = z.infer<typeof PropertyMapping>;
 
