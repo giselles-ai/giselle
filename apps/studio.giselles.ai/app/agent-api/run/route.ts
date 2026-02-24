@@ -154,6 +154,9 @@ export async function POST(request: NextRequest) {
 			BROWSER_TOOL_RELAY_SESSION_ID: session.sessionId,
 			BROWSER_TOOL_RELAY_TOKEN: session.token,
 			...(oidcToken ? { VERCEL_OIDC_TOKEN: oidcToken } : {}),
+			...(process.env.VERCEL_PROTECTION_BYPASS
+				? { VERCEL_PROTECTION_BYPASS: process.env.VERCEL_PROTECTION_BYPASS }
+				: {}),
 		},
 		tools: {
 			browser: { relayUrl },
