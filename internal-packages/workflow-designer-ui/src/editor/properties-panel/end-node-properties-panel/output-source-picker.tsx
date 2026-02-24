@@ -180,12 +180,12 @@ function useOutputSourceCandidates(nodes: NodeLike[]) {
 			const contentType =
 				node && isOperationNode(node) ? node.content.type : "other";
 			const groupLabel = operationTypeToGroupLabel(contentType);
-			const existing = groups.get(contentType);
+			const existing = groups.get(groupLabel);
 			if (existing) {
 				existing.items.push(candidate);
 			} else {
-				groups.set(contentType, {
-					groupId: contentType,
+				groups.set(groupLabel, {
+					groupId: groupLabel,
 					groupLabel,
 					items: [candidate],
 				});
