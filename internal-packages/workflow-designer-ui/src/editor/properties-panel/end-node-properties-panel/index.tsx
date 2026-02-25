@@ -230,10 +230,7 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 								</p>
 								{availableOutputSourceNodes.length === 0 && (
 									<p
-										className={clsx(
-											"mt-[6px]",
-											emptyStateHelperTextClassName,
-										)}
+										className={clsx("mt-[6px]", emptyStateHelperTextClassName)}
 									>
 										Add a node as an output first.
 									</p>
@@ -304,10 +301,7 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 												}}
 												aria-label="Disconnect this node from the App output"
 											>
-												<TrashIcon
-													className="size-[14px]"
-													aria-hidden="true"
-												/>
+												<TrashIcon className="size-[14px]" aria-hidden="true" />
 											</Button>
 										</li>
 									);
