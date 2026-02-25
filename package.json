@@ -47,6 +47,8 @@
 			"@electric-sql/client": "1.0.10",
 			"cookie": "1.0.2",
 			"@react-email/preview-server>next": "16.1.5",
+			"@babel/helpers": "7.26.10",
+			"@babel/runtime": "7.26.10",
 			"vite": "7.3.1",
 			"jws": "4.0.1",
 			"qs": "6.14.1",
