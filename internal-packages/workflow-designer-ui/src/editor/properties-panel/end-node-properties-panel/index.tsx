@@ -21,6 +21,7 @@ import type {
 	Schema,
 } from "@giselles-ai/protocol";
 import { isAppEntryNode } from "@giselles-ai/protocol";
+import { useFeatureFlag } from "@giselles-ai/react";
 import clsx from "clsx/lite";
 import {
 	Braces,
@@ -31,8 +32,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
-
-import { useFeatureFlag } from "@giselles-ai/react";
 import {
 	useAppDesignerStore,
 	useConnectNodes,
