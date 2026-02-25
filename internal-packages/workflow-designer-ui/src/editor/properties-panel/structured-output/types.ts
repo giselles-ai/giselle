@@ -95,7 +95,10 @@ export function changeFieldType(
 			return {
 				...base,
 				type: "object",
-				children: field.type === "object" ? field.children : [],
+				children:
+					field.type === "object" && field.children.length > 0
+						? field.children
+						: [createEmptyFormField()],
 			};
 		case "array":
 			return {

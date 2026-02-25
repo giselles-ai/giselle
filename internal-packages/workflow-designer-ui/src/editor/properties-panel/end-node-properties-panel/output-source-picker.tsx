@@ -128,6 +128,17 @@ function collectSubSchemaItems(
 				depth + 1,
 			);
 		}
+		if (subSchema.type === "array" && subSchema.items.type === "object") {
+			collectSubSchemaItems(
+				candidates,
+				subSchema.items.properties,
+				node,
+				outputId,
+				nodeName,
+				path,
+				depth + 1,
+			);
+		}
 	}
 }
 
@@ -248,7 +259,8 @@ export function OutputSourcePicker({
 			(c) =>
 				c.source.nodeId === value.nodeId &&
 				c.source.outputId === value.outputId &&
-				c.source.path.join(".") === value.path.join("."),
+				c.source.path.length === value.path.length &&
+				c.source.path.every((seg, i) => seg === value.path[i]),
 		);
 	}, [value, flatCandidates]);
 

@@ -11,7 +11,7 @@ export function convertSchemaToFormFields({ title, properties }: Schema) {
 	};
 }
 
-function convertSubSchemaToFormField(
+export function convertSubSchemaToFormField(
 	key: string,
 	subSchema: SubSchema,
 ): FormField {

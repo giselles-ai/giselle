@@ -10,11 +10,23 @@ import {
 	DialogTrigger,
 } from "@giselle-internal/ui/dialog";
 import { Input } from "@giselle-internal/ui/input";
-import type { NodeLike, PropertyMapping, Schema } from "@giselles-ai/protocol";
+import type {
+	NodeLike,
+	PropertyMapping,
+	Schema,
+	SubSchema,
+} from "@giselles-ai/protocol";
+import {
+	isContentGenerationNode,
+	isTextGenerationNode,
+} from "@giselles-ai/protocol";
 import { Plus } from "lucide-react";
 import { useCallback, useState } from "react";
 import { convertFormFieldsToSchema } from "../structured-output/convert-form-fields-to-schema";
-import { convertSchemaToFormFields } from "../structured-output/convert-schema-to-form-fields";
+import {
+	convertSchemaToFormFields,
+	convertSubSchemaToFormField,
+} from "../structured-output/convert-schema-to-form-fields";
 import { FormFieldRow } from "../structured-output/form-field-row";
 import {
 	changeFieldType,
@@ -28,6 +40,53 @@ import {
 	hasEmptyNames,
 } from "../structured-output/validation";
 import { OutputSourcePicker } from "./output-source-picker";
+
+function getNodeSchema(node: NodeLike): Schema | undefined {
+	if (isTextGenerationNode(node) || isContentGenerationNode(node)) {
+		if (node.content.output.format === "object") {
+			return node.content.output.schema;
+		}
+	}
+	return undefined;
+}
+
+function resolveSubSchemaAtPath(
+	schema: Schema,
+	path: string[],
+): SubSchema | undefined {
+	if (path.length === 0) {
+		return {
+			type: "object",
+			properties: schema.properties,
+			required: schema.required,
+			additionalProperties: false,
+		};
+	}
+	let current: SubSchema | undefined = {
+		type: "object",
+		properties: schema.properties,
+		required: schema.required,
+		additionalProperties: false,
+	};
+	for (const segment of path) {
+		if (!current) return undefined;
+		if (current.type === "array") {
+			current = current.items;
+		}
+		if (current.type !== "object") return undefined;
+		current = current.properties[segment];
+	}
+	return current;
+}
+
+function createChildrenFromSubSchema(subSchema: SubSchema): FormField[] {
+	if (subSchema.type === "object") {
+		return Object.entries(subSchema.properties).map(([key, child]) =>
+			convertSubSchemaToFormField(key, child),
+		);
+	}
+	return [];
+}
 
 interface StructuredOutputDialogProps {
 	schema: Schema;
@@ -213,7 +272,21 @@ export function StructuredOutputDialog({
 			const next = prev.filter((_, i) => i !== index);
 			setFieldSourceMapping((prevMap) => {
 				const newMap = new Map(prevMap);
-				newMap.delete(deleted.id);
+				const collectIds = (field: FormField): string[] => {
+					const ids = [field.id];
+					if (field.type === "object") {
+						for (const child of field.children) {
+							ids.push(...collectIds(child));
+						}
+					}
+					if (field.type === "array") {
+						ids.push(...collectIds(field.items));
+					}
+					return ids;
+				};
+				for (const id of collectIds(deleted)) {
+					newMap.delete(id);
+				}
 				return newMap;
 			});
 			return next;
@@ -233,12 +306,25 @@ export function StructuredOutputDialog({
 				return next;
 			});
 			setFields((prev) =>
-				updateFieldById(prev, fieldId, (field) =>
-					changeFieldType(field, fieldType),
-				),
+				updateFieldById(prev, fieldId, (field) => {
+					const updated = changeFieldType(field, fieldType);
+					if (updated.type !== "object") return updated;
+
+					const sourceNode = nodes.find((n) => n.id === ref.nodeId);
+					if (!sourceNode) return updated;
+					const schema = getNodeSchema(sourceNode);
+					if (!schema) return updated;
+					const subSchema = resolveSubSchemaAtPath(schema, ref.path);
+					if (!subSchema) return updated;
+
+					return {
+						...updated,
+						children: createChildrenFromSubSchema(subSchema),
+					};
+				}),
 			);
 		},
-		[],
+		[nodes],
 	);
 
 	const handleSourceClear = useCallback((fieldId: string) => {
