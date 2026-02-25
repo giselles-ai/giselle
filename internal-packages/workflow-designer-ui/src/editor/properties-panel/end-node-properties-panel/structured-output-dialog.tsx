@@ -189,12 +189,13 @@ function hasUnmappedFields(
 	fieldSourceMapping: Map<string, PropertyMapping["source"]>,
 ): boolean {
 	for (const field of fields) {
-		if (!fieldSourceMapping.has(field.id)) return true;
+		if (fieldSourceMapping.has(field.id)) continue;
 		if (field.type === "object") {
 			if (hasUnmappedFields(field.children, fieldSourceMapping)) return true;
-		}
-		if (field.type === "array") {
+		} else if (field.type === "array") {
 			if (hasUnmappedFields([field.items], fieldSourceMapping)) return true;
+		} else {
+			return true;
 		}
 	}
 	return false;
