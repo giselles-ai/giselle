@@ -38,7 +38,7 @@ import {
 import { getNodeSchema } from "./get-node-schema";
 import { OutputSourcePicker } from "./output-source-picker";
 
-function resolveSubSchemaAtPath(
+function getSubSchemaAtPath(
 	schema: Schema,
 	path: string[],
 ): SubSchema | undefined {
@@ -74,6 +74,32 @@ function createChildrenFromSubSchema(subSchema: SubSchema): FormField[] {
 		);
 	}
 	return [];
+}
+
+function applySourceSchemaToField(
+	field: FormField,
+	fieldType: FieldType,
+	sourceNode: NodeLike,
+	sourcePath: string[],
+): FormField {
+	const updated = changeFieldType(field, fieldType);
+	if (updated.type !== "object" && updated.type !== "array") return updated;
+
+	const schema = getNodeSchema(sourceNode);
+	if (!schema) return updated;
+	const subSchema = getSubSchemaAtPath(schema, sourcePath);
+	if (!subSchema) return updated;
+
+	if (updated.type === "object") {
+		return { ...updated, children: createChildrenFromSubSchema(subSchema) };
+	}
+	if (subSchema.type === "array") {
+		return {
+			...updated,
+			items: convertSubSchemaToFormField("items", subSchema.items),
+		};
+	}
+	return updated;
 }
 
 interface StructuredOutputDialogProps {
@@ -158,26 +184,38 @@ function convertPropertyMappingsToFieldSourceMapping(
 	return map;
 }
 
-function updateFieldById(
+function findFieldById(
 	fields: FormField[],
 	fieldId: string,
-	updater: (field: FormField) => FormField,
-): FormField[] {
-	return fields.map((field) => {
-		if (field.id === fieldId) {
-			return updater(field);
-		}
+): FormField | undefined {
+	for (const field of fields) {
+		if (field.id === fieldId) return field;
 		if (field.type === "object") {
-			const updatedChildren = updateFieldById(field.children, fieldId, updater);
-			if (updatedChildren !== field.children) {
-				return { ...field, children: updatedChildren };
-			}
+			const found = findFieldById(field.children, fieldId);
+			if (found) return found;
 		}
 		if (field.type === "array") {
-			const [updatedItem] = updateFieldById([field.items], fieldId, updater);
-			if (updatedItem !== field.items) {
-				return { ...field, items: updatedItem };
-			}
+			const found = findFieldById([field.items], fieldId);
+			if (found) return found;
+		}
+	}
+	return undefined;
+}
+
+function replaceFieldById(
+	fields: FormField[],
+	fieldId: string,
+	newField: FormField,
+): FormField[] {
+	return fields.map((field) => {
+		if (field.id === fieldId) return newField;
+		if (field.type === "object") {
+			const updated = replaceFieldById(field.children, fieldId, newField);
+			if (updated !== field.children) return { ...field, children: updated };
+		}
+		if (field.type === "array") {
+			const [updated] = replaceFieldById([field.items], fieldId, newField);
+			if (updated !== field.items) return { ...field, items: updated };
 		}
 		return field;
 	});
@@ -293,38 +331,22 @@ export function StructuredOutputDialog({
 				next.set(fieldId, ref);
 				return next;
 			});
-			setFields((prev) =>
-				updateFieldById(prev, fieldId, (field) => {
-					const updated = changeFieldType(field, fieldType);
-					if (updated.type !== "object" && updated.type !== "array")
-						return updated;
 
-					const sourceNode = nodes.find((n) => n.id === ref.nodeId);
-					if (!sourceNode) return updated;
-					const schema = getNodeSchema(sourceNode);
-					if (!schema) return updated;
-					const subSchema = resolveSubSchemaAtPath(schema, ref.path);
-					if (!subSchema) return updated;
+			const targetField = findFieldById(fields, fieldId);
+			if (!targetField) return;
 
-					if (updated.type === "object") {
-						return {
-							...updated,
-							children: createChildrenFromSubSchema(subSchema),
-						};
-					}
+			const sourceNode = nodes.find((n) => n.id === ref.nodeId);
+			if (!sourceNode) return;
 
-					if (subSchema.type === "array") {
-						return {
-							...updated,
-							items: convertSubSchemaToFormField("items", subSchema.items),
-						};
-					}
-
-					return updated;
-				}),
+			const newField = applySourceSchemaToField(
+				targetField,
+				fieldType,
+				sourceNode,
+				ref.path,
 			);
+			setFields(replaceFieldById(fields, fieldId, newField));
 		},
-		[nodes],
+		[nodes, fields],
 	);
 
 	const handleSourceClear = useCallback((fieldId: string) => {
