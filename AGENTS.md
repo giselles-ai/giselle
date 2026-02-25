@@ -453,3 +453,27 @@ npx opensrc <owner>/<repo>      # GitHub repo (e.g., npx opensrc vercel/ai)
 ```
 
 <!-- opensrc:end -->
+
+## Cursor Cloud specific instructions
+
+### Runtime requirements
+- **Node.js v24** is required (`.node-version`). The VM ships with v22; use `nvm install 24 && nvm alias default 24` during initial setup.
+- **pnpm 10.16.0** is the pinned package manager (via `packageManager` field). Enable it with `corepack enable pnpm` after switching Node versions.
+
+### Quick reference
+All standard dev commands are documented in `AGENTS.md` above and in root `package.json` scripts. Key ones:
+
+| Task | Command |
+|------|---------|
+| Install deps | `pnpm install --frozen-lockfile` |
+| Build SDK (required before first run) | `pnpm build-sdk` |
+| Start dev server | `pnpm dev:studio.giselles.ai` |
+| Lint/format | `pnpm format` |
+| Type-check | `pnpm check-types` |
+| Run tests | `pnpm test` |
+
+### Gotchas
+- After `pnpm install`, build scripts for `esbuild`, `sharp`, etc. are blocked by pnpm's `onlyBuiltDependencies` policy. Run their install scripts manually if builds fail (e.g., `node node_modules/.pnpm/esbuild@*/node_modules/esbuild/install.js`). The `--frozen-lockfile` install usually handles this gracefully.
+- The dev server (`studio.giselles.ai`) needs a `.env.local` in `apps/studio.giselles.ai/`. Copy from `.env.example` and fill in at minimum `COOKIE_SECRET` and `TOKEN_ENCRYPTION_KEY` (can be generated with `node -e "...crypto..."` as noted in the example). Without external services (Supabase, Postgres), the auth pages render but login/signup cannot complete.
+- `pnpm build-sdk` must run before the first `pnpm dev:studio.giselles.ai` or the app will fail to resolve internal packages.
+- The root redirects `/` to `/playground`; use `/login` or `/signup` to see the auth UI without database connectivity.
