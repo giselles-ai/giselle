@@ -49,13 +49,15 @@ export function FormFieldRow({
 		<div className={depth > 0 ? "pl-[24px]" : ""}>
 			<div className="flex items-center gap-[8px] py-[4px]">
 				<div className={`shrink-0 ${config.colorClass}`}>{config.icon}</div>
-				<Input
-					value={field.name}
-					onChange={(e) => onChange({ ...field, name: e.target.value })}
-					placeholder="Property name"
-					className="flex-1 min-w-0"
-					required
-				/>
+				<div className="flex-1 min-w-0">
+					<Input
+						value={field.name}
+						onChange={(e) => onChange({ ...field, name: e.target.value })}
+						placeholder="Property name"
+						className="w-full"
+						required
+					/>
+				</div>
 				<Select
 					options={typeOptions}
 					value={field.type}
@@ -77,14 +79,16 @@ export function FormFieldRow({
 				{renderExtra ? (
 					renderExtra(field)
 				) : (
-					<Input
-						value={field.description}
-						onChange={(e) =>
-							onChange({ ...field, description: e.target.value })
-						}
-						placeholder="Add description"
-						className="flex-1 min-w-0"
-					/>
+					<div className="flex-1 min-w-0">
+						<Input
+							value={field.description}
+							onChange={(e) =>
+								onChange({ ...field, description: e.target.value })
+							}
+							placeholder="Add description"
+							className="w-full"
+						/>
+					</div>
 				)}
 				<button
 					type="button"

@@ -441,18 +441,11 @@ export function StructuredOutputDialog({
 								Properties
 							</div>
 							{fields.length > 0 && (
-								<div className="flex items-center gap-[8px] text-[13px] text-white/30 mb-[4px]">
-									<div className="w-[14px] shrink-0" />
-									<div className="flex-1 min-w-0 border border-transparent px-[8px]">
-										Name
-									</div>
-									<div className="w-[80px] shrink-0 border border-transparent px-[8px] text-center">
-										Type
-									</div>
-									<div className="flex-1 min-w-0 border border-transparent px-[8px]">
-										Value
-									</div>
-									<div className="w-[22px] shrink-0" />
+								<div className="flex gap-[8px] text-[13px] text-white/30 mb-[4px] pl-[22px]">
+									<div className="flex-1">Name</div>
+									<div className="w-[80px]">Type</div>
+									<div className="flex-1">Value</div>
+									<div className="w-[22px]" />
 								</div>
 							)}
 							<div className="space-y-[2px]">
