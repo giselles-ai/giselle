@@ -184,6 +184,22 @@ function convertPropertyMappingsToFieldSourceMapping(
 	return map;
 }
 
+function hasUnmappedFields(
+	fields: FormField[],
+	fieldSourceMapping: Map<string, PropertyMapping["source"]>,
+): boolean {
+	for (const field of fields) {
+		if (!fieldSourceMapping.has(field.id)) return true;
+		if (field.type === "object") {
+			if (hasUnmappedFields(field.children, fieldSourceMapping)) return true;
+		}
+		if (field.type === "array") {
+			if (hasUnmappedFields([field.items], fieldSourceMapping)) return true;
+		}
+	}
+	return false;
+}
+
 function findFieldById(
 	fields: FormField[],
 	fieldId: string,
@@ -270,6 +286,10 @@ export function StructuredOutputDialog({
 			}
 			if (hasEmptyEnumValues(fields)) {
 				setErrorMessage("Enum fields must have at least one value.");
+				return;
+			}
+			if (hasUnmappedFields(fields, fieldSourceMapping)) {
+				setErrorMessage("All properties must have a value selected.");
 				return;
 			}
 			const newSchema = convertFormFieldsToSchema(trimmedTitle, fields);
