@@ -418,6 +418,7 @@ export function StructuredOutputDialog({
 										onDelete={() => handleFieldDelete(index)}
 										renderExtra={renderExtra}
 										isTypeLocked={isTypeLocked}
+										excludeTypes={["enum"]}
 									/>
 								))}
 							</div>

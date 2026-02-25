@@ -34,13 +34,6 @@ interface SourceCandidateGroup {
 }
 
 function subSchemaToFieldType(subSchema: SubSchema): FieldType {
-	if (
-		subSchema.type === "string" &&
-		subSchema.enum &&
-		subSchema.enum.length > 0
-	) {
-		return "enum";
-	}
 	return subSchema.type;
 }
 

@@ -1,13 +1,14 @@
 import { z } from "zod/v4";
 
-const FieldTypeSchema = z.enum([
+export const fieldTypes = [
 	"string",
 	"number",
 	"boolean",
 	"enum",
 	"object",
 	"array",
-]);
+] as const;
+const FieldTypeSchema = z.enum(fieldTypes);
 export type FieldType = z.infer<typeof FieldTypeSchema>;
 
 export function isFieldType(value: string): value is FieldType {

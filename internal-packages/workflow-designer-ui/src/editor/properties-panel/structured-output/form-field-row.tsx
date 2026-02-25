@@ -6,15 +6,18 @@ import { typeConfig } from "./field-type-config";
 import {
 	changeFieldType,
 	createEmptyFormField,
+	type FieldType,
 	type FormField,
+	fieldTypes,
 	isFieldType,
 	type ObjectFormField,
 } from "./types";
 
-const typeOptions = Object.entries(typeConfig).map(([value, config]) => ({
-	value,
-	label: config.label,
-}));
+function createTypeOptions(excludeTypes: FieldType[]) {
+	return fieldTypes
+		.filter((t) => !excludeTypes.includes(t))
+		.map((value) => ({ value, label: typeConfig[value].label }));
+}
 
 type RenderExtra = ((field: FormField) => React.ReactNode) | undefined;
 type IsTypeLocked = (fieldId: string) => boolean;
@@ -26,6 +29,7 @@ interface FormFieldRowProps {
 	depth?: number;
 	renderExtra?: RenderExtra;
 	isTypeLocked?: IsTypeLocked;
+	excludeTypes: FieldType[];
 }
 
 export function FormFieldRow({
@@ -35,9 +39,11 @@ export function FormFieldRow({
 	depth = 0,
 	renderExtra,
 	isTypeLocked = () => false,
+	excludeTypes = [],
 }: FormFieldRowProps) {
 	const config = typeConfig[field.type];
 	const typeLocked = isTypeLocked(field.id);
+	const typeOptions = createTypeOptions(excludeTypes);
 
 	return (
 		<div className={depth > 0 ? "pl-[24px]" : ""}>
@@ -103,6 +109,7 @@ export function FormFieldRow({
 					depth={depth}
 					renderExtra={renderExtra}
 					isTypeLocked={isTypeLocked}
+					excludeTypes={excludeTypes}
 				/>
 			)}
 
@@ -113,6 +120,7 @@ export function FormFieldRow({
 					depth={depth}
 					renderExtra={renderExtra}
 					isTypeLocked={isTypeLocked}
+					excludeTypes={excludeTypes}
 				/>
 			)}
 		</div>
@@ -184,12 +192,14 @@ function ObjectFields({
 	depth,
 	renderExtra,
 	isTypeLocked,
+	excludeTypes = [],
 }: {
 	field: ObjectFormField;
 	onChange: (updated: ObjectFormField) => void;
 	depth: number;
 	renderExtra?: RenderExtra;
 	isTypeLocked?: IsTypeLocked;
+	excludeTypes: FieldType[];
 }) {
 	return (
 		<div className="mt-[2px]">
@@ -211,6 +221,7 @@ function ObjectFields({
 					depth={depth + 1}
 					renderExtra={renderExtra}
 					isTypeLocked={isTypeLocked}
+					excludeTypes={excludeTypes}
 				/>
 			))}
 			<div className="pl-[24px]">
@@ -238,15 +249,18 @@ function ArrayItems({
 	depth,
 	renderExtra,
 	isTypeLocked = () => false,
+	excludeTypes = [],
 }: {
 	items: FormField;
 	onItemsChange: (updated: FormField) => void;
 	depth: number;
 	renderExtra?: RenderExtra;
 	isTypeLocked?: IsTypeLocked;
+	excludeTypes: FieldType[];
 }) {
 	const itemConfig = typeConfig[items.type];
 	const itemTypeLocked = isTypeLocked(items.id);
+	const itemTypeOptions = createTypeOptions(excludeTypes);
 
 	return (
 		<div className="pl-[24px] mt-[2px]">
@@ -258,7 +272,7 @@ function ArrayItems({
 					Array items
 				</span>
 				<Select
-					options={typeOptions}
+					options={itemTypeOptions}
 					value={items.type}
 					onValueChange={(newType) => {
 						if (isFieldType(newType))
@@ -304,6 +318,7 @@ function ArrayItems({
 					depth={depth + 1}
 					renderExtra={renderExtra}
 					isTypeLocked={isTypeLocked}
+					excludeTypes={excludeTypes}
 				/>
 			)}
 
@@ -316,6 +331,7 @@ function ArrayItems({
 					depth={depth + 1}
 					renderExtra={renderExtra}
 					isTypeLocked={isTypeLocked}
+					excludeTypes={excludeTypes}
 				/>
 			)}
 		</div>
