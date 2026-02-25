@@ -106,9 +106,9 @@ export function changeFieldType(
 				...base,
 				type: "array",
 				items:
-				field.type === "array"
-					? field.items
-					: { ...createEmptyFormField(), name: "items" },
+					field.type === "array"
+						? field.items
+						: { ...createEmptyFormField(), name: "items" },
 			};
 	}
 }

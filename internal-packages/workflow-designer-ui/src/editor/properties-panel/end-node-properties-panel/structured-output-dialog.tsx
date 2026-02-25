@@ -293,35 +293,36 @@ export function StructuredOutputDialog({
 				next.set(fieldId, ref);
 				return next;
 			});
-		setFields((prev) =>
-			updateFieldById(prev, fieldId, (field) => {
-				const updated = changeFieldType(field, fieldType);
-				if (updated.type !== "object" && updated.type !== "array") return updated;
+			setFields((prev) =>
+				updateFieldById(prev, fieldId, (field) => {
+					const updated = changeFieldType(field, fieldType);
+					if (updated.type !== "object" && updated.type !== "array")
+						return updated;
 
-				const sourceNode = nodes.find((n) => n.id === ref.nodeId);
-				if (!sourceNode) return updated;
-				const schema = getNodeSchema(sourceNode);
-				if (!schema) return updated;
-				const subSchema = resolveSubSchemaAtPath(schema, ref.path);
-				if (!subSchema) return updated;
+					const sourceNode = nodes.find((n) => n.id === ref.nodeId);
+					if (!sourceNode) return updated;
+					const schema = getNodeSchema(sourceNode);
+					if (!schema) return updated;
+					const subSchema = resolveSubSchemaAtPath(schema, ref.path);
+					if (!subSchema) return updated;
 
-				if (updated.type === "object") {
-					return {
-						...updated,
-						children: createChildrenFromSubSchema(subSchema),
-					};
-				}
+					if (updated.type === "object") {
+						return {
+							...updated,
+							children: createChildrenFromSubSchema(subSchema),
+						};
+					}
 
-				if (subSchema.type === "array") {
-					return {
-						...updated,
-						items: convertSubSchemaToFormField("items", subSchema.items),
-					};
-				}
+					if (subSchema.type === "array") {
+						return {
+							...updated,
+							items: convertSubSchemaToFormField("items", subSchema.items),
+						};
+					}
 
-				return updated;
-			}),
-		);
+					return updated;
+				}),
+			);
 		},
 		[nodes],
 	);
