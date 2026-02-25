@@ -3,7 +3,6 @@
 import {
 	type Generation,
 	isContentGenerationNode,
-	isEndNode,
 	isTextGenerationNode,
 } from "@giselles-ai/protocol";
 import type { UIMessage } from "ai";
@@ -366,14 +365,10 @@ export function GenerationView({ generation }: { generation: Generation }) {
 	}, [generation]);
 
 	const operationNode = generation.context.operationNode;
-	const isEndNodeWithStructuredOutput =
-		isEndNode(operationNode) &&
-		operationNode.content.output.format === "object";
 	const shouldDisplayAsJson =
-		isEndNodeWithStructuredOutput ||
-		((isTextGenerationNode(operationNode) ||
+		(isTextGenerationNode(operationNode) ||
 			isContentGenerationNode(operationNode)) &&
-			operationNode.content.output.format === "object");
+		operationNode.content.output.format === "object";
 
 	if (generation.status === "failed") {
 		return (
@@ -526,28 +521,9 @@ export function GenerationView({ generation }: { generation: Generation }) {
 					})}
 				</div>
 			))}
-			{generation.status === "completed" &&
-				isEndNodeWithStructuredOutput &&
-				generatedMessages.length === 0 &&
-				generation.outputs
-					.filter((output) => output.type === "generated-text")
-					.map((output) => {
-						let displayText = output.content;
-						try {
-							displayText = `\`\`\`json\n${JSON.stringify(JSON.parse(output.content), null, 2)}\n\`\`\``;
-						} catch {
-							// keep raw text if not valid JSON
-						}
-						return (
-							<div key={output.outputId}>
-								<Streamdown className="markdown-renderer">
-									{displayText}
-								</Streamdown>
-							</div>
-						);
-					})}
 			{generation.status !== "completed" &&
 				generation.status !== "cancelled" &&
+				// Show the spinner only when there is no reasoning part
 				!generatedMessages.some((message) =>
 					message.parts.some((part) => part.type === "reasoning"),
 				) && (
