@@ -254,10 +254,10 @@ export function StructuredOutputDialog({
 		setErrorMessage("");
 	}, []);
 
-	const handleFieldDelete = useCallback((index: number) => {
-		setFields((prev) => {
-			const deleted = prev[index];
-			const next = prev.filter((_, i) => i !== index);
+	const handleFieldDelete = useCallback(
+		(index: number) => {
+			const deleted = fields[index];
+			setFields((prev) => prev.filter((_, i) => i !== index));
 			setFieldSourceMapping((prevMap) => {
 				const newMap = new Map(prevMap);
 				const collectIds = (field: FormField): string[] => {
@@ -277,10 +277,10 @@ export function StructuredOutputDialog({
 				}
 				return newMap;
 			});
-			return next;
-		});
-		setErrorMessage("");
-	}, []);
+			setErrorMessage("");
+		},
+		[fields],
+	);
 
 	const handleAddField = useCallback(() => {
 		setFields((prev) => [...prev, createEmptyFormField()]);
