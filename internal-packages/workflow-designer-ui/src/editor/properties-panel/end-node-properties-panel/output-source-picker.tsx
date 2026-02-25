@@ -6,18 +6,14 @@ import type {
 	PropertyMapping,
 	SubSchema,
 } from "@giselles-ai/protocol";
-import {
-	isContentGenerationNode,
-	isImageGenerationNode,
-	isOperationNode,
-	isTextGenerationNode,
-} from "@giselles-ai/protocol";
+import { isImageGenerationNode, isOperationNode } from "@giselles-ai/protocol";
 import { Search, X } from "lucide-react";
 import { Popover as PopoverPrimitive } from "radix-ui";
 import { useMemo, useState } from "react";
 import { typeConfig } from "../structured-output/field-type-config";
 import type { FieldType } from "../structured-output/types";
 import { generateFieldId as generateCandidateId } from "../structured-output/types";
+import { getNodeSchema } from "./get-node-schema";
 
 interface SourceCandidateItem {
 	id: string;
@@ -33,14 +29,10 @@ interface SourceCandidateGroup {
 	items: SourceCandidateItem[];
 }
 
-function subSchemaToFieldType(subSchema: SubSchema): FieldType {
-	return subSchema.type;
-}
-
 function collectCandidatesFromNode(node: NodeLike): SourceCandidateItem[] {
 	const candidates: SourceCandidateItem[] = [];
 	const nodeName = defaultName(node);
-	const structuredSchema = getSchema(node);
+	const structuredSchema = getNodeSchema(node);
 
 	for (const output of node.outputs) {
 		const isStructuredOutput =
@@ -97,7 +89,7 @@ function collectSubSchemaItems(
 ) {
 	for (const [key, subSchema] of Object.entries(properties)) {
 		const path = [...parentPath, key];
-		const fieldType = subSchemaToFieldType(subSchema);
+		const fieldType = subSchema.type;
 		candidates.push({
 			id: generateCandidateId(),
 			label: key,
@@ -135,21 +127,12 @@ function collectSubSchemaItems(
 	}
 }
 
-function getSchema(node: NodeLike) {
-	if (isTextGenerationNode(node) || isContentGenerationNode(node)) {
-		if (node.content.output.format === "object") {
-			return node.content.output.schema;
-		}
-	}
-	return undefined;
-}
-
 function isOutputSourceCandidate(node: NodeLike): boolean {
 	if (!isOperationNode(node)) return false;
 	if (isImageGenerationNode(node)) return false;
 	if (node.content.type === "end") return false;
 	if (node.content.type === "appEntry") return false;
-	if (node.outputs.length === 0 && !getSchema(node)) {
+	if (node.outputs.length === 0 && !getNodeSchema(node)) {
 		return false;
 	}
 	return true;

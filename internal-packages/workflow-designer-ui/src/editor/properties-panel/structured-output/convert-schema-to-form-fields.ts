@@ -67,7 +67,7 @@ export function convertSubSchemaToFormField(
 				name: key,
 				type: "array",
 				description,
-				items: convertSubSchemaToFormField("", subSchema.items),
+				items: convertSubSchemaToFormField("items", subSchema.items),
 			};
 		default: {
 			const _exhaustiveCheck: never = subSchema;

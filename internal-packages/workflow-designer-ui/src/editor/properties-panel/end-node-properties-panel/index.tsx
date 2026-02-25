@@ -335,19 +335,11 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 						/>
 					</div>
 
-					{outputFormat === "object" && (
+					{node.content.output.format === "object" && (
 						<div className="flex justify-end">
 							<StructuredOutputDialog
-								schema={
-									node.content.output.format === "object"
-										? node.content.output.schema
-										: defaultSchema
-								}
-								mappings={
-									node.content.output.format === "object"
-										? node.content.output.mappings
-										: []
-								}
+								schema={node.content.output.schema}
+								mappings={node.content.output.mappings}
 								nodes={connectedOutputsByOutputNode.map((g) => g.outputNode)}
 								onUpdate={(schema, mappings) => {
 									updateNodeDataContent(node, {
@@ -355,9 +347,8 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 									});
 								}}
 								trigger={
-									node.content.output.format === "object" &&
 									Object.keys(node.content.output.schema.properties).length >
-										0 ? (
+									0 ? (
 										<Button
 											variant="solid"
 											size="large"

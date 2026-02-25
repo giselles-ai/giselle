@@ -16,10 +16,6 @@ import type {
 	Schema,
 	SubSchema,
 } from "@giselles-ai/protocol";
-import {
-	isContentGenerationNode,
-	isTextGenerationNode,
-} from "@giselles-ai/protocol";
 import { Plus } from "lucide-react";
 import { useCallback, useState } from "react";
 import { convertFormFieldsToSchema } from "../structured-output/convert-form-fields-to-schema";
@@ -39,16 +35,8 @@ import {
 	hasEmptyEnumValues,
 	hasEmptyNames,
 } from "../structured-output/validation";
+import { getNodeSchema } from "./get-node-schema";
 import { OutputSourcePicker } from "./output-source-picker";
-
-function getNodeSchema(node: NodeLike): Schema | undefined {
-	if (isTextGenerationNode(node) || isContentGenerationNode(node)) {
-		if (node.content.output.format === "object") {
-			return node.content.output.schema;
-		}
-	}
-	return undefined;
-}
 
 function resolveSubSchemaAtPath(
 	schema: Schema,
@@ -305,24 +293,35 @@ export function StructuredOutputDialog({
 				next.set(fieldId, ref);
 				return next;
 			});
-			setFields((prev) =>
-				updateFieldById(prev, fieldId, (field) => {
-					const updated = changeFieldType(field, fieldType);
-					if (updated.type !== "object") return updated;
+		setFields((prev) =>
+			updateFieldById(prev, fieldId, (field) => {
+				const updated = changeFieldType(field, fieldType);
+				if (updated.type !== "object" && updated.type !== "array") return updated;
 
-					const sourceNode = nodes.find((n) => n.id === ref.nodeId);
-					if (!sourceNode) return updated;
-					const schema = getNodeSchema(sourceNode);
-					if (!schema) return updated;
-					const subSchema = resolveSubSchemaAtPath(schema, ref.path);
-					if (!subSchema) return updated;
+				const sourceNode = nodes.find((n) => n.id === ref.nodeId);
+				if (!sourceNode) return updated;
+				const schema = getNodeSchema(sourceNode);
+				if (!schema) return updated;
+				const subSchema = resolveSubSchemaAtPath(schema, ref.path);
+				if (!subSchema) return updated;
 
+				if (updated.type === "object") {
 					return {
 						...updated,
 						children: createChildrenFromSubSchema(subSchema),
 					};
-				}),
-			);
+				}
+
+				if (subSchema.type === "array") {
+					return {
+						...updated,
+						items: convertSubSchemaToFormField("items", subSchema.items),
+					};
+				}
+
+				return updated;
+			}),
+		);
 		},
 		[nodes],
 	);
