@@ -191,6 +191,7 @@ function hasUnmappedFields(
 	for (const field of fields) {
 		if (fieldSourceMapping.has(field.id)) continue;
 		if (field.type === "object") {
+			if (field.children.length === 0) return true;
 			if (hasUnmappedFields(field.children, fieldSourceMapping)) return true;
 		} else if (field.type === "array") {
 			if (hasUnmappedFields([field.items], fieldSourceMapping)) return true;
