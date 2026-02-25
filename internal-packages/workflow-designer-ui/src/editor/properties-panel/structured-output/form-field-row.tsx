@@ -39,7 +39,7 @@ export function FormFieldRow({
 	depth = 0,
 	renderExtra,
 	isTypeLocked = () => false,
-	excludeTypes = [],
+	excludeTypes,
 }: FormFieldRowProps) {
 	const config = typeConfig[field.type];
 	const typeLocked = isTypeLocked(field.id);
@@ -192,7 +192,7 @@ function ObjectFields({
 	depth,
 	renderExtra,
 	isTypeLocked,
-	excludeTypes = [],
+	excludeTypes,
 }: {
 	field: ObjectFormField;
 	onChange: (updated: ObjectFormField) => void;
@@ -249,7 +249,7 @@ function ArrayItems({
 	depth,
 	renderExtra,
 	isTypeLocked = () => false,
-	excludeTypes = [],
+	excludeTypes,
 }: {
 	items: FormField;
 	onItemsChange: (updated: FormField) => void;

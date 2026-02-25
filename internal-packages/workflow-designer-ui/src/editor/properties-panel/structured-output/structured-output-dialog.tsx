@@ -147,12 +147,13 @@ export function StructuredOutputDialog({
 							)}
 							<div className="space-y-[2px]">
 								{fields.map((field, index) => (
-									<FormFieldRow
-										key={field.id}
-										field={field}
-										onChange={(updated) => handleFieldChange(index, updated)}
-										onDelete={() => handleFieldDelete(index)}
-									/>
+								<FormFieldRow
+									key={field.id}
+									field={field}
+									onChange={(updated) => handleFieldChange(index, updated)}
+									onDelete={() => handleFieldDelete(index)}
+									excludeTypes={[]}
+								/>
 								))}
 							</div>
 							<button
