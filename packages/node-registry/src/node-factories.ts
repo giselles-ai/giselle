@@ -437,6 +437,7 @@ const endFactoryImpl = {
 		type: "operation",
 		content: {
 			type: "end",
+			output: { format: "passthrough" },
 		},
 		inputs: [],
 		outputs: [],

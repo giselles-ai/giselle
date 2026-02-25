@@ -169,6 +169,7 @@ describe("isSupportedConnection", () => {
 		outputs: [],
 		content: {
 			type: "end",
+			output: { format: "passthrough" },
 		},
 	});
 
