@@ -332,21 +332,23 @@ export function StructuredOutputDialog({
 				return next;
 			});
 
-			const targetField = findFieldById(fields, fieldId);
-			if (!targetField) return;
-
 			const sourceNode = nodes.find((n) => n.id === ref.nodeId);
 			if (!sourceNode) return;
 
-			const newField = applySourceSchemaToField(
-				targetField,
-				fieldType,
-				sourceNode,
-				ref.path,
-			);
-			setFields(replaceFieldById(fields, fieldId, newField));
+			setFields((prev) => {
+				const targetField = findFieldById(prev, fieldId);
+				if (!targetField) return prev;
+
+				const newField = applySourceSchemaToField(
+					targetField,
+					fieldType,
+					sourceNode,
+					ref.path,
+				);
+				return replaceFieldById(prev, fieldId, newField);
+			});
 		},
-		[nodes, fields],
+		[nodes],
 	);
 
 	const handleSourceClear = useCallback((fieldId: string) => {
