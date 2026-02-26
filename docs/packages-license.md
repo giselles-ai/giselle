@@ -2229,7 +2229,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@oxc-resolver/binding-linux-x64-gnu"></a>
-### @oxc-resolver/binding-linux-x64-gnu v11.13.0
+### @oxc-resolver/binding-linux-x64-gnu v11.18.0
 #### 
 
 ##### Paths
@@ -8998,7 +8998,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="knip"></a>
-### knip v5.67.1
+### knip v5.85.0
 #### 
 
 ##### Paths
@@ -10439,7 +10439,7 @@ MIT-0 permitted
 
 
 <a name="oxc-resolver"></a>
-### oxc-resolver v11.13.0
+### oxc-resolver v11.18.0
 #### 
 
 ##### Paths
@@ -12199,7 +12199,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="smol-toml"></a>
-### smol-toml v1.4.1
+### smol-toml v1.6.0
 #### 
 
 ##### Paths

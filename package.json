@@ -34,7 +34,7 @@
 		"@biomejs/biome": "catalog:",
 		"@changesets/cli": "^2.28.1",
 		"@types/node": "catalog:",
-		"knip": "5.67.1",
+		"knip": "5.85.0",
 		"turbo": "2.7.3",
 		"typescript": "catalog:"
 	},
