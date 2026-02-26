@@ -1,122 +1,35 @@
 import { Input } from "@giselle-internal/ui/input";
 import { Select } from "@giselle-internal/ui/select";
-import {
-	Braces,
-	Hash,
-	List,
-	Plus,
-	ToggleLeft,
-	Trash2,
-	Type,
-	X,
-} from "lucide-react";
+import { Plus, Trash2, X } from "lucide-react";
 import { useState } from "react";
+import { typeConfig } from "./field-type-config";
 import {
+	changeFieldType,
 	createEmptyFormField,
 	type FieldType,
 	type FormField,
+	fieldTypes,
 	isFieldType,
 	type ObjectFormField,
 } from "./types";
 
-const typeConfig: Record<
-	FieldType,
-	{ label: string; icon: React.ReactNode; colorClass: string }
-> = {
-	string: {
-		label: "STR",
-		icon: <Type className="size-[14px]" />,
-		colorClass: "text-emerald-300",
-	},
-	number: {
-		label: "NUM",
-		icon: <Hash className="size-[14px]" />,
-		colorClass: "text-teal-300",
-	},
-	boolean: {
-		label: "BOOL",
-		icon: <ToggleLeft className="size-[14px]" />,
-		colorClass: "text-rose-400",
-	},
-	enum: {
-		label: "ENUM",
-		icon: <List className="size-[14px]" />,
-		colorClass: "text-purple-400",
-	},
-	object: {
-		label: "OBJ",
-		icon: <Braces className="size-[14px]" />,
-		colorClass: "text-blue-300",
-	},
-	array: {
-		label: "ARR",
-		icon: <List className="size-[14px]" />,
-		colorClass: "text-indigo-300",
-	},
-};
-
-const typeOptions = Object.entries(typeConfig).map(([value, config]) => ({
-	value,
-	label: config.label,
-}));
-
-function handleFormFieldTypeChange(
-	field: FormField,
-	newType: string,
-	onChange: (updated: FormField) => void,
-) {
-	if (!isFieldType(newType)) return;
-	const base = {
-		id: field.id,
-		name: field.name,
-		description: field.description,
-	};
-	switch (newType) {
-		case "string":
-			onChange({ ...base, type: "string" });
-			break;
-		case "number":
-			onChange({ ...base, type: "number" });
-			break;
-		case "boolean":
-			onChange({ ...base, type: "boolean" });
-			break;
-		case "enum":
-			onChange({
-				...base,
-				type: "enum",
-				enumValues: field.type === "enum" ? field.enumValues : [],
-			});
-			break;
-		case "object":
-			onChange({
-				...base,
-				type: "object",
-				children:
-					field.type === "object" && field.children.length > 0
-						? field.children
-						: [createEmptyFormField()],
-			});
-			break;
-		case "array":
-			onChange({
-				...base,
-				type: "array",
-				items: field.type === "array" ? field.items : createEmptyFormField(),
-			});
-			break;
-		default: {
-			const _exhaustiveCheck: never = newType;
-			throw new Error(`Unhandled field type: ${_exhaustiveCheck}`);
-		}
-	}
+function createTypeOptions(excludeTypes: FieldType[]) {
+	return fieldTypes
+		.filter((t) => !excludeTypes.includes(t))
+		.map((value) => ({ value, label: typeConfig[value].label }));
 }
+
+type RenderExtra = ((field: FormField) => React.ReactNode) | undefined;
+type IsTypeLocked = (fieldId: string) => boolean;
 
 interface FormFieldRowProps {
 	field: FormField;
 	onChange: (updated: FormField) => void;
 	onDelete: () => void;
 	depth?: number;
+	renderExtra?: RenderExtra;
+	isTypeLocked?: IsTypeLocked;
+	excludeTypes: FieldType[];
 }
 
 export function FormFieldRow({
@@ -124,29 +37,37 @@ export function FormFieldRow({
 	onChange,
 	onDelete,
 	depth = 0,
+	renderExtra,
+	isTypeLocked = () => false,
+	excludeTypes,
 }: FormFieldRowProps) {
 	const config = typeConfig[field.type];
+	const typeLocked = isTypeLocked(field.id);
+	const typeOptions = createTypeOptions(excludeTypes);
 
 	return (
 		<div className={depth > 0 ? "pl-[24px]" : ""}>
 			<div className="flex items-center gap-[8px] py-[4px]">
 				<div className={`shrink-0 ${config.colorClass}`}>{config.icon}</div>
-				<Input
-					value={field.name}
-					onChange={(e) => onChange({ ...field, name: e.target.value })}
-					placeholder="Property name"
-					className="flex-1 min-w-0"
-					required
-				/>
+				<div className="flex-1 min-w-0">
+					<Input
+						value={field.name}
+						onChange={(e) => onChange({ ...field, name: e.target.value })}
+						placeholder="Property name"
+						className="w-full"
+						required
+					/>
+				</div>
 				<Select
 					options={typeOptions}
 					value={field.type}
-					onValueChange={(newType) =>
-						handleFormFieldTypeChange(field, newType, onChange)
-					}
+					onValueChange={(newType) => {
+						if (isFieldType(newType)) onChange(changeFieldType(field, newType));
+					}}
 					widthClassName="w-[80px]"
 					placeholder="Type"
 					triggerClassName="h-[32px] hover:cursor-pointer"
+					disabled={typeLocked}
 					renderTriggerContent={
 						<span
 							className={`text-[11px] font-bold tracking-wide ${config.colorClass}`}
@@ -155,12 +76,20 @@ export function FormFieldRow({
 						</span>
 					}
 				/>
-				<Input
-					value={field.description}
-					onChange={(e) => onChange({ ...field, description: e.target.value })}
-					placeholder="Add description"
-					className="flex-1 min-w-0"
-				/>
+				{renderExtra ? (
+					renderExtra(field)
+				) : (
+					<div className="flex-1 min-w-0">
+						<Input
+							value={field.description}
+							onChange={(e) =>
+								onChange({ ...field, description: e.target.value })
+							}
+							placeholder="Add description"
+							className="w-full"
+						/>
+					</div>
+				)}
 				<button
 					type="button"
 					onClick={onDelete}
@@ -170,22 +99,32 @@ export function FormFieldRow({
 				</button>
 			</div>
 
-			{field.type === "enum" && (
+			{!typeLocked && field.type === "enum" && (
 				<EnumValuesInput
 					values={field.enumValues}
 					onChange={(enumValues) => onChange({ ...field, enumValues })}
 				/>
 			)}
 
-			{field.type === "object" && (
-				<ObjectFields field={field} onChange={onChange} depth={depth} />
+			{!typeLocked && field.type === "object" && (
+				<ObjectFields
+					field={field}
+					onChange={onChange}
+					depth={depth}
+					renderExtra={renderExtra}
+					isTypeLocked={isTypeLocked}
+					excludeTypes={excludeTypes}
+				/>
 			)}
 
-			{field.type === "array" && (
+			{!typeLocked && field.type === "array" && (
 				<ArrayItems
 					items={field.items}
 					onItemsChange={(updated) => onChange({ ...field, items: updated })}
 					depth={depth}
+					renderExtra={renderExtra}
+					isTypeLocked={isTypeLocked}
+					excludeTypes={excludeTypes}
 				/>
 			)}
 		</div>
@@ -255,10 +194,16 @@ function ObjectFields({
 	field,
 	onChange,
 	depth,
+	renderExtra,
+	isTypeLocked,
+	excludeTypes,
 }: {
 	field: ObjectFormField;
 	onChange: (updated: ObjectFormField) => void;
 	depth: number;
+	renderExtra?: RenderExtra;
+	isTypeLocked?: IsTypeLocked;
+	excludeTypes: FieldType[];
 }) {
 	return (
 		<div className="mt-[2px]">
@@ -278,6 +223,9 @@ function ObjectFields({
 						})
 					}
 					depth={depth + 1}
+					renderExtra={renderExtra}
+					isTypeLocked={isTypeLocked}
+					excludeTypes={excludeTypes}
 				/>
 			))}
 			<div className="pl-[24px]">
@@ -303,12 +251,20 @@ function ArrayItems({
 	items,
 	onItemsChange,
 	depth,
+	renderExtra,
+	isTypeLocked = () => false,
+	excludeTypes,
 }: {
 	items: FormField;
 	onItemsChange: (updated: FormField) => void;
 	depth: number;
+	renderExtra?: RenderExtra;
+	isTypeLocked?: IsTypeLocked;
+	excludeTypes: FieldType[];
 }) {
 	const itemConfig = typeConfig[items.type];
+	const itemTypeLocked = isTypeLocked(items.id);
+	const itemTypeOptions = createTypeOptions(excludeTypes);
 
 	return (
 		<div className="pl-[24px] mt-[2px]">
@@ -320,14 +276,16 @@ function ArrayItems({
 					Array items
 				</span>
 				<Select
-					options={typeOptions}
+					options={itemTypeOptions}
 					value={items.type}
-					onValueChange={(newType) =>
-						handleFormFieldTypeChange(items, newType, onItemsChange)
-					}
+					onValueChange={(newType) => {
+						if (isFieldType(newType))
+							onItemsChange(changeFieldType(items, newType));
+					}}
 					widthClassName="w-[80px]"
 					placeholder="Type"
 					triggerClassName="h-[32px]"
+					disabled={itemTypeLocked}
 					renderTriggerContent={
 						<span
 							className={`text-[11px] font-bold tracking-wide ${itemConfig.colorClass}`}
@@ -336,38 +294,48 @@ function ArrayItems({
 						</span>
 					}
 				/>
-				<Input
-					value={items.description}
-					onChange={(e) =>
-						onItemsChange({ ...items, description: e.target.value })
-					}
-					placeholder="Add description"
-					className="flex-1 min-w-0"
-				/>
+				{renderExtra ? (
+					renderExtra(items)
+				) : (
+					<Input
+						value={items.description}
+						onChange={(e) =>
+							onItemsChange({ ...items, description: e.target.value })
+						}
+						placeholder="Add description"
+						className="flex-1 min-w-0"
+					/>
+				)}
 			</div>
 
-			{items.type === "enum" && (
+			{!itemTypeLocked && items.type === "enum" && (
 				<EnumValuesInput
 					values={items.enumValues}
 					onChange={(enumValues) => onItemsChange({ ...items, enumValues })}
 				/>
 			)}
 
-			{items.type === "object" && (
+			{!itemTypeLocked && items.type === "object" && (
 				<ObjectFields
 					field={items}
 					onChange={(updated) => onItemsChange(updated)}
 					depth={depth + 1}
+					renderExtra={renderExtra}
+					isTypeLocked={isTypeLocked}
+					excludeTypes={excludeTypes}
 				/>
 			)}
 
-			{items.type === "array" && (
+			{!itemTypeLocked && items.type === "array" && (
 				<ArrayItems
 					items={items.items}
 					onItemsChange={(updated) =>
 						onItemsChange({ ...items, items: updated })
 					}
 					depth={depth + 1}
+					renderExtra={renderExtra}
+					isTypeLocked={isTypeLocked}
+					excludeTypes={excludeTypes}
 				/>
 			)}
 		</div>

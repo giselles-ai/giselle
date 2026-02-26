@@ -1,13 +1,14 @@
 import { z } from "zod/v4";
 
-const FieldTypeSchema = z.enum([
+export const fieldTypes = [
 	"string",
 	"number",
 	"boolean",
 	"enum",
 	"object",
 	"array",
-]);
+] as const;
+const FieldTypeSchema = z.enum(fieldTypes);
 export type FieldType = z.infer<typeof FieldTypeSchema>;
 
 export function isFieldType(value: string): value is FieldType {
@@ -66,4 +67,48 @@ export function createEmptyFormField(): StringFormField {
 		type: "string",
 		description: "",
 	};
+}
+
+export function changeFieldType(
+	field: FormField,
+	newType: FieldType,
+): FormField {
+	if (field.type === newType) return field;
+	const base = {
+		id: field.id,
+		name: field.name,
+		description: field.description,
+	};
+	switch (newType) {
+		case "string":
+			return { ...base, type: "string" };
+		case "number":
+			return { ...base, type: "number" };
+		case "boolean":
+			return { ...base, type: "boolean" };
+		case "enum":
+			return {
+				...base,
+				type: "enum",
+				enumValues: field.type === "enum" ? field.enumValues : [],
+			};
+		case "object":
+			return {
+				...base,
+				type: "object",
+				children:
+					field.type === "object" && field.children.length > 0
+						? field.children
+						: [createEmptyFormField()],
+			};
+		case "array":
+			return {
+				...base,
+				type: "array",
+				items:
+					field.type === "array"
+						? field.items
+						: { ...createEmptyFormField(), name: "items" },
+			};
+	}
 }

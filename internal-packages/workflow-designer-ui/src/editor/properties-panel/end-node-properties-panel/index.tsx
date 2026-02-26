@@ -11,16 +11,25 @@
 
 import { Button } from "@giselle-internal/ui/button";
 import { DropdownMenu } from "@giselle-internal/ui/dropdown-menu";
+import { Select } from "@giselle-internal/ui/select";
 import { defaultName } from "@giselles-ai/node-registry";
 import type {
 	Connection,
 	EndNode,
 	NodeId,
 	NodeLike,
+	Schema,
 } from "@giselles-ai/protocol";
 import { isAppEntryNode } from "@giselles-ai/protocol";
+import { useFeatureFlag } from "@giselles-ai/react";
 import clsx from "clsx/lite";
-import { PlusIcon, SquareArrowOutUpRightIcon, TrashIcon } from "lucide-react";
+import {
+	Braces,
+	Plus,
+	PlusIcon,
+	SquareArrowOutUpRightIcon,
+	TrashIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
 import {
@@ -29,6 +38,7 @@ import {
 	useDeleteNode,
 	useDisconnectNodes,
 	useUpdateNodeData,
+	useUpdateNodeDataContent,
 } from "../../../app-designer";
 import { NodeIcon } from "../../../icons/node";
 import {
@@ -37,6 +47,20 @@ import {
 	PropertiesPanelRoot,
 } from "../ui";
 import { SettingLabel } from "../ui/setting-label";
+import { StructuredOutputDialog } from "./structured-output-dialog";
+
+const outputFormatOptions = [
+	{ value: "passthrough", label: "Raw" },
+	{ value: "object", label: "JSON" },
+];
+
+const defaultSchema: Schema = {
+	title: "response",
+	type: "object",
+	properties: {},
+	required: [],
+	additionalProperties: false,
+};
 
 function AddOutputButton({
 	availableNodes,
@@ -84,6 +108,7 @@ function AddOutputButton({
 export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 	const deleteNode = useDeleteNode();
 	const updateNodeData = useUpdateNodeData();
+	const updateNodeDataContent = useUpdateNodeDataContent();
 	const connectNodes = useConnectNodes();
 	const disconnectNodes = useDisconnectNodes();
 	const { nodes, connections } = useAppDesignerStore((s) => ({
@@ -100,6 +125,9 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 		if (appEntryNode.content.status !== "configured") return undefined;
 		return appEntryNode.content.appId;
 	}, [nodes]);
+
+	const { structuredOutput } = useFeatureFlag();
+	const outputFormat = node.content.output.format;
 
 	const helperTextClassName = "text-[11px] text-text-muted/50";
 	const emptyStateHelperTextClassName = "text-[11px] text-text-muted/70";
@@ -181,18 +209,18 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 			/>
 			<PropertiesPanelContent>
 				<div className="flex flex-col gap-[16px]">
-					<div className="space-y-0">
-						<div className="flex items-center justify-between gap-[12px]">
+					<div className="flex items-center justify-between">
+						<div className="space-y-0">
 							<SettingLabel className="mb-0">Outputs</SettingLabel>
-							<AddOutputButton
-								availableNodes={availableOutputSourceNodes}
-								endNodeId={node.id}
-								onConnectNodes={connectNodes}
-							/>
+							<p className={helperTextClassName}>
+								These outputs will determine the results of your app.
+							</p>
 						</div>
-						<p className={helperTextClassName}>
-							These outputs will determine the results of your app.
-						</p>
+						<AddOutputButton
+							availableNodes={availableOutputSourceNodes}
+							endNodeId={node.id}
+							onConnectNodes={connectNodes}
+						/>
 					</div>
 
 					<div className={listClassName}>
@@ -282,6 +310,72 @@ export function EndNodePropertiesPanel({ node }: { node: EndNode }) {
 							</ul>
 						)}
 					</div>
+
+					{structuredOutput && (
+						<>
+							<div className="flex items-center justify-between gap-[12px]">
+								<SettingLabel className="mb-0">Output Format</SettingLabel>
+								<Select
+									options={outputFormatOptions}
+									placeholder="Select format"
+									value={outputFormat}
+									onValueChange={(value) => {
+										if (value === "object") {
+											updateNodeDataContent(node, {
+												output: {
+													format: "object",
+													schema: defaultSchema,
+													mappings: [],
+												},
+											});
+										} else if (value === "passthrough") {
+											updateNodeDataContent(node, {
+												output: { format: "passthrough" },
+											});
+										}
+									}}
+									widthClassName="w-[100px]"
+								/>
+							</div>
+
+							{node.content.output.format === "object" && (
+								<div className="flex justify-end">
+									<StructuredOutputDialog
+										schema={node.content.output.schema}
+										mappings={node.content.output.mappings}
+										nodes={connectedOutputsByOutputNode.map(
+											(g) => g.outputNode,
+										)}
+										onUpdate={(schema, mappings) => {
+											updateNodeDataContent(node, {
+												output: { format: "object", schema, mappings },
+											});
+										}}
+										trigger={
+											Object.keys(node.content.output.schema.properties)
+												.length > 0 ? (
+												<Button
+													variant="solid"
+													size="large"
+													leftIcon={<Braces className="text-blue-300" />}
+												>
+													{node.content.output.schema.title}
+												</Button>
+											) : (
+												<Button
+													variant="solid"
+													size="large"
+													leftIcon={<Plus />}
+												>
+													Set Schema
+												</Button>
+											)
+										}
+									/>
+								</div>
+							)}
+						</>
+					)}
 
 					<TryPlaygroundSection
 						isDisabled={isTryAppInStageDisabled}
