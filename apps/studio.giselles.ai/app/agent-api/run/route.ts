@@ -1,5 +1,9 @@
 import { createRelaySession } from "@giselles-ai/browser-tool/relay";
-import { createGeminiAgent, runChat } from "@giselles-ai/sandbox-agent";
+import {
+	createCodexAgent,
+	createGeminiAgent,
+	runChat,
+} from "@giselles-ai/sandbox-agent";
 import { eq } from "drizzle-orm";
 import type { NextRequest } from "next/server";
 import * as z from "zod/v4";
@@ -16,6 +20,7 @@ const requestSchema = z.object({
 	document: z.string().optional(),
 	session_id: z.string().min(1).optional(),
 	sandbox_id: z.string().min(1).optional(),
+	agent_type: z.enum(["gemini", "codex"]),
 });
 
 function mergeRelaySessionStream(input: {
@@ -146,34 +151,67 @@ export async function POST(request: NextRequest) {
 
 	const oidcToken = request.headers.get("x-vercel-oidc-token");
 
-	const agent = createGeminiAgent({
-		env: {
-			GEMINI_API_KEY: process.env.GEMINI_API_KEY ?? "",
-			SANDBOX_SNAPSHOT_ID: process.env.SANDBOX_SNAPSHOT_ID ?? "",
-			BROWSER_TOOL_RELAY_URL: relayUrl,
-			BROWSER_TOOL_RELAY_SESSION_ID: session.sessionId,
-			BROWSER_TOOL_RELAY_TOKEN: session.token,
-			...(oidcToken ? { VERCEL_OIDC_TOKEN: oidcToken } : {}),
-			...(process.env.VERCEL_PROTECTION_BYPASS
-				? { VERCEL_PROTECTION_BYPASS: process.env.VERCEL_PROTECTION_BYPASS }
-				: {}),
-		},
-		tools: {
-			browser: { relayUrl },
-		},
-	});
+	const agentType = parsed.data.agent_type;
 
-	const chatResponse = await runChat({
-		agent,
-		signal: request.signal,
-		input: {
-			message,
-			session_id: parsed.data.session_id,
-			sandbox_id: parsed.data.sandbox_id,
-			relay_session_id: session.sessionId,
-			relay_token: session.token,
-		},
-	});
+	const commonEnv = {
+		SANDBOX_SNAPSHOT_ID: process.env.SANDBOX_SNAPSHOT_ID ?? "",
+		...(oidcToken ? { VERCEL_OIDC_TOKEN: oidcToken } : {}),
+		...(process.env.VERCEL_PROTECTION_BYPASS
+			? { VERCEL_PROTECTION_BYPASS: process.env.VERCEL_PROTECTION_BYPASS }
+			: {}),
+	};
+
+	const browserEnv = {
+		BROWSER_TOOL_RELAY_URL: relayUrl,
+		BROWSER_TOOL_RELAY_SESSION_ID: session.sessionId,
+		BROWSER_TOOL_RELAY_TOKEN: session.token,
+	};
+
+	const browserInput = {
+		relay_session_id: session.sessionId,
+		relay_token: session.token,
+	};
+
+	const chatResponse =
+		agentType === "codex"
+			? await runChat({
+					agent: createCodexAgent({
+						env: {
+							OPENAI_API_KEY: process.env.OPENAI_API_KEY ?? "",
+							...browserEnv,
+							...commonEnv,
+						},
+						tools: {
+							browser: { relayUrl },
+						},
+					}),
+					signal: request.signal,
+					input: {
+						message,
+						session_id: parsed.data.session_id,
+						sandbox_id: parsed.data.sandbox_id,
+						...browserInput,
+					},
+				})
+			: await runChat({
+					agent: createGeminiAgent({
+						env: {
+							GEMINI_API_KEY: process.env.GEMINI_API_KEY ?? "",
+							...browserEnv,
+							...commonEnv,
+						},
+						tools: {
+							browser: { relayUrl },
+						},
+					}),
+					signal: request.signal,
+					input: {
+						message,
+						session_id: parsed.data.session_id,
+						sandbox_id: parsed.data.sandbox_id,
+						...browserInput,
+					},
+				});
 
 	const response = mergeRelaySessionStream({
 		chatResponse,

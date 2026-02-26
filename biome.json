@@ -13,7 +13,8 @@
 			"!**/node_modules",
 			"!**/build",
 			"!**/db/migrate",
-			"!**/worktrees"
+			"!**/worktrees",
+			"!opensrc"
 		],
 		"ignoreUnknown": false
 	},
