@@ -1,5 +1,7 @@
+import { buildObject } from "@giselles-ai/giselle";
 import {
 	AppId,
+	type CompletedGeneration,
 	type EndOutput,
 	type GenerationOutput,
 	isCompletedGeneration,
@@ -60,14 +62,6 @@ type ApiTaskResult =
 			outputFormat: "object";
 			object: Record<string, unknown>;
 	  });
-
-// TODO: replace with real implementation from packages/giselle/src/tasks/build-object.ts
-function buildObject(
-	_endNodeOutput: { format: "object"; schema: unknown; mappings: unknown[] },
-	_generationsById: Record<string, unknown>,
-): Record<string, unknown> {
-	return {};
-}
 
 export async function GET(
 	request: NextRequest,
@@ -138,6 +132,13 @@ export async function GET(
 			),
 		).then((entries) => entries.filter((e) => e !== null)),
 	);
+	const generationsByNodeId: Record<string, CompletedGeneration> = {};
+	for (const generation of Object.values(generationsById)) {
+		if (!isCompletedGeneration(generation)) {
+			continue;
+		}
+		generationsByNodeId[generation.context.operationNode.id] = generation;
+	}
 
 	const steps: ApiStep[] = task.sequences.map((sequence, sequenceIndex) => ({
 		title: `Step ${sequenceIndex + 1}`,
@@ -197,7 +198,7 @@ export async function GET(
 			taskResult = {
 				...base,
 				outputFormat: "object",
-				object: buildObject(endNodeOutput, generationsById),
+				object: buildObject(endNodeOutput, generationsByNodeId),
 			};
 			break;
 		}
