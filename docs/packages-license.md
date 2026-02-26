@@ -4,7 +4,7 @@
 ## Summary
 * 965 MIT
 * 193 Apache 2.0
-* 43 ISC
+* 44 ISC
 * 27 New BSD
 * 16 Simplified BSD
 * 9 BlueOak-1.0.0
@@ -1239,7 +1239,7 @@ MIT-0 permitted
 
 
 <a name="@giselles-ai/sandbox-agent"></a>
-### @giselles-ai/sandbox-agent v0.1.9
+### @giselles-ai/sandbox-agent v0.1.11
 #### 
 
 ##### Paths
@@ -1290,6 +1290,17 @@ MIT-0 permitted
 * /home/runner/work/giselle/giselle
 
 <a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@iarna/toml"></a>
+### @iarna/toml v3.0.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://en.wikipedia.org/wiki/ISC_license">ISC</a> permitted
 
 
 
