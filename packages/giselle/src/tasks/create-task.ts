@@ -91,6 +91,7 @@ export async function createTask(
 	);
 
 	let endNodeId: NodeId | undefined;
+	let endNodeOutput: Task["endNodeOutput"] = { format: "passthrough" };
 	for (const node of nodes) {
 		if (!isEndNode(node)) {
 			continue;
@@ -101,6 +102,7 @@ export async function createTask(
 			);
 		}
 		endNodeId = node.id;
+		endNodeOutput = node.content.output;
 	}
 	const nodeIdsConnectedToEnd = Array.from(
 		new Set(
@@ -300,6 +302,7 @@ export async function createTask(
 		status: "created",
 		name: starterNode ? defaultName(starterNode) : "group-nodes",
 		nodeIdsConnectedToEnd,
+		endNodeOutput,
 		steps: {
 			queued: generations.length,
 			inProgress: 0,
