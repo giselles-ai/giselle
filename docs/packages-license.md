@@ -3373,7 +3373,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@rollup/rollup-linux-x64-gnu"></a>
-### @rollup/rollup-linux-x64-gnu v4.49.0
+### @rollup/rollup-linux-x64-gnu v4.59.0
 #### 
 
 ##### Paths
@@ -11836,7 +11836,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="rollup"></a>
-### rollup v4.49.0
+### rollup v4.59.0
 #### 
 
 ##### Paths
