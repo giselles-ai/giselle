@@ -1,5 +1,6 @@
 import {
 	AppId,
+	type EndOutput,
 	type GenerationOutput,
 	isCompletedGeneration,
 	isFailedGeneration,
@@ -41,6 +42,32 @@ type ApiOutput = {
 	generationId: string;
 	outputs: GenerationOutput[];
 };
+
+type ApiTaskResultBase = {
+	id: string;
+	status: string;
+	workspaceId: string;
+	name: string;
+	steps: ApiStep[];
+};
+
+type ApiTaskResult =
+	| (ApiTaskResultBase & {
+			outputFormat: "passthrough";
+			outputs: ApiOutput[];
+	  })
+	| (ApiTaskResultBase & {
+			outputFormat: "object";
+			object: Record<string, unknown>;
+	  });
+
+// TODO: replace with real implementation from packages/giselle/src/tasks/build-object.ts
+function buildObject(
+	_endNodeOutput: { format: "object"; schema: unknown; mappings: unknown[] },
+	_generationsById: Record<string, unknown>,
+): Record<string, unknown> {
+	return {};
+}
 
 export async function GET(
 	request: NextRequest,
@@ -154,42 +181,67 @@ export async function GET(
 			.filter((itemOrNull) => itemOrNull !== null),
 	}));
 
-	const allStepItems = steps.flatMap((step) => step.items);
-	const outputs: ApiOutput[] = (task.nodeIdsConnectedToEnd ?? [])
-		.map((nodeId) => {
-			const match = allStepItems.find((item) => {
-				const generation = generationsById[item.generationId];
-				if (!generation) {
-					return false;
-				}
-				return generation.context.operationNode.id === nodeId;
-			});
-			if (!match) {
-				return null;
-			}
-			const generation = generationsById[match.generationId];
-			if (!generation || !isCompletedGeneration(generation)) {
-				return null;
-			}
-			return {
-				title: match.title,
-				generationId: generation.id,
-				outputs: generation.outputs,
-			} satisfies ApiOutput;
-		})
-		.filter((outputOrNull) => outputOrNull !== null);
+	const endNodeOutput: EndOutput = task.endNodeOutput;
+	const base: ApiTaskResultBase = {
+		id: task.id,
+		status: task.status,
+		workspaceId: task.workspaceId,
+		name: task.name,
+		steps,
+	};
+
+	let taskResult: ApiTaskResult;
+
+	switch (endNodeOutput.format) {
+		case "object": {
+			taskResult = {
+				...base,
+				outputFormat: "object",
+				object: buildObject(endNodeOutput, generationsById),
+			};
+			break;
+		}
+		case "passthrough": {
+			const allStepItems = steps.flatMap((step) => step.items);
+			const outputs: ApiOutput[] = (task.nodeIdsConnectedToEnd ?? [])
+				.map((nodeId) => {
+					const match = allStepItems.find((item) => {
+						const generation = generationsById[item.generationId];
+						if (!generation) {
+							return false;
+						}
+						return generation.context.operationNode.id === nodeId;
+					});
+					if (!match) {
+						return null;
+					}
+					const generation = generationsById[match.generationId];
+					if (!generation || !isCompletedGeneration(generation)) {
+						return null;
+					}
+					return {
+						title: match.title,
+						generationId: generation.id,
+						outputs: generation.outputs,
+					} satisfies ApiOutput;
+				})
+				.filter((outputOrNull) => outputOrNull !== null);
+
+			taskResult = {
+				...base,
+				outputFormat: "passthrough",
+				outputs,
+			};
+			break;
+		}
+		default: {
+			const _exhaustive: never = endNodeOutput;
+			throw new Error(`Unhandled output format: ${_exhaustive}`);
+		}
+	}
 
 	return Response.json(
-		{
-			task: {
-				id: task.id,
-				status: task.status,
-				workspaceId: task.workspaceId,
-				name: task.name,
-				steps,
-				outputs,
-			},
-		},
+		{ task: taskResult },
 		{ headers: { "Cache-Control": "no-store" } },
 	);
 }
