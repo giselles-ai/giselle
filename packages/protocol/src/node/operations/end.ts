@@ -12,7 +12,7 @@ const PropertyMapping = z.object({
 });
 export type PropertyMapping = z.infer<typeof PropertyMapping>;
 
-const Output = z.discriminatedUnion("format", [
+export const EndOutputSchema = z.discriminatedUnion("format", [
 	z.object({ format: z.literal("passthrough") }),
 	z.object({
 		format: z.literal("object"),
@@ -20,11 +20,11 @@ const Output = z.discriminatedUnion("format", [
 		mappings: z.array(PropertyMapping),
 	}),
 ]);
-export type EndOutput = z.infer<typeof Output>;
+export type EndOutput = z.infer<typeof EndOutputSchema>;
 
 export const EndContent = z.object({
 	type: z.literal("end"),
-	output: Output.default({ format: "passthrough" }),
+	output: EndOutputSchema.default({ format: "passthrough" }),
 });
 export type EndContent = z.infer<typeof EndContent>;
 

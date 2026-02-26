@@ -42,6 +42,7 @@ function createTestTask(overrides?: Partial<Task>): Task {
 		starter: { type: "run-button" },
 		name: "Test Task",
 		status: "inProgress",
+		endNodeOutput: { format: "passthrough" },
 		steps: {
 			queued: totalSteps,
 			inProgress: 0,

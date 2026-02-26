@@ -32,6 +32,7 @@ describe("patchTask", () => {
 			createdAt: Date.now(),
 			updatedAt: Date.now(),
 			annotations: [],
+			endNodeOutput: { format: "passthrough" },
 			sequences: [
 				{
 					id: "sqn-001" as const,
