@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 965 MIT
+* 963 MIT
 * 193 Apache 2.0
 * 43 ISC
 * 27 New BSD
@@ -854,7 +854,7 @@ MIT OR Apache-2.0 permitted
 
 
 <a name="@changesets/apply-release-plan"></a>
-### @changesets/apply-release-plan v7.0.10
+### @changesets/apply-release-plan v7.0.14
 #### 
 
 ##### Paths
@@ -865,7 +865,7 @@ MIT OR Apache-2.0 permitted
 
 
 <a name="@changesets/assemble-release-plan"></a>
-### @changesets/assemble-release-plan v6.0.6
+### @changesets/assemble-release-plan v6.0.9
 #### 
 
 ##### Paths
@@ -887,7 +887,7 @@ MIT OR Apache-2.0 permitted
 
 
 <a name="@changesets/cli"></a>
-### @changesets/cli v2.28.1
+### @changesets/cli v2.29.8
 #### 
 
 ##### Paths
@@ -898,7 +898,7 @@ MIT OR Apache-2.0 permitted
 
 
 <a name="@changesets/config"></a>
-### @changesets/config v3.1.1
+### @changesets/config v3.1.2
 #### 
 
 ##### Paths
@@ -931,7 +931,7 @@ MIT OR Apache-2.0 permitted
 
 
 <a name="@changesets/get-release-plan"></a>
-### @changesets/get-release-plan v4.0.8
+### @changesets/get-release-plan v4.0.14
 #### 
 
 ##### Paths
@@ -953,7 +953,7 @@ MIT OR Apache-2.0 permitted
 
 
 <a name="@changesets/git"></a>
-### @changesets/git v3.0.2
+### @changesets/git v3.0.4
 #### 
 
 ##### Paths
@@ -975,7 +975,7 @@ MIT OR Apache-2.0 permitted
 
 
 <a name="@changesets/parse"></a>
-### @changesets/parse v0.4.1
+### @changesets/parse v0.4.2
 #### 
 
 ##### Paths
@@ -997,7 +997,7 @@ MIT OR Apache-2.0 permitted
 
 
 <a name="@changesets/read"></a>
-### @changesets/read v0.6.3
+### @changesets/read v0.6.6
 #### 
 
 ##### Paths
@@ -1334,6 +1334,17 @@ LGPL-3.0-or-later permitted
 * /home/runner/work/giselle/giselle
 
 <a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
+
+
+
+<a name="@inquirer/external-editor"></a>
+### @inquirer/external-editor v1.0.3
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
 
 
 
@@ -6204,7 +6215,7 @@ CC-BY-4.0 permitted
 
 
 <a name="chardet"></a>
-### chardet v0.7.0
+### chardet v2.1.1
 #### 
 
 ##### Paths
@@ -7457,17 +7468,6 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="external-editor"></a>
-### external-editor v3.1.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="fast-content-type-parse"></a>
 ### fast-content-type-parse v3.0.0
 #### 
@@ -8415,7 +8415,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="iconv-lite"></a>
-### iconv-lite v0.4.24
+### iconv-lite v0.6.3
 #### 
 
 ##### Paths
@@ -10407,17 +10407,6 @@ MIT-0 permitted
 
 <a name="os-paths"></a>
 ### os-paths v4.4.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="os-tmpdir"></a>
-### os-tmpdir v1.0.2
 #### 
 
 ##### Paths
@@ -12919,17 +12908,6 @@ BlueOak-1.0.0 permitted
 
 <a name="tldts-core"></a>
 ### tldts-core v6.1.86
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="tmp"></a>
-### tmp v0.0.33
 #### 
 
 ##### Paths
