@@ -342,8 +342,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/react
       '@giselles-ai/sandbox-agent':
-        specifier: 0.1.9
-        version: 0.1.9(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
+        specifier: 0.1.10
+        version: 0.1.10
       '@giselles-ai/supabase-driver':
         specifier: workspace:*
         version: link:../../packages/supabase-driver
@@ -2851,11 +2851,8 @@ packages:
       react: '>=19.0.0'
       react-dom: '>=19.0.0'
 
-  '@giselles-ai/sandbox-agent@0.1.9':
-    resolution: {integrity: sha512-QtoBEtXZIoftW6L6sH5G/OQAj2K8kjhWyq4S042Ib5BMKZsC57M9FzbbOzVrO+Y3XKfm+0q1+d6ZFPSn9cPTlg==}
-    peerDependencies:
-      react: '>=19.0.0'
-      react-dom: '>=19.0.0'
+  '@giselles-ai/sandbox-agent@0.1.10':
+    resolution: {integrity: sha512-7RU9Iog30JrCMfi8bbg1mo6ix6GUNEnrgqr4CRjmx597p3MNMywvNGgnXnTiSaoYoZZ4PgjaXiB8f6haFFmvyg==}
 
   '@google-cloud/precise-date@4.0.0':
     resolution: {integrity: sha512-1TUx3KdaU3cN7nfCdNf+UVqA/PSX29Cjcox3fZZBtINlRrXVTmUkQnCKv2MbBUbCopbK4olAT1IHl76uZyCiVA==}
@@ -10795,11 +10792,9 @@ snapshots:
       - '@cfworker/json-schema'
       - supports-color
 
-  '@giselles-ai/sandbox-agent@0.1.9(react-dom@19.2.1(react@19.2.1))(react@19.2.1)':
+  '@giselles-ai/sandbox-agent@0.1.10':
     dependencies:
       '@vercel/sandbox': 1.6.0
-      react: 19.2.1
-      react-dom: 19.2.1(react@19.2.1)
       zod: 4.3.6
     transitivePeerDependencies:
       - bare-abort-controller
