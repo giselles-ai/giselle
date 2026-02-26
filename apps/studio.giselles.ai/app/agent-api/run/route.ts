@@ -161,29 +161,24 @@ export async function POST(request: NextRequest) {
 			: {}),
 	};
 
+	const browserEnv = {
+		BROWSER_TOOL_RELAY_URL: relayUrl,
+		BROWSER_TOOL_RELAY_SESSION_ID: session.sessionId,
+		BROWSER_TOOL_RELAY_TOKEN: session.token,
+	};
+
+	const browserInput = {
+		relay_session_id: session.sessionId,
+		relay_token: session.token,
+	};
+
 	const chatResponse =
 		agentType === "codex"
 			? await runChat({
 					agent: createCodexAgent({
 						env: {
 							OPENAI_API_KEY: process.env.OPENAI_API_KEY ?? "",
-							...commonEnv,
-						},
-					}),
-					signal: request.signal,
-					input: {
-						message,
-						session_id: parsed.data.session_id,
-						sandbox_id: parsed.data.sandbox_id,
-					},
-				})
-			: await runChat({
-					agent: createGeminiAgent({
-						env: {
-							GEMINI_API_KEY: process.env.GEMINI_API_KEY ?? "",
-							BROWSER_TOOL_RELAY_URL: relayUrl,
-							BROWSER_TOOL_RELAY_SESSION_ID: session.sessionId,
-							BROWSER_TOOL_RELAY_TOKEN: session.token,
+							...browserEnv,
 							...commonEnv,
 						},
 						tools: {
@@ -195,8 +190,26 @@ export async function POST(request: NextRequest) {
 						message,
 						session_id: parsed.data.session_id,
 						sandbox_id: parsed.data.sandbox_id,
-						relay_session_id: session.sessionId,
-						relay_token: session.token,
+						...browserInput,
+					},
+				})
+			: await runChat({
+					agent: createGeminiAgent({
+						env: {
+							GEMINI_API_KEY: process.env.GEMINI_API_KEY ?? "",
+							...browserEnv,
+							...commonEnv,
+						},
+						tools: {
+							browser: { relayUrl },
+						},
+					}),
+					signal: request.signal,
+					input: {
+						message,
+						session_id: parsed.data.session_id,
+						sandbox_id: parsed.data.sandbox_id,
+						...browserInput,
 					},
 				});
 

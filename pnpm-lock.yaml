@@ -342,8 +342,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/react
       '@giselles-ai/sandbox-agent':
-        specifier: 0.1.10
-        version: 0.1.10
+        specifier: 0.1.11
+        version: 0.1.11
       '@giselles-ai/supabase-driver':
         specifier: workspace:*
         version: link:../../packages/supabase-driver
@@ -2851,8 +2851,8 @@ packages:
       react: '>=19.0.0'
       react-dom: '>=19.0.0'
 
-  '@giselles-ai/sandbox-agent@0.1.10':
-    resolution: {integrity: sha512-7RU9Iog30JrCMfi8bbg1mo6ix6GUNEnrgqr4CRjmx597p3MNMywvNGgnXnTiSaoYoZZ4PgjaXiB8f6haFFmvyg==}
+  '@giselles-ai/sandbox-agent@0.1.11':
+    resolution: {integrity: sha512-F/auBgqJyQTkPPVut+NhH4tMLBQ/5hPsOZp582sjMYlIvGT3iSeH9wx2nMSVAmphFJJBa2i4BMpoJSPIxLMgYw==}
 
   '@google-cloud/precise-date@4.0.0':
     resolution: {integrity: sha512-1TUx3KdaU3cN7nfCdNf+UVqA/PSX29Cjcox3fZZBtINlRrXVTmUkQnCKv2MbBUbCopbK4olAT1IHl76uZyCiVA==}
@@ -2883,6 +2883,9 @@ packages:
     engines: {node: '>=18.14.1'}
     peerDependencies:
       hono: '>=4.11.10'
+
+  '@iarna/toml@3.0.0':
+    resolution: {integrity: sha512-td6ZUkz2oS3VeleBcN+m//Q6HlCFCPrnI0FZhrt/h4XqLEdOyYp2u21nd8MdsR+WJy5r9PTDaHTDDfhf4H4l6Q==}
 
   '@icons-pack/react-simple-icons@10.0.0':
     resolution: {integrity: sha512-oU0PVDx9sbNQjRxJN555dsHbRApYN+aBq/O9+wo3JgNkEfvBMgAEtsSGtXWWXQsLAxJcYiFOCzBWege/Xj/JFQ==}
@@ -10792,8 +10795,9 @@ snapshots:
       - '@cfworker/json-schema'
       - supports-color
 
-  '@giselles-ai/sandbox-agent@0.1.10':
+  '@giselles-ai/sandbox-agent@0.1.11':
     dependencies:
+      '@iarna/toml': 3.0.0
       '@vercel/sandbox': 1.6.0
       zod: 4.3.6
     transitivePeerDependencies:
@@ -10818,6 +10822,8 @@ snapshots:
   '@hono/node-server@1.19.9(hono@4.11.10)':
     dependencies:
       hono: 4.11.10
+
+  '@iarna/toml@3.0.0': {}
 
   '@icons-pack/react-simple-icons@10.0.0(react@19.2.1)':
     dependencies:
