@@ -506,6 +506,49 @@ describe("buildObject", () => {
 			expect(buildObject(endNodeOutput, generationsByNodeId)).toEqual({});
 		});
 
+		it("returns empty object when source.path navigates into an array value", () => {
+			const endNodeOutput: Extract<EndOutput, { format: "object" }> = {
+				format: "object",
+				schema: {
+					title: "TestSchema",
+					type: "object",
+					properties: {
+						name: { type: "string" },
+					},
+					additionalProperties: false,
+					required: ["name"],
+				},
+				mappings: [
+					{
+						path: ["name"],
+						source: {
+							nodeId: defaultNodeId,
+							outputId: defaultOutputId,
+							path: ["items", "name"],
+						},
+					},
+				],
+			};
+			// source.path = ["items", "name"] specifies "name", but the value at
+			// "items" is an array with multiple elements, so there is no way to
+			// determine which element's "name" to pick.
+			const generationsByNodeId = {
+				[defaultNodeId]: createCompletedGeneration({
+					outputs: [
+						{
+							type: "generated-text",
+							outputId: defaultOutputId,
+							content: JSON.stringify({
+								items: [{ name: "Alice" }, { name: "Bob" }],
+							}),
+						},
+					],
+				}),
+			};
+
+			expect(buildObject(endNodeOutput, generationsByNodeId)).toEqual({});
+		});
+
 		it("returns empty object when source.path points to a missing property", () => {
 			const endNodeOutput: Extract<EndOutput, { format: "object" }> = {
 				format: "object",
