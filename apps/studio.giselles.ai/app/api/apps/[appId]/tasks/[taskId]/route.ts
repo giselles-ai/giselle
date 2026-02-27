@@ -16,22 +16,14 @@ import { db } from "@/db";
 import { apps } from "@/db/schema";
 import { verifyApiSecretForTeam } from "@/lib/api-keys";
 
-type ApiStepItem =
-	| {
-			id: string;
-			title: string;
-			status: string;
-			generationId: string;
-			outputs?: GenerationOutput[];
-			error?: string;
-	  }
-	| {
-			id: string;
-			title: string;
-			status: string;
-			generationId: string;
-			error: string;
-	  };
+type ApiStepItem = {
+	id: string;
+	title: string;
+	status: string;
+	generationId: string;
+	outputs?: GenerationOutput[];
+	error?: string;
+};
 
 type ApiStep = {
 	title: string;
@@ -53,15 +45,17 @@ type ApiTaskResultBase = {
 	steps: ApiStep[];
 };
 
-type ApiTaskResult =
-	| (ApiTaskResultBase & {
-			outputFormat: "passthrough";
-			outputs: ApiOutput[];
-	  })
-	| (ApiTaskResultBase & {
-			outputFormat: "object";
-			object: Record<string, unknown>;
-	  });
+type PassthroughApiTaskResult = ApiTaskResultBase & {
+	outputType: "passthrough";
+	outputs: ApiOutput[];
+};
+
+type ObjectApiTaskResult = ApiTaskResultBase & {
+	outputType: "object";
+	output: Record<string, unknown>;
+};
+
+type ApiTaskResult = PassthroughApiTaskResult | ObjectApiTaskResult;
 
 export async function GET(
 	request: NextRequest,
@@ -197,8 +191,8 @@ export async function GET(
 		case "object": {
 			taskResult = {
 				...base,
-				outputFormat: "object",
-				object: buildObject(endNodeOutput, generationsByNodeId),
+				outputType: "object",
+				output: buildObject(endNodeOutput, generationsByNodeId),
 			};
 			break;
 		}
@@ -230,7 +224,7 @@ export async function GET(
 
 			taskResult = {
 				...base,
-				outputFormat: "passthrough",
+				outputType: "passthrough",
 				outputs,
 			};
 			break;

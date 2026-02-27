@@ -72,9 +72,9 @@
 ## Now
 
 - API route implementation complete with real `buildObject` integration.
-- Structured object polling no longer returns 500 for in-progress runs with incomplete mapped generations.
-- Structured object response path is validated by `build-object.test.ts` (missing generation/output/path now covered as non-throw behavior).
-- Structured object builder now behaves like passthrough-style best effort: unresolved mappings are omitted from `object` instead of causing API failure.
+- Renamed discriminant field from `outputFormat` to `outputType` and result field from `object` to `output`.
+- Extracted `PassthroughApiTaskResult` and `ObjectApiTaskResult` as named type aliases.
+- Simplified `ApiStepItem` from a union to a single type with optional fields.
 
 ## Next
 
