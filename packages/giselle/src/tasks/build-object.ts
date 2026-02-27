@@ -2,6 +2,7 @@ import type {
 	CompletedGeneration,
 	EndOutput,
 	GenerationOutput,
+	NodeId,
 	PropertyMapping,
 	SubSchema,
 } from "@giselles-ai/protocol";
@@ -71,7 +72,7 @@ function getRawTextFromOutput(output: GenerationOutput): string | undefined {
 function resolveValue(params: {
 	mapping: PropertyMapping;
 	targetSchema: SubSchema;
-	generationsByNodeId: Record<string, CompletedGeneration>;
+	generationsByNodeId: Record<NodeId, CompletedGeneration>;
 }): unknown | undefined {
 	const { mapping, targetSchema, generationsByNodeId } = params;
 	const generation = generationsByNodeId[mapping.source.nodeId];
@@ -120,7 +121,7 @@ function buildValueFromSubSchema(params: {
 	subSchema: SubSchema;
 	schemaPath: string[];
 	mappings: PropertyMapping[];
-	generationsByNodeId: Record<string, CompletedGeneration>;
+	generationsByNodeId: Record<NodeId, CompletedGeneration>;
 }): unknown | undefined {
 	const { subSchema, schemaPath, mappings, generationsByNodeId } = params;
 

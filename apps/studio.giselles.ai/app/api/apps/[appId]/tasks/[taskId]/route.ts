@@ -7,6 +7,7 @@ import {
 	isCompletedGeneration,
 	isFailedGeneration,
 	isOperationNode,
+	type NodeId,
 	TaskId,
 } from "@giselles-ai/protocol";
 import { eq } from "drizzle-orm";
@@ -126,7 +127,7 @@ export async function GET(
 			),
 		).then((entries) => entries.filter((e) => e !== null)),
 	);
-	const generationsByNodeId: Record<string, CompletedGeneration> = {};
+	const generationsByNodeId: Record<NodeId, CompletedGeneration> = {};
 	for (const generation of Object.values(generationsById)) {
 		if (!isCompletedGeneration(generation)) {
 			continue;
