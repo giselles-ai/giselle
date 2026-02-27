@@ -1239,7 +1239,7 @@ MIT-0 permitted
 
 
 <a name="@giselles-ai/sandbox-agent"></a>
-### @giselles-ai/sandbox-agent v0.1.11
+### @giselles-ai/sandbox-agent v0.1.12
 #### 
 
 ##### Paths
