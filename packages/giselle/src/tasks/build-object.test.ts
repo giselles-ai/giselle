@@ -329,6 +329,72 @@ describe("buildObject", () => {
 		});
 	});
 
+	it("coerces number and boolean values from raw text", () => {
+		const numberNodeId = NodeId.generate();
+		const booleanNodeId = NodeId.generate();
+		const numberOutputId = OutputId.generate();
+		const booleanOutputId = OutputId.generate();
+
+		const endNodeOutput: Extract<EndOutput, { format: "object" }> = {
+			format: "object",
+			schema: {
+				title: "TestSchema",
+				type: "object",
+				properties: {
+					count: { type: "number" },
+					isActive: { type: "boolean" },
+				},
+				additionalProperties: false,
+				required: ["count", "isActive"],
+			},
+			mappings: [
+				{
+					path: ["count"],
+					source: {
+						nodeId: numberNodeId,
+						outputId: numberOutputId,
+						path: [],
+					},
+				},
+				{
+					path: ["isActive"],
+					source: {
+						nodeId: booleanNodeId,
+						outputId: booleanOutputId,
+						path: [],
+					},
+				},
+			],
+		};
+		const generationsByNodeId = {
+			[numberNodeId]: createCompletedGeneration({
+				nodeId: numberNodeId,
+				outputs: [
+					{
+						type: "generated-text",
+						outputId: numberOutputId,
+						content: "42",
+					},
+				],
+			}),
+			[booleanNodeId]: createCompletedGeneration({
+				nodeId: booleanNodeId,
+				outputs: [
+					{
+						type: "generated-text",
+						outputId: booleanOutputId,
+						content: "true",
+					},
+				],
+			}),
+		};
+
+		const result = buildObject(endNodeOutput, generationsByNodeId);
+		expect(result).toEqual({ count: 42, isActive: true });
+		expect(typeof result.count).toBe("number");
+		expect(typeof result.isActive).toBe("boolean");
+	});
+
 	it("returns empty object when generation is missing for mapped nodeId", () => {
 		const endNodeOutput: Extract<EndOutput, { format: "object" }> = {
 			format: "object",

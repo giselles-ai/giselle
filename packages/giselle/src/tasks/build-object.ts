@@ -7,12 +7,16 @@ import type {
 } from "@giselles-ai/protocol";
 import { dataQueryResultToText, queryResultToText } from "../generations/utils";
 
-const pathSeparator = "\u0000";
+function isEqualPath(a: string[], b: string[]): boolean {
+	if (a.length !== b.length) return false;
+	return a.every((segment, i) => segment === b[i]);
+}
 
-type ObjectEndOutput = Extract<EndOutput, { format: "object" }>;
-
-function toPathKey(path: string[]): string {
-	return path.join(pathSeparator);
+function findMappingAtSchemaPath(
+	mappings: PropertyMapping[],
+	schemaPath: string[],
+): PropertyMapping | undefined {
+	return mappings.find((m) => isEqualPath(m.path, schemaPath));
 }
 
 function parseJson(raw: string): unknown | undefined {
@@ -23,7 +27,10 @@ function parseJson(raw: string): unknown | undefined {
 	}
 }
 
-function navigateObjectPath(value: unknown, path: string[]): unknown | undefined {
+function navigateObjectPath(
+	value: unknown,
+	path: string[],
+): unknown | undefined {
 	let current: unknown = value;
 	for (const segment of path) {
 		if (Array.isArray(current)) {
@@ -91,26 +98,36 @@ function resolveValue(params: {
 		return navigateObjectPath(parsed, mapping.source.path);
 	}
 
-	if (targetSchema.type === "object" || targetSchema.type === "array") {
-		return parseJson(rawText);
+	switch (targetSchema.type) {
+		case "object":
+		case "array":
+			return parseJson(rawText);
+		case "number": {
+			const num = Number(rawText);
+			return Number.isNaN(num) ? undefined : num;
+		}
+		case "boolean":
+			if (rawText === "true") return true;
+			if (rawText === "false") return false;
+			return undefined;
+		case "string":
+			return rawText;
 	}
-
-	return rawText;
 }
 
-function buildFromSubSchema(params: {
+function buildValueFromSubSchema(params: {
 	subSchema: SubSchema;
-	path: string[];
-	mappingsByPath: Map<string, PropertyMapping>;
+	schemaPath: string[];
+	mappings: PropertyMapping[];
 	generationsByNodeId: Record<string, CompletedGeneration>;
 }): unknown | undefined {
-	const { subSchema, path, mappingsByPath, generationsByNodeId } = params;
+	const { subSchema, schemaPath, mappings, generationsByNodeId } = params;
 
 	switch (subSchema.type) {
 		case "string":
 		case "number":
 		case "boolean": {
-			const mapping = mappingsByPath.get(toPathKey(path));
+			const mapping = findMappingAtSchemaPath(mappings, schemaPath);
 			if (!mapping) {
 				return undefined;
 			}
@@ -121,10 +138,10 @@ function buildFromSubSchema(params: {
 			});
 		}
 		case "object": {
-			const selfMapping = mappingsByPath.get(toPathKey(path));
-			if (selfMapping) {
+			const directMapping = findMappingAtSchemaPath(mappings, schemaPath);
+			if (directMapping) {
 				return resolveValue({
-					mapping: selfMapping,
+					mapping: directMapping,
 					targetSchema: subSchema,
 					generationsByNodeId,
 				});
@@ -132,10 +149,10 @@ function buildFromSubSchema(params: {
 
 			const result: Record<string, unknown> = {};
 			for (const [key, childSchema] of Object.entries(subSchema.properties)) {
-				const childValue = buildFromSubSchema({
+				const childValue = buildValueFromSubSchema({
 					subSchema: childSchema,
-					path: [...path, key],
-					mappingsByPath,
+					schemaPath: [...schemaPath, key],
+					mappings,
 					generationsByNodeId,
 				});
 				if (childValue !== undefined) {
@@ -145,7 +162,7 @@ function buildFromSubSchema(params: {
 			return result;
 		}
 		case "array": {
-			const mappingAtPath = mappingsByPath.get(toPathKey(path));
+			const mappingAtPath = findMappingAtSchemaPath(mappings, schemaPath);
 			if (mappingAtPath) {
 				return resolveValue({
 					mapping: mappingAtPath,
@@ -154,10 +171,12 @@ function buildFromSubSchema(params: {
 				});
 			}
 
-			const itemsPath = [...path, "items"];
-			const mappingAtItemsPath = mappingsByPath.get(toPathKey(itemsPath));
+			const itemsSchemaPath = [...schemaPath, "items"];
+			const mappingAtItemsPath = findMappingAtSchemaPath(
+				mappings,
+				itemsSchemaPath,
+			);
 			if (!mappingAtItemsPath) {
-				// Known limitation: array item sub-property mappings are not handled.
 				return undefined;
 			}
 			return resolveValue({
@@ -174,22 +193,17 @@ function buildFromSubSchema(params: {
 }
 
 export function buildObject(
-	endNodeOutput: ObjectEndOutput,
+	endNodeOutput: Extract<EndOutput, { format: "object" }>,
 	generationsByNodeId: Record<string, CompletedGeneration>,
 ): Record<string, unknown> {
-	const mappingsByPath = new Map<string, PropertyMapping>();
-	for (const mapping of endNodeOutput.mappings) {
-		mappingsByPath.set(toPathKey(mapping.path), mapping);
-	}
-
 	const result: Record<string, unknown> = {};
 	for (const [key, subSchema] of Object.entries(
 		endNodeOutput.schema.properties,
 	)) {
-		const value = buildFromSubSchema({
+		const value = buildValueFromSubSchema({
 			subSchema,
-			path: [key],
-			mappingsByPath,
+			schemaPath: [key],
+			mappings: endNodeOutput.mappings,
 			generationsByNodeId,
 		});
 		if (value !== undefined) {
