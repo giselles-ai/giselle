@@ -177,7 +177,7 @@ export async function POST(request: NextRequest) {
 			? await runChat({
 					agent: createCodexAgent({
 						env: {
-							OPENAI_API_KEY: process.env.OPENAI_API_KEY ?? "",
+							CODEX_API_KEY: process.env.CODEX_API_KEY ?? "",
 							...browserEnv,
 							...commonEnv,
 						},
