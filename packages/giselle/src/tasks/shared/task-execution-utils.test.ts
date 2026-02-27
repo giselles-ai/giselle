@@ -57,7 +57,6 @@ function createTestTask(overrides?: Partial<Task>): Task {
 		createdAt: 0,
 		updatedAt: 0,
 		annotations: [],
-		endNodeOutput: { format: "passthrough" },
 		sequences,
 		...overrides,
 	};
