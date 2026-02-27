@@ -617,7 +617,7 @@ export default class Giselle {
 			taskId,
 			includeGenerations: true,
 		});
-		if(!("outputType" in result.task)) {
+		if (!("outputType" in result.task)) {
 			throw new Error("Unexpected task response: missing outputType");
 		}
 		return result as CompletedAppTaskResult;
