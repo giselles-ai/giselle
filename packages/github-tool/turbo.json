@@ -35,7 +35,8 @@
 				"GOOGLE_PRIVATE_*",
 				"WAITUNTIL_OFFSET_MILLIS",
 				"EDGE_CONFIG",
-				"TRIGGER_SECRET_KEY"
+				"TRIGGER_SECRET_KEY",
+				"SANDBOX_SNAPSHOT_ID"
 			]
 		},
 		"build": {
