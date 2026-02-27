@@ -618,7 +618,11 @@ export default class Giselle {
 			includeGenerations: true,
 		});
 		if (!("outputType" in result.task)) {
-			throw new Error("Unexpected task response: missing outputType");
+			throw new ApiError(
+				"Tasks API returned invalid JSON",
+				200,
+				JSON.stringify(result),
+			);
 		}
 		return result as CompletedAppTaskResult;
 	}
