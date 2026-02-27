@@ -8,9 +8,9 @@
 
 ## Goal (incl. success criteria)
 
-- API returns `outputFormat` field in the task result
+- API returns `outputType` field in the task result
 - `passthrough`: includes `outputs` (existing behavior)
-- `object`: includes `object` field with transformed JSON (no `outputs` duplication)
+- `object`: includes `output` field with transformed JSON (no `outputs` duplication)
 - `buildObject` logic lives in engine layer and is used by the route
 - SDK parses the new response shape
 
@@ -23,14 +23,15 @@
 
 ## Key decisions
 
-- Use discriminated union on `outputFormat` instead of optional field
+- Use discriminated union on `outputType` instead of optional field
 - When `format === "object"`, do NOT include `outputs` (avoid redundancy; raw data available in `steps`)
 - Investigated OpenAI, Anthropic, Vercel AI SDK patterns — none use optional fields for this
-- Field name `object` (not `structuredOutput`) to match `outputFormat: "object"` and Vercel AI SDK naming
-- Keep `outputFormat` (not `format`) for clarity and extensibility at the top level
+- Field name `output` (not `structuredOutput`) to match `outputType: "object"` and Vercel AI SDK naming
+- Keep `outputType` (not `format`) for clarity and extensibility at the top level
 - Flat structure (not nested under `output`) to preserve backward compatibility with existing `task.outputs`
 - Exhaustive switch with `never` check on `endNodeOutput` (not `.format` due to Zod v4 built-type limitation)
 - Exported `EndOutputSchema` from `end.ts` (was file-local `Output`) for reuse in Task schema
+- Use `Record<NodeId, CompletedGeneration>` (branded type) for `generationsByNodeId` for type safety
 
 ## State
 
@@ -59,26 +60,27 @@
   - schema-based recursive object construction
   - mapping resolution against `generationsByNodeId`
   - output-type handling for `generated-text`, `reasoning`, `query-result`, `data-query-result`
-  - JSON parsing + `source.path` navigation with explicit errors for unresolved mappings/paths
-- Added `packages/giselle/src/tasks/build-object.test.ts` (8 tests).
+  - JSON parsing + `source.path` navigation; best-effort mode (returns `undefined` per field instead of throwing)
+- Added `packages/giselle/src/tasks/build-object.test.ts` (11 tests: 7 valid, 4 invalid).
 - Refined `build-object.test.ts` to avoid helper abstractions (`createSchema`, `generatedTextOutput`) and keep test fixtures explicit/inline per case.
+- Organized tests into `describe("valid")` and `describe("invalid")` blocks.
 - Exported `buildObject` from `packages/giselle/src/tasks/index.ts` and `packages/giselle/src/index.ts` (named export only).
 - Replaced route-local `buildObject` mock with engine implementation in `apps/studio.giselles.ai/app/api/apps/[appId]/tasks/[taskId]/route.ts`.
-- Added route-side `generationsByNodeId` construction and 500 response guard when structured output building fails.
-- Fixed polling regression for `outputFormat: "object"`: when task status is not `completed`, missing mapped generations/outputs now return `{ object: {} }` instead of 500.
-- Changed `buildObject` to best-effort mode (returns `undefined` per field instead of throwing for missing mappings/generations/outputs/JSON/path failures), while keeping `never` exhaustiveness throws.
+- Added route-side `generationsByNodeId` construction using `Record<NodeId, CompletedGeneration>` (branded type).
 - Simplified route object branch to call `buildObject` directly (removed route-side structured-output error classification/catch fallback).
+- Renamed internal variables for consistency (`directMapping` → `mapping`, `mappingAtPath` → `mapping`, `mappingAtItemsPath` → `itemsMapping`).
 
 ## Now
 
-- API route implementation complete with real `buildObject` integration.
-- Renamed discriminant field from `outputFormat` to `outputType` and result field from `object` to `output`.
-- Extracted `PassthroughApiTaskResult` and `ObjectApiTaskResult` as named type aliases.
-- Simplified `ApiStepItem` from a union to a single type with optional fields.
+- API route and `buildObject` implementation complete.
+- Discriminant field: `outputType` (`"passthrough"` | `"object"`), result field: `output`.
+- `ApiStepItem` simplified to single type; `PassthroughApiTaskResult` / `ObjectApiTaskResult` extracted as named aliases.
+- `generationsByNodeId` uses `Record<NodeId, CompletedGeneration>` for type safety.
+- 11 tests passing (7 valid cases, 4 invalid/edge cases including array navigation guard).
 
 ## Next
 
-- Update SDK (`packages/sdk/src/sdk.ts`) to parse and expose the `outputFormat: "object"` shape end-to-end.
+- Update SDK (`packages/sdk/src/sdk.ts`) to parse and expose the `outputType: "object"` shape end-to-end.
 - Decide follow-up for array item sub-property mapping (`["...","items","name"]`) currently treated as out-of-scope limitation (UI still allows selecting it).
 
 ## Open questions (UNCONFIRMED if needed)
