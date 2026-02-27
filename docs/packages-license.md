@@ -8844,7 +8844,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="js-yaml"></a>
-### js-yaml v3.14.1
+### js-yaml v3.14.2
 #### 
 
 ##### Paths
