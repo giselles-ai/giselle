@@ -3,6 +3,7 @@ import {
 	type AppId,
 	ConnectionId,
 	type CreatedGeneration,
+	type EndOutput,
 	GenerationContextInput,
 	GenerationId,
 	GenerationOrigin,
@@ -91,6 +92,7 @@ export async function createTask(
 	);
 
 	let endNodeId: NodeId | undefined;
+	let endNodeOutput: EndOutput | undefined;
 	for (const node of nodes) {
 		if (!isEndNode(node)) {
 			continue;
@@ -101,6 +103,7 @@ export async function createTask(
 			);
 		}
 		endNodeId = node.id;
+		endNodeOutput = node.content.output;
 	}
 	const nodeIdsConnectedToEnd = Array.from(
 		new Set(
@@ -300,6 +303,7 @@ export async function createTask(
 		status: "created",
 		name: starterNode ? defaultName(starterNode) : "group-nodes",
 		nodeIdsConnectedToEnd,
+		endNodeOutput: endNodeOutput ?? { format: "passthrough" },
 		steps: {
 			queued: generations.length,
 			inProgress: 0,
