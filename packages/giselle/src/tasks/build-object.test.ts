@@ -184,7 +184,6 @@ describe("buildObject", () => {
 
 			expect(buildObject(endNodeOutput, generationsByNodeId)).toEqual({
 				summary: "summary text",
-				queryContext: "",
 				rowsText: JSON.stringify([{ id: 1, name: "Alice" }], null, 2),
 			});
 		});
@@ -371,6 +370,67 @@ describe("buildObject", () => {
 					name: "Bob",
 				},
 			});
+		});
+
+		it("coerces number and boolean values extracted through source.path", () => {
+			const nodeId = NodeId.generate();
+			const numberOutputId = OutputId.generate();
+			const booleanOutputId = OutputId.generate();
+
+			const endNodeOutput: Extract<EndOutput, { format: "object" }> = {
+				format: "object",
+				schema: {
+					title: "TestSchema",
+					type: "object",
+					properties: {
+						count: { type: "number" },
+						isActive: { type: "boolean" },
+					},
+					additionalProperties: false,
+					required: ["count", "isActive"],
+				},
+				mappings: [
+					{
+						path: ["count"],
+						source: {
+							nodeId,
+							outputId: numberOutputId,
+							path: ["count"],
+						},
+					},
+					{
+						path: ["isActive"],
+						source: {
+							nodeId,
+							outputId: booleanOutputId,
+							path: ["isActive"],
+						},
+					},
+				],
+			};
+
+			const generationsByNodeId = {
+				[nodeId]: createCompletedGeneration({
+					nodeId,
+					outputs: [
+						{
+							type: "generated-text",
+							outputId: numberOutputId,
+							content: JSON.stringify({ count: "42" }),
+						},
+						{
+							type: "generated-text",
+							outputId: booleanOutputId,
+							content: JSON.stringify({ isActive: "true" }),
+						},
+					],
+				}),
+			};
+
+			const result = buildObject(endNodeOutput, generationsByNodeId);
+			expect(result).toEqual({ count: 42, isActive: true });
+			expect(typeof result.count).toBe("number");
+			expect(typeof result.isActive).toBe("boolean");
 		});
 
 		it("coerces number and boolean values from raw text", () => {
@@ -590,6 +650,176 @@ describe("buildObject", () => {
 			};
 
 			expect(buildObject(endNodeOutput, {})).toEqual({});
+		});
+
+		it("omits object field when raw text parses to a primitive", () => {
+			const endNodeOutput: Extract<EndOutput, { format: "object" }> = {
+				format: "object",
+				schema: {
+					title: "TestSchema",
+					type: "object",
+					properties: {
+						response: {
+							type: "object",
+							properties: {
+								name: { type: "string" },
+							},
+							required: ["name"],
+							additionalProperties: false,
+						},
+					},
+					additionalProperties: false,
+					required: ["response"],
+				},
+				mappings: [
+					{
+						path: ["response"],
+						source: {
+							nodeId: defaultNodeId,
+							outputId: defaultOutputId,
+							path: [],
+						},
+					},
+				],
+			};
+			const generationsByNodeId = {
+				[defaultNodeId]: createCompletedGeneration({
+					outputs: [
+						{
+							type: "generated-text",
+							outputId: defaultOutputId,
+							content: "42",
+						},
+					],
+				}),
+			};
+
+			expect(buildObject(endNodeOutput, generationsByNodeId)).toEqual({});
+		});
+
+		it("omits array field when raw text parses to an object", () => {
+			const endNodeOutput: Extract<EndOutput, { format: "object" }> = {
+				format: "object",
+				schema: {
+					title: "TestSchema",
+					type: "object",
+					properties: {
+						tags: {
+							type: "array",
+							items: { type: "string" },
+						},
+					},
+					additionalProperties: false,
+					required: ["tags"],
+				},
+				mappings: [
+					{
+						path: ["tags"],
+						source: {
+							nodeId: defaultNodeId,
+							outputId: defaultOutputId,
+							path: [],
+						},
+					},
+				],
+			};
+			const generationsByNodeId = {
+				[defaultNodeId]: createCompletedGeneration({
+					outputs: [
+						{
+							type: "generated-text",
+							outputId: defaultOutputId,
+							content: JSON.stringify({ a: 1 }),
+						},
+					],
+				}),
+			};
+
+			expect(buildObject(endNodeOutput, generationsByNodeId)).toEqual({});
+		});
+
+		it("omits fields when raw text cannot be coerced to the target schema type", () => {
+			const numberNodeId = NodeId.generate();
+			const booleanNodeId = NodeId.generate();
+			const stringNodeId = NodeId.generate();
+			const numberOutputId = OutputId.generate();
+			const booleanOutputId = OutputId.generate();
+			const stringOutputId = OutputId.generate();
+
+			const endNodeOutput: Extract<EndOutput, { format: "object" }> = {
+				format: "object",
+				schema: {
+					title: "TestSchema",
+					type: "object",
+					properties: {
+						count: { type: "number" },
+						isActive: { type: "boolean" },
+						name: { type: "string" },
+					},
+					additionalProperties: false,
+					required: ["count", "isActive", "name"],
+				},
+				mappings: [
+					{
+						path: ["count"],
+						source: {
+							nodeId: numberNodeId,
+							outputId: numberOutputId,
+							path: [],
+						},
+					},
+					{
+						path: ["isActive"],
+						source: {
+							nodeId: booleanNodeId,
+							outputId: booleanOutputId,
+							path: [],
+						},
+					},
+					{
+						path: ["name"],
+						source: {
+							nodeId: stringNodeId,
+							outputId: stringOutputId,
+							path: ["name"],
+						},
+					},
+				],
+			};
+			const generationsByNodeId = {
+				[numberNodeId]: createCompletedGeneration({
+					nodeId: numberNodeId,
+					outputs: [
+						{
+							type: "generated-text",
+							outputId: numberOutputId,
+							content: "not-a-number",
+						},
+					],
+				}),
+				[booleanNodeId]: createCompletedGeneration({
+					nodeId: booleanNodeId,
+					outputs: [
+						{
+							type: "generated-text",
+							outputId: booleanOutputId,
+							content: "yes",
+						},
+					],
+				}),
+				[stringNodeId]: createCompletedGeneration({
+					nodeId: stringNodeId,
+					outputs: [
+						{
+							type: "generated-text",
+							outputId: stringOutputId,
+							content: JSON.stringify({ name: 42 }),
+						},
+					],
+				}),
+			};
+
+			expect(buildObject(endNodeOutput, generationsByNodeId)).toEqual({});
 		});
 
 		it("returns empty object when source.path points to a missing property", () => {

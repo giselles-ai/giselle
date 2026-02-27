@@ -56,7 +56,7 @@ function getRawTextFromOutput(output: GenerationOutput): string | undefined {
 		case "reasoning":
 			return output.content;
 		case "query-result":
-			return queryResultToText(output) ?? "";
+			return queryResultToText(output);
 		case "data-query-result":
 			return dataQueryResultToText(output);
 		case "generated-image":
@@ -66,6 +66,43 @@ function getRawTextFromOutput(output: GenerationOutput): string | undefined {
 			const _exhaustive: never = output;
 			throw new Error(`Unhandled generation output type: ${_exhaustive}`);
 		}
+	}
+}
+
+function coerceToSubSchema(
+	value: unknown,
+	targetSchema: SubSchema,
+): unknown | undefined {
+	if (value === undefined) return undefined;
+
+	switch (targetSchema.type) {
+		case "object":
+			return value !== null &&
+				typeof value === "object" &&
+				!Array.isArray(value)
+				? value
+				: undefined;
+		case "array":
+			return Array.isArray(value) ? value : undefined;
+		case "number": {
+			if (typeof value === "number") {
+				return Number.isNaN(value) ? undefined : value;
+			}
+			if (typeof value === "string") {
+				if (value === "") return undefined;
+				const num = Number(value);
+				return Number.isNaN(num) ? undefined : num;
+			}
+			return undefined;
+		}
+		case "boolean":
+			if (typeof value === "boolean") return value;
+			if (value === "true") return true;
+			if (value === "false") return false;
+			return undefined;
+		case "string":
+			if (typeof value === "string") return value;
+			return undefined;
 	}
 }
 
@@ -97,23 +134,20 @@ function resolveValue(params: {
 		if (parsed === undefined) {
 			return undefined;
 		}
-		return navigateObjectPath(parsed, mapping.source.path);
+		const extracted = navigateObjectPath(parsed, mapping.source.path);
+		return coerceToSubSchema(extracted, targetSchema);
 	}
 
 	switch (targetSchema.type) {
 		case "object":
-		case "array":
-			return parseJson(rawText);
-		case "number": {
-			const num = Number(rawText);
-			return Number.isNaN(num) ? undefined : num;
+		case "array": {
+			const parsed = parseJson(rawText);
+			return coerceToSubSchema(parsed, targetSchema);
 		}
+		case "number":
 		case "boolean":
-			if (rawText === "true") return true;
-			if (rawText === "false") return false;
-			return undefined;
 		case "string":
-			return rawText;
+			return coerceToSubSchema(rawText, targetSchema);
 	}
 }
 
@@ -196,7 +230,7 @@ function buildValueFromSubSchema(params: {
 
 export function buildObject(
 	endNodeOutput: Extract<EndOutput, { format: "object" }>,
-	generationsByNodeId: Record<string, CompletedGeneration>,
+	generationsByNodeId: Record<NodeId, CompletedGeneration>,
 ): Record<string, unknown> {
 	const result: Record<string, unknown> = {};
 	for (const [key, subSchema] of Object.entries(

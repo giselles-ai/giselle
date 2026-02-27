@@ -3,7 +3,7 @@
 ## Human intent (must not be overwritten)
 
 - Add structured output support to the public task API (`GET /api/apps/:appId/tasks/:taskId`)
-- Use a discriminated union (`outputFormat: "passthrough" | "object"`) instead of optional fields
+- Use a discriminated union (`outputType: "passthrough" | "object"`) instead of optional fields
 - Keep backward compatibility for existing consumers (passthrough is the default)
 
 ## Goal (incl. success criteria)
