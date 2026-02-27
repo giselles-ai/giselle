@@ -48,24 +48,31 @@ export function useAddWebPages() {
 				normalizedUrls.push(normalized);
 			}
 
+			const node = store.getState().nodes.find((n) => n.id === args.nodeId) as
+				| WebPageNode
+				| undefined;
+			if (!node || node.content.type !== "webPage") {
+				return;
+			}
+			const existingUrls = new Set(
+				node.content.webpages.map((w) => normalizeHttpsUrl(w.url) ?? w.url),
+			);
+
 			const batchSeen = new Set<string>();
 
 			for (const url of normalizedUrls) {
+				if (batchSeen.has(url) || existingUrls.has(url)) {
+					args.onError?.(`duplicate URL: ${url}`);
+					continue;
+				}
+				batchSeen.add(url);
+
 				const node = store.getState().nodes.find((n) => n.id === args.nodeId) as
 					| WebPageNode
 					| undefined;
 				if (!node || node.content.type !== "webPage") {
 					return;
 				}
-
-				const existingUrls = new Set(
-					node.content.webpages.map((w) => normalizeHttpsUrl(w.url) ?? w.url),
-				);
-				if (batchSeen.has(url) || existingUrls.has(url)) {
-					args.onError?.(`duplicate URL: ${url}`);
-					continue;
-				}
-				batchSeen.add(url);
 
 				const newWebPage: WebPage = {
 					id: WebPageId.generate(),
