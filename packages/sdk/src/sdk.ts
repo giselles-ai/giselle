@@ -577,9 +577,7 @@ export default class Giselle {
 		}
 	}
 
-	async #runAppAndWait(
-		args: AppRunAndWaitArgs,
-	): Promise<FinalAppTaskResult> {
+	async #runAppAndWait(args: AppRunAndWaitArgs): Promise<FinalAppTaskResult> {
 		const { taskId } = await this.#runApp(args);
 
 		const pollIntervalMs = args.pollIntervalMs ?? defaultPollIntervalMs;
