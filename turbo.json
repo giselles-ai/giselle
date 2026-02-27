@@ -34,7 +34,8 @@
 				"WAITUNTIL_OFFSET_MILLIS",
 				"EDGE_CONFIG",
 				"TRIGGER_SECRET_KEY",
-				"SANDBOX_SNAPSHOT_ID"
+				"SANDBOX_SNAPSHOT_ID",
+				"CODEX_API_KEY"
 			],
 			"dependsOn": ["^build"],
 			"inputs": [

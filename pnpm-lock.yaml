@@ -342,8 +342,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/react
       '@giselles-ai/sandbox-agent':
-        specifier: 0.1.11
-        version: 0.1.11
+        specifier: 0.1.12
+        version: 0.1.12
       '@giselles-ai/supabase-driver':
         specifier: workspace:*
         version: link:../../packages/supabase-driver
@@ -2851,8 +2851,8 @@ packages:
       react: '>=19.0.0'
       react-dom: '>=19.0.0'
 
-  '@giselles-ai/sandbox-agent@0.1.11':
-    resolution: {integrity: sha512-F/auBgqJyQTkPPVut+NhH4tMLBQ/5hPsOZp582sjMYlIvGT3iSeH9wx2nMSVAmphFJJBa2i4BMpoJSPIxLMgYw==}
+  '@giselles-ai/sandbox-agent@0.1.12':
+    resolution: {integrity: sha512-7r4mhXDT6iQcwk2jKTZW42wHq9xaatSAKa89ZvRghO8MPomDchLHJJJRkd9zbXF69T9uZ+SXi37DsLjwrdf/CQ==}
 
   '@google-cloud/precise-date@4.0.0':
     resolution: {integrity: sha512-1TUx3KdaU3cN7nfCdNf+UVqA/PSX29Cjcox3fZZBtINlRrXVTmUkQnCKv2MbBUbCopbK4olAT1IHl76uZyCiVA==}
@@ -10843,7 +10843,7 @@ snapshots:
       - '@cfworker/json-schema'
       - supports-color
 
-  '@giselles-ai/sandbox-agent@0.1.11':
+  '@giselles-ai/sandbox-agent@0.1.12':
     dependencies:
       '@iarna/toml': 3.0.0
       '@vercel/sandbox': 1.6.0
