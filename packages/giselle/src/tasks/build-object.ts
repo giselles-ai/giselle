@@ -33,6 +33,7 @@ function navigateObjectPath(
 ): unknown | undefined {
 	let current: unknown = value;
 	for (const segment of path) {
+		// Navigating into array element properties is not supported
 		if (Array.isArray(current)) {
 			return undefined;
 		}
@@ -138,10 +139,10 @@ function buildValueFromSubSchema(params: {
 			});
 		}
 		case "object": {
-			const directMapping = findMappingAtSchemaPath(mappings, schemaPath);
-			if (directMapping) {
+			const mapping = findMappingAtSchemaPath(mappings, schemaPath);
+			if (mapping) {
 				return resolveValue({
-					mapping: directMapping,
+					mapping,
 					targetSchema: subSchema,
 					generationsByNodeId,
 				});
@@ -162,25 +163,25 @@ function buildValueFromSubSchema(params: {
 			return result;
 		}
 		case "array": {
-			const mappingAtPath = findMappingAtSchemaPath(mappings, schemaPath);
-			if (mappingAtPath) {
+			const mapping = findMappingAtSchemaPath(mappings, schemaPath);
+			if (mapping) {
 				return resolveValue({
-					mapping: mappingAtPath,
+					mapping,
 					targetSchema: subSchema,
 					generationsByNodeId,
 				});
 			}
 
 			const itemsSchemaPath = [...schemaPath, "items"];
-			const mappingAtItemsPath = findMappingAtSchemaPath(
+			const itemsMapping = findMappingAtSchemaPath(
 				mappings,
 				itemsSchemaPath,
 			);
-			if (!mappingAtItemsPath) {
+			if (!itemsMapping) {
 				return undefined;
 			}
 			return resolveValue({
-				mapping: mappingAtItemsPath,
+				mapping: itemsMapping,
 				targetSchema: subSchema,
 				generationsByNodeId,
 			});

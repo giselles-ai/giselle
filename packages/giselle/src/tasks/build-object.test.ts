@@ -280,6 +280,49 @@ describe("buildObject", () => {
 		});
 	});
 
+	it("maps array directly when mapping path matches array schema path", () => {
+		const endNodeOutput: Extract<EndOutput, { format: "object" }> = {
+			format: "object",
+			schema: {
+				title: "TestSchema",
+				type: "object",
+				properties: {
+					tags: {
+						type: "array",
+						items: { type: "string" },
+					},
+				},
+				additionalProperties: false,
+				required: ["tags"],
+			},
+			mappings: [
+				{
+					path: ["tags"],
+					source: {
+						nodeId: defaultNodeId,
+						outputId: defaultOutputId,
+						path: [],
+					},
+				},
+			],
+		};
+		const generationsByNodeId = {
+			[defaultNodeId]: createCompletedGeneration({
+				outputs: [
+					{
+						type: "generated-text",
+						outputId: defaultOutputId,
+						content: JSON.stringify(["a", "b", "c"]),
+					},
+				],
+			}),
+		};
+
+		expect(buildObject(endNodeOutput, generationsByNodeId)).toEqual({
+			tags: ["a", "b", "c"],
+		});
+	});
+
 	it("parses whole object when source.path is empty and target schema is object", () => {
 		const endNodeOutput: Extract<EndOutput, { format: "object" }> = {
 			format: "object",
