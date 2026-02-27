@@ -306,7 +306,7 @@ function parseTaskResponseJson(json: unknown): AppTaskResult {
 	const outputType = (task as { outputType?: unknown }).outputType;
 	if (outputType === "object") {
 		const output = (task as { output?: unknown }).output;
-		if (typeof output !== "object" || output === null) {
+		if (typeof output !== "object" || output === null || Array.isArray(output)) {
 			throw new Error("Invalid response JSON");
 		}
 		return { task: task as ObjectAppTask };
