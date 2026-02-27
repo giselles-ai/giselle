@@ -173,10 +173,7 @@ function buildValueFromSubSchema(params: {
 			}
 
 			const itemsSchemaPath = [...schemaPath, "items"];
-			const itemsMapping = findMappingAtSchemaPath(
-				mappings,
-				itemsSchemaPath,
-			);
+			const itemsMapping = findMappingAtSchemaPath(mappings, itemsSchemaPath);
 			if (!itemsMapping) {
 				return undefined;
 			}
