@@ -261,13 +261,13 @@ export type ObjectAppTask = {
 	status: string;
 };
 
-export type CompletedAppTask = PassthroughAppTask | ObjectAppTask;
+export type FinalAppTask = PassthroughAppTask | ObjectAppTask;
 
-export type CompletedAppTaskResult = {
-	task: CompletedAppTask;
+export type FinalAppTaskResult = {
+	task: FinalAppTask;
 };
 
-export type AppTask = TaskWithStatus | CompletedAppTask;
+export type AppTask = TaskWithStatus | FinalAppTask;
 
 export type AppTaskResult = {
 	task: AppTask;
@@ -336,7 +336,7 @@ function parseTaskResponseJson(json: unknown): AppTaskResult {
 export default class Giselle {
 	readonly apps: {
 		run: (args: AppRunArgs) => Promise<AppRunResult>;
-		runAndWait: (args: AppRunAndWaitArgs) => Promise<CompletedAppTaskResult>;
+		runAndWait: (args: AppRunAndWaitArgs) => Promise<FinalAppTaskResult>;
 		list: () => Promise<AppListResult>;
 	};
 	readonly files: {
@@ -579,7 +579,7 @@ export default class Giselle {
 
 	async #runAppAndWait(
 		args: AppRunAndWaitArgs,
-	): Promise<CompletedAppTaskResult> {
+	): Promise<FinalAppTaskResult> {
 		const { taskId } = await this.#runApp(args);
 
 		const pollIntervalMs = args.pollIntervalMs ?? defaultPollIntervalMs;
@@ -612,18 +612,10 @@ export default class Giselle {
 		}
 
 		// Fetch full results at the end.
-		const result = await this.#getTask({
+		return (await this.#getTask({
 			appId: args.appId,
 			taskId,
 			includeGenerations: true,
-		});
-		if (!("outputType" in result.task)) {
-			throw new ApiError(
-				"Tasks API returned invalid JSON",
-				200,
-				JSON.stringify(result),
-			);
-		}
-		return result as CompletedAppTaskResult;
+		})) as FinalAppTaskResult;
 	}
 }
