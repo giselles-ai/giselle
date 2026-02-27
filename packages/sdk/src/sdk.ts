@@ -312,7 +312,11 @@ function parseTaskResponseJson(json: unknown): AppTaskResult {
 	const outputType = (task as { outputType?: unknown }).outputType;
 	if (outputType === "object") {
 		const output = (task as { output?: unknown }).output;
-		if (typeof output !== "object" || output === null || Array.isArray(output)) {
+		if (
+			typeof output !== "object" ||
+			output === null ||
+			Array.isArray(output)
+		) {
 			throw new Error("Invalid response JSON");
 		}
 		return { task: task as ObjectAppTask };
@@ -573,7 +577,9 @@ export default class Giselle {
 		}
 	}
 
-	async #runAppAndWait(args: AppRunAndWaitArgs): Promise<CompletedAppTaskResult> {
+	async #runAppAndWait(
+		args: AppRunAndWaitArgs,
+	): Promise<CompletedAppTaskResult> {
 		const { taskId } = await this.#runApp(args);
 
 		const pollIntervalMs = args.pollIntervalMs ?? defaultPollIntervalMs;
@@ -611,6 +617,9 @@ export default class Giselle {
 			taskId,
 			includeGenerations: true,
 		});
+		if(!("outputType" in result.task)) {
+			throw new Error("Unexpected task response: missing outputType");
+		}
 		return result as CompletedAppTaskResult;
 	}
 }
