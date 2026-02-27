@@ -261,7 +261,13 @@ export type ObjectAppTask = {
 	status: string;
 };
 
-export type AppTask = TaskWithStatus | PassthroughAppTask | ObjectAppTask;
+export type CompletedAppTask = PassthroughAppTask | ObjectAppTask;
+
+export type CompletedAppTaskResult = {
+	task: CompletedAppTask;
+};
+
+export type AppTask = TaskWithStatus | CompletedAppTask;
 
 export type AppTaskResult = {
 	task: AppTask;
@@ -326,7 +332,7 @@ function parseTaskResponseJson(json: unknown): AppTaskResult {
 export default class Giselle {
 	readonly apps: {
 		run: (args: AppRunArgs) => Promise<AppRunResult>;
-		runAndWait: (args: AppRunAndWaitArgs) => Promise<AppTaskResult>;
+		runAndWait: (args: AppRunAndWaitArgs) => Promise<CompletedAppTaskResult>;
 		list: () => Promise<AppListResult>;
 	};
 	readonly files: {
@@ -567,7 +573,7 @@ export default class Giselle {
 		}
 	}
 
-	async #runAppAndWait(args: AppRunAndWaitArgs): Promise<AppTaskResult> {
+	async #runAppAndWait(args: AppRunAndWaitArgs): Promise<CompletedAppTaskResult> {
 		const { taskId } = await this.#runApp(args);
 
 		const pollIntervalMs = args.pollIntervalMs ?? defaultPollIntervalMs;
@@ -600,10 +606,11 @@ export default class Giselle {
 		}
 
 		// Fetch full results at the end.
-		return await this.#getTask({
+		const result = await this.#getTask({
 			appId: args.appId,
 			taskId,
 			includeGenerations: true,
 		});
+		return result as CompletedAppTaskResult;
 	}
 }
