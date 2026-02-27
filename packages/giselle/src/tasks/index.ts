@@ -1,3 +1,4 @@
+export * from "./build-object";
 export * from "./create-and-start-task";
 export * from "./create-task";
 export * from "./get-task";
