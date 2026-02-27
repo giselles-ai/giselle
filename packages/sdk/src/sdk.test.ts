@@ -264,6 +264,7 @@ describe("Giselle SDK (public Runs API)", () => {
 							workspaceId: "ws_123",
 							name: "My Task",
 							steps: [],
+							outputType: "passthrough",
 							outputs: [],
 						},
 					}),
@@ -296,7 +297,218 @@ describe("Giselle SDK (public Runs API)", () => {
 				workspaceId: "ws_123",
 				name: "My Task",
 				steps: [],
+				outputType: "passthrough",
 				outputs: [],
+			},
+		});
+	});
+
+	it("app.runAndWait() returns passthrough task result when outputType is passthrough", async () => {
+		let callIndex = 0;
+		const fetchMock = vi.fn((url: unknown, init?: RequestInit) => {
+			callIndex += 1;
+			const headers = new Headers(init?.headers);
+
+			if (callIndex === 1) {
+				expect(url).toBe("https://example.com/api/apps/app-xxxxx/run");
+				expect(init?.method).toBe("POST");
+				expect(headers.get("Authorization")).toBe("Bearer apk_test.secret");
+				expect(headers.get("Content-Type")).toBe("application/json");
+
+				return new Response(JSON.stringify({ taskId: "tsk_123" }), {
+					status: 200,
+					headers: { "Content-Type": "application/json" },
+				});
+			}
+
+			if (callIndex === 2) {
+				expect(url).toBe(
+					"https://example.com/api/apps/app-xxxxx/tasks/tsk_123",
+				);
+				expect(init?.method).toBe("GET");
+				expect(headers.get("Authorization")).toBe("Bearer apk_test.secret");
+
+				return new Response(
+					JSON.stringify({ task: { id: "tsk_123", status: "inProgress" } }),
+					{
+						status: 200,
+						headers: { "Content-Type": "application/json" },
+					},
+				);
+			}
+
+			if (callIndex === 3) {
+				expect(url).toBe(
+					"https://example.com/api/apps/app-xxxxx/tasks/tsk_123",
+				);
+				expect(init?.method).toBe("GET");
+				expect(headers.get("Authorization")).toBe("Bearer apk_test.secret");
+
+				return new Response(
+					JSON.stringify({ task: { id: "tsk_123", status: "completed" } }),
+					{
+						status: 200,
+						headers: { "Content-Type": "application/json" },
+					},
+				);
+			}
+
+			expect(url).toBe(
+				"https://example.com/api/apps/app-xxxxx/tasks/tsk_123?includeGenerations=1",
+			);
+			expect(init?.method).toBe("GET");
+			expect(headers.get("Authorization")).toBe("Bearer apk_test.secret");
+
+			return new Response(
+				JSON.stringify({
+					task: {
+						id: "tsk_123",
+						status: "completed",
+						workspaceId: "ws_123",
+						name: "My Task",
+						steps: [{ title: "Step1", status: "completed", items: [] }],
+						outputType: "passthrough",
+						outputs: [
+							{
+								title: "Pass",
+								generationId: "gen_1",
+								outputs: [],
+							},
+						],
+					},
+				}),
+				{
+					status: 200,
+					headers: { "Content-Type": "application/json" },
+				},
+			);
+		});
+
+		const client = new Giselle({
+			baseUrl: "https://example.com",
+			apiKey: "apk_test.secret",
+			fetch: fetchMock as unknown as typeof fetch,
+		});
+
+		await expect(
+			client.apps.runAndWait({
+				appId: "app-xxxxx",
+				input: { text: "hello" },
+				pollIntervalMs: 0,
+			}),
+		).resolves.toEqual({
+			task: {
+				id: "tsk_123",
+				status: "completed",
+				workspaceId: "ws_123",
+				name: "My Task",
+				steps: [{ title: "Step1", status: "completed", items: [] }],
+				outputType: "passthrough",
+				outputs: [
+					{
+						title: "Pass",
+						generationId: "gen_1",
+						outputs: [],
+					},
+				],
+			},
+		});
+	});
+
+	it("app.runAndWait() returns object task result when outputType is object", async () => {
+		let callIndex = 0;
+		const fetchMock = vi.fn((url: unknown, init?: RequestInit) => {
+			callIndex += 1;
+			const headers = new Headers(init?.headers);
+
+			if (callIndex === 1) {
+				expect(url).toBe("https://example.com/api/apps/app-xxxxx/run");
+				expect(init?.method).toBe("POST");
+				expect(headers.get("Authorization")).toBe("Bearer apk_test.secret");
+				return new Response(JSON.stringify({ taskId: "tsk_123" }), {
+					status: 200,
+					headers: { "Content-Type": "application/json" },
+				});
+			}
+
+			if (callIndex === 2) {
+				return new Response(
+					JSON.stringify({ task: { id: "tsk_123", status: "inProgress" } }),
+					{
+						status: 200,
+						headers: { "Content-Type": "application/json" },
+					},
+				);
+			}
+
+			if (callIndex === 3) {
+				expect(url).toBe(
+					"https://example.com/api/apps/app-xxxxx/tasks/tsk_123",
+				);
+				expect(init?.method).toBe("GET");
+				expect(headers.get("Authorization")).toBe("Bearer apk_test.secret");
+
+				return new Response(
+					JSON.stringify({ task: { id: "tsk_123", status: "completed" } }),
+					{
+						status: 200,
+						headers: { "Content-Type": "application/json" },
+					},
+				);
+			}
+
+			expect(url).toBe(
+				"https://example.com/api/apps/app-xxxxx/tasks/tsk_123?includeGenerations=1",
+			);
+			expect(init?.method).toBe("GET");
+			expect(headers.get("Authorization")).toBe("Bearer apk_test.secret");
+
+			return new Response(
+				JSON.stringify({
+					task: {
+						id: "tsk_123",
+						status: "completed",
+						workspaceId: "ws_123",
+						name: "My Task",
+						steps: [{ title: "Step1", status: "completed", items: [] }],
+						outputType: "object",
+						output: {
+							summary: "ok",
+							score: 10,
+						},
+					},
+				}),
+				{
+					status: 200,
+					headers: { "Content-Type": "application/json" },
+				},
+			);
+		});
+
+		const client = new Giselle({
+			baseUrl: "https://example.com",
+			apiKey: "apk_test.secret",
+			fetch: fetchMock as unknown as typeof fetch,
+		});
+
+		await expect(
+			client.apps.runAndWait({
+				appId: "app-xxxxx",
+				input: { text: "hello" },
+				pollIntervalMs: 0,
+			}),
+		).resolves.toEqual({
+			task: {
+				id: "tsk_123",
+				status: "completed",
+				workspaceId: "ws_123",
+				name: "My Task",
+				steps: [{ title: "Step1", status: "completed", items: [] }],
+				outputType: "object",
+				output: {
+					summary: "ok",
+					score: 10,
+				},
 			},
 		});
 	});
