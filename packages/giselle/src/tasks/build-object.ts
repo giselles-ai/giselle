@@ -161,6 +161,9 @@ function buildValueFromSubSchema(params: {
 					result[key] = childValue;
 				}
 			}
+			if (Object.keys(result).length === 0) {
+				return undefined;
+			}
 			return result;
 		}
 		case "array": {

@@ -37,12 +37,12 @@
 
 - `buildObject` is implemented in `packages/giselle/src/tasks/build-object.ts` and wired into Studio task API route.
 - Object output now resolves from completed generations by node ID (`generationsByNodeId`).
-- Monorepo checks for this change:
+- SDK update reverted from this branch; will be a separate follow-up PR.
+- Monorepo checks:
   - `pnpm format`: pass
   - `pnpm build-sdk`: pass
-  - `pnpm test`: pass (includes new `build-object.test.ts`)
-  - `pnpm check-types`: fail in `studio.giselles.ai` due unrelated missing modules (`@giselles-ai/browser-tool/relay`, `@giselles-ai/sandbox-agent`)
-  - `pnpm tidy`: fail with `knip --no-config-hints` (`ERROR: Invalid input`)
+  - `pnpm test`: pass (engine: 11 build-object tests, all others green)
+  - `pnpm check-types`: pass
 
 ## Done
 
@@ -69,18 +69,19 @@
 - Added route-side `generationsByNodeId` construction using `Record<NodeId, CompletedGeneration>` (branded type).
 - Simplified route object branch to call `buildObject` directly (removed route-side structured-output error classification/catch fallback).
 - Renamed internal variables for consistency (`directMapping` → `mapping`, `mappingAtPath` → `mapping`, `mappingAtItemsPath` → `itemsMapping`).
+- Fixed phantom empty object bug: `buildValueFromSubSchema` `"object"` case now returns `undefined` when no child properties are resolved (previously returned `{}`).
+- Added test: "omits nested object when no child properties can be resolved" (12 tests total).
 
 ## Now
 
-- API route and `buildObject` implementation complete.
-- Discriminant field: `outputType` (`"passthrough"` | `"object"`), result field: `output`.
-- `ApiStepItem` simplified to single type; `PassthroughApiTaskResult` / `ObjectApiTaskResult` extracted as named aliases.
-- `generationsByNodeId` uses `Record<NodeId, CompletedGeneration>` for type safety.
-- 11 tests passing (7 valid cases, 4 invalid/edge cases including array navigation guard).
+- API route and `buildObject` engine complete. SDK update deferred to a follow-up PR.
+- Discriminant field: `outputType` (`"passthrough"` | `"object"`), result field: `output` (object) or `outputs` (passthrough).
+- All quality checks pass: format, build-sdk, check-types, test (12 build-object tests).
 
 ## Next
 
-- Update SDK (`packages/sdk/src/sdk.ts`) to parse and expose the `outputType: "object"` shape end-to-end.
+- E2E testing with curl against a real workspace + published App with structured output End node.
+- SDK update (`packages/sdk/src/sdk.ts`) to parse `outputType: "object"` response — separate PR after this one merges.
 - Decide follow-up for array item sub-property mapping (`["...","items","name"]`) currently treated as out-of-scope limitation (UI still allows selecting it).
 
 ## Open questions (UNCONFIRMED if needed)
@@ -94,4 +95,5 @@
 - `packages/giselle/src/tasks/build-object.test.ts` (added)
 - `packages/giselle/src/tasks/index.ts` (modified)
 - `packages/giselle/src/index.ts` (modified)
-- `packages/sdk/src/sdk.ts` (pending changes)
+- `packages/sdk/src/sdk.ts` (follow-up PR)
+- `packages/sdk/src/sdk.test.ts` (follow-up PR)

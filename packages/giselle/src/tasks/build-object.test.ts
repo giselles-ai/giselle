@@ -549,6 +549,49 @@ describe("buildObject", () => {
 			expect(buildObject(endNodeOutput, generationsByNodeId)).toEqual({});
 		});
 
+		it("omits nested object when no child properties can be resolved", () => {
+			const endNodeOutput: Extract<EndOutput, { format: "object" }> = {
+				format: "object",
+				schema: {
+					title: "TestSchema",
+					type: "object",
+					properties: {
+						user: {
+							type: "object",
+							properties: {
+								name: { type: "string" },
+								age: { type: "number" },
+							},
+							required: ["name", "age"],
+							additionalProperties: false,
+						},
+					},
+					additionalProperties: false,
+					required: ["user"],
+				},
+				mappings: [
+					{
+						path: ["user", "name"],
+						source: {
+							nodeId: defaultNodeId,
+							outputId: defaultOutputId,
+							path: [],
+						},
+					},
+					{
+						path: ["user", "age"],
+						source: {
+							nodeId: defaultNodeId,
+							outputId: OutputId.generate(),
+							path: [],
+						},
+					},
+				],
+			};
+
+			expect(buildObject(endNodeOutput, {})).toEqual({});
+		});
+
 		it("returns empty object when source.path points to a missing property", () => {
 			const endNodeOutput: Extract<EndOutput, { format: "object" }> = {
 				format: "object",
