@@ -1,0 +1,230 @@
+---
+description: Correct AI SDK patterns for this project — prevents hallucination of outdated APIs
+globs: packages/giselle/src/generations/**/*.ts
+alwaysApply: false
+---
+
+# AI SDK — Correct Patterns for This Project
+
+> **How this rule differs from `update-ai-sdk.mdc`:** That rule covers *upgrading SDK versions* (running `pnpm outdated`, updating the catalog). This rule covers *writing correct code* against the current pinned SDK version.
+
+LLMs frequently hallucinate outdated AI SDK APIs. Follow these rules strictly.
+
+## 1. `toolContext` → `experimental_context`
+
+**NEVER** use `toolContext`. It was removed.
+
+```typescript
+// ✅ CORRECT
+import { tool } from "ai";
+import { z } from "zod";
+
+const myTool = tool({
+  description: "Do something with user context",
+  inputSchema: z.object({
+    query: z.string().describe("The search query"),
+  }),
+  execute: async (input, { experimental_context }) => {
+    const ctx = experimental_context as { userId: string };
+    // use ctx.userId
+  },
+});
+
+// Pass context at the call site:
+const result = streamText({
+  model,
+  tools: { myTool },
+  experimental_context: { userId: "123" },
+  // ...
+});
+```
+
+```typescript
+// ❌ WRONG — removed API, will fail silently
+execute: async (args, { toolContext }) => { ... }
+```
+
+**Source:** https://sdk.vercel.ai/docs/ai-sdk-core/tools-and-tool-calling#context-experimental
+
+---
+
+## 2. `parameters` → `inputSchema`
+
+The `tool()` function property for defining input is `inputSchema`, not `parameters`.
+
+```typescript
+// ✅ CORRECT
+tool({
+  description: "Get weather",
+  inputSchema: z.object({
+    location: z.string().describe("City name"),
+  }),
+  execute: async ({ location }) => { ... },
+});
+```
+
+```typescript
+// ❌ WRONG — old property name
+tool({
+  parameters: z.object({ ... }), // Does not exist
+});
+```
+
+**Source:** https://sdk.vercel.ai/docs/ai-sdk-core/tools-and-tool-calling#tool-calling
+
+---
+
+## 3. `strict: true` is a Tool Option (not Zod)
+
+`strict` is a **top-level property on the tool**, not a method on the Zod schema. Always add `.describe()` to every field.
+
+```typescript
+// ✅ CORRECT
+tool({
+  description: "Get weather",
+  inputSchema: z.object({
+    location: z.string().describe("City name, e.g. London"),
+  }),
+  strict: true,  // <-- top-level tool option
+  execute: async ({ location }) => { ... },
+});
+```
+
+```typescript
+// ❌ WRONG — .strict() is a Zod method, not the SDK's strict mode
+inputSchema: z.object({ ... }).strict(),
+```
+
+**Source:** https://sdk.vercel.ai/docs/ai-sdk-core/tools-and-tool-calling#strict-mode
+
+---
+
+## 4. `toDataStreamResponse()` → `toUIMessageStream()`
+
+This project uses `toUIMessageStream()` — not `toDataStreamResponse()` or `toUIMessageStreamResponse()`.
+
+```typescript
+// ✅ CORRECT — what this project uses
+const uiMessageStream = streamTextResult.toUIMessageStream({
+  onFinish: async ({ messages }) => {
+    // handle completion
+  },
+});
+```
+
+```typescript
+// ❌ WRONG — outdated helpers
+result.toDataStreamResponse();
+result.toUIMessageStreamResponse();
+```
+
+---
+
+## 5. `maxSteps` → `stopWhen`
+
+Multi-step tool calls use `stopWhen`, not `maxSteps`. Import `stepCountIs` from `"ai"` for simple step limits, or use a custom function.
+
+```typescript
+// ✅ CORRECT — simple step limit
+import { streamText, stepCountIs } from "ai";
+
+const result = streamText({
+  model,
+  stopWhen: stepCountIs(5),
+  tools: { ... },
+});
+
+// ✅ CORRECT — custom stop condition (used in this project)
+stopWhen: ({ steps }) => {
+  const lastStep = steps[steps.length - 1];
+  return lastStep.finishReason !== "tool-calls";
+},
+```
+
+```typescript
+// ❌ WRONG — deprecated option
+streamText({ maxSteps: 5, ... });
+```
+
+**Source:** https://sdk.vercel.ai/docs/ai-sdk-core/tools-and-tool-calling#multi-step-calls-using-stopwhen
+
+---
+
+## 6. Messages: `UIMessage` + `ModelMessage`
+
+Client messages are `UIMessage` type. Model calls expect `ModelMessage`. Use `convertToModelMessages()` to convert between them.
+
+```typescript
+// ✅ CORRECT
+import { streamText, type UIMessage, type ModelMessage } from "ai";
+```
+
+```typescript
+// ❌ WRONG — using untyped message arrays
+const { messages } = await req.json();
+streamText({ messages, ... }); // Missing type safety
+```
+
+**Source:** https://sdk.vercel.ai/docs/getting-started/nextjs-app-router#create-a-route-handler
+
+---
+
+## 7. `generateObject` — Heads-Up for Future Migration
+
+> **Note:** This project currently uses `generateObject` which is valid for our pinned SDK version. However, upstream AI SDK v6 has deprecated `generateObject` and `streamObject` in favor of `generateText` / `streamText` with `Output.object({ schema })`. Keep this in mind for the next SDK upgrade.
+
+```typescript
+// Current (v5) — valid for this project
+import { generateObject } from "ai";
+const { object } = await generateObject({ model, schema, prompt });
+
+// Future (v6) — for when the project upgrades
+import { generateText, Output } from "ai";
+const { output } = await generateText({
+  model,
+  output: Output.object({ schema }),
+  prompt,
+});
+```
+
+**Source:** https://sdk.vercel.ai/docs/ai-sdk-core/generating-structured-data#generateobject-and-streamobject-legacy
+
+---
+
+## Reference: Canonical Streaming Pattern
+
+A correct streaming setup following this project's conventions:
+
+```typescript
+import {
+  streamText,
+  stepCountIs,
+  smoothStream,
+  type UIMessage,
+} from "ai";
+import { createGateway } from "@ai-sdk/gateway";
+
+const gateway = createGateway({
+  headers: aiGatewayHeaders,
+});
+
+const streamTextResult = streamText({
+  model: gateway("openai/gpt-4o"),
+  messages,
+  tools: toolSet,
+  stopWhen: stepCountIs(5),
+  experimental_transform: smoothStream({
+    delayInMs: 1000,
+    chunking: "line",
+  }),
+  onError: ({ error }) => {
+    // handle error
+  },
+});
+
+const uiMessageStream = streamTextResult.toUIMessageStream({
+  onFinish: async ({ messages: generateMessages }) => {
+    // handle completion
+  },
+});
+```
