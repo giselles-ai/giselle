@@ -4,7 +4,7 @@
 ## Summary
 * 965 MIT
 * 193 Apache 2.0
-* 44 ISC
+* 45 ISC
 * 27 New BSD
 * 16 Simplified BSD
 * 9 BlueOak-1.0.0
@@ -9966,13 +9966,24 @@ BlueOak-1.0.0 permitted
 
 
 <a name="minimatch"></a>
-### minimatch v10.2.1
+### minimatch v10.2.4
 #### 
 
 ##### Paths
 * /home/runner/work/giselle/giselle
 
 BlueOak-1.0.0 permitted
+
+
+
+<a name="minimatch"></a>
+### minimatch v9.0.8
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://en.wikipedia.org/wiki/ISC_license">ISC</a> permitted
 
 
 
