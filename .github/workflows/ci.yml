@@ -38,7 +38,7 @@ jobs:
         run: pnpm report:colors:out || true
       - name: Upload Report Artifact
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: report-colors
           path: .reports/report-colors.json
