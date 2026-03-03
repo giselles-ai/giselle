@@ -6,6 +6,77 @@ Please note we have a [code of conduct](CODE_OF_CONDUCT.md), please follow it in
 
 ## Development environment setup
 
+### Prerequisites
+
+| Requirement | Version | Check |
+|-------------|---------|-------|
+| Node.js | 24+ | `node -v` |
+| pnpm | 10+ | `pnpm -v` |
+| PostgreSQL | 14+ | `psql --version` |
+
+### 1. Clone and install
+
+```bash
+git clone https://github.com/giselles-ai/giselle.git
+cd giselle
+pnpm install
+```
+
+### 2. Configure environment variables
+
+```bash
+cp apps/studio.giselles.ai/.env.example apps/studio.giselles.ai/.env.local
+```
+
+Open `.env.local` and fill in the **required** variables (marked in the file):
+
+| Variable | Description |
+|----------|-------------|
+| `POSTGRES_URL` | PostgreSQL connection string (e.g. `postgres://user:pass@localhost:5432/giselle`) |
+| `GITHUB_APP_ID` | Your GitHub App's ID |
+| `GITHUB_APP_PRIVATE_KEY` | Your GitHub App's private key (PEM format) |
+| `GITHUB_APP_CLIENT_ID` | Your GitHub App's client ID |
+| `GITHUB_APP_CLIENT_SECRET` | Your GitHub App's client secret |
+| `GITHUB_APP_WEBHOOK_SECRET` | Your GitHub App's webhook secret |
+
+You also need at least one AI provider API key:
+
+| Variable | Provider |
+|----------|----------|
+| `OPENAI_API_KEY` | OpenAI |
+| `ANTHROPIC_API_KEY` | Anthropic |
+| `GOOGLE_AI_API_KEY` | Google AI |
+
+All other variables in `.env.example` are optional for local development.
+
+> **Tip:** To create a GitHub App for development, see [GitHub's documentation](https://docs.github.com/en/apps/creating-github-apps). Set the homepage URL to `http://localhost:3000` and the callback URL to `http://localhost:3000/api/auth/callback/github-app`.
+
+### 3. Set up the database
+
+Create a PostgreSQL database and make sure `POSTGRES_URL` in `.env.local` points to it:
+
+```bash
+createdb giselle
+```
+
+Run migrations to set up the schema:
+
+```bash
+cd apps/studio.giselles.ai
+npx drizzle-kit push
+cd ../..
+```
+
+### 4. Start the development server
+
+```bash
+pnpm dev:studio.giselles.ai
+```
+
+Open [http://localhost:3000](http://localhost:3000) — you should see the Giselle studio.
+
+### Project structure
+
 Giselle has both a Cloud version and a Self-hosting version, which can be found in the following directories:
 
 - Cloud: [apps/studio.giselles.ai/](apps/studio.giselles.ai/)
