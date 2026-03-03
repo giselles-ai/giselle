@@ -12,7 +12,7 @@ Please note we have a [code of conduct](CODE_OF_CONDUCT.md), please follow it in
 |-------------|---------|-------|
 | Node.js | 24+ | `node -v` |
 | pnpm | 10+ | `pnpm -v` |
-| PostgreSQL | 14+ | `psql --version` |
+| PostgreSQL | 16+ | `psql --version` |
 
 ### 1. Clone and install
 
