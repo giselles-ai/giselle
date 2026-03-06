@@ -1,15 +1,13 @@
 "use client";
 
 import { Button } from "@giselle-internal/ui/button";
+import { Select } from "@giselle-internal/ui/select";
 import {
-	type App,
 	type AppEntryNode,
 	createUploadedFileData,
 	createUploadingFileData,
 	type GenerationContextInput,
 	isEndNode,
-	type Schema,
-	type SubSchema,
 	type UploadedFileData,
 } from "@giselles-ai/protocol";
 import { useFeatureFlag, useGiselle } from "@giselles-ai/react";
@@ -32,6 +30,11 @@ import {
 	TabsList,
 	TabsTrigger,
 } from "../../editor/properties-panel/text-generation-node-properties-panel/tools/ui/tabs";
+import {
+	generateApiSampleCode,
+	generateApiSampleCodeWithResponse,
+	type SchemaLibrary,
+} from "./generate-sample-code";
 
 export function AppEntryInputDialog({
 	onClose,
@@ -57,6 +60,7 @@ export function AppEntryInputDialog({
 		Record<string, string>
 	>({});
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [schemaLibrary, setSchemaLibrary] = useState<SchemaLibrary>("zod");
 
 	const nodes = useAppDesignerStore((s) => s.nodes);
 
@@ -74,9 +78,13 @@ export function AppEntryInputDialog({
 			!data?.app || !sdkAvailability
 				? ""
 				: endNodeOutputSchema !== undefined
-					? generateApiSampleCodeWithResponse(data.app, endNodeOutputSchema)
+					? generateApiSampleCodeWithResponse(
+							data.app,
+							endNodeOutputSchema,
+							schemaLibrary,
+						)
 					: generateApiSampleCode(data.app),
-		[data?.app, sdkAvailability, endNodeOutputSchema],
+		[data?.app, sdkAvailability, endNodeOutputSchema, schemaLibrary],
 	);
 
 	const handleSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
@@ -428,7 +436,36 @@ export function AppEntryInputDialog({
 								</p>
 							</div>
 
-							<Streamdown className="markdown-renderer">
+							{endNodeOutputSchema !== undefined && (
+								<div className="flex items-center gap-[8px] justify-end">
+									<label
+										htmlFor="schema-library-select"
+										className="text-[12px] text-text-muted font-sans font-semibold"
+									>
+										Validation Library
+									</label>
+									<Select
+										id="schema-library-select"
+										options={[
+											{ value: "zod", label: "Zod" },
+											{ value: "valibot", label: "Valibot" },
+											{ value: "arktype", label: "ArkType" },
+											{ value: "yup", label: "Yup" },
+											{ value: "effect", label: "Effect Schema" },
+										]}
+										value={schemaLibrary}
+										onValueChange={(v) => setSchemaLibrary(v as SchemaLibrary)}
+										placeholder="Validation Library"
+										widthClassName="w-[150px]"
+										triggerClassName="h-auto py-[4px] text-[12px]"
+									/>
+								</div>
+							)}
+							<Streamdown
+								key={schemaLibrary}
+								mode="static"
+								className="markdown-renderer"
+							>
 								{apiSampleCode}
 							</Streamdown>
 						</div>
@@ -437,78 +474,4 @@ export function AppEntryInputDialog({
 			</Tabs>
 		</div>
 	);
-}
-
-function generateExampleValue(subSchema: SubSchema): unknown {
-	switch (subSchema.type) {
-		case "string":
-			return subSchema.enum && subSchema.enum.length > 0
-				? subSchema.enum[0]
-				: "string";
-		case "number":
-			return 0;
-		case "boolean":
-			return true;
-		case "object": {
-			const obj: Record<string, unknown> = {};
-			for (const [key, childSchema] of Object.entries(subSchema.properties)) {
-				obj[key] = generateExampleValue(childSchema);
-			}
-			return obj;
-		}
-		case "array":
-			return [generateExampleValue(subSchema.items)];
-		default: {
-			const _exhaustiveCheck: never = subSchema;
-			throw new Error(`Unhandled schema type: ${_exhaustiveCheck}`);
-		}
-	}
-}
-
-function generateExampleResponse(schema: Schema): Record<string, unknown> {
-	const result: Record<string, unknown> = {};
-	for (const [key, subSchema] of Object.entries(schema.properties)) {
-		result[key] = generateExampleValue(subSchema);
-	}
-	return result;
-}
-
-function generateApiSampleCodeWithResponse(app: App, schema: Schema): string {
-	return `\`\`\`typescript
-import Giselle from "@giselles-ai/sdk";
-
-const client = new Giselle({
-  apiKey: process.env.GISELLE_API_KEY,
-});
-
-const { task } = await client.apps.runAndWait({
-  appId: "${app.id}",
-  input: { text: "your input here" },
-});
-
-console.log(task);
-\`\`\`
-
-**Response**
-
-\`\`\`json
-${JSON.stringify(generateExampleResponse(schema), null, 2)}
-\`\`\``;
-}
-
-function generateApiSampleCode(app: App): string {
-	return `\`\`\`typescript
-import Giselle from "@giselles-ai/sdk";
-
-const client = new Giselle({
-  apiKey: process.env.GISELLE_API_KEY,
-});
-
-const { taskId } = await client.apps.run({
-  appId: "${app.id}",
-  input: { text: "your input here" },
-});
-
-console.log(taskId);
-\`\`\``;
 }

@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
 	ApiError,
 	ConfigurationError,
+	SchemaValidationError,
 	TimeoutError,
 	UnsupportedFeatureError,
 } from "./errors";
@@ -550,6 +551,248 @@ describe("Giselle SDK (public Runs API)", () => {
 				timeoutMs: 0,
 			}),
 		).rejects.toBeInstanceOf(TimeoutError);
+	});
+
+	it("app.runAndWait() validates output with schema and returns typed result", async () => {
+		let callIndex = 0;
+		const fetchMock = vi.fn((_url: unknown) => {
+			callIndex += 1;
+			if (callIndex === 1) {
+				return new Response(JSON.stringify({ taskId: "tsk_123" }), {
+					status: 200,
+					headers: { "Content-Type": "application/json" },
+				});
+			}
+			if (callIndex === 2) {
+				return new Response(
+					JSON.stringify({ task: { id: "tsk_123", status: "completed" } }),
+					{ status: 200, headers: { "Content-Type": "application/json" } },
+				);
+			}
+			return new Response(
+				JSON.stringify({
+					task: {
+						id: "tsk_123",
+						status: "completed",
+						workspaceId: "ws_123",
+						name: "My Task",
+						steps: [],
+						outputType: "object",
+						output: { summary: "ok", score: 10 },
+					},
+				}),
+				{ status: 200, headers: { "Content-Type": "application/json" } },
+			);
+		});
+
+		const mockSchema = {
+			"~standard": {
+				version: 1 as const,
+				vendor: "test",
+				validate: (value: unknown) => ({
+					value: value as { summary: string; score: number },
+				}),
+			},
+		};
+
+		const client = new Giselle({
+			baseUrl: "https://example.com",
+			apiKey: "apk_test.secret",
+			fetch: fetchMock as unknown as typeof fetch,
+		});
+
+		const { task } = await client.apps.runAndWait({
+			appId: "app-xxxxx",
+			input: { text: "hello" },
+			pollIntervalMs: 0,
+			schema: mockSchema,
+		});
+
+		expect(task.outputType).toBe("object");
+		if (task.outputType === "object") {
+			expect(typeof task.output.summary).toBe("string");
+			expect(task.output.summary).toBe("ok");
+			expect(typeof task.output.score).toBe("number");
+			expect(task.output.score).toBe(10);
+		}
+	});
+
+	it("app.runAndWait() throws SchemaValidationError when validation fails", async () => {
+		let callIndex = 0;
+		const fetchMock = vi.fn((_url: unknown) => {
+			callIndex += 1;
+			if (callIndex === 1) {
+				return new Response(JSON.stringify({ taskId: "tsk_123" }), {
+					status: 200,
+					headers: { "Content-Type": "application/json" },
+				});
+			}
+			if (callIndex === 2) {
+				return new Response(
+					JSON.stringify({ task: { id: "tsk_123", status: "completed" } }),
+					{ status: 200, headers: { "Content-Type": "application/json" } },
+				);
+			}
+			return new Response(
+				JSON.stringify({
+					task: {
+						id: "tsk_123",
+						status: "completed",
+						workspaceId: "ws_123",
+						name: "My Task",
+						steps: [],
+						outputType: "object",
+						output: { summary: "ok" },
+					},
+				}),
+				{ status: 200, headers: { "Content-Type": "application/json" } },
+			);
+		});
+
+		const mockSchema = {
+			"~standard": {
+				version: 1 as const,
+				vendor: "test",
+				validate: () => ({
+					issues: [{ message: "Expected number, got string" }],
+				}),
+			},
+		};
+
+		const client = new Giselle({
+			baseUrl: "https://example.com",
+			apiKey: "apk_test.secret",
+			fetch: fetchMock as unknown as typeof fetch,
+		});
+
+		await expect(
+			client.apps.runAndWait({
+				appId: "app-xxxxx",
+				input: { text: "hello" },
+				pollIntervalMs: 0,
+				schema: mockSchema,
+			}),
+		).rejects.toBeInstanceOf(SchemaValidationError);
+	});
+
+	it("app.runAndWait() skips schema validation when outputType is passthrough", async () => {
+		let callIndex = 0;
+		const fetchMock = vi.fn((_url: unknown) => {
+			callIndex += 1;
+			if (callIndex === 1) {
+				return new Response(JSON.stringify({ taskId: "tsk_123" }), {
+					status: 200,
+					headers: { "Content-Type": "application/json" },
+				});
+			}
+			if (callIndex === 2) {
+				return new Response(
+					JSON.stringify({ task: { id: "tsk_123", status: "completed" } }),
+					{ status: 200, headers: { "Content-Type": "application/json" } },
+				);
+			}
+			return new Response(
+				JSON.stringify({
+					task: {
+						id: "tsk_123",
+						status: "completed",
+						workspaceId: "ws_123",
+						name: "My Task",
+						steps: [],
+						outputType: "passthrough",
+						outputs: [],
+					},
+				}),
+				{ status: 200, headers: { "Content-Type": "application/json" } },
+			);
+		});
+
+		const mockSchema = {
+			"~standard": {
+				version: 1 as const,
+				vendor: "test",
+				validate: () => {
+					throw new Error("Should not be called");
+				},
+			},
+		};
+
+		const client = new Giselle({
+			baseUrl: "https://example.com",
+			apiKey: "apk_test.secret",
+			fetch: fetchMock as unknown as typeof fetch,
+		});
+
+		await expect(
+			client.apps.runAndWait({
+				appId: "app-xxxxx",
+				input: { text: "hello" },
+				pollIntervalMs: 0,
+				schema: mockSchema,
+			}),
+		).resolves.toMatchObject({
+			task: { outputType: "passthrough" },
+		});
+	});
+
+	it("app.runAndWait() skips schema validation when task failed", async () => {
+		let callIndex = 0;
+		const fetchMock = vi.fn((_url: unknown) => {
+			callIndex += 1;
+			if (callIndex === 1) {
+				return new Response(JSON.stringify({ taskId: "tsk_123" }), {
+					status: 200,
+					headers: { "Content-Type": "application/json" },
+				});
+			}
+			if (callIndex === 2) {
+				return new Response(
+					JSON.stringify({ task: { id: "tsk_123", status: "failed" } }),
+					{ status: 200, headers: { "Content-Type": "application/json" } },
+				);
+			}
+			return new Response(
+				JSON.stringify({
+					task: {
+						id: "tsk_123",
+						status: "failed",
+						workspaceId: "ws_123",
+						name: "My Task",
+						steps: [],
+						outputType: "object",
+						output: {},
+					},
+				}),
+				{ status: 200, headers: { "Content-Type": "application/json" } },
+			);
+		});
+
+		const mockSchema = {
+			"~standard": {
+				version: 1 as const,
+				vendor: "test",
+				validate: () => {
+					throw new Error("Should not be called on failed task");
+				},
+			},
+		};
+
+		const client = new Giselle({
+			baseUrl: "https://example.com",
+			apiKey: "apk_test.secret",
+			fetch: fetchMock as unknown as typeof fetch,
+		});
+
+		await expect(
+			client.apps.runAndWait({
+				appId: "app-xxxxx",
+				input: { text: "hello" },
+				pollIntervalMs: 0,
+				schema: mockSchema,
+			}),
+		).resolves.toMatchObject({
+			task: { status: "failed" },
+		});
 	});
 
 	it("files.upload() calls POST /api/apps/{appId}/files/upload and returns UploadedFileData", async () => {

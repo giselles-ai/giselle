@@ -54,6 +54,9 @@ catalogs:
     '@octokit/webhooks':
       specifier: 14.0.2
       version: 14.0.2
+    '@standard-schema/spec':
+      specifier: 1.1.0
+      version: 1.1.0
     '@supabase/auth-js':
       specifier: 2.70.0
       version: 2.70.0
@@ -1335,6 +1338,9 @@ importers:
       '@giselles-ai/protocol':
         specifier: workspace:*
         version: link:../protocol
+      '@standard-schema/spec':
+        specifier: 'catalog:'
+        version: 1.1.0
     devDependencies:
       '@giselles-ai/tsconfig':
         specifier: workspace:*
@@ -4863,6 +4869,9 @@ packages:
 
   '@standard-schema/spec@1.0.0':
     resolution: {integrity: sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA==}
+
+  '@standard-schema/spec@1.1.0':
+    resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
 
   '@supabase/auth-js@2.70.0':
     resolution: {integrity: sha512-BaAK/tOAZFJtzF1sE3gJ2FwTjLf4ky3PSvcvLGEgEmO4BSBkwWKu8l67rLLIBZPDnCyV7Owk2uPyKHa0kj5QGg==}
@@ -12864,6 +12873,8 @@ snapshots:
   '@socket.io/component-emitter@3.1.2': {}
 
   '@standard-schema/spec@1.0.0': {}
+
+  '@standard-schema/spec@1.1.0': {}
 
   '@supabase/auth-js@2.70.0':
     dependencies:

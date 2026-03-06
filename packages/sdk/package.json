@@ -6,7 +6,8 @@
 	"module": "./dist/index.mjs",
 	"types": "./dist/index.d.ts",
 	"dependencies": {
-		"@giselles-ai/protocol": "workspace:*"
+		"@giselles-ai/protocol": "workspace:*",
+		"@standard-schema/spec": "catalog:"
 	},
 	"scripts": {
 		"build": "tsup",

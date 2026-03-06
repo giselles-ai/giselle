@@ -26,6 +26,10 @@ export class NotImplementedError extends GiselleSdkError {
 	name = "NotImplementedError";
 }
 
+export class SchemaValidationError extends GiselleSdkError {
+	name = "SchemaValidationError";
+}
+
 export class TimeoutError extends GiselleSdkError {
 	name = "TimeoutError";
 }

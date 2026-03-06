@@ -27,6 +27,7 @@ catalog:
   "@octokit/request-error": 7.0.0
   "@octokit/webhooks": 14.0.2
   "@radix-ui/react-tabs": 1.1.13
+  "@standard-schema/spec": 1.1.0
   "@supabase/auth-js": 2.70.0
   "@supabase/ssr": 0.6.1
   "@supabase/supabase-js": 2.50.5
