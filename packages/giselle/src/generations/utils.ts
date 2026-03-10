@@ -17,6 +17,7 @@ import {
 	NodeGenerationIndex,
 	NodeId,
 	type OperationNode,
+	type Output,
 	OutputId,
 	type TextGenerationContent,
 	type TextGenerationNode,
@@ -1211,4 +1212,53 @@ export function buildOutputOption(
 ): ReturnType<typeof AiOutput.object> | undefined {
 	if (output.format !== "object") return undefined;
 	return AiOutput.object({ schema: jsonSchema(output.schema) });
+}
+
+const GENERATED_OBJECT_PROPERTY_ACCESSOR_PREFIX = "generated-object-property:";
+
+/**
+ * When a text-generation node has structured output (`output.format === "object"`),
+ * parse the generated JSON and produce one GenerationOutput per top-level schema
+ * property that has a matching node output (identified by the accessor prefix).
+ * Downstream nodes can then @-mention individual fields instead of the whole JSON blob.
+ */
+export function buildGeneratedObjectPropertyOutputs(
+	text: string,
+	nodeOutputs: Output[],
+): GenerationOutput[] {
+	const propertyOutputs = nodeOutputs.filter((o) =>
+		o.accessor.startsWith(GENERATED_OBJECT_PROPERTY_ACCESSOR_PREFIX),
+	);
+	if (propertyOutputs.length === 0) {
+		return [];
+	}
+
+	let parsed: unknown;
+	try {
+		parsed = JSON.parse(text);
+	} catch {
+		return [];
+	}
+	if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
+		return [];
+	}
+	const record = parsed as Record<string, unknown>;
+
+	const results: GenerationOutput[] = [];
+	for (const output of propertyOutputs) {
+		const propertyName = output.accessor.slice(
+			GENERATED_OBJECT_PROPERTY_ACCESSOR_PREFIX.length,
+		);
+		if (!(propertyName in record)) {
+			continue;
+		}
+		const value = record[propertyName];
+		const content = typeof value === "string" ? value : JSON.stringify(value);
+		results.push({
+			type: "generated-text",
+			content,
+			outputId: output.id,
+		});
+	}
+	return results;
 }

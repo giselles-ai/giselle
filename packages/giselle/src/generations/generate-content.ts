@@ -44,7 +44,12 @@ import {
 } from "./internal/use-generation-executor";
 import { createPostgresTools } from "./tools/postgres";
 import type { GenerationMetadata, PreparedToolSet } from "./types";
-import { buildMessageObject, buildOutputOption, getGeneration } from "./utils";
+import {
+	buildGeneratedObjectPropertyOutputs,
+	buildMessageObject,
+	buildOutputOption,
+	getGeneration,
+} from "./utils";
 import { transformGiselleLanguageModelToAiSdkLanguageModelCallOptions } from "./v2/language-model";
 import { buildToolSet } from "./v2/tools";
 
@@ -416,6 +421,12 @@ export function generateContent({
 							outputId: generatedTextOutput.id,
 						});
 					}
+					generationOutputs.push(
+						...buildGeneratedObjectPropertyOutputs(
+							text,
+							generationContext.operationNode.outputs,
+						),
+					);
 
 					const reasoningRetrievalStartTime = Date.now();
 					const reasoningText = await streamTextResult.reasoningText;
@@ -770,6 +781,12 @@ function generateContentV2({
 							outputId: generatedTextOutput.id,
 						});
 					}
+					generationOutputs.push(
+						...buildGeneratedObjectPropertyOutputs(
+							text,
+							generationContext.operationNode.outputs,
+						),
+					);
 
 					const reasoningRetrievalStartTime = Date.now();
 					const reasoningText = await streamTextResult.reasoningText;
