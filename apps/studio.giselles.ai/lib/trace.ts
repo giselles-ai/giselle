@@ -1,46 +1,29 @@
-import { traceGeneration } from "@giselles-ai/langfuse";
-import type {
-	CompletedGeneration,
-	FailedGeneration,
-	OutputFileBlob,
-} from "@giselles-ai/protocol";
-import type { ModelMessage, ProviderMetadata } from "ai";
-import type { CurrentTeam } from "@/services/teams";
+import { Langfuse } from "langfuse";
+import { traceGeneration } from "@repo/langfuse/trace-generation";
 
-type TeamForPlan = Pick<
-	CurrentTeam,
-	"id" | "activeSubscriptionId" | "activeCustomerId" | "plan"
->;
+const langfuse = new Langfuse({
+	secretKey: process.env.LANGFUSE_SECRET_KEY,
+	publicKey: process.env.LANGFUSE_PUBLIC_KEY,
+	baseUrl: process.env.LANGFUSE_BASE_URL,
+});
 
-export async function traceGenerationForTeam(args: {
-	generation: CompletedGeneration | FailedGeneration;
-	inputMessages: ModelMessage[];
-	outputFileBlobs?: OutputFileBlob[];
+export const trace = ({
+	traceId,
+	userId,
+	sessionId,
+	metadata,
+}: {
+	traceId: string;
+	userId?: string;
 	sessionId?: string;
-	userId: string;
-	team: TeamForPlan;
-	providerMetadata?: ProviderMetadata;
-	requestId?: string;
-}) {
-	const teamPlan = args.team.plan;
-	const planTag = `plan:${teamPlan}`;
-
-	await traceGeneration({
-		generation: args.generation,
-		outputFileBlobs: args.outputFileBlobs,
-		inputMessages: args.inputMessages,
-		userId: args.userId,
-		tags: [planTag],
-		metadata: {
-			generationId: args.generation.id,
-			teamPlan,
-			userId: args.userId,
-			subscriptionId: args.team.activeSubscriptionId ?? "",
-			customerId: args.team.activeCustomerId ?? "",
-			providerMetadata: args.providerMetadata,
-			requestId: args.requestId,
-			workspaceId: args.generation.context.origin.workspaceId,
-		},
-		sessionId: args.sessionId,
+	metadata?: Record<string, unknown>;
+}) => {
+	return traceGeneration({
+		langfuse,
+		traceId,
+		userId,
+		sessionId,
+		metadata,
+		deploymentId: process.env.VERCEL_DEPLOYMENT_ID,
 	});
-}
+};
