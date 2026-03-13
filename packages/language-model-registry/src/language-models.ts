@@ -1,11 +1,13 @@
 import { anthropic } from "./anthropic";
 import { google } from "./google";
+import { novita } from "./novita";
 import { openai } from "./openai";
 
 export const languageModels = [
 	...Object.values(openai),
 	...Object.values(anthropic),
 	...Object.values(google),
+	...Object.values(novita),
 ];
 
 export const languageModelIds = languageModels.map((model) => model.id);

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { anthropic } from "./anthropic";
 import { google } from "./google";
 import { parseConfiguration } from "./language-model";
+import { novita } from "./novita";
 import { openai } from "./openai";
 
 describe("parseConfiguration", () => {
@@ -161,5 +162,23 @@ describe("parseConfiguration", () => {
 			expect(result.temperature).toBe(1.0); // default
 			expect(result.thinkingLevel).toBe("high"); // default
 		});
+	});
+});
+
+describe("novita models", () => {
+	it("should have valid model IDs", () => {
+		expect(novita["novita/deepseek/deepseek-v3.2"].id).toBe(
+			"novita/deepseek/deepseek-v3.2",
+		);
+		expect(novita["novita/zai-org/glm-5"].id).toBe("novita/zai-org/glm-5");
+		expect(novita["novita/minimax/minimax-m2.5"].id).toBe(
+			"novita/minimax/minimax-m2.5",
+		);
+	});
+
+	it("should have correct provider", () => {
+		expect(novita["novita/deepseek/deepseek-v3.2"].provider.id).toBe("novita");
+		expect(novita["novita/zai-org/glm-5"].provider.id).toBe("novita");
+		expect(novita["novita/minimax/minimax-m2.5"].provider.id).toBe("novita");
 	});
 });

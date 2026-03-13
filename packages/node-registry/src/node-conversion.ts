@@ -13,6 +13,12 @@ import {
 	type TextGenerationNode,
 } from "@giselles-ai/protocol";
 
+// Novita model IDs for TextGenerationNode (without "novita/" prefix)
+type NovitaTextGenerationModelId =
+	| "deepseek/deepseek-v3.2"
+	| "zai-org/glm-5"
+	| "minimax/minimax-m2.5";
+
 // Legacy model IDs that are no longer in the current schema but may exist in stored data
 type LegacyAnthropicModelId =
 	| "claude-opus-4-1-20250805"
@@ -22,7 +28,8 @@ type LegacyOpenAiModelId = "gpt-5-codex";
 type TextGenerationModelIdWithLegacy =
 	| TextGenerationNode["content"]["llm"]["id"]
 	| LegacyAnthropicModelId
-	| LegacyOpenAiModelId;
+	| LegacyOpenAiModelId
+	| NovitaTextGenerationModelId;
 
 function convertTextGenerationLanguageModelIdToContentGenerationLanguageModelId(
 	from: TextGenerationModelIdWithLegacy,
@@ -65,6 +72,12 @@ function convertTextGenerationLanguageModelIdToContentGenerationLanguageModelId(
 			return "openai/gpt-5.1-codex";
 		case "gpt-5-nano":
 			return "openai/gpt-5-nano";
+		case "deepseek/deepseek-v3.2":
+			return "novita/deepseek/deepseek-v3.2";
+		case "zai-org/glm-5":
+			return "novita/zai-org/glm-5";
+		case "minimax/minimax-m2.5":
+			return "novita/minimax/minimax-m2.5";
 		case "sonar":
 		case "sonar-pro":
 			// fallback to gpt-5-nano
@@ -114,9 +127,11 @@ function convertContentGenerationLanguageModelIdToTextGenerationLanguageModelId(
 		case "openai/gpt-5-codex":
 			return "gpt-5.1-codex";
 		case "openai/gpt-5-nano":
-			// When converting back, use gpt-5-nano (not sonar/sonar-pro)
-			// as we cannot determine the original source
 			return "gpt-5-nano";
+		case "novita/deepseek/deepseek-v3.2":
+		case "novita/zai-org/glm-5":
+		case "novita/minimax/minimax-m2.5":
+			return "gpt-5";
 		default: {
 			const _exhaustiveCheck: never = from;
 			throw new Error(`Unknown language model id: ${_exhaustiveCheck}`);
@@ -249,6 +264,20 @@ export function convertContentGenerationToTextGeneration(
 			};
 			break;
 		case "openai":
+			llm = {
+				provider: "openai",
+				id: OpenAILanguageModelId.parse(languageModelId),
+				configurations: {
+					temperature: 0.7,
+					topP: 1.0,
+					presencePenalty: 0.0,
+					frequencyPenalty: 0.0,
+					textVerbosity: "medium",
+					reasoningEffort: "medium",
+				},
+			};
+			break;
+		case "novita":
 			llm = {
 				provider: "openai",
 				id: OpenAILanguageModelId.parse(languageModelId),
