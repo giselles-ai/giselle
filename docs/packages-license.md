@@ -8050,7 +8050,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="happy-dom"></a>
-### happy-dom v20.0.2
+### happy-dom v20.8.8
 #### 
 
 ##### Paths
@@ -13224,7 +13224,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="undici"></a>
-### undici v7.22.0
+### undici v7.24.4
 #### 
 
 ##### Paths
@@ -13235,7 +13235,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="undici-types"></a>
-### undici-types v6.21.0
+### undici-types v7.16.0
 #### 
 
 ##### Paths
