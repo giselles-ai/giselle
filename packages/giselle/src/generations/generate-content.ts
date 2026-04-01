@@ -1,7 +1,7 @@
 import { type AnthropicProviderOptions, anthropic } from "@ai-sdk/anthropic";
 import { createGateway } from "@ai-sdk/gateway";
 import { google } from "@ai-sdk/google";
-import { type OpenAIResponsesProviderOptions, openai } from "@ai-sdk/openai";
+import { createOpenAI, type OpenAIResponsesProviderOptions, openai } from "@ai-sdk/openai";
 import type { SharedV2ProviderMetadata } from "@ai-sdk/provider";
 import { githubTools, octokit } from "@giselles-ai/github-tool";
 import {
@@ -567,6 +567,13 @@ function generationModel(
 		case "perplexity": {
 			return gateway(`${llmProvider}/${languageModel.id}`);
 		}
+		case "minimax": {
+			const minimaxOpenAI = createOpenAI({
+				baseURL: "https://api.minimax.io/v1",
+				apiKey: process.env.MINIMAX_API_KEY ?? "",
+			});
+			return minimaxOpenAI(languageModel.id);
+		}
 		default: {
 			const _exhaustiveCheck: never = llmProvider;
 			throw new Error(`Unknown LLM provider: ${_exhaustiveCheck}`);
@@ -624,6 +631,16 @@ function generateContentV2({
 						},
 			);
 
+			const languageModelId = operationNode.content.languageModel.id;
+			const [providerPrefix] = languageModelId.split("/");
+			const resolvedModel =
+				providerPrefix === "minimax"
+					? createOpenAI({
+							baseURL: "https://api.minimax.io/v1",
+							apiKey: process.env.MINIMAX_API_KEY ?? "",
+						})(languageModelId.slice("minimax/".length))
+					: gateway(languageModelId);
+
 			const messages = await buildMessageObject({
 				node: operationNode,
 				contextNodes: generationContext.sourceNodes,
@@ -656,7 +673,7 @@ function generateContentV2({
 				...callOptions,
 				experimental_output: outputOption,
 				abortSignal: abortController.signal,
-				model: gateway(operationNode.content.languageModel.id),
+				model: resolvedModel,
 				messages,
 				tools: toolSet,
 				stopWhen: ({ steps }) => {

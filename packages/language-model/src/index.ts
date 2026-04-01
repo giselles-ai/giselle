@@ -16,6 +16,10 @@ import {
 	models as googleImageLanguageModels,
 } from "./google-image";
 import {
+	LanguageModel as MiniMaxLanguageModel,
+	models as minimaxLanguageModels,
+} from "./minimax";
+import {
 	LanguageModel as OpenAILanguageModel,
 	models as openaiLanguageModels,
 } from "./openai";
@@ -52,6 +56,7 @@ export const LanguageModel = z.union([
 	OpenAILanguageModel,
 	OpenAIImageLanguageModel,
 	PerplexityLanguageModel,
+	MiniMaxLanguageModel,
 	FalLanguageModel,
 ]);
 export type LanguageModel = z.infer<typeof LanguageModel>;
@@ -63,6 +68,7 @@ export const languageModels = [
 	...openaiLanguageModels,
 	...openaiImageLanguageModels,
 	...perplexityLanguageModels,
+	...minimaxLanguageModels,
 	...falLanguageModels,
 ];
 
@@ -73,12 +79,14 @@ export {
 	OpenAILanguageModel,
 	OpenAIImageLanguageModel,
 	PerplexityLanguageModel,
+	MiniMaxLanguageModel,
 	FalLanguageModel,
 	anthropicLanguageModels,
 	googleLanguageModels,
 	googleImageLanguageModels,
 	openaiLanguageModels,
 	perplexityLanguageModels,
+	minimaxLanguageModels,
 	falLanguageModels,
 };
 
@@ -89,10 +97,12 @@ export const LanguageModelProviders = z.enum([
 	OpenAILanguageModel.shape.provider.value,
 	OpenAIImageLanguageModel.shape.provider.value,
 	PerplexityLanguageModel.shape.provider.value,
+	MiniMaxLanguageModel.shape.provider.value,
 	FalLanguageModel.shape.provider.value,
 ]);
 export type LanguageModelProvider = z.infer<typeof LanguageModelProviders>;
 
 export { AnthropicLanguageModelId } from "./anthropic";
 export { GoogleLanguageModelId } from "./google";
+export { MiniMaxLanguageModelId } from "./minimax";
 export { OpenAILanguageModelId } from "./openai";

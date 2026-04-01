@@ -468,3 +468,37 @@ export const cohereEmbeddingPricing: EmbeddingModelPriceTable = {
 		],
 	},
 };
+
+export const minimaxTokenPricing: ModelPriceTable = {
+	// https://platform.minimaxi.com/document/
+	"MiniMax-M2.7": {
+		prices: [
+			{
+				validFrom: "2025-06-01T00:00:00Z",
+				price: {
+					input: {
+						costPerMegaToken: 0.8,
+					},
+					output: {
+						costPerMegaToken: 2.4,
+					},
+				},
+			},
+		],
+	},
+	"MiniMax-M2.7-highspeed": {
+		prices: [
+			{
+				validFrom: "2025-06-01T00:00:00Z",
+				price: {
+					input: {
+						costPerMegaToken: 0.6,
+					},
+					output: {
+						costPerMegaToken: 1.8,
+					},
+				},
+			},
+		],
+	},
+};

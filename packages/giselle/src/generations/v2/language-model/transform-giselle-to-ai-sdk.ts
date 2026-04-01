@@ -107,6 +107,18 @@ export function transformGiselleLanguageModelToAiSdkLanguageModelCallOptions(
 				},
 			} satisfies Partial<LanguageModelV2CallOptions>;
 		}
+		case "minimax/MiniMax-M2.7":
+		case "minimax/MiniMax-M2.7-highspeed": {
+			const config = parseConfiguration(
+				languageModel,
+				content.languageModel.configuration,
+			);
+			// MiniMax temperature must be in (0.0, 1.0] — clamp to valid range
+			const temperature = Math.min(Math.max(config.temperature, 0.01), 1.0);
+			return {
+				temperature,
+			} satisfies Partial<LanguageModelV2CallOptions>;
+		}
 		default: {
 			const _exhaustiveCheck: never = languageModel;
 			throw new Error(`Unsupported language model: ${_exhaustiveCheck}`);
