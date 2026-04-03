@@ -1,7 +1,6 @@
 import type { KnipConfig } from "knip";
 
 const config: KnipConfig = {
-	exclude: ["catalog"],
 	biome: false,
 	ignoreIssues: {
 		"apps/studio.giselles.ai/emails/**/*.tsx": ["duplicates"],
