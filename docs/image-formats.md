@@ -39,14 +39,15 @@ SVG (`image/svg+xml`) is not supported for vision inputs.
 
 ## Current Behavior
 
-- SVG files may still be uploaded through some parts of the system
-- In some cases, SVG files are treated as image inputs and passed to providers
-- This can result in runtime errors or failed requests
+- SVG files may still be accepted by the system
+- SVG files can be passed to vision models in some cases
+- This may result in runtime errors due to unsupported MIME types
 
 ---
 
 ## Recommended Handling
 
+Developers should avoid using SVG files for vision inputs and instead convert them to supported raster formats such as PNG or JPEG.
 ### Avoid SVG for vision inputs
 
 Use supported raster formats instead:
