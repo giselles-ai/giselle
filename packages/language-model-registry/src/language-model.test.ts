@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { anthropic } from "./anthropic";
 import { google } from "./google";
 import { parseConfiguration } from "./language-model";
+import { minimax } from "./minimax";
 import { openai } from "./openai";
 
 describe("parseConfiguration", () => {
@@ -160,6 +161,48 @@ describe("parseConfiguration", () => {
 
 			expect(result.temperature).toBe(1.0); // default
 			expect(result.thinkingLevel).toBe("high"); // default
+		});
+	});
+
+	describe("with minimax/MiniMax-M2.7", () => {
+		const model = minimax["minimax/MiniMax-M2.7"];
+
+		it("should parse valid temperature", () => {
+			const unknownData: Record<string, unknown> = {
+				temperature: 0.5,
+			};
+
+			const result = parseConfiguration(model, unknownData);
+
+			expect(result.temperature).toBe(0.5);
+		});
+
+		it("should fallback to default when temperature is zero (invalid - must be > 0)", () => {
+			const unknownData: Record<string, unknown> = {
+				temperature: 0,
+			};
+
+			const result = parseConfiguration(model, unknownData);
+
+			expect(result.temperature).toBe(0.7); // falls back to default
+		});
+
+		it("should fallback to default when temperature exceeds 1.0", () => {
+			const unknownData: Record<string, unknown> = {
+				temperature: 1.5,
+			};
+
+			const result = parseConfiguration(model, unknownData);
+
+			expect(result.temperature).toBe(0.7); // falls back to default
+		});
+
+		it("should use default when temperature is missing", () => {
+			const unknownData: Record<string, unknown> = {};
+
+			const result = parseConfiguration(model, unknownData);
+
+			expect(result.temperature).toBe(0.7);
 		});
 	});
 });
