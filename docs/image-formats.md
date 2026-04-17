@@ -1,46 +1,81 @@
-# Image format support
+# Image Format Support
 
-This document will explains supported image formats for vision inputs and limitations such as SVG handling.
+This document explains supported image formats for vision inputs and limitations such as SVG handling.
 
 ## Summary
 
-- Most vision models only support image formats such as PNG, JPEG, GIF, and WebP
-- SVG (`image/svg+xml`) is not supported by LLM providers generally
-- SVG uploads are sometimes accepted in this system however are ignored initially
-- This should be prevented or handled explicitly
+- Most vision models support raster image formats such as PNG, JPEG, and GIF
+- SVG (`image/svg+xml`) is not supported by LLM providers
+- SVG inputs may still be accepted by the system but can cause errors at runtime
+- Developers should avoid using SVG for vision inputs or handle it explicitly
 
-## Supported Formats 
+---
 
-Currently the following types are supported:
+## Supported Formats
+
+The following MIME types are currently supported:
+
 - `image/jpeg`
 - `image/png`
 - `image/gif`
-- `image/webp`
 
-These are compatible with major LLMs
+These formats are compatible with major LLM providers.
 
-## Unsupported Format: SVG and why it is unsupported
+---
 
-- SVG is not supported for vision inputs
-- SVG is a vector based (XML) based, LLMs only support pixel based images (JPEG, PNG etc)
-- If SVG is passed to a vision model it may result in an error
+## Unsupported Format: SVG
 
-## System behavoir prior to fixes
+SVG (`image/svg+xml`) is not supported for vision inputs.
 
-- SVG files mayy still be uploaded through some UI components
-- In generation pipelines, SVG files are skipped and are not sent to the model
-- A warning may be logged but not visible to feedback
+### Why SVG is not supported
 
-Can result it:
-- file upload appearing succesful whilst the image is silently ignored
+- SVG is a vector-based (XML) format
+- Vision models require raster (pixel-based) image data (e.g. JPEG, PNG)
+- Passing SVG to a vision model may result in errors such as:
+`UnknownError: Unsupported MIME type: image/svg+xml`
 
-## Approach to Fix
 
-- Remove SVG from image handling and handle as a unsupported dtype with a clear message or warning
-- Avoids confusion and ensures only supported formats are used.
+---
 
-## After Fix, SVG Handling
-- SVG is not supported still
-- SVG files are explicitly excluded from image processing and will not be sent to LLMs
-- SVG has been intentionally removed from vision handling due to provider limitations
+## Current Behavior
 
+- SVG files may still be uploaded through some parts of the system
+- In some cases, SVG files are treated as image inputs and passed to providers
+- This can result in runtime errors or failed requests
+
+---
+
+## Recommended Handling
+
+### Avoid SVG for vision inputs
+
+Use supported raster formats instead:
+
+- PNG
+- JPEG
+- GIF
+
+---
+
+### Convert SVG to a raster format
+
+If SVG input is required, convert it before use:
+
+- server-side (e.g. image processing tools)
+- client-side (e.g. canvas rendering)
+
+---
+
+### Validate file types early
+
+Reject unsupported formats and provide a clear error message, for example:
+
+> "SVG is not supported. Please use PNG, JPEG, or GIF instead."
+
+---
+
+## Developer Notes
+
+- `image/svg+xml` should not be treated as a valid `ImagePart` for vision inputs
+- Validation should be applied consistently across UI and backend
+- Mismatches between accepted file types and backend handling can lead to confusing behavior
