@@ -11,10 +11,9 @@ This document explains supported image formats for vision inputs and limitations
 
 ---
 
-## Supported Formats
+## Provider-Supported Formats for Vision Inputs
 
-The following MIME types are currently supported:
-
+The following MIME types are supported by major vision model providers:
 - `image/jpeg`
 - `image/png`
 - `image/gif`
