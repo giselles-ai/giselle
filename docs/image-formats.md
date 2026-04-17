@@ -50,11 +50,11 @@ SVG (`image/svg+xml`) is not supported for vision inputs.
 Developers should avoid using SVG files for vision inputs and instead convert them to supported raster formats such as PNG or JPEG.
 ### Avoid SVG for vision inputs
 
-Use supported raster formats instead:
+Use supported raster MIME types instead:
 
-- PNG
-- JPEG
-- GIF
+- `image/png` (PNG)
+- `image/jpeg` (JPEG)
+- `image/gif` (GIF)
 
 ---
 
