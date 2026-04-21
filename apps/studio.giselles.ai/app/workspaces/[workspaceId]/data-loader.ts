@@ -6,7 +6,6 @@ import {
 	aiGatewayFlag,
 	aiGatewayUnsupportedModelsFlag,
 	generateContentNodeFlag,
-	googleUrlContextFlag,
 	layoutV3Flag,
 	privatePreviewToolsFlag,
 	webSearchActionFlag,
@@ -59,7 +58,6 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 	const stage = true;
 	const aiGateway = await aiGatewayFlag();
 	const aiGatewayUnsupportedModels = await aiGatewayUnsupportedModelsFlag();
-	const googleUrlContext = await googleUrlContextFlag();
 	const data = await giselle.getWorkspace(workspaceId);
 	const generateContentNode = await generateContentNodeFlag();
 	const privatePreviewTools = await privatePreviewToolsFlag();
@@ -118,7 +116,6 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 		stage,
 		aiGateway,
 		aiGatewayUnsupportedModels,
-		googleUrlContext,
 		data,
 		documentVectorStores,
 		teamDataStores,
@@ -129,7 +126,6 @@ export async function dataLoader(workspaceId: WorkspaceId) {
 			stage,
 			aiGateway,
 			aiGatewayUnsupportedModels,
-			googleUrlContext,
 			generateContentNode,
 			privatePreviewTools,
 		},

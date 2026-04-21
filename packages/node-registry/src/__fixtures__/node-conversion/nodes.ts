@@ -222,7 +222,6 @@ export const googleGemini = {
 				temperature: 0.7,
 				topP: 1,
 				searchGrounding: true,
-				urlContext: false,
 			},
 		},
 		prompt:
