@@ -1,6 +1,5 @@
 import { Toggle } from "@giselle-internal/ui/toggle";
 import { GoogleLanguageModelData } from "@giselles-ai/protocol";
-import { useUsageLimits } from "@giselles-ai/react";
 import { TemperatureSlider, TopPSlider } from "./shared-model-controls";
 
 export function GoogleModelPanel({
@@ -12,8 +11,6 @@ export function GoogleModelPanel({
 	onModelChange: (changedValue: GoogleLanguageModelData) => void;
 	onSearchGroundingConfigurationChange: (enabled: boolean) => void;
 }) {
-	useUsageLimits();
-
 	const isSearchGroundingEnabled =
 		googleLanguageModel.configurations.searchGrounding;
 

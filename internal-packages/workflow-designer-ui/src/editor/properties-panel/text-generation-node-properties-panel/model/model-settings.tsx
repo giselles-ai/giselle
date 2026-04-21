@@ -122,11 +122,7 @@ export function ModelSettings({
 
 	const updateOutputForGoogle = useCallback(
 		(googleSearch: boolean) => {
-			const sourceOutput = node.outputs.find((o) => o.accessor === "source");
-			if (googleSearch && sourceOutput) {
-				return;
-			}
-			if (googleSearch && !sourceOutput) {
+			if (googleSearch) {
 				onNodeChange({
 					outputs: [
 						...node.outputs,
@@ -135,6 +131,7 @@ export function ModelSettings({
 				});
 				return;
 			}
+			const sourceOutput = node.outputs.find((o) => o.accessor === "source");
 			for (const connection of connections) {
 				if (connection.outputId !== sourceOutput?.id) {
 					continue;
