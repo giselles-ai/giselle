@@ -6,7 +6,6 @@ export interface FeatureFlagContextValue {
 	stage: boolean;
 	aiGateway: boolean;
 	aiGatewayUnsupportedModels: boolean;
-	googleUrlContext: boolean;
 	generateContentNode: boolean;
 	privatePreviewTools: boolean;
 }

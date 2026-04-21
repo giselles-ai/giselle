@@ -260,7 +260,6 @@ export function convertContentGenerationToTextGeneration(
 					temperature: 0.7,
 					topP: 1.0,
 					searchGrounding: false,
-					urlContext: false,
 				},
 			};
 			break;

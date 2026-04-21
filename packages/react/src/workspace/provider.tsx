@@ -53,7 +53,6 @@ export function WorkspaceProvider({
 				aiGateway: featureFlag?.aiGateway ?? false,
 				aiGatewayUnsupportedModels:
 					featureFlag?.aiGatewayUnsupportedModels ?? false,
-				googleUrlContext: featureFlag?.googleUrlContext ?? false,
 				generateContentNode: featureFlag?.generateContentNode ?? false,
 				privatePreviewTools: featureFlag?.privatePreviewTools ?? false,
 			}}
