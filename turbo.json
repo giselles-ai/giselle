@@ -9,7 +9,6 @@
 				"LANGFUSE_*",
 				"POSTGRES_*",
 				"REDIS_URL",
-				"SIGNOZ_*",
 				"STRIPE_*",
 				"SMTP_*",
 				"SUPABASE_*",
