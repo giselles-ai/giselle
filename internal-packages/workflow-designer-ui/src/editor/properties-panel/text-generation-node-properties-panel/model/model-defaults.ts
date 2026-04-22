@@ -95,18 +95,6 @@ export function updateModelId(
 				...currentModel,
 				id: newModelId,
 			});
-		case "perplexity":
-			// Perplexity is deprecated, convert to OpenAI as a fallback
-			return OpenAILanguageModelData.parse({
-				provider: "openai",
-				id: "gpt-5-nano",
-				configurations: {
-					temperature: 0.7,
-					topP: 1.0,
-					frequencyPenalty: 0.0,
-					presencePenalty: 0.0,
-				},
-			});
 		default: {
 			const _exhaustiveCheck: never = currentModel;
 			throw new Error(

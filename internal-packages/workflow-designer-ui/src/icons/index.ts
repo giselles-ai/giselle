@@ -24,7 +24,6 @@ export * from "./openai";
 export * from "./panel-close";
 export * from "./panel-open";
 export * from "./pdf-file";
-export * from "./perplexity";
 export * from "./picture";
 export * from "./pptx-file";
 export * from "./prompt";

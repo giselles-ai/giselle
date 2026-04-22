@@ -6,7 +6,6 @@ import {
 	GoogleWhiteIcon,
 	ImageGenerationNodeIcon,
 	OpenaiIcon,
-	PerplexityIcon,
 	ProTag,
 } from "../components";
 
@@ -35,9 +34,6 @@ function _LanguageModelListItem({
 				)}
 				{languageModel.provider === "google" && (
 					<GoogleWhiteIcon className="w-[18px] h-[18px]" data-icon />
-				)}
-				{languageModel.provider === "perplexity" && (
-					<PerplexityIcon className="w-[18px] h-[18px]" data-icon />
 				)}
 				{languageModel.provider === "fal" && (
 					<ImageGenerationNodeIcon

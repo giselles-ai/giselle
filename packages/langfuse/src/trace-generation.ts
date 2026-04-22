@@ -175,9 +175,6 @@ function extractTags(
 		if (llm.provider === "anthropic" && tools?.anthropicWebSearch) {
 			tags.push("tool:web-search");
 		}
-		if (llm.provider === "perplexity") {
-			tags.push("tool:web-search");
-		}
 
 		// Tool integrations
 		if (tools?.github) tags.push("tool:github");
@@ -263,9 +260,6 @@ function extractMetadata(
 		}
 		if (llm.provider === "openai" && tools?.openaiWebSearch) {
 			metadata["tools.webSearch.provider"] = "openai.webSearchPreview";
-		}
-		if (llm.provider === "perplexity") {
-			metadata["tools.webSearch.provider"] = "perplexity";
 		}
 
 		// Tool integrations metadata

@@ -19,10 +19,13 @@ type LegacyAnthropicModelId =
 	| "claude-sonnet-4-5-20250929"
 	| "claude-haiku-4-5-20251001";
 type LegacyOpenAiModelId = "gpt-5-codex";
+// Removed Perplexity IDs; kept here only to surface a clear error on stored data.
+type RemovedPerplexityModelId = "sonar" | "sonar-pro";
 type TextGenerationModelIdWithLegacy =
 	| TextGenerationNode["content"]["llm"]["id"]
 	| LegacyAnthropicModelId
-	| LegacyOpenAiModelId;
+	| LegacyOpenAiModelId
+	| RemovedPerplexityModelId;
 
 function convertTextGenerationLanguageModelIdToContentGenerationLanguageModelId(
 	from: TextGenerationModelIdWithLegacy,
@@ -75,9 +78,9 @@ function convertTextGenerationLanguageModelIdToContentGenerationLanguageModelId(
 			return "openai/gpt-5-nano";
 		case "sonar":
 		case "sonar-pro":
-			// fallback to gpt-5-nano
-			// @todo discuss policy/strategy
-			return "openai/gpt-5-nano";
+			throw new Error(
+				`Perplexity provider has been removed; model "${from}" is no longer supported. Update the node to a supported provider/model.`,
+			);
 		default: {
 			const _exhaustiveCheck: never = from;
 			throw new Error(`Unknown language model id: ${_exhaustiveCheck}`);
@@ -130,8 +133,6 @@ function convertContentGenerationLanguageModelIdToTextGenerationLanguageModelId(
 		case "openai/gpt-5-codex":
 			return "gpt-5.1-codex";
 		case "openai/gpt-5-nano":
-			// When converting back, use gpt-5-nano (not sonar/sonar-pro)
-			// as we cannot determine the original source
 			return "gpt-5-nano";
 		default: {
 			const _exhaustiveCheck: never = from;

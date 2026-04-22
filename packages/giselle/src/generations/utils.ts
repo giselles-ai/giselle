@@ -280,7 +280,6 @@ async function buildGenerationMessageForTextGeneration({
 				switch (llmProvider) {
 					case "anthropic":
 					case "openai":
-					case "perplexity":
 						userMessage = userMessage.replace(
 							replaceKeyword,
 							fileContents
