@@ -23,10 +23,6 @@ import {
 	LanguageModel as OpenAIImageLanguageModel,
 	models as openaiImageLanguageModels,
 } from "./openai-image";
-import {
-	LanguageModel as PerplexityLanguageModel,
-	models as perplexityLanguageModels,
-} from "./perplexity";
 
 export * from "./base";
 export * from "./costs";
@@ -51,7 +47,6 @@ export const LanguageModel = z.union([
 	GoogleImageLanguageModel,
 	OpenAILanguageModel,
 	OpenAIImageLanguageModel,
-	PerplexityLanguageModel,
 	FalLanguageModel,
 ]);
 export type LanguageModel = z.infer<typeof LanguageModel>;
@@ -62,7 +57,6 @@ export const languageModels = [
 	...anthropicLanguageModels,
 	...openaiLanguageModels,
 	...openaiImageLanguageModels,
-	...perplexityLanguageModels,
 	...falLanguageModels,
 ];
 
@@ -72,13 +66,11 @@ export {
 	GoogleImageLanguageModel,
 	OpenAILanguageModel,
 	OpenAIImageLanguageModel,
-	PerplexityLanguageModel,
 	FalLanguageModel,
 	anthropicLanguageModels,
 	googleLanguageModels,
 	googleImageLanguageModels,
 	openaiLanguageModels,
-	perplexityLanguageModels,
 	falLanguageModels,
 };
 
@@ -88,7 +80,6 @@ export const LanguageModelProviders = z.enum([
 	GoogleImageLanguageModel.shape.provider.value,
 	OpenAILanguageModel.shape.provider.value,
 	OpenAIImageLanguageModel.shape.provider.value,
-	PerplexityLanguageModel.shape.provider.value,
 	FalLanguageModel.shape.provider.value,
 ]);
 export type LanguageModelProvider = z.infer<typeof LanguageModelProviders>;

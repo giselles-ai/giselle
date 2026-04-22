@@ -106,7 +106,7 @@ export function TopPSlider<T extends { configurations: { topP: number } }>({
 	);
 }
 
-// Frequency Penalty slider (used by OpenAI and Perplexity)
+// Frequency Penalty slider
 export function FrequencyPenaltySlider<
 	T extends { configurations: { frequencyPenalty: number } },
 >({
@@ -136,7 +136,7 @@ export function FrequencyPenaltySlider<
 	);
 }
 
-// Presence Penalty slider (used by OpenAI and Perplexity)
+// Presence Penalty slider
 export function PresencePenaltySlider<
 	T extends { configurations: { presencePenalty: number } },
 >({

@@ -8,7 +8,6 @@ export {
 	GoogleWhiteIcon,
 	OpenaiIcon,
 	PdfFileIcon,
-	PerplexityIcon,
 	PictureIcon,
 	PromptIcon,
 	SearchIcon,

@@ -73,11 +73,6 @@ function convertTextGenerationLanguageModelIdToContentGenerationLanguageModelId(
 			return "openai/gpt-5.1-codex";
 		case "gpt-5-nano":
 			return "openai/gpt-5-nano";
-		case "sonar":
-		case "sonar-pro":
-			// fallback to gpt-5-nano
-			// @todo discuss policy/strategy
-			return "openai/gpt-5-nano";
 		default: {
 			const _exhaustiveCheck: never = from;
 			throw new Error(`Unknown language model id: ${_exhaustiveCheck}`);
@@ -130,8 +125,6 @@ function convertContentGenerationLanguageModelIdToTextGenerationLanguageModelId(
 		case "openai/gpt-5-codex":
 			return "gpt-5.1-codex";
 		case "openai/gpt-5-nano":
-			// When converting back, use gpt-5-nano (not sonar/sonar-pro)
-			// as we cannot determine the original source
 			return "gpt-5-nano";
 		default: {
 			const _exhaustiveCheck: never = from;

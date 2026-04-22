@@ -542,8 +542,7 @@ function generationModel(
 	switch (llmProvider) {
 		case "anthropic":
 		case "openai":
-		case "google":
-		case "perplexity": {
+		case "google": {
 			return gateway(`${llmProvider}/${languageModel.id}`);
 		}
 		default: {

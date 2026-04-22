@@ -4,7 +4,6 @@ import {
 	GoogleWhiteIcon,
 	ImageGenerationNodeIcon,
 	OpenaiIcon,
-	PerplexityIcon,
 	ProTag,
 } from "../components";
 
@@ -51,9 +50,6 @@ function _ModelProviderGroup({
 							)}
 							{provider === "google" && (
 								<GoogleWhiteIcon className="w-[18px] h-[18px]" data-icon />
-							)}
-							{provider === "perplexity" && (
-								<PerplexityIcon className="w-[18px] h-[18px]" data-icon />
 							)}
 							{provider === "fal" && (
 								<ImageGenerationNodeIcon

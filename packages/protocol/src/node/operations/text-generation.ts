@@ -2,7 +2,6 @@ import {
 	AnthropicLanguageModel,
 	GoogleLanguageModel,
 	OpenAILanguageModel,
-	PerplexityLanguageModel,
 } from "@giselles-ai/language-model";
 import * as z from "zod/v4";
 import { SecretId } from "../../secret";
@@ -29,20 +28,10 @@ export const OpenAILanguageModelData = OpenAILanguageModel.pick({
 });
 export type OpenAILanguageModelData = z.infer<typeof OpenAILanguageModelData>;
 
-export const PerplexityLanguageModelData = PerplexityLanguageModel.pick({
-	provider: true,
-	id: true,
-	configurations: true,
-});
-export type PerplexityLanguageModelData = z.infer<
-	typeof PerplexityLanguageModelData
->;
-
 export const TextGenerationLanguageModelProvider = z.enum([
 	AnthropicLanguageModelData.shape.provider.value,
 	GoogleLanguageModelData.shape.provider.value,
 	OpenAILanguageModelData.shape.provider.value,
-	PerplexityLanguageModelData.shape.provider.value,
 ]);
 export type TextGenerationLanguageModelProvider = z.infer<
 	typeof TextGenerationLanguageModelProvider
@@ -54,7 +43,6 @@ export const TextGenerationLanguageModelData = z.discriminatedUnion(
 		AnthropicLanguageModelData,
 		GoogleLanguageModelData,
 		OpenAILanguageModelData,
-		PerplexityLanguageModelData,
 	],
 );
 export type TextGenerationLanguageModelData = z.infer<

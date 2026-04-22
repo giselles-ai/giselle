@@ -342,7 +342,7 @@ export function Page({
 												className="h-5 w-5 text-white/40"
 											/>
 										}
-										providers={["openai", "anthropic", "google", "perplexity"]}
+										providers={["openai", "anthropic", "google"]}
 									/>
 									<AppListCard
 										title="Tech Support"

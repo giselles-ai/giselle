@@ -36,7 +36,6 @@ catalog:
   "@ai-sdk/openai": 1.3.6   # Update to latest version
   "@ai-sdk/anthropic": 1.2.4 # Update to latest version
   "@ai-sdk/google": 1.2.5   # Update to latest version
-  "@ai-sdk/perplexity": 1.1.3 # Update to latest version
   "@ai-sdk/react": 1.2.5    # Update to latest version
   "@ai-sdk/fal": 0.1.1      # Update if needed
 ```

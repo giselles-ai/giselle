@@ -4,7 +4,6 @@ import {
 	GoogleWhiteIcon,
 	ImageGenerationNodeIcon,
 	OpenaiIcon,
-	PerplexityIcon,
 } from "../components";
 
 interface ProviderIconProps {
@@ -23,8 +22,6 @@ export function ProviderIcon({
 			return <OpenaiIcon className={className} data-icon />;
 		case "google":
 			return <GoogleWhiteIcon className={className} data-icon />;
-		case "perplexity":
-			return <PerplexityIcon className={className} data-icon />;
 		case "fal":
 			return (
 				<ImageGenerationNodeIcon
