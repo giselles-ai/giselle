@@ -2,11 +2,13 @@ import type { User } from "@supabase/auth-js";
 import { type NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "./create-server-client";
 
+type GuardResult = NextResponse | undefined;
+
 export const supabaseMiddleware = (
 	guardCallback?: (
 		user: User | null,
 		request: NextRequest,
-	) => Promise<NextResponse | undefined>,
+	) => GuardResult | Promise<GuardResult>,
 ) => {
 	return async (request: NextRequest) => {
 		// Dev safeguard: If Supabase env vars are not set locally, skip auth wiring
@@ -52,7 +54,7 @@ export const supabaseMiddleware = (
 		const {
 			data: { user },
 		} = await supabase.auth.getUser();
-		const response = guardCallback?.(user, request);
+		const response = await guardCallback?.(user, request);
 		if (response != null) {
 			return response;
 		}
