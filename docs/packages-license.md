@@ -5560,7 +5560,7 @@ FSL-1.1-MIT manually approved
 
 
 <a name="@xmldom/xmldom"></a>
-### @xmldom/xmldom v0.8.12
+### @xmldom/xmldom v0.8.13
 #### 
 
 ##### Paths
