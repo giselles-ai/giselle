@@ -22,13 +22,9 @@ import { useGenerationExecutor } from "./internal/use-generation-executor";
 import {
 	buildMessageObject,
 	detectImageType,
+	type GeneratedImageData,
 	setGeneratedImage,
 } from "./utils";
-
-interface GeneratedImageData {
-	uint8Array: Uint8Array;
-	base64: string;
-}
 
 export function generateImage(args: {
 	context: GiselleContext;
