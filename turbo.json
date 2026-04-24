@@ -12,7 +12,7 @@
 				"STRIPE_*",
 				"SMTP_*",
 				"SUPABASE_*",
-				"GTM_ID",
+				"NEXT_PUBLIC_GTM_ID",
 				"SENTRY_*",
 				"INTERNAL_USER_EMAIL_DOMAIN",
 				"OFFICIAL_VECTOR_STORE_TEAM_DB_ID",

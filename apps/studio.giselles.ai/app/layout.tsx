@@ -56,7 +56,7 @@ export default function RootLayout({
 			suppressHydrationWarning
 			className={`${dmSans.variable} ${dmMono.variable}`}
 		>
-			<GoogleTagManager gtmId={process.env.GTM_ID ?? ""} />
+			<GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID ?? ""} />
 			<PHProvider>
 				<body>
 					<ThemeProvider
