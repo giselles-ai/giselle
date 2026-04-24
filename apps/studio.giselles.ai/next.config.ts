@@ -110,6 +110,13 @@ const sentryBuildOptions: SentryBuildOptions = {
 	// For all available options, see:
 	// https://www.npmjs.com/package/@sentry/webpack-plugin#options
 
+	// Source-map upload targets — read from env so deployments opt in by
+	// providing SENTRY_ORG / SENTRY_PROJECT / SENTRY_AUTH_TOKEN. Undefined
+	// values skip upload (plugin emits a warning, build continues).
+	org: process.env.SENTRY_ORG,
+	project: process.env.SENTRY_PROJECT,
+	authToken: process.env.SENTRY_AUTH_TOKEN,
+
 	// Only print logs for uploading source maps in CI
 	silent: !process.env.CI,
 
