@@ -1,15 +1,11 @@
-import { fal } from "@ai-sdk/fal";
 import { google } from "@ai-sdk/google";
 import { openai } from "@ai-sdk/openai";
-import type { GeneratedImageData } from "@giselles-ai/language-model";
 import {
 	type FailedGeneration,
-	type FalLanguageModelData,
 	type GenerationContext,
 	type GenerationOutput,
 	type GoogleImageLanguageModelData,
 	type Image,
-	type ImageGenerationNode,
 	ImageId,
 	isImageGenerationNode,
 	type OpenAIImageLanguageModelData,
@@ -26,6 +22,7 @@ import { useGenerationExecutor } from "./internal/use-generation-executor";
 import {
 	buildMessageObject,
 	detectImageType,
+	type GeneratedImageData,
 	setGeneratedImage,
 } from "./utils";
 
@@ -68,17 +65,6 @@ export function generateImage(args: {
 
 				let generationOutputs: GenerationOutput[] = [];
 				switch (operationNode.content.llm.provider) {
-					case "fal":
-						generationOutputs = await generateImageWithFal({
-							operationNode,
-							messages,
-							runningGeneration,
-							generationContext,
-							languageModelData: operationNode.content.llm,
-							context: args.context,
-							signal,
-						});
-						break;
 					case "openai":
 						generationOutputs = await generateImageWithOpenAI({
 							messages,
@@ -132,88 +118,6 @@ export function generateImage(args: {
 			}
 		},
 	});
-}
-
-async function generateImageWithFal({
-	operationNode,
-	generationContext,
-	runningGeneration,
-	messages,
-	context,
-	languageModelData,
-	signal,
-}: {
-	operationNode: ImageGenerationNode;
-	generationContext: GenerationContext;
-	runningGeneration: RunningGeneration;
-	messages: ModelMessage[];
-	context: GiselleContext;
-	languageModelData: FalLanguageModelData;
-	signal?: AbortSignal;
-}) {
-	let prompt = "";
-	for (const message of messages) {
-		if (!Array.isArray(message.content)) {
-			continue;
-		}
-		for (const content of message.content) {
-			if (content.type !== "text") {
-				continue;
-			}
-			prompt += content.text;
-		}
-	}
-
-	const result = await generateImageAiSdk({
-		model: fal.image(operationNode.content.llm.id),
-		prompt,
-		n: languageModelData.configurations.n,
-		size: languageModelData.configurations.size,
-		abortSignal: signal,
-	});
-
-	const generationOutputs: GenerationOutput[] = [];
-
-	const generatedImageOutput = generationContext.operationNode.outputs.find(
-		(output) => output.accessor === "generated-image",
-	);
-	if (generatedImageOutput !== undefined) {
-		const contents = await Promise.all(
-			result.images.map(async (image) => {
-				const imageType = detectImageType(image.uint8Array);
-				if (imageType === null) {
-					return null;
-				}
-				const id = ImageId.generate();
-				const filename = `${id}.${imageType.ext}`;
-
-				await setGeneratedImage({
-					storage: context.storage,
-					generation: runningGeneration,
-					generatedImage: {
-						uint8Array: image.uint8Array,
-						base64: image.base64,
-					} satisfies GeneratedImageData,
-					generatedImageFilename: filename,
-				});
-
-				return {
-					id,
-					contentType: imageType.contentType,
-					filename,
-					pathname: `/generations/${runningGeneration.id}/generated-images/${filename}`,
-				} satisfies Image;
-			}),
-		).then((results) => results.filter((result) => result !== null));
-
-		generationOutputs.push({
-			type: "generated-image",
-			contents,
-			outputId: generatedImageOutput.id,
-		});
-	}
-
-	return generationOutputs;
 }
 
 async function generateImageWithOpenAI({

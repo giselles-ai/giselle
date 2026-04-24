@@ -1,16 +1,8 @@
 import {
-	FalLanguageModel,
 	GoogleImageLanguageModel,
 	OpenAIImageLanguageModel,
 } from "@giselles-ai/language-model";
 import * as z from "zod/v4";
-
-export const FalLanguageModelData = FalLanguageModel.pick({
-	provider: true,
-	id: true,
-	configurations: true,
-});
-export type FalLanguageModelData = z.infer<typeof FalLanguageModelData>;
 
 export const OpenAIImageLanguageModelData = OpenAIImageLanguageModel.pick({
 	provider: true,
@@ -32,11 +24,7 @@ export type GoogleImageLanguageModelData = z.infer<
 
 export const ImageGenerationLanguageModelData = z.discriminatedUnion(
 	"provider",
-	[
-		OpenAIImageLanguageModelData,
-		GoogleImageLanguageModelData,
-		FalLanguageModelData,
-	],
+	[OpenAIImageLanguageModelData, GoogleImageLanguageModelData],
 );
 export type ImageGenerationLanguageModelData = z.infer<
 	typeof ImageGenerationLanguageModelData
@@ -50,7 +38,6 @@ export function isImageGenerationLanguageModelData(
 export const ImageGenerationLanguageModelProvider = z.enum([
 	OpenAIImageLanguageModelData.shape.provider.value,
 	GoogleImageLanguageModelData.shape.provider.value,
-	FalLanguageModelData.shape.provider.value,
 ]);
 export type ImageGenerationLanguageModelProvider = z.infer<
 	typeof ImageGenerationLanguageModelProvider

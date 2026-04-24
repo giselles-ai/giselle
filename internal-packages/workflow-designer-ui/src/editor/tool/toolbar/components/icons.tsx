@@ -15,4 +15,3 @@ export {
 	VideoIcon,
 	WebPageFileIcon,
 } from "../../../../icons";
-export { ImageGenerationNodeIcon } from "../../../../icons/node";
