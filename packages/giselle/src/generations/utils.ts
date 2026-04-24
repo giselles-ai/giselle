@@ -596,7 +596,6 @@ async function buildGenerationMessageForImageGeneration(
 					fileResolver,
 				);
 				switch (llmProvider) {
-					case "fal":
 					case "openai":
 						userMessage = userMessage.replace(
 							replaceKeyword,

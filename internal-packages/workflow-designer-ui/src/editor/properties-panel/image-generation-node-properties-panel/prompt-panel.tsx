@@ -1,6 +1,5 @@
 import { useToasts } from "@giselle-internal/ui/toast";
 import {
-	falLanguageModels,
 	googleImageLanguageModels,
 	hasTierAccess,
 	openaiImageModels,
@@ -27,7 +26,7 @@ import { ProTag } from "../../tool/toolbar/components/pro-tag";
 import { PromptEditor } from "../ui/prompt-editor";
 import { SettingDetail, SettingLabel } from "../ui/setting-label";
 import { createDefaultModelData, updateModelId } from "./model-defaults";
-import { FalModelPanel, OpenAIImageModelPanel } from "./models";
+import { OpenAIImageModelPanel } from "./models";
 import { useConnectedSources } from "./sources";
 
 export function PromptPanel({ node }: { node: ImageGenerationNode }) {
@@ -53,15 +52,6 @@ export function PromptPanel({ node }: { node: ImageGenerationNode }) {
 
 	const groups = useMemo(
 		() => [
-			{
-				provider: "fal",
-				label: "Fal",
-				models: falLanguageModels.map((m) => ({
-					id: m.id,
-					badge: m.tier === Tier.enum.pro ? <ProTag /> : undefined,
-					disabled: !hasTierAccess(m, userTier),
-				})),
-			},
 			{
 				provider: "openai",
 				label: "OpenAI",
@@ -130,18 +120,16 @@ export function PromptPanel({ node }: { node: ImageGenerationNode }) {
 								return;
 							}
 							const model =
-								provider === "fal"
-									? falLanguageModels.find((m) => m.id === modelId)
-									: provider === "openai"
-										? selectableOpenAIImageModels.find((m) => m.id === modelId)
-										: googleImageLanguageModels.find((m) => m.id === modelId);
+								provider === "openai"
+									? selectableOpenAIImageModels.find((m) => m.id === modelId)
+									: googleImageLanguageModels.find((m) => m.id === modelId);
 							if (!model) return;
 							if (!hasTierAccess(model, userTier)) {
 								error("Please upgrade to Pro to use this model.");
 								return;
 							}
 							const next = createDefaultModelData(
-								provider as "fal" | "openai" | "google",
+								provider as "openai" | "google",
 							);
 							const updated = updateModelId(next, modelId);
 							disconnectInvalidConnections(updated);
@@ -153,12 +141,6 @@ export function PromptPanel({ node }: { node: ImageGenerationNode }) {
 				</div>
 			</div>
 			<SettingLabel>Model parameters</SettingLabel>
-			{node.content.llm.provider === "fal" && (
-				<FalModelPanel
-					languageModel={node.content.llm}
-					onModelChange={(value) => updateNodeDataContent(node, { llm: value })}
-				/>
-			)}
 			{node.content.llm.provider === "openai" && (
 				<OpenAIImageModelPanel
 					languageModel={node.content.llm}

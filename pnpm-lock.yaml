@@ -9,9 +9,6 @@ catalogs:
     '@ai-sdk/anthropic':
       specifier: 2.0.49
       version: 2.0.49
-    '@ai-sdk/fal':
-      specifier: 1.0.23
-      version: 1.0.23
     '@ai-sdk/gateway':
       specifier: 2.0.22
       version: 2.0.22
@@ -870,9 +867,6 @@ importers:
       '@ai-sdk/anthropic':
         specifier: 'catalog:'
         version: 2.0.49(zod@4.1.12)
-      '@ai-sdk/fal':
-        specifier: 'catalog:'
-        version: 1.0.23(zod@4.1.12)
       '@ai-sdk/gateway':
         specifier: 'catalog:'
         version: 2.0.22(zod@4.1.12)
@@ -1632,12 +1626,6 @@ packages:
 
   '@ai-sdk/anthropic@2.0.49':
     resolution: {integrity: sha512-XedtHVHX6UOlR/aa8bDmlsDc/e+kjC+l6qBeqnZPF05np6Xs7YR8tfH7yARq0LDq3m+ysw7Qoy9M5KRL+1C8qA==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      zod: ^3.25.76 || ^4.1.8
-
-  '@ai-sdk/fal@1.0.23':
-    resolution: {integrity: sha512-7W6xP0N0MEWGiQiZ7HbcO/0zGQKj7vzD1dBxL/nU+PdaEsCrTgIuVwKqh0JR20BQXtF+LJ2423O3kf9ReNWCVA==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -9129,12 +9117,6 @@ snapshots:
       typescript: 5.7.3
 
   '@ai-sdk/anthropic@2.0.49(zod@4.1.12)':
-    dependencies:
-      '@ai-sdk/provider': 2.0.0
-      '@ai-sdk/provider-utils': 3.0.17(zod@4.1.12)
-      zod: 4.1.12
-
-  '@ai-sdk/fal@1.0.23(zod@4.1.12)':
     dependencies:
       '@ai-sdk/provider': 2.0.0
       '@ai-sdk/provider-utils': 3.0.17(zod@4.1.12)

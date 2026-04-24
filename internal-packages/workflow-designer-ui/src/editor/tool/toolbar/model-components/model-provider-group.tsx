@@ -2,7 +2,6 @@ import type { LanguageModel } from "@giselles-ai/language-model";
 import {
 	AnthropicIcon,
 	GoogleWhiteIcon,
-	ImageGenerationNodeIcon,
 	OpenaiIcon,
 	ProTag,
 } from "../components";
@@ -50,13 +49,6 @@ function _ModelProviderGroup({
 							)}
 							{provider === "google" && (
 								<GoogleWhiteIcon className="w-[18px] h-[18px]" data-icon />
-							)}
-							{provider === "fal" && (
-								<ImageGenerationNodeIcon
-									modelId={model.id}
-									className="w-[18px] h-[18px]"
-									data-icon
-								/>
 							)}
 						</div>
 						<div className="flex items-center gap-[8px]">

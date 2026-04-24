@@ -1,6 +1,5 @@
 import {
 	anthropicLanguageModels,
-	falLanguageModels,
 	googleImageLanguageModels,
 	openaiLanguageModels,
 } from "@giselles-ai/language-model";
@@ -46,7 +45,7 @@ describe("isSupportedConnection", () => {
 		}) satisfies TextGenerationNode;
 	const createImageGenerationNode = (
 		id: NodeId,
-		llm: ImageGenerationLanguageModelData = falLanguageModels[0],
+		llm: ImageGenerationLanguageModelData = googleImageLanguageModels[0],
 	) =>
 		({
 			id,

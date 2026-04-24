@@ -4,7 +4,6 @@ import type { ToggleGroup } from "radix-ui";
 import {
 	AnthropicIcon,
 	GoogleWhiteIcon,
-	ImageGenerationNodeIcon,
 	OpenaiIcon,
 	ProTag,
 } from "../components";
@@ -34,13 +33,6 @@ function _LanguageModelListItem({
 				)}
 				{languageModel.provider === "google" && (
 					<GoogleWhiteIcon className="w-[18px] h-[18px]" data-icon />
-				)}
-				{languageModel.provider === "fal" && (
-					<ImageGenerationNodeIcon
-						modelId={languageModel.id}
-						className="w-[18px] h-[18px]"
-						data-icon
-					/>
 				)}
 				<div className="flex items-center gap-[8px]">
 					<p className="text-[14px] text-left text-nowrap">

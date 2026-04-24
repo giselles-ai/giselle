@@ -4,10 +4,6 @@ import {
 	models as anthropicLanguageModels,
 } from "./anthropic";
 import {
-	LanguageModel as FalLanguageModel,
-	models as falLanguageModels,
-} from "./fal";
-import {
 	LanguageModel as GoogleLanguageModel,
 	models as googleLanguageModels,
 } from "./google";
@@ -26,11 +22,6 @@ import {
 
 export * from "./base";
 export * from "./costs";
-export type { GeneratedImageData } from "./fal";
-export {
-	falImageGenerationSizes as imageGenerationSizes,
-	getImageGenerationModelProvider,
-} from "./fal";
 export * from "./helper";
 export {
 	background as openaiImageBackground,
@@ -47,7 +38,6 @@ export const LanguageModel = z.union([
 	GoogleImageLanguageModel,
 	OpenAILanguageModel,
 	OpenAIImageLanguageModel,
-	FalLanguageModel,
 ]);
 export type LanguageModel = z.infer<typeof LanguageModel>;
 
@@ -57,7 +47,6 @@ export const languageModels = [
 	...anthropicLanguageModels,
 	...openaiLanguageModels,
 	...openaiImageLanguageModels,
-	...falLanguageModels,
 ];
 
 export {
@@ -66,12 +55,10 @@ export {
 	GoogleImageLanguageModel,
 	OpenAILanguageModel,
 	OpenAIImageLanguageModel,
-	FalLanguageModel,
 	anthropicLanguageModels,
 	googleLanguageModels,
 	googleImageLanguageModels,
 	openaiLanguageModels,
-	falLanguageModels,
 };
 
 export const LanguageModelProviders = z.enum([
@@ -80,7 +67,6 @@ export const LanguageModelProviders = z.enum([
 	GoogleImageLanguageModel.shape.provider.value,
 	OpenAILanguageModel.shape.provider.value,
 	OpenAIImageLanguageModel.shape.provider.value,
-	FalLanguageModel.shape.provider.value,
 ]);
 export type LanguageModelProvider = z.infer<typeof LanguageModelProviders>;
 
