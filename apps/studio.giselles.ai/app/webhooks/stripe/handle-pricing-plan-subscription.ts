@@ -94,7 +94,7 @@ export async function handlePricingPlanServicingActivated(event: Stripe.Event) {
 				);
 				if (Number.isNaN(teamDbId)) {
 					throw new Error(
-						`Invalid teamDbId in metadata: ${metadata[UPGRADING_TEAM_DB_ID_KEY]}`,
+						`Invalid teamDbId in metadata[${UPGRADING_TEAM_DB_ID_KEY}]: ${metadata[UPGRADING_TEAM_DB_ID_KEY]}`,
 					);
 				}
 				await upgradeExistingTeam(
@@ -115,7 +115,7 @@ export async function handlePricingPlanServicingActivated(event: Stripe.Event) {
 				);
 				if (Number.isNaN(userDbId)) {
 					throw new Error(
-						`Invalid userDbId in metadata: ${metadata[DRAFT_TEAM_USER_DB_ID_METADATA_KEY]}`,
+						`Invalid userDbId in metadata[${DRAFT_TEAM_USER_DB_ID_METADATA_KEY}]: ${metadata[DRAFT_TEAM_USER_DB_ID_METADATA_KEY]}`,
 					);
 				}
 				await createNewProTeam(
