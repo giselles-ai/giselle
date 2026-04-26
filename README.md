@@ -37,29 +37,15 @@ Giselle is an open source AI for agentic workflows, enabling seamless human-AI c
 
 ## ⚡ Quick Start
 
-Get Giselle running locally in under 2 minutes:
-
 ```bash
-# Clone the repository
 git clone https://github.com/giselles-ai/giselle.git
 cd giselle
-
-# Install dependencies
 pnpm install
-
-# Create environment file
-touch .env.local
-
-# Add your API key (at least one required)
-echo 'OPENAI_API_KEY="your_openai_api_key_here"' >> .env.local
-
-# Start development server
-pnpm turbo dev
+cp apps/studio.giselles.ai/.env.example apps/studio.giselles.ai/.env.local
+pnpm dev:studio.giselles.ai
 ```
 
-Open [http://localhost:3000](http://localhost:3000) and start building your AI agents!
-
-> **Note**: You need at least one AI provider API key. Supported providers: OpenAI, Anthropic, Google AI.
+> **Note**: You need Node.js 24+, pnpm 10+, PostgreSQL, a GitHub App, and at least one AI provider API key. Edit `.env.local` before starting — see [CONTRIBUTING.md](CONTRIBUTING.md#development-environment-setup) for full setup instructions.
 
 ## ✨ Features
 
