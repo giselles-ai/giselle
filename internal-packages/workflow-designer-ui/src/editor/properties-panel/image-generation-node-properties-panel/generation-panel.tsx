@@ -5,21 +5,11 @@ import { Maximize2 } from "lucide-react";
 import { useCallback } from "react";
 import { useAppDesignerStore } from "../../../app-designer";
 import { GenerateImageIcon } from "../../../icons";
-import { EmptyState } from "../../../ui/empty-state";
 import { GenerationView } from "../../../ui/generation-view";
-
-function Empty() {
-	return (
-		<div className="relative bg-[color-mix(in_srgb,var(--color-text-inverse,#fff)_10%,transparent)] min-h-[250px] rounded-[8px] flex justify-center items-center text-text-muted">
-			<EmptyState
-				icon={<GenerateImageIcon width={24} height={24} />}
-				title="Nothing generated yet."
-				description="Generate or adjust the Prompt to see results."
-				className="text-text-muted"
-			/>
-		</div>
-	);
-}
+import {
+	GenerationEmptyState,
+	GenerationStatusHeader,
+} from "../ui";
 
 export function GenerationPanel({
 	node,
@@ -45,7 +35,13 @@ export function GenerationPanel({
 	}, [onClickGenerateButton]);
 
 	if (currentGeneration === undefined) {
-		return <Empty />;
+		return (
+			<GenerationEmptyState
+				icon={<GenerateImageIcon width={24} height={24} />}
+				minHeight="min-h-[250px]"
+				paddingY=""
+			/>
+		);
 	}
 	return (
 		<div
@@ -64,25 +60,7 @@ export function GenerationPanel({
 					<Maximize2 className="size-[16px] text-inverse group-hover:text-inverse/80" />
 				</button>
 			)}
-			<div
-				className={clsx(
-					"border-b border-white-400/20 py-[4px] px-[16px] flex items-center gap-[8px]",
-					"**:data-header-text:font-[700]",
-				)}
-			>
-				{(currentGeneration.status === "created" ||
-					currentGeneration.status === "queued" ||
-					currentGeneration.status === "running") && (
-					<p data-header-text>Generating...</p>
-				)}
-				{currentGeneration.status === "completed" && (
-					<p data-header-text>Result</p>
-				)}
-				{currentGeneration.status === "failed" && <p data-header-text>Error</p>}
-				{currentGeneration.status === "cancelled" && (
-					<p data-header-text>Result</p>
-				)}
-			</div>
+			<GenerationStatusHeader generation={currentGeneration} />
 			<div className="flex-1 py-[4px] px-[16px] overflow-y-auto">
 				<GenerationView generation={currentGeneration} />
 			</div>
