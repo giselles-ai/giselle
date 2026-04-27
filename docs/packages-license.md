@@ -6015,7 +6015,7 @@ Python-2.0 manually approved
 
 
 <a name="brace-expansion"></a>
-### brace-expansion v5.0.2
+### brace-expansion v5.0.5
 #### 
 
 ##### Paths
