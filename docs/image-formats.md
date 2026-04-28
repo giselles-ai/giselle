@@ -13,10 +13,11 @@ This document explains supported image formats for vision inputs and limitations
 
 ## Provider-Supported Formats for Vision Inputs
 
-The following MIME types are supported by major vision model providers:
-- `image/jpeg`
-- `image/png`
-- `image/gif`
+Supported image formats for vision inputs:
+
+- image/png (PNG)
+- image/jpeg (JPEG)
+- image/gif (GIF)
 
 These formats are compatible with major LLM providers.
 
@@ -28,10 +29,11 @@ SVG (`image/svg+xml`) is not supported for vision inputs.
 
 ### Why SVG is not supported
 
-- SVG is a vector-based (XML) format
-- Vision models require raster (pixel-based) image data (e.g. JPEG, PNG)
-- Passing SVG to a vision model may result in errors such as:
-`UnknownError: Unsupported MIME type: image/svg+xml`
+SVG (image/svg+xml) is not supported.
+
+Vision model providers require rasterized pixel data. SVG is a vector format and will fail at runtime even if accepted by file pickers.
+
+Users should convert SVG files to PNG or JPEG before upload.`UnknownError: Unsupported MIME type: image/svg+xml`
 
 
 ---
