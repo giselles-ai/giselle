@@ -15,7 +15,7 @@ const fileType: Record<FileCategory, FileTypeConfig> = {
 		label: "Text",
 	},
 	image: {
-		accept: ["image/png", "image/jpeg", "image/gif","image/webp"],
+		accept: ["image/png", "image/jpeg", "image/gif"],
 		label: "Image",
 	},
 };

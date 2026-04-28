@@ -70,7 +70,7 @@ If SVG input is required, convert it before use:
 
 Reject unsupported formats and provide a clear error message, for example:
 
-> "SVG is not supported. Please use PNG/JPEG/GIF/WebP instead.."
+> "SVG is not supported. Please use PNG/JPEG/GIF instead.."
 
 ---
 

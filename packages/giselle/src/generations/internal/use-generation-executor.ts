@@ -579,10 +579,8 @@ export async function useGenerationExecutor<T>(args: {
 							case "image/jpeg":
 							case "image/png":
 							case "image/gif":
-							case "image/webp":
-								return "Please use an Image node to upload this file.";
 							case "image/svg+xml":
-  								console.warn("SVG not supported");
+  								console.warn("SVG is not supported. Please use PNG/JPEG/GIF instead.");
   								return null; 
 							case "application/pdf":
 								return {
