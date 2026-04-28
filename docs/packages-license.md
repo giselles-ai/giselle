@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 962 MIT
+* 963 MIT
 * 193 Apache 2.0
 * 43 ISC
 * 24 New BSD
@@ -1571,6 +1571,17 @@ BlueOak-1.0.0 permitted
 
 <a name="@noble/hashes"></a>
 ### @noble/hashes v1.7.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@nodable/entities"></a>
+### @nodable/entities v2.1.0
 #### 
 
 ##### Paths
@@ -7566,7 +7577,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="fast-xml-builder"></a>
-### fast-xml-builder v1.1.4
+### fast-xml-builder v1.1.5
 #### 
 
 ##### Paths
@@ -7577,7 +7588,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="fast-xml-parser"></a>
-### fast-xml-parser v5.5.12
+### fast-xml-parser v5.7.2
 #### 
 
 ##### Paths
