@@ -579,7 +579,6 @@ export async function useGenerationExecutor<T>(args: {
 									"SVG is not supported for vision input. Please upload PNG/JPEG/GIF/WebP instead.",
 								);
 								return undefined;
-								
 							case "application/pdf":
 								return {
 									type: "file",
