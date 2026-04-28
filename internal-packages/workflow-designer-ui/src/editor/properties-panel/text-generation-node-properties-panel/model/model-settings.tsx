@@ -121,21 +121,8 @@ export function ModelSettings({
 	);
 
 	const updateOutputForGoogle = useCallback(
-		({
-			urlContext,
-			googleSearch,
-		}: {
-			urlContext: boolean;
-			googleSearch: boolean;
-		}) => {
-			const sourceOutput = node.outputs.find((o) => o.accessor === "source");
-			if (urlContext && googleSearch && sourceOutput) {
-				return;
-			}
-			if ((urlContext || googleSearch) && sourceOutput) {
-				return;
-			}
-			if ((urlContext || googleSearch) && !sourceOutput) {
+		(googleSearch: boolean) => {
+			if (googleSearch) {
 				onNodeChange({
 					outputs: [
 						...node.outputs,
@@ -144,6 +131,7 @@ export function ModelSettings({
 				});
 				return;
 			}
+			const sourceOutput = node.outputs.find((o) => o.accessor === "source");
 			for (const connection of connections) {
 				if (connection.outputId !== sourceOutput?.id) {
 					continue;
@@ -175,38 +163,9 @@ export function ModelSettings({
 					},
 				} satisfies GoogleLanguageModelData,
 			});
-			updateOutputForGoogle({
-				urlContext: result.data.configurations.urlContext,
-				googleSearch,
-			});
+			updateOutputForGoogle(googleSearch);
 		},
 		[node, onTextGenerationContentChange, updateOutputForGoogle],
-	);
-
-	const handleGoogleUrlContextChange = useCallback(
-		(urlContext: boolean) => {
-			const result = GoogleLanguageModelData.safeParse(node.content.llm);
-			if (result.error) {
-				console.warn(
-					`Error parsing GoogleLanguageModelData: ${node.content.llm}`,
-				);
-				return;
-			}
-			onTextGenerationContentChange({
-				llm: {
-					...result.data,
-					configurations: {
-						...result.data.configurations,
-						urlContext,
-					},
-				} satisfies GoogleLanguageModelData,
-			});
-			updateOutputForGoogle({
-				urlContext,
-				googleSearch: result.data.configurations.searchGrounding,
-			});
-		},
-		[node, updateOutputForGoogle, onTextGenerationContentChange],
 	);
 
 	const handleSelect = useCallback(
@@ -254,7 +213,6 @@ export function ModelSettings({
 						onSearchGroundingConfigurationChange={
 							handleGoogleSearchGroundingChange
 						}
-						onUrlContextConfigurationChange={handleGoogleUrlContextChange}
 						onModelChange={(value) =>
 							onTextGenerationContentChange({ llm: value })
 						}

@@ -1,11 +1,5 @@
 import type { LanguageModel } from "@giselles-ai/language-model";
-import {
-	AnthropicIcon,
-	GoogleWhiteIcon,
-	ImageGenerationNodeIcon,
-	OpenaiIcon,
-	PerplexityIcon,
-} from "../components";
+import { AnthropicIcon, GoogleWhiteIcon, OpenaiIcon } from "../components";
 
 interface ProviderIconProps {
 	model: LanguageModel;
@@ -23,16 +17,6 @@ export function ProviderIcon({
 			return <OpenaiIcon className={className} data-icon />;
 		case "google":
 			return <GoogleWhiteIcon className={className} data-icon />;
-		case "perplexity":
-			return <PerplexityIcon className={className} data-icon />;
-		case "fal":
-			return (
-				<ImageGenerationNodeIcon
-					modelId={model.id}
-					className={className}
-					data-icon
-				/>
-			);
 		default:
 			return null;
 	}

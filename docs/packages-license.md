@@ -2,8 +2,8 @@
 
 
 ## Summary
-* 962 MIT
-* 194 Apache 2.0
+* 963 MIT
+* 193 Apache 2.0
 * 43 ISC
 * 24 New BSD
 * 15 Simplified BSD
@@ -53,17 +53,6 @@
 
 <a name="@ai-sdk/anthropic"></a>
 ### @ai-sdk/anthropic v2.0.49
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
-
-
-
-<a name="@ai-sdk/fal"></a>
-### @ai-sdk/fal v1.0.23
 #### 
 
 ##### Paths
@@ -1582,6 +1571,17 @@ BlueOak-1.0.0 permitted
 
 <a name="@noble/hashes"></a>
 ### @noble/hashes v1.7.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@nodable/entities"></a>
+### @nodable/entities v2.1.0
 #### 
 
 ##### Paths
@@ -5571,7 +5571,7 @@ FSL-1.1-MIT manually approved
 
 
 <a name="@xmldom/xmldom"></a>
-### @xmldom/xmldom v0.8.12
+### @xmldom/xmldom v0.8.13
 #### 
 
 ##### Paths
@@ -6026,7 +6026,7 @@ Python-2.0 manually approved
 
 
 <a name="brace-expansion"></a>
-### brace-expansion v5.0.2
+### brace-expansion v5.0.5
 #### 
 
 ##### Paths
@@ -7577,7 +7577,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="fast-xml-builder"></a>
-### fast-xml-builder v1.1.4
+### fast-xml-builder v1.1.5
 #### 
 
 ##### Paths
@@ -7588,7 +7588,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="fast-xml-parser"></a>
-### fast-xml-parser v5.5.12
+### fast-xml-parser v5.7.2
 #### 
 
 ##### Paths
@@ -10921,7 +10921,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="postcss"></a>
-### postcss v8.4.31
+### postcss v8.5.12
 #### 
 
 ##### Paths
@@ -11295,7 +11295,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="protobufjs"></a>
-### protobufjs v7.4.0
+### protobufjs v7.5.5
 #### 
 
 ##### Paths
@@ -13470,7 +13470,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="uuid"></a>
-### uuid v9.0.1
+### uuid v14.0.0
 #### 
 
 ##### Paths

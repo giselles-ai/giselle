@@ -3,7 +3,6 @@ import type { SVGProps } from "react";
 import { AnthropicIcon } from "../anthropic";
 import { GoogleWhiteIcon } from "../google";
 import { OpenaiIcon } from "../openai";
-import { PerplexityIcon } from "../perplexity";
 
 function _TextGenerationNodeIcon({
 	llmProvider,
@@ -18,8 +17,6 @@ function _TextGenerationNodeIcon({
 			return <AnthropicIcon {...props} />;
 		case "google":
 			return <GoogleWhiteIcon {...props} />;
-		case "perplexity":
-			return <PerplexityIcon {...props} />;
 		default: {
 			const _exhaustiveCheck: never = llmProvider;
 			throw new Error(`Unhandled LLMProvider: ${_exhaustiveCheck}`);

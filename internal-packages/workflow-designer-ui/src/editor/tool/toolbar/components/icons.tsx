@@ -8,7 +8,6 @@ export {
 	GoogleWhiteIcon,
 	OpenaiIcon,
 	PdfFileIcon,
-	PerplexityIcon,
 	PictureIcon,
 	PromptIcon,
 	SearchIcon,
@@ -16,4 +15,3 @@ export {
 	VideoIcon,
 	WebPageFileIcon,
 } from "../../../../icons";
-export { ImageGenerationNodeIcon } from "../../../../icons/node";

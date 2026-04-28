@@ -39,7 +39,7 @@ import {
 import type { GiselleContext } from "../types";
 import type { AppEntryResolver } from "./types";
 
-interface GeneratedImageData {
+export interface GeneratedImageData {
 	uint8Array: Uint8Array;
 	base64: string;
 }
@@ -280,7 +280,6 @@ async function buildGenerationMessageForTextGeneration({
 				switch (llmProvider) {
 					case "anthropic":
 					case "openai":
-					case "perplexity":
 						userMessage = userMessage.replace(
 							replaceKeyword,
 							fileContents
@@ -597,7 +596,6 @@ async function buildGenerationMessageForImageGeneration(
 					fileResolver,
 				);
 				switch (llmProvider) {
-					case "fal":
 					case "openai":
 						userMessage = userMessage.replace(
 							replaceKeyword,

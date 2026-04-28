@@ -244,27 +244,6 @@ export function generateContent({
 				};
 			}
 			if (
-				operationNode.content.llm.provider === "google" &&
-				hasCapability(languageModel, Capability.UrlContext) &&
-				(operationNode.content.llm.configurations.urlContext ?? false)
-			) {
-				preparedToolSet = {
-					...preparedToolSet,
-					toolSet: {
-						...preparedToolSet.toolSet,
-						// Cast needed: urlContext returns Tool<{}, any> but ToolSet expects Tool<any, any>.
-						// This is a type mismatch in AI SDK where {} is not assignable to the ToolSet union type.
-						url_context: google.tools.urlContext({}) as Tool<
-							// biome-ignore lint/suspicious/noExplicitAny: AI SDK type compatibility workaround
-							any,
-							// biome-ignore lint/suspicious/noExplicitAny: AI SDK type compatibility workaround
-							any
-						>,
-					},
-				};
-			}
-
-			if (
 				operationNode.content.llm.provider === "anthropic" &&
 				operationNode.content.tools?.anthropicWebSearch
 			) {
@@ -563,8 +542,7 @@ function generationModel(
 	switch (llmProvider) {
 		case "anthropic":
 		case "openai":
-		case "google":
-		case "perplexity": {
+		case "google": {
 			return gateway(`${llmProvider}/${languageModel.id}`);
 		}
 		default: {

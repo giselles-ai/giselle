@@ -1,9 +1,7 @@
 import {
 	anthropicLanguageModels,
-	falLanguageModels,
 	googleImageLanguageModels,
 	openaiLanguageModels,
-	perplexityLanguageModels,
 } from "@giselles-ai/language-model";
 import type {
 	ActionNode,
@@ -47,7 +45,7 @@ describe("isSupportedConnection", () => {
 		}) satisfies TextGenerationNode;
 	const createImageGenerationNode = (
 		id: NodeId,
-		llm: ImageGenerationLanguageModelData = falLanguageModels[0],
+		llm: ImageGenerationLanguageModelData = googleImageLanguageModels[0],
 	) =>
 		({
 			id,
@@ -308,22 +306,6 @@ describe("isSupportedConnection", () => {
 			const inputNode = createTextGenerationNode(
 				NodeId.generate(),
 				openaiLanguageModels[0],
-			);
-
-			const result = isSupportedConnection(fileNode, inputNode);
-
-			expect(result.canConnect).toBe(false);
-			expect(result).toHaveProperty(
-				"message",
-				"File node is not supported as an input for this node",
-			);
-		});
-
-		test("should reject image file node as input for Perplexity", () => {
-			const fileNode = createFileNode(NodeId.generate(), "image");
-			const inputNode = createTextGenerationNode(
-				NodeId.generate(),
-				perplexityLanguageModels[0],
 			);
 
 			const result = isSupportedConnection(fileNode, inputNode);

@@ -1,4 +1,3 @@
-import { getImageGenerationModelProvider } from "@giselles-ai/language-model";
 import {
 	isActionNode,
 	isContentGenerationNode,
@@ -12,17 +11,12 @@ import {
 import { DatabaseZapIcon, FlagIcon, PlayIcon, ZapIcon } from "lucide-react";
 import type { SVGProps } from "react";
 import { AnthropicIcon } from "../anthropic";
-import { Flux1Icon } from "../flux1";
 import { GitHubIcon } from "../github";
 import { GoogleIcon, GoogleWhiteIcon } from "../google";
-import { IdegramIcon } from "../ideogram";
 import { OpenaiIcon } from "../openai";
 import { PdfFileIcon } from "../pdf-file";
-import { PerplexityIcon } from "../perplexity";
 import { PictureIcon } from "../picture";
 import { PromptIcon } from "../prompt";
-import { RecraftIcon } from "../recraft";
-import { StableDiffusionIcon } from "../stable-diffusion";
 import { TextFileIcon } from "../text-file";
 import { WebPageFileIcon } from "../web-page-file";
 import { DataQueryIcon } from "./data-query-icon";
@@ -53,7 +47,6 @@ function NodeGitHubIcon({ className, ...props }: SVGProps<SVGSVGElement>) {
 }
 
 export * from "./file-node";
-export * from "./image-generation-node";
 export * from "./text-generation-node";
 
 export function NodeIcon({
@@ -106,8 +99,6 @@ export function NodeIcon({
 								return <GoogleWhiteIcon {...props} data-content-type-icon />;
 							}
 							return <GoogleIcon {...props} data-content-type-icon />;
-						case "perplexity":
-							return <PerplexityIcon {...props} data-content-type-icon />;
 						default: {
 							const _exhaustiveCheck: never = node.content.llm;
 							throw new Error(`Unhandled LLMProvider: ${_exhaustiveCheck}`);
@@ -120,32 +111,6 @@ export function NodeIcon({
 						);
 					}
 					switch (node.content.llm.provider) {
-						case "fal": {
-							const imageModelProvider = getImageGenerationModelProvider(
-								node.content.llm.id,
-							);
-							if (imageModelProvider === undefined) {
-								return null;
-							}
-							switch (imageModelProvider) {
-								case "flux":
-									return <Flux1Icon {...props} data-content-type-icon />;
-								case "recraft":
-									return <RecraftIcon {...props} data-content-type-icon />;
-								case "ideogram":
-									return <IdegramIcon {...props} data-content-type-icon />;
-								case "stable-diffusion":
-									return (
-										<StableDiffusionIcon {...props} data-content-type-icon />
-									);
-								default: {
-									const _exhaustiveCheck: never = imageModelProvider;
-									throw new Error(
-										`Unhandled ImageModelProvider: ${_exhaustiveCheck}`,
-									);
-								}
-							}
-						}
 						case "openai":
 							return <OpenaiIcon {...props} data-content-type-icon />;
 						case "google":

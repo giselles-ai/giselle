@@ -1,5 +1,4 @@
 import {
-	FalLanguageModelData,
 	GoogleImageLanguageModelData,
 	type ImageGenerationLanguageModelData,
 	type ImageGenerationLanguageModelProvider,
@@ -10,15 +9,6 @@ export function createDefaultModelData(
 	provider: ImageGenerationLanguageModelProvider,
 ): ImageGenerationLanguageModelData {
 	switch (provider) {
-		case "fal":
-			return FalLanguageModelData.parse({
-				provider: "fal",
-				id: "fal-ai/flux/schnell",
-				configurations: {
-					size: "1152x864",
-					n: 1,
-				},
-			});
 		case "openai":
 			return OpenAIImageLanguageModelData.parse({
 				provider: "openai",
@@ -51,11 +41,6 @@ export function updateModelId(
 	newModelId: string,
 ): ImageGenerationLanguageModelData {
 	switch (currentModel.provider) {
-		case "fal":
-			return FalLanguageModelData.parse({
-				...currentModel,
-				id: newModelId,
-			});
 		case "openai":
 			return OpenAIImageLanguageModelData.parse({
 				...currentModel,

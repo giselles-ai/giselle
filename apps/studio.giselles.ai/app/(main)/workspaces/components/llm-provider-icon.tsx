@@ -2,7 +2,6 @@ import {
 	AnthropicIcon,
 	GoogleWhiteIcon,
 	OpenaiIcon,
-	PerplexityIcon,
 } from "../../../../../../internal-packages/workflow-designer-ui/src/icons";
 
 export function LLMProviderIcon({
@@ -19,8 +18,6 @@ export function LLMProviderIcon({
 			return <AnthropicIcon className={className} />;
 		case "google":
 			return <GoogleWhiteIcon className={className} />;
-		case "perplexity":
-			return <PerplexityIcon className={className} />;
 		default:
 			return null;
 	}
