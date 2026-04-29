@@ -579,9 +579,17 @@ export async function useGenerationExecutor<T>(args: {
 							case "image/jpeg":
 							case "image/png":
 							case "image/gif":
+								return {
+									type: "image",
+									image: blob,
+									mediaType: fileParameter.type,
+								} as ImagePart;
 							case "image/svg+xml":
-  								console.warn("SVG is not supported. Please use PNG/JPEG/GIF instead.");
-  								return null; 
+								args.context.logger.warn(
+									{ id: fileParameter.id },
+									"SVG is not supported. Please use PNG/JPEG/GIF instead.",
+								);
+								return undefined;
 							case "application/pdf":
 								return {
 									type: "file",
