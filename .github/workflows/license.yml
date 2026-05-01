@@ -30,7 +30,7 @@ jobs:
         id: fork-check
         run: echo "is_fork=${{ github.event.pull_request.head.repo.fork }}" >> "$GITHUB_OUTPUT"
       - name: Create GitHub App Token for non-fork PRs
-        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
         if: steps.fork-check.outputs.is_fork != 'true'
         id: app-token
         with:
