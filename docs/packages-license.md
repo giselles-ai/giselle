@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 963 MIT
+* 964 MIT
 * 193 Apache 2.0
 * 43 ISC
 * 24 New BSD
@@ -7577,7 +7577,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="fast-xml-builder"></a>
-### fast-xml-builder v1.1.5
+### fast-xml-builder v1.2.0
 #### 
 
 ##### Paths
@@ -7588,7 +7588,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="fast-xml-parser"></a>
-### fast-xml-parser v5.7.2
+### fast-xml-parser v5.7.3
 #### 
 
 ##### Paths
@@ -13818,6 +13818,17 @@ BlueOak-1.0.0 permitted
 * /home/runner/work/giselle/giselle
 
 <a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
+
+
+
+<a name="xml-naming"></a>
+### xml-naming v0.1.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
 
 
 
