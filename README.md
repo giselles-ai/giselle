@@ -1,7 +1,6 @@
 <div align="center">
   
   <a href="https://github.com/giselles-ai/giselle"><img src="https://img.shields.io/github/stars/giselles-ai/giselle.svg?style=social&label=Star" alt="GitHub stars" style="margin-right: 5px;"></a>  <img src="https://img.shields.io/badge/License-Apache2.0-blue.svg" alt="License" style="margin-right: 5px;">
-  <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"></a>
 
   
   <img src="./docs/assets/giselle-logo-light.svg#gh-light-mode-only" alt="Giselle logo" height="100">
@@ -115,17 +114,15 @@ Giselle is currently still in active development. The roadmap for the public rep
 
 ## 🤝 Contributing
 
-Your contributions — big or small — help Giselle evolve and improve. Interested in joining us?
-
-Here's how you can contribute:
+Thanks for your interest in Giselle. Here are a few ways you can engage with the project:
 
 - Star this repo ⭐
 - Follow us on social media: [Facebook](https://www.facebook.com/GiselleAI/), [X](https://x.com/Giselles_AI), [Instagram](https://www.instagram.com/giselle_de_ai) and [YouTube](https://www.youtube.com/@Giselle_AI)
 - [Report a bug](https://github.com/giselles-ai/giselle/issues/new?template=1_bug_report.yml) you encounter while using Giselle
-- [Request a feature](https://github.com/giselles-ai/giselle/discussions/categories/ideas) you think would be helpful
-- [Submit a pull request](CONTRIBUTING.md#how-to-submit-a-pull-request) if you'd like to add new features or fix bugs
+- [Share an idea or question](https://github.com/giselles-ai/giselle/discussions) on GitHub Discussions
+- Before opening a pull request for non-trivial changes, please start a discussion so we can align on scope
 
-For more details, please see our [contributing guide](CONTRIBUTING.md).
+For details on contributing, please see our [contributing guide](CONTRIBUTING.md).
 
 ## 📄 License
 
