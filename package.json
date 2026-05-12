@@ -46,7 +46,7 @@
 		"overrides": {
 			"@electric-sql/client": "1.0.10",
 			"cookie": "1.0.2",
-			"@react-email/preview-server>next": "16.2.3",
+			"@react-email/preview-server>next": "16.2.6",
 			"@babel/helpers": "7.26.10",
 			"@babel/runtime": "7.26.10",
 			"vite": "7.3.2",
