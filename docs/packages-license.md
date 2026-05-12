@@ -1262,7 +1262,7 @@ MIT-0 permitted
 
 
 <a name="@hono/node-server"></a>
-### @hono/node-server v1.19.10
+### @hono/node-server v1.19.14
 #### 
 
 ##### Paths
@@ -8281,7 +8281,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="hono"></a>
-### hono v4.12.4
+### hono v4.12.18
 #### 
 
 ##### Paths
