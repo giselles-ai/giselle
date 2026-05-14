@@ -280,6 +280,7 @@ async function traceContentGeneration(args: {
 	metadata?: Record<string, unknown>;
 	tags?: string[];
 	sessionId?: string;
+	deploymentId?: string;
 }) {
 	const langfuseInput = await prepareLangfuseInput(args.inputMessages);
 
@@ -295,6 +296,7 @@ async function traceContentGeneration(args: {
 	const metadata = {
 		...args.metadata,
 		...extractMetadata(args.operationNode),
+		...(args.deploymentId ? { deploymentId: args.deploymentId } : {}),
 	};
 
 	if (args.generation.status === "failed") {
@@ -371,6 +373,7 @@ export async function traceGeneration(args: {
 	tags?: string[];
 	outputFileBlobs?: OutputFileBlob[];
 	sessionId?: string;
+	deploymentId?: string;
 }) {
 	try {
 		const { operationNode } = args.generation.context;
@@ -390,6 +393,7 @@ export async function traceGeneration(args: {
 				metadata: args.metadata,
 				tags: args.tags,
 				sessionId: args.sessionId,
+				deploymentId: args.deploymentId,
 			});
 			return;
 		}
@@ -422,6 +426,7 @@ export async function traceGeneration(args: {
 		const metadata = {
 			...args.metadata,
 			...extractMetadata(operationNode),
+			...(args.deploymentId ? { deploymentId: args.deploymentId } : {}),
 		};
 
 		const llm = operationNode.content.llm;
