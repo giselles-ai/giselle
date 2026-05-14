@@ -2373,7 +2373,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@protobufjs/codegen"></a>
-### @protobufjs/codegen v2.0.4
+### @protobufjs/codegen v2.0.5
 #### 
 
 ##### Paths
@@ -2417,7 +2417,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@protobufjs/inquire"></a>
-### @protobufjs/inquire v1.1.0
+### @protobufjs/inquire v1.1.1
 #### 
 
 ##### Paths
@@ -2450,7 +2450,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@protobufjs/utf8"></a>
-### @protobufjs/utf8 v1.1.0
+### @protobufjs/utf8 v1.1.1
 #### 
 
 ##### Paths
@@ -11295,7 +11295,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="protobufjs"></a>
-### protobufjs v7.5.5
+### protobufjs v7.5.6
 #### 
 
 ##### Paths
