@@ -12630,7 +12630,7 @@ Unknown manually approved
 
 
 <a name="systeminformation"></a>
-### systeminformation v5.31.5
+### systeminformation v5.31.6
 #### 
 
 ##### Paths
