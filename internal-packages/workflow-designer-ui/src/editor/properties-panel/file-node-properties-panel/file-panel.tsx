@@ -47,19 +47,25 @@ class InvalidFileTypeError extends FileUploadError {
 		}
 
 		switch (this.actualType) {
-			case "image/jpeg":
-			case "image/png":
-			case "image/gif":
+  			case "image/jpeg":
+ 			case "image/png":
+  			case "image/gif":
+  			case "image/webp":
+    			return "Please use the Image node to upload this file.";
+
 			case "image/svg+xml":
-				return "Please use Image node to upload this file.";
-			case "application/pdf":
-				return "Please use PDF node to upload this file.";
-			case "text/plain":
-			case "text/markdown":
-				return "Please use Text node to upload this file.";
-			default:
-				return `${this.actualType} is not supported.`;
-		}
+    			return "SVG is not supported. Please use PNG/JPEG/GIF/WebP instead.";
+
+  			case "application/pdf":
+    			return "Please use PDF node to upload this file.";
+
+  			case "text/plain":
+  			case "text/markdown":
+    			return "Please use Text node to upload this file.";
+
+  default:
+    return `${this.actualType} is not supported.`;
+}
 	}
 }
 
