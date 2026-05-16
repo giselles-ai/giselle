@@ -17,8 +17,10 @@ export function buildAiGatewayHeaders(
 	const stripeCustomerId = team?.activeCustomerId ?? undefined;
 	if (stripeCustomerId !== undefined) {
 		headers["stripe-customer-id"] = stripeCustomerId;
-		headers["stripe-restricted-access-key"] =
-			process.env.STRIPE_AI_GATEWAY_RESTRICTED_ACCESS_KEY ?? "";
+		if (process.env.STRIPE_AI_GATEWAY_RESTRICTED_ACCESS_KEY) {
+			headers["stripe-restricted-access-key"] =
+				process.env.STRIPE_AI_GATEWAY_RESTRICTED_ACCESS_KEY;
+		}
 	} else if (team?.plan === "pro" || team?.plan === "team") {
 		console.warn(
 			`Stripe customer ID not found for vector store ingest (team: ${team?.id})`,
