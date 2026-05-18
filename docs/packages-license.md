@@ -4,7 +4,7 @@
 ## Summary
 * 965 MIT
 * 193 Apache 2.0
-* 43 ISC
+* 42 ISC
 * 24 New BSD
 * 15 Simplified BSD
 * 10 BlueOak-1.0.0
@@ -13917,17 +13917,6 @@ BlueOak-1.0.0 permitted
 * /home/runner/work/giselle/giselle
 
 BlueOak-1.0.0 permitted
-
-
-
-<a name="yaml"></a>
-### yaml v2.7.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://en.wikipedia.org/wiki/ISC_license">ISC</a> permitted
 
 
 
