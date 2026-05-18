@@ -10822,7 +10822,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="picomatch"></a>
-### picomatch v2.3.1
+### picomatch v2.3.2
 #### 
 
 ##### Paths
