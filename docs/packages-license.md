@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 965 MIT
+* 964 MIT
 * 193 Apache 2.0
 * 42 ISC
 * 24 New BSD
@@ -10447,17 +10447,6 @@ MIT-0 permitted
 
 
 
-<a name="os-tmpdir"></a>
-### os-tmpdir v1.0.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="outdent"></a>
 ### outdent v0.5.0
 #### 
@@ -12960,7 +12949,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="tmp"></a>
-### tmp v0.0.33
+### tmp v0.2.5
 #### 
 
 ##### Paths
