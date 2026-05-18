@@ -12043,7 +12043,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="serialize-javascript"></a>
-### serialize-javascript v7.0.3
+### serialize-javascript v7.0.5
 #### 
 
 ##### Paths
