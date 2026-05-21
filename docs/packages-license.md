@@ -11295,7 +11295,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="protobufjs"></a>
-### protobufjs v7.5.6
+### protobufjs v7.5.8
 #### 
 
 ##### Paths
