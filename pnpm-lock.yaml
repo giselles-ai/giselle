@@ -276,7 +276,7 @@ overrides:
   glob@>=11.0.0 <11.1.0: 11.1.0
   fast-xml-parser: 5.7.3
   fast-uri: 3.1.2
-  protobufjs: 7.5.6
+  protobufjs: 7.5.8
   hono: 4.12.18
   '@hono/node-server': 1.19.14
   ajv@>=6.0.0 <7.0.0: 6.14.0
@@ -7853,8 +7853,8 @@ packages:
   prosemirror-view@1.38.0:
     resolution: {integrity: sha512-O45kxXQTaP9wPdXhp8TKqCR+/unS/gnfg9Q93svQcB3j0mlp2XSPAmsPefxHADwzC+fbNS404jqRxm3UQaGvgw==}
 
-  protobufjs@7.5.6:
-    resolution: {integrity: sha512-M71sTMB146U3u0di3yup8iM+zv8yPRNQVr1KK4tyBitl3qFvEGucq/rGDRShD2rsJhtN02RJaJ7j5X5hmy8SJg==}
+  protobufjs@7.5.8:
+    resolution: {integrity: sha512-dvpCIeLPbXZS/Ete7yLaO7RenOdken2NHKykBXbsaGxZT0UTltcarBciw+A78SRQs9iMAAVpsYA+l8b1hTePIA==}
     engines: {node: '>=12.0.0'}
 
   proxy-addr@2.0.7:
@@ -10889,7 +10889,7 @@ snapshots:
       '@opentelemetry/sdk-logs': 0.203.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-metrics': 2.0.1(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-trace-base': 2.0.1(@opentelemetry/api@1.9.0)
-      protobufjs: 7.5.6
+      protobufjs: 7.5.8
 
   '@opentelemetry/redis-common@0.38.2': {}
 
@@ -16086,7 +16086,7 @@ snapshots:
       prosemirror-state: 1.4.3
       prosemirror-transform: 1.10.2
 
-  protobufjs@7.5.6:
+  protobufjs@7.5.8:
     dependencies:
       '@protobufjs/aspromise': 1.1.2
       '@protobufjs/base64': 1.1.2
