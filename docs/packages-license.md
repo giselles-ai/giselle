@@ -4789,6 +4789,17 @@ FSL-1.1-MIT manually approved
 
 
 
+<a name="@turbo/linux-64"></a>
+### @turbo/linux-64 v2.9.14
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="@types/chai"></a>
 ### @types/chai v5.2.2
 #### 
@@ -13103,18 +13114,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="turbo"></a>
-### turbo v2.7.3
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="turbo-linux-64"></a>
-### turbo-linux-64 v2.7.3
+### turbo v2.9.14
 #### 
 
 ##### Paths
