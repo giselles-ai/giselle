@@ -11361,7 +11361,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="qs"></a>
-### qs v6.14.2
+### qs v6.15.2
 #### 
 
 ##### Paths
