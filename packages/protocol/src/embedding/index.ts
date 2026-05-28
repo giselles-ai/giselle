@@ -2,7 +2,7 @@ import * as z from "zod/v4";
 import type { EmbeddingProfileId } from "./profiles";
 import { isEmbeddingProfileId } from "./profiles";
 
-export const EmbeddingProvider = z.enum(["openai", "google", "cohere"]);
+export const EmbeddingProvider = z.enum(["openai", "google"]);
 export type EmbeddingProvider = z.infer<typeof EmbeddingProvider>;
 
 export const OpenAIEmbeddingModel = z.enum([
@@ -14,13 +14,9 @@ export type OpenAIEmbeddingModel = z.infer<typeof OpenAIEmbeddingModel>;
 export const GeminiEmbeddingModel = z.enum(["gemini-embedding-001"]);
 export type GeminiEmbeddingModel = z.infer<typeof GeminiEmbeddingModel>;
 
-export const CohereEmbeddingModel = z.enum(["embed-4"]);
-export type CohereEmbeddingModel = z.infer<typeof CohereEmbeddingModel>;
-
 export const EmbeddingModelId = z.union([
 	OpenAIEmbeddingModel,
 	GeminiEmbeddingModel,
-	CohereEmbeddingModel,
 ]);
 export type EmbeddingModelId = z.infer<typeof EmbeddingModelId>;
 

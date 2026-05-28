@@ -16,10 +16,6 @@ vi.mock("./google", () => ({
 	createGoogleEmbedder: vi.fn(() => "google-embedder"),
 }));
 
-vi.mock("./not-implemented", () => ({
-	createNotImplementedEmbedder: vi.fn(() => "not-implemented-embedder"),
-}));
-
 vi.mock("./gateway", async () => {
 	const actual = await vi.importActual<typeof import("./gateway")>("./gateway");
 	return {
@@ -73,12 +69,10 @@ describe("createEmbedderFromProfile", () => {
 
 	it("throws if transport gateway is requested for an unsupported profile", () => {
 		expect(() =>
-			createEmbedderFromProfile(4, "gateway-key", {
+			createEmbedderFromProfile(999 as never, "gateway-key", {
 				transport: "gateway",
 			}),
-		).toThrow(
-			"Embedding profile '4' (cohere/embed-4) is not supported by AI Gateway",
-		);
+		).toThrow("Configuration field 'profileId' has invalid value");
 	});
 });
 
@@ -93,8 +87,13 @@ describe("isGatewaySupportedEmbeddingProfile", () => {
 	});
 
 	it("returns false for unsupported providers", () => {
-		expect(isGatewaySupportedEmbeddingProfile(EMBEDDING_PROFILES[4])).toBe(
-			false,
-		);
+		expect(
+			isGatewaySupportedEmbeddingProfile({
+				provider: "openai",
+				model: "unknown-model",
+				dimensions: 1536,
+				name: "Unknown model",
+			} as never),
+		).toBe(false);
 	});
 });

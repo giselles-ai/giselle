@@ -456,15 +456,3 @@ export const googleEmbeddingPricing: EmbeddingModelPriceTable = {
 		],
 	},
 };
-
-export const cohereEmbeddingPricing: EmbeddingModelPriceTable = {
-	"embed-4": {
-		prices: [
-			{
-				validFrom: "2025-09-26T00:00:00Z",
-				costPerMegaToken: 0.12,
-				imageCostPerMegaToken: 0.47,
-			},
-		],
-	},
-};

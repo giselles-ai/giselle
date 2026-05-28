@@ -251,7 +251,6 @@ Other embedding profiles continue to use their provider-specific API keys.
 
 - `OPENAI_API_KEY`: Required for OpenAI embedders
 - `GOOGLE_GENERATIVE_AI_API_KEY`: Required for Google Gemini embedders
-- `COHERE_API_KEY`: Required for Cohere embedders
 - `AI_GATEWAY_API_KEY`: Optional. Routes supported models through Vercel AI Gateway
 - `DATABASE_URL`: PostgreSQL connection string with pgvector extension
 
