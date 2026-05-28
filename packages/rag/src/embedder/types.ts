@@ -7,7 +7,7 @@ export interface EmbeddingMetrics {
 	texts: string[];
 	embeddings: number[][];
 	model: string;
-	provider: "openai" | "google" | "cohere";
+	provider: "openai" | "google";
 	dimensions: number;
 	usage?: { tokens: number; imageTokens?: number };
 	operation: "embed" | "embedMany";

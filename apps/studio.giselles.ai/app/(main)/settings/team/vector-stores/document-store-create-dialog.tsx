@@ -43,26 +43,17 @@ export function DocumentVectorStoreCreateDialog({
 }: DocumentVectorStoreCreateDialogProps) {
 	const [open, setOpen] = useState(false);
 	const [name, setName] = useState("");
-	const availableProfiles = useMemo(
+	const selectableProfiles = useMemo(
 		() => Object.entries(DOCUMENT_EMBEDDING_PROFILES),
 		[],
 	);
-	const selectableProfiles = useMemo(
-		() =>
-			availableProfiles.filter(([, profile]) => profile.provider !== "cohere"),
-		[availableProfiles],
-	);
 	const defaultProfileIds = useMemo(() => {
-		const primaryIds = selectableProfiles.map(([id]) => Number(id));
-		const fallbackIds =
-			primaryIds.length > 0
-				? primaryIds
-				: availableProfiles.map(([id]) => Number(id));
-		if (fallbackIds.includes(DEFAULT_EMBEDDING_PROFILE_ID)) {
+		const profileIds = selectableProfiles.map(([id]) => Number(id));
+		if (profileIds.includes(DEFAULT_EMBEDDING_PROFILE_ID)) {
 			return [DEFAULT_EMBEDDING_PROFILE_ID];
 		}
-		return fallbackIds.length > 0 ? [fallbackIds[0]] : [];
-	}, [selectableProfiles, availableProfiles]);
+		return profileIds.length > 0 ? [profileIds[0]] : [];
+	}, [selectableProfiles]);
 	const [selectedProfiles, setSelectedProfiles] = useState<number[]>(() => [
 		...defaultProfileIds,
 	]);

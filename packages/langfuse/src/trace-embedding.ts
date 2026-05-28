@@ -3,7 +3,7 @@ import type { EmbeddingMetrics } from "@giselles-ai/rag";
 import { Langfuse } from "langfuse";
 
 function buildTags(args: {
-	provider: "openai" | "google" | "cohere";
+	provider: "openai" | "google";
 	dimensions: number;
 	operation: "embed" | "embedMany";
 }) {

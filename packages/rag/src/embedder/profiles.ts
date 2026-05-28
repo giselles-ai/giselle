@@ -9,7 +9,6 @@ import {
 	isGatewaySupportedEmbeddingProfile,
 } from "./gateway";
 import { createGoogleEmbedder } from "./google";
-import { createNotImplementedEmbedder } from "./not-implemented";
 import { createOpenAIEmbedder } from "./openai";
 import type { EmbedderFunction } from "./types";
 
@@ -67,9 +66,6 @@ export function createEmbedderFromProfile(
 				transport: normalizedTransport,
 				...embedderOptions,
 			});
-		case "cohere":
-			// Placeholder: actual Cohere embedder will be added in a follow-up PR
-			return createNotImplementedEmbedder("cohere");
 		default: {
 			const _exhaustiveCheck: never = profile;
 			throw new Error(`Unknown provider: ${_exhaustiveCheck}`);
