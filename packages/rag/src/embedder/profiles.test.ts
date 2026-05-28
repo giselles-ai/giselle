@@ -67,7 +67,7 @@ describe("createEmbedderFromProfile", () => {
 		expect(result).toBe("gateway-embedder");
 	});
 
-	it("throws if transport gateway is requested for an unsupported profile", () => {
+	it("throws if the profile id is invalid", () => {
 		expect(() =>
 			createEmbedderFromProfile(999 as never, "gateway-key", {
 				transport: "gateway",
@@ -86,7 +86,7 @@ describe("isGatewaySupportedEmbeddingProfile", () => {
 		).toBeTruthy();
 	});
 
-	it("returns false for unsupported providers", () => {
+	it("returns false for unsupported models", () => {
 		expect(
 			isGatewaySupportedEmbeddingProfile({
 				provider: "openai",
