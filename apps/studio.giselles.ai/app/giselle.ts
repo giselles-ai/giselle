@@ -422,8 +422,10 @@ const callbacks: GiselleCallbacks = {
 		};
 		if (stripeCustomerId !== undefined) {
 			aiGatewayHeaders["stripe-customer-id"] = stripeCustomerId;
-			aiGatewayHeaders["stripe-restricted-access-key"] =
-				process.env.STRIPE_AI_GATEWAY_RESTRICTED_ACCESS_KEY ?? "";
+			if (process.env.STRIPE_AI_GATEWAY_RESTRICTED_ACCESS_KEY) {
+				aiGatewayHeaders["stripe-restricted-access-key"] =
+					process.env.STRIPE_AI_GATEWAY_RESTRICTED_ACCESS_KEY;
+			}
 		} else if (teamPlan === "pro" || teamPlan === "team") {
 			logger.warn(
 				`Stripe customer ID not found for generation ${generation.id}`,
