@@ -50,8 +50,9 @@ class InvalidFileTypeError extends FileUploadError {
 			case "image/jpeg":
 			case "image/png":
 			case "image/gif":
-			case "image/svg+xml":
 				return "Please use Image node to upload this file.";
+			case "image/svg+xml":
+				return "SVG is not supported. Please use PNG, JPEG, GIF instead.";
 			case "application/pdf":
 				return "Please use PDF node to upload this file.";
 			case "text/plain":
