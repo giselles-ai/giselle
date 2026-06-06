@@ -42,5 +42,6 @@ export async function traceGenerationForTeam(args: {
 			workspaceId: args.generation.context.origin.workspaceId,
 		},
 		sessionId: args.sessionId,
+		deploymentId: process.env.VERCEL_DEPLOYMENT_ID,
 	});
 }
