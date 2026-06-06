@@ -46,7 +46,7 @@ export function TeamSwitchButton({
 				</span>
 				{isPro ? <ProTag /> : <FreeTag />}
 			</div>
-			{isCurrentTeam && (
+			{isCurrentTeam && !pending && (
 				<span className="absolute right-2 left-auto flex h-3.5 w-3.5 items-center justify-center">
 					<CheckIcon className="h-4 w-6" />
 				</span>
