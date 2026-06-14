@@ -471,12 +471,17 @@ async function getFileContents(
 						filename: file.name,
 						mediaType: file.type,
 					} satisfies FilePart;
-				case "image":
+				case "image": {
+					const SUPPORTED = ["image/jpeg","image/png","image/gif","image/webp"];
+					if (!SUPPORTED.includes(file.type)) {
+						return null;
+					}
 					return {
 						type: "image",
 						image: data,
 						mediaType: file.type,
 					} satisfies ImagePart;
+				}
 				default: {
 					const _exhaustiveCheck: never = fileContent.category;
 					throw new Error(`Unhandled file category: ${_exhaustiveCheck}`);

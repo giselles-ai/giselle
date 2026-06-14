@@ -579,7 +579,7 @@ export async function useGenerationExecutor<T>(args: {
 							case "image/jpeg":
 							case "image/png":
 							case "image/gif":
-							case "image/svg+xml":
+							case "image/webp":
 								return {
 									type: "image",
 									image: blob,

@@ -51,7 +51,7 @@ class InvalidFileTypeError extends FileUploadError {
 			case "image/png":
 			case "image/gif":
 			case "image/svg+xml":
-				return "Please use Image node to upload this file.";
+				return "SVG files are not supported. Please convert to PNG, JPEG, GIF, or WebP.";
 			case "application/pdf":
 				return "Please use PDF node to upload this file.";
 			case "text/plain":
@@ -226,7 +226,7 @@ export function FilePanel({ node, config }: FilePanelProps) {
 
 			const imageItems: DataTransferItem[] = [];
 			for (const item of items) {
-				if (item.type.startsWith("image/")) {
+				if (config.accept.includes(item.type)) {
 					imageItems.push(item);
 				}
 			}
