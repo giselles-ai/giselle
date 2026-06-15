@@ -1,3 +1,4 @@
+import { SUPPORTED_IMAGE_MIME_TYPES } from "@giselles-ai/protocol";
 import type { FileCategory, FileNode } from "@giselles-ai/protocol";
 import { useDeleteNode, useUpdateNodeData } from "../../../app-designer";
 import { PropertiesPanelContent, PropertiesPanelRoot } from "../ui";
@@ -15,7 +16,7 @@ const fileType: Record<FileCategory, FileTypeConfig> = {
 		label: "Text",
 	},
 	image: {
-		accept: ["image/png", "image/jpeg", "image/gif", "image/webp"],
+		accept: [...SUPPORTED_IMAGE_MIME_TYPES],
 		label: "Image",
 	},
 };

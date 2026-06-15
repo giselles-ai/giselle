@@ -115,6 +115,14 @@ export const FileData = z.union([
 ]);
 export type FileData = z.infer<typeof FileData>;
 
+export const SUPPORTED_IMAGE_MIME_TYPES = [
+	"image/jpeg",
+	"image/png",
+	"image/gif",
+	"image/webp",
+] as const;
+export type SupportedImageMimeType = (typeof SUPPORTED_IMAGE_MIME_TYPES)[number];
+
 export const FileCategory = z.enum(["pdf", "text", "image"]);
 export type FileCategory = z.infer<typeof FileCategory>;
 export const FileContent = z.object({

@@ -1,4 +1,5 @@
 import { parseConfiguration } from "@giselles-ai/data-store-registry";
+import { SUPPORTED_IMAGE_MIME_TYPES } from "@giselles-ai/protocol";
 import { isClonedFileDataPayload } from "@giselles-ai/node-registry";
 import type {
 	FailedGeneration,

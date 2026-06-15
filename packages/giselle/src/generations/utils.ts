@@ -1,4 +1,5 @@
 import { hasTierAccess, languageModels } from "@giselles-ai/language-model";
+import { SUPPORTED_IMAGE_MIME_TYPES } from "@giselles-ai/protocol";
 import {
 	type CompletedGeneration,
 	type ContentGenerationNode,
@@ -476,7 +477,7 @@ async function getFileContents(
 						mediaType: file.type,
 					} satisfies FilePart;
 				case "image": {
-					const supportedImageTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+					const supportedImageTypes = SUPPORTED_IMAGE_MIME_TYPES;
 					if (!supportedImageTypes.includes(file.type)) {
 						return null;
 					}
