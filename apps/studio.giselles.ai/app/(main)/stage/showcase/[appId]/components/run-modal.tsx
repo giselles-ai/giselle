@@ -101,8 +101,7 @@ export function RunModal({
 				const message =
 					error instanceof Error ? error.message : "Failed to run app.";
 				setSubmitError(message);
-				console.error("Failed to run app:", error);
-			}
+				}
 			return null;
 		},
 		[inputs, flowTriggerData, onClose, client],
