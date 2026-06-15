@@ -43,6 +43,7 @@ export function RunModal({
 	const [validationErrors, setValidationErrors] = useState<
 		Record<string, string>
 	>({});
+	const [submitError, setSubmitError] = useState<string | null>(null);
 
 	// Load flow trigger data when modal opens
 	useEffect(() => {
@@ -73,6 +74,7 @@ export function RunModal({
 			}
 
 			setValidationErrors({});
+			setSubmitError(null);
 
 			try {
 				const parameterItems = await toParameterItems(inputs, values, {
@@ -94,6 +96,9 @@ export function RunModal({
 				await runWorkspaceApp(flowTriggerData.flowTrigger, parameterItems);
 				onClose();
 			} catch (error) {
+				const message =
+					error instanceof Error ? error.message : "Failed to run app.";
+				setSubmitError(message);
 				console.error("Failed to run app:", error);
 			}
 			return null;
@@ -175,6 +180,9 @@ export function RunModal({
 							</div>
 						) : (
 							<form action={action} className="text-[14px]">
+								{submitError && (
+									<p className="mb-3 text-sm text-red-400">{submitError}</p>
+								)}
 								<FormInputRenderer
 									inputs={inputs}
 									validationErrors={validationErrors}
