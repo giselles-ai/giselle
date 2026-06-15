@@ -48,12 +48,14 @@ export function RunModal({
 	// Load flow trigger data when modal opens
 	useEffect(() => {
 		if (isOpen && workspaceId) {
+			setSubmitError(null);
 			setIsLoading(true);
 			fetchWorkspaceFlowTrigger(workspaceId)
 				.then(setFlowTriggerData)
 				.finally(() => setIsLoading(false));
 		} else {
 			setFlowTriggerData(null);
+			setSubmitError(null);
 		}
 	}, [isOpen, workspaceId]);
 
