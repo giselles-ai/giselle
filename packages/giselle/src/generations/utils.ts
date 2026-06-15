@@ -240,6 +240,8 @@ async function buildGenerationMessageForTextGeneration({
 
 						attachedFiles.push(...fileContents);
 						attachedFileNodeIds.push(contextNode.id);
+						} else {
+							userMessage = userMessage.replace(replaceKeyword, "");
 						}
 						break;
 					}
@@ -314,6 +316,8 @@ async function buildGenerationMessageForTextGeneration({
 
 						attachedFiles.push(...fileContents);
 						attachedFileNodeIds.push(contextNode.id);
+						} else {
+							userMessage = userMessage.replace(replaceKeyword, "");
 						}
 						break;
 					default: {
@@ -592,6 +596,8 @@ async function buildGenerationMessageForImageGeneration(
 						);
 
 						attachedFiles.push(...fileContents);
+						} else {
+							userMessage = userMessage.replace(replaceKeyword, "");
 						}
 						break;
 					}
@@ -639,6 +645,8 @@ async function buildGenerationMessageForImageGeneration(
 						);
 
 						attachedFiles.push(...fileContents);
+						} else {
+							userMessage = userMessage.replace(replaceKeyword, "");
 						}
 						break;
 					default: {
@@ -1095,6 +1103,8 @@ async function buildGenerationMessageForContentGeneration({
 
 						attachedFiles.push(...fileContents);
 						attachedFileNodeIds.push(contextNode.id);
+						} else {
+							userMessage = userMessage.replace(replaceKeyword, "");
 						}
 						break;
 					}
@@ -1149,6 +1159,8 @@ async function buildGenerationMessageForContentGeneration({
 
 						attachedFiles.push(...fileContents);
 						attachedFileNodeIds.push(contextNode.id);
+						} else {
+							userMessage = userMessage.replace(replaceKeyword, "");
 						}
 						break;
 					default: {
