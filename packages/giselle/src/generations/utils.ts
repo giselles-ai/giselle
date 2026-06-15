@@ -231,6 +231,7 @@ async function buildGenerationMessageForTextGeneration({
 							contextNode.content,
 							fileResolver,
 						);
+						if (fileContents.length > 0) {
 						userMessage = userMessage.replace(
 							replaceKeyword,
 							getFilesDescription(attachedFiles.length, fileContents.length),
@@ -238,6 +239,7 @@ async function buildGenerationMessageForTextGeneration({
 
 						attachedFiles.push(...fileContents);
 						attachedFileNodeIds.push(contextNode.id);
+						}
 						break;
 					}
 					default: {
@@ -303,6 +305,7 @@ async function buildGenerationMessageForTextGeneration({
 						);
 						break;
 					case "google":
+						if (fileContents.length > 0) {
 						userMessage = userMessage.replace(
 							replaceKeyword,
 							getFilesDescription(attachedFiles.length, fileContents.length),
@@ -310,6 +313,7 @@ async function buildGenerationMessageForTextGeneration({
 
 						attachedFiles.push(...fileContents);
 						attachedFileNodeIds.push(contextNode.id);
+						}
 						break;
 					default: {
 						const _exhaustiveCheck: never = llmProvider;
@@ -472,8 +476,8 @@ async function getFileContents(
 						mediaType: file.type,
 					} satisfies FilePart;
 				case "image": {
-					const SUPPORTED = ["image/jpeg","image/png","image/gif","image/webp"];
-					if (!SUPPORTED.includes(file.type)) {
+					const supportedImageTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+					if (!supportedImageTypes.includes(file.type)) {
 						return null;
 					}
 					return {
@@ -580,12 +584,14 @@ async function buildGenerationMessageForImageGeneration(
 							contextNode.content,
 							fileResolver,
 						);
+						if (fileContents.length > 0) {
 						userMessage = userMessage.replace(
 							replaceKeyword,
 							getFilesDescription(attachedFiles.length, fileContents.length),
 						);
 
 						attachedFiles.push(...fileContents);
+						}
 						break;
 					}
 					default: {
@@ -625,12 +631,14 @@ async function buildGenerationMessageForImageGeneration(
 						);
 						break;
 					case "google":
+						if (fileContents.length > 0) {
 						userMessage = userMessage.replace(
 							replaceKeyword,
 							getFilesDescription(attachedFiles.length, fileContents.length),
 						);
 
 						attachedFiles.push(...fileContents);
+						}
 						break;
 					default: {
 						const _exhaustiveCheck: never = llmProvider;
@@ -1078,6 +1086,7 @@ async function buildGenerationMessageForContentGeneration({
 							contextNode.content,
 							fileResolver,
 						);
+						if (fileContents.length > 0) {
 						userMessage = userMessage.replace(
 							replaceKeyword,
 							getFilesDescription(attachedFiles.length, fileContents.length),
@@ -1085,6 +1094,7 @@ async function buildGenerationMessageForContentGeneration({
 
 						attachedFiles.push(...fileContents);
 						attachedFileNodeIds.push(contextNode.id);
+						}
 						break;
 					}
 					default: {
@@ -1130,6 +1140,7 @@ async function buildGenerationMessageForContentGeneration({
 						);
 						break;
 					case "google":
+						if (fileContents.length > 0) {
 						userMessage = userMessage.replace(
 							replaceKeyword,
 							getFilesDescription(attachedFiles.length, fileContents.length),
@@ -1137,6 +1148,7 @@ async function buildGenerationMessageForContentGeneration({
 
 						attachedFiles.push(...fileContents);
 						attachedFileNodeIds.push(contextNode.id);
+						}
 						break;
 					default: {
 						const _exhaustiveCheck: never = llmProvider;
