@@ -1141,7 +1141,7 @@ MIT-0 permitted
 
 
 <a name="@esbuild/linux-x64"></a>
-### @esbuild/linux-x64 v0.25.10
+### @esbuild/linux-x64 v0.28.1
 #### 
 
 ##### Paths
@@ -7225,7 +7225,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="esbuild"></a>
-### esbuild v0.25.10
+### esbuild v0.28.1
 #### 
 
 ##### Paths
