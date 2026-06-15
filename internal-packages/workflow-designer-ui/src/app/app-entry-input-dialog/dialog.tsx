@@ -164,7 +164,12 @@ export function AppEntryInputDialog({
 
 						const uploadedFiles: UploadedFileData[] = [];
 
+						const maxFileSize = 1024 * 1024 * 4.5;
 						for (const file of files) {
+							if (file.size > maxFileSize) {
+								errors[parameter.id] = `${parameter.name}: file size exceeds the 4.5MB limit.`;
+								break;
+							}
 							const uploadingFileData = createUploadingFileData({
 								name: file.name,
 								type: file.type || "application/octet-stream",

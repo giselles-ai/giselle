@@ -83,6 +83,10 @@ export function RunModal({
 						formData.append("fileId", fileId);
 						formData.append("fileName", fileName);
 						formData.append("file", file);
+						const maxFileSize = 1024 * 1024 * 4.5;
+						if (file.size > maxFileSize) {
+							throw new Error(`${fileName}: file size exceeds the 4.5MB limit.`);
+						}
 						await client.uploadFile(formData);
 					},
 				});
