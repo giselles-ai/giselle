@@ -294,7 +294,7 @@ overrides:
   picomatch@>=4.0.0 <4.0.4: 4.0.4
   picomatch@<2.3.2: 2.3.2
   yaml@>=2.0.0 <2.8.3: 2.8.3
-  tmp@<0.2.6: 0.2.6
+  tmp@<0.2.7: 0.2.7
   brace-expansion@>=4.0.0 <5.0.6: 5.0.6
   postcss@<8.5.10: 8.5.12
   uuid@<14.0.0: 14.0.0
@@ -8370,8 +8370,8 @@ packages:
     resolution: {integrity: sha512-WMi/OQ2axVTf/ykqCQgXiIct+mSQDFdH2fkwhPwgEwvJ1kSzZRiinb0zF2Xb8u4+OqPChmyI6MEu4EezNJz+FQ==}
     hasBin: true
 
-  tmp@0.2.6:
-    resolution: {integrity: sha512-5sJPdPjfI5Kx+qbrDesxkglRBxW//g7hCsqspEjwkewGvBMGIKMOTKzLt1hFVJzyadba3lDUN20O9qhvbQUSTA==}
+  tmp@0.2.7:
+    resolution: {integrity: sha512-e0votIpp4Uo2AJYSzVHV6xCcawuiez3DzqDAbrTc3YxBkplN6e+dM13ZeIcZnDg/QpSuU2zfZ3rzwY8ukEnaXw==}
     engines: {node: '>=14.14'}
 
   to-regex-range@5.0.1:
@@ -13925,7 +13925,7 @@ snapshots:
     dependencies:
       chardet: 0.7.0
       iconv-lite: 0.4.24
-      tmp: 0.2.6
+      tmp: 0.2.7
 
   fast-content-type-parse@3.0.0: {}
 
@@ -16730,7 +16730,7 @@ snapshots:
     dependencies:
       tldts-core: 6.1.86
 
-  tmp@0.2.6: {}
+  tmp@0.2.7: {}
 
   to-regex-range@5.0.1:
     dependencies:
