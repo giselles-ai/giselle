@@ -75,7 +75,7 @@ catalog:
   react-resizable-panels: 2.1.7
   swr: 2.3.6
   tailwindcss: 4.1.18
-  tar: 7.5.11
+  tar: 7.5.16
   tiktoken: 1.0.22
   tsup: 8.5.1
   tsx: 4.20.6
