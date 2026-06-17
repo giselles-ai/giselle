@@ -2384,7 +2384,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@protobufjs/eventemitter"></a>
-### @protobufjs/eventemitter v1.1.0
+### @protobufjs/eventemitter v1.1.1
 #### 
 
 ##### Paths
@@ -2395,7 +2395,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@protobufjs/fetch"></a>
-### @protobufjs/fetch v1.1.0
+### @protobufjs/fetch v1.1.1
 #### 
 
 ##### Paths
@@ -2417,7 +2417,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@protobufjs/inquire"></a>
-### @protobufjs/inquire v1.1.1
+### @protobufjs/inquire v1.1.2
 #### 
 
 ##### Paths
@@ -9172,7 +9172,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="long"></a>
-### long v5.2.4
+### long v5.3.2
 #### 
 
 ##### Paths
@@ -11295,7 +11295,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="protobufjs"></a>
-### protobufjs v7.5.8
+### protobufjs v7.6.3
 #### 
 
 ##### Paths
