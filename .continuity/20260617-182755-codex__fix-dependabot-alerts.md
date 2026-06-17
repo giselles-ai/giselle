@@ -29,7 +29,7 @@
 ## State
 
 - Branch: `codex/fix-dependabot-alerts`.
-- Implementation complete.
+- Implementation complete; PR #2942 CI follow-up in progress.
 - `pnpm audit --json` now reports only `@ai-sdk/provider-utils` (`patched_versions: <0.0.0`), matching the previously dismissed Dependabot alert.
 
 ## Done
@@ -47,10 +47,17 @@
   - `pnpm test`
   - `pnpm install --frozen-lockfile --lockfile-only`
   - `pnpm audit --json` (only no-patch/dismissed `@ai-sdk/provider-utils` remains)
+- CI job `check` failed on PR #2942 because GitHub Actions runs `pnpm knip`; `knip@6.17.1` reported unlisted `rg` binaries in scripts on the runner where ripgrep is not installed.
+- Added `rg` to `knip.ts` `ignoreBinaries`.
+- CI follow-up verification passed:
+  - `pnpm knip`
+  - `PATH=/Users/tadashi.shigeoka/.local/share/mise/installs/node/24/bin:/usr/bin:/bin pnpm knip`
+  - `pnpm tidy`
+  - `pnpm format`
 
 ## Now
 
-- Stage, commit, push, and open a draft PR.
+- Commit and push CI follow-up for PR #2942.
 
 ## Next
 

@@ -51,7 +51,7 @@ const config: KnipConfig = {
 		},
 	},
 	ignore: ["turbo/generators/config.ts"],
-	ignoreBinaries: ["vercel"],
+	ignoreBinaries: ["rg", "vercel"],
 };
 
 export default config;
