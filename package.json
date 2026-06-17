@@ -47,8 +47,8 @@
 			"@electric-sql/client": "1.0.10",
 			"cookie": "1.0.2",
 			"@react-email/preview-server>next": "16.2.6",
-			"@babel/helpers": "7.26.10",
-			"@babel/runtime": "7.26.10",
+			"@babel/helpers": "7.29.7",
+			"@babel/runtime": "7.29.7",
 			"vite@>=7.0.0 <=7.3.4": "7.3.5",
 			"jws": "4.0.1",
 			"glob@>=11.0.0 <11.1.0": "11.1.0",
@@ -59,7 +59,7 @@
 			"@hono/node-server": "1.19.14",
 			"ajv@>=6.0.0 <7.0.0": "6.14.0",
 			"js-yaml@>=4.0.0 <=4.1.1": "4.2.0",
-			"read-yaml-file": "2.1.0",
+			"read-yaml-file@1.1.0": "2.1.0",
 			"@esbuild-kit/core-utils>esbuild": "0.28.1",
 			"esbuild@>=0.17.0 <0.28.1": "0.28.1",
 			"serialize-javascript": "7.0.5",
@@ -82,7 +82,7 @@
 			"qs@>=6.11.1 <6.15.2": "6.15.2",
 			"markdown-it": "14.2.0",
 			"@opentelemetry/core": "2.8.0",
-			"@babel/core": "7.29.6"
+			"@babel/core": "7.29.7"
 		}
 	}
 }
