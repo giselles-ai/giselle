@@ -29,7 +29,7 @@
 ## State
 
 - Branch: `codex/fix-dependabot-alerts`.
-- Implementation complete; PR #2942 CI follow-up in progress.
+- Implementation complete; PR #2942 CI follow-up pushed.
 - `pnpm audit --json` now reports only `@ai-sdk/provider-utils` (`patched_versions: <0.0.0`), matching the previously dismissed Dependabot alert.
 
 ## Done
@@ -57,7 +57,7 @@
 
 ## Now
 
-- Commit and push CI follow-up for PR #2942.
+- Await PR #2942 CI rerun.
 
 ## Next
 
