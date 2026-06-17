@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 962 MIT
+* 961 MIT
 * 192 Apache 2.0
 * 44 ISC
 * 23 New BSD
@@ -613,7 +613,7 @@
 
 
 <a name="@babel/core"></a>
-### @babel/core v7.29.6
+### @babel/core v7.29.7
 #### 
 
 ##### Paths
@@ -712,7 +712,7 @@
 
 
 <a name="@babel/helpers"></a>
-### @babel/helpers v7.26.10
+### @babel/helpers v7.29.7
 #### 
 
 ##### Paths
@@ -734,7 +734,7 @@
 
 
 <a name="@babel/runtime"></a>
-### @babel/runtime v7.26.10
+### @babel/runtime v7.29.7
 #### 
 
 ##### Paths
@@ -11527,17 +11527,6 @@ BlueOak-1.0.0 permitted
 
 <a name="redis-parser"></a>
 ### redis-parser v3.0.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="regenerator-runtime"></a>
-### regenerator-runtime v0.14.1
 #### 
 
 ##### Paths
