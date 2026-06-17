@@ -120,7 +120,6 @@ Thanks for your interest in Giselle. Here are a few ways you can engage with the
 - Follow us on social media: [Facebook](https://www.facebook.com/GiselleAI/), [X](https://x.com/Giselles_AI), [Instagram](https://www.instagram.com/giselle_de_ai) and [YouTube](https://www.youtube.com/@Giselle_AI)
 - [Report a bug](https://github.com/giselles-ai/giselle/issues/new?template=1_bug_report.yml) you encounter while using Giselle
 - [Share an idea or question](https://github.com/giselles-ai/giselle/discussions) on GitHub Discussions
-- Before opening a pull request for non-trivial changes, please start a discussion so we can align on scope
 
 For details on contributing, please see our [contributing guide](CONTRIBUTING.md).
 
