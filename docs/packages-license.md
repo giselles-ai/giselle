@@ -13767,7 +13767,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="ws"></a>
-### ws v7.5.10
+### ws v7.5.11
 #### 
 
 ##### Paths
