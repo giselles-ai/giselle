@@ -65,7 +65,7 @@
 			"serialize-javascript": "7.0.5",
 			"systeminformation": "5.31.6",
 			"socket.io-parser": "4.2.6",
-			"undici@>=7.0.0 <7.24.0": "7.24.4",
+			"undici@>=7.0.0 <7.28.0": "7.28.0",
 			"@xmldom/xmldom": "0.8.13",
 			"path-to-regexp@>=8.0.0 <8.4.0": "8.4.2",
 			"express-rate-limit": "8.2.2",

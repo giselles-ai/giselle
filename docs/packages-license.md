@@ -3,7 +3,7 @@
 
 ## Summary
 * 963 MIT
-* 193 Apache 2.0
+* 192 Apache 2.0
 * 42 ISC
 * 24 New BSD
 * 15 Simplified BSD
@@ -125,17 +125,6 @@
 * /home/runner/work/giselle/giselle
 
 <a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="@ampproject/remapping"></a>
-### @ampproject/remapping v2.3.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
 
 
 
@@ -613,7 +602,7 @@
 
 
 <a name="@babel/compat-data"></a>
-### @babel/compat-data v7.26.5
+### @babel/compat-data v7.29.7
 #### 
 
 ##### Paths
@@ -624,7 +613,7 @@
 
 
 <a name="@babel/core"></a>
-### @babel/core v7.26.7
+### @babel/core v7.29.7
 #### 
 
 ##### Paths
@@ -646,7 +635,7 @@
 
 
 <a name="@babel/helper-compilation-targets"></a>
-### @babel/helper-compilation-targets v7.26.5
+### @babel/helper-compilation-targets v7.29.7
 #### 
 
 ##### Paths
@@ -668,7 +657,7 @@
 
 
 <a name="@babel/helper-module-imports"></a>
-### @babel/helper-module-imports v7.25.9
+### @babel/helper-module-imports v7.29.7
 #### 
 
 ##### Paths
@@ -679,7 +668,7 @@
 
 
 <a name="@babel/helper-module-transforms"></a>
-### @babel/helper-module-transforms v7.26.0
+### @babel/helper-module-transforms v7.29.7
 #### 
 
 ##### Paths
@@ -712,7 +701,7 @@
 
 
 <a name="@babel/helper-validator-option"></a>
-### @babel/helper-validator-option v7.25.9
+### @babel/helper-validator-option v7.29.7
 #### 
 
 ##### Paths
@@ -1845,7 +1834,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/core"></a>
-### @opentelemetry/core v2.0.1
+### @opentelemetry/core v2.8.0
 #### 
 
 ##### Paths
@@ -9084,7 +9073,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="linkify-it"></a>
-### linkify-it v5.0.0
+### linkify-it v5.0.1
 #### 
 
 ##### Paths
@@ -9238,7 +9227,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="markdown-it"></a>
-### markdown-it v14.1.1
+### markdown-it v14.2.0
 #### 
 
 ##### Paths
@@ -12685,7 +12674,7 @@ Unknown manually approved
 
 
 <a name="tar"></a>
-### tar v7.5.11
+### tar v7.5.16
 #### 
 
 ##### Paths
@@ -13224,7 +13213,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="undici"></a>
-### undici v7.24.4
+### undici v7.28.0
 #### 
 
 ##### Paths
