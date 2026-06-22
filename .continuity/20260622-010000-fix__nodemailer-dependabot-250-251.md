@@ -17,18 +17,21 @@
 ## Key decisions
 
 - Bump nodemailer 8.0.9 -> 9.0.1 in apps/studio.giselles.ai/package.json.
+- Also bump @types/nodemailer 6.4.17 -> 8.0.1 (latest; no 9.x typings exist) to track the v9 runtime, after coderabbit flagged a type mismatch. NOTE: real check-types passed even at 6.4.17 once nodemailer@9 was actually installed (the first check-types ran lockfile-only, so node_modules still had v8 — corrected by running full `pnpm install`).
 
 ## State
 
-- Edited package.json, regenerated pnpm-lock.yaml (nodemailer@9.0.1). `pnpm -F studio.giselles.ai check-types` passes.
+- PR #2950 open. CI all green. Two bot comments handled (replies posted):
+  - qodo (packages-license.md stale): auto-resolved by License Compliance CI commit 8878702.
+  - coderabbit (@types/nodemailer incompatible, Critical): not an actual failure for our usage, but bumped to 8.0.1 anyway.
 
 ## Done
 
-- Version bump + lockfile + type-check.
+- nodemailer 8.0.9 -> 9.0.1, @types/nodemailer 6.4.17 -> 8.0.1, lockfile, type-check pass. Replied to both bots.
 
 ## Now
 
-- Commit and open PR.
+- Awaiting review/merge.
 
 ## Next
 
