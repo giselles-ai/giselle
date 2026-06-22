@@ -110,7 +110,7 @@
 		"@react-email/preview-server": "5.0.5",
 		"@tailwindcss/postcss": "catalog:",
 		"@types/node": "catalog:",
-		"@types/nodemailer": "6.4.17",
+		"@types/nodemailer": "8.0.1",
 		"@types/react": "catalog:",
 		"@types/react-dom": "catalog:",
 		"drizzle-kit": "catalog:",

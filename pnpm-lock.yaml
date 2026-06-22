@@ -586,8 +586,8 @@ importers:
         specifier: 'catalog:'
         version: 24.10.4
       '@types/nodemailer':
-        specifier: 6.4.17
-        version: 6.4.17
+        specifier: 8.0.1
+        version: 8.0.1
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.7
@@ -5069,8 +5069,8 @@ packages:
   '@types/node@25.3.0':
     resolution: {integrity: sha512-4K3bqJpXpqfg2XKGK9bpDTc6xO/xoUP/RBWS7AtRMug6zZFaRekiLzjVtAoZMquxoAbzBvy5nxQ7veS5eYzf8A==}
 
-  '@types/nodemailer@6.4.17':
-    resolution: {integrity: sha512-I9CCaIp6DTldEg7vyUTZi8+9Vo0hi1/T8gv3C89yk1rSAAzoKQ8H8ki/jBYJSFoH/BisgLP8tkZMlQ91CIquww==}
+  '@types/nodemailer@8.0.1':
+    resolution: {integrity: sha512-PxpaInm8V1JQDd4j0ds5HfvWQk8JupS1C0Picb96QJsrrRDjBH+DlK7L4ZdNSqNULhiZRQHc40nLVShaGxXAMw==}
 
   '@types/pg-pool@2.0.7':
     resolution: {integrity: sha512-U4CwmGVQcbEuqpyju8/ptOKg6gEC+Tqsvj2xS9o1g71bUh8twxnC6ZL5rZKCsGN0iyH0CwgUyc9VR5owNQF9Ng==}
@@ -12981,9 +12981,9 @@ snapshots:
     dependencies:
       undici-types: 7.18.2
 
-  '@types/nodemailer@6.4.17':
+  '@types/nodemailer@8.0.1':
     dependencies:
-      '@types/node': 24.10.4
+      '@types/node': 25.3.0
 
   '@types/pg-pool@2.0.7':
     dependencies:
