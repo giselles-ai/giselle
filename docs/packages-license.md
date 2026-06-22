@@ -5087,7 +5087,7 @@ FSL-1.1-MIT manually approved
 
 
 <a name="@types/nodemailer"></a>
-### @types/nodemailer v6.4.17
+### @types/nodemailer v8.0.1
 #### 
 
 ##### Paths
