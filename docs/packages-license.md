@@ -8820,7 +8820,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="js-yaml"></a>
-### js-yaml v3.14.2
+### js-yaml v3.15.0
 #### 
 
 ##### Paths
