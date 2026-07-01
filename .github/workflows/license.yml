@@ -70,7 +70,7 @@ jobs:
         if: steps.determine.outputs.files_changed == 'true'
       - run: pnpm install
         if: steps.determine.outputs.files_changed == 'true'
-      - uses: ruby/setup-ruby@afeafc3d1ab54a631816aba4c914a0081c12ff2f # v1.310.0
+      - uses: ruby/setup-ruby@0dafeac902942906541bc140009cdbf32665b601 # v1.315.0
         if: steps.determine.outputs.files_changed == 'true'
         with:
           ruby-version: '3.3'
