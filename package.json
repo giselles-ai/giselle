@@ -63,7 +63,7 @@
 			"@esbuild-kit/core-utils>esbuild": "0.28.1",
 			"esbuild@>=0.17.0 <0.28.1": "0.28.1",
 			"serialize-javascript": "7.0.5",
-			"systeminformation": "5.31.6",
+			"systeminformation": "5.31.7",
 			"socket.io-parser": "4.2.6",
 			"undici@>=7.0.0 <7.28.0": "7.28.0",
 			"@xmldom/xmldom": "0.8.13",
