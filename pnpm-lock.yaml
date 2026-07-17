@@ -285,7 +285,7 @@ overrides:
   '@esbuild-kit/core-utils>esbuild': 0.28.1
   esbuild@>=0.17.0 <0.28.1: 0.28.1
   serialize-javascript: 7.0.5
-  systeminformation: 5.31.6
+  systeminformation: 5.31.7
   socket.io-parser: 4.2.6
   undici@>=7.0.0 <7.28.0: 7.28.0
   '@xmldom/xmldom': 0.8.13
@@ -8282,8 +8282,8 @@ packages:
   symbol-tree@3.2.4:
     resolution: {integrity: sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==}
 
-  systeminformation@5.31.6:
-    resolution: {integrity: sha512-Uv2b2uGGM6ns+26czgW2cYRabYdnswM0ddSOOlryHOaelzsmDSet1iM/NT7VOYxW8x/BW+HkY+b1Ve2pLTSGSA==}
+  systeminformation@5.31.7:
+    resolution: {integrity: sha512-/8NC53e5nP9nmhn42/ncdOkyJnOoue/Vy+tJOyUGd1Yv66G069wK4rrziwhrqDETgk78CudTQupw5z19S5uoZw==}
     engines: {node: '>=8.0.0'}
     os: [darwin, linux, win32, freebsd, openbsd, netbsd, sunos, android]
     hasBin: true
@@ -10497,7 +10497,7 @@ snapshots:
   '@opentelemetry/host-metrics@0.37.0(@opentelemetry/api@1.9.0)':
     dependencies:
       '@opentelemetry/api': 1.9.0
-      systeminformation: 5.31.6
+      systeminformation: 5.31.7
 
   '@opentelemetry/instrumentation-amqplib@0.58.0(@opentelemetry/api@1.9.0)':
     dependencies:
@@ -16686,7 +16686,7 @@ snapshots:
 
   symbol-tree@3.2.4: {}
 
-  systeminformation@5.31.6: {}
+  systeminformation@5.31.7: {}
 
   tagged-tag@1.0.0: {}
 
