@@ -1251,7 +1251,7 @@ MIT-0 permitted
 
 
 <a name="@hono/node-server"></a>
-### @hono/node-server v1.19.14
+### @hono/node-server v2.0.5
 #### 
 
 ##### Paths
@@ -1284,7 +1284,7 @@ MIT-0 permitted
 
 
 <a name="@img/colour"></a>
-### @img/colour v1.0.0
+### @img/colour v1.1.0
 #### 
 
 ##### Paths
@@ -1295,7 +1295,7 @@ MIT-0 permitted
 
 
 <a name="@img/sharp-libvips-linux-x64"></a>
-### @img/sharp-libvips-linux-x64 v1.2.4
+### @img/sharp-libvips-linux-x64 v1.3.0
 #### 
 
 ##### Paths
@@ -1306,7 +1306,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@img/sharp-linux-x64"></a>
-### @img/sharp-linux-x64 v0.34.5
+### @img/sharp-linux-x64 v0.35.0
 #### 
 
 ##### Paths
@@ -7544,7 +7544,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="fast-uri"></a>
-### fast-uri v3.1.2
+### fast-uri v3.1.4
 #### 
 
 ##### Paths
@@ -8259,7 +8259,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="hono"></a>
-### hono v4.12.25
+### hono v4.12.27
 #### 
 
 ##### Paths
@@ -9051,7 +9051,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="linkify-it"></a>
-### linkify-it v5.0.1
+### linkify-it v5.0.2
 #### 
 
 ##### Paths
@@ -12010,7 +12010,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="sharp"></a>
-### sharp v0.34.5
+### sharp v0.35.0
 #### 
 
 ##### Paths
@@ -12652,7 +12652,7 @@ Unknown manually approved
 
 
 <a name="tar"></a>
-### tar v7.5.16
+### tar v7.5.19
 #### 
 
 ##### Paths
