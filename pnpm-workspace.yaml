@@ -95,6 +95,10 @@ catalog:
 minimumReleaseAge: 1440
 # Use minimumReleaseAgeExclude temporarily for emergency security vulnerability fixes
 minimumReleaseAgeExclude:
+  - body-parser
+  - brace-expansion
+  - engine.io
+  - protobufjs
   - next
   - "@next/env"
   - "@next/third-parties"
