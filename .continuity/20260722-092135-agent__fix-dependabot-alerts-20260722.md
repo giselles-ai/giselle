@@ -24,7 +24,7 @@
 
 ## State
 
-- Implementation and verification complete; ready to commit, push, and open a draft PR.
+- Complete; changes are committed, pushed, and available in draft PR #2959.
 
 ## Done
 
@@ -38,14 +38,15 @@
 - Added the four emergency security releases to `minimumReleaseAgeExclude` and regenerated `pnpm-lock.yaml`.
 - Confirmed the lockfile contains only patched versions for all four packages.
 - Passed `pnpm format`, `pnpm build-sdk`, `pnpm check-types`, `pnpm tidy`, and `pnpm test`.
+- Committed the dependency fixes as `87d9f7f87`, pushed the branch, and opened draft PR #2959 against `main`.
 
 ## Now
 
-- Commit and publish the verified dependency updates.
+- N/A (complete).
 
 ## Next
 
-- Push the branch and open a draft PR against `main`.
+- N/A (complete).
 
 ## Open questions (UNCONFIRMED if needed)
 
@@ -56,6 +57,7 @@
 - `.continuity/20260722-092135-agent__fix-dependabot-alerts-20260722.md`
 - `gh auth login -h github.com`
 - `gh api repos/giselles-ai/giselle/dependabot/alerts`
+- `https://github.com/giselles-ai/giselle/pull/2959`
 - `package.json`
 - `pnpm-workspace.yaml`
 - `pnpm-lock.yaml`
