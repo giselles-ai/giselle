@@ -21,10 +21,11 @@
 
 - Created `agent/fix-dependabot-alerts-20260722` from freshly fetched `origin/main` (`68d09c8b2`).
 - Use GitHub security alerts to identify exact vulnerable packages and patched versions before editing the lockfile.
+- Removed the four package-wide `minimumReleaseAgeExclude` entries after confirming every patched release is already older than 24 hours; the normal supply-chain cooling-off gate remains in effect.
 
 ## State
 
-- Complete; changes are committed, pushed, and available in draft PR #2959.
+- Complete; dependency versions remain patched without package-wide release-age bypasses.
 
 ## Done
 
@@ -39,6 +40,10 @@
 - Confirmed the lockfile contains only patched versions for all four packages.
 - Passed `pnpm format`, `pnpm build-sdk`, `pnpm check-types`, `pnpm tidy`, and `pnpm test`.
 - Committed the dependency fixes as `87d9f7f87`, pushed the branch, and opened draft PR #2959 against `main`.
+- Incorporated the automated `docs/packages-license.md` update from `c9465667c`.
+- Addressed the release-age review feedback by removing the four package-wide exclusions.
+- Confirmed a normal `pnpm install --frozen-lockfile` succeeds with the 24-hour gate enabled.
+- Re-ran and passed `pnpm format`, `pnpm build-sdk`, `pnpm check-types`, `pnpm tidy`, and `pnpm test`.
 
 ## Now
 
