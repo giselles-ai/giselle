@@ -1251,7 +1251,7 @@ MIT-0 permitted
 
 
 <a name="@hono/node-server"></a>
-### @hono/node-server v2.0.5
+### @hono/node-server v2.0.10
 #### 
 
 ##### Paths
