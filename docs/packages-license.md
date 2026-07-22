@@ -2,10 +2,10 @@
 
 
 ## Summary
-* 963 MIT
+* 962 MIT
 * 192 Apache 2.0
 * 42 ISC
-* 24 New BSD
+* 23 New BSD
 * 15 Simplified BSD
 * 10 BlueOak-1.0.0
 * 2 Mozilla Public License 2.0
@@ -2396,17 +2396,6 @@ BlueOak-1.0.0 permitted
 
 <a name="@protobufjs/float"></a>
 ### @protobufjs/float v1.0.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/BSD-3-Clause">New BSD</a> permitted
-
-
-
-<a name="@protobufjs/inquire"></a>
-### @protobufjs/inquire v1.1.2
 #### 
 
 ##### Paths
@@ -4811,17 +4800,6 @@ FSL-1.1-MIT manually approved
 
 
 
-<a name="@types/cookie"></a>
-### @types/cookie v0.4.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="@types/cors"></a>
 ### @types/cors v2.8.19
 #### 
@@ -5993,7 +5971,7 @@ Python-2.0 manually approved
 
 
 <a name="body-parser"></a>
-### body-parser v2.2.2
+### body-parser v2.3.0
 #### 
 
 ##### Paths
@@ -6026,7 +6004,7 @@ Python-2.0 manually approved
 
 
 <a name="brace-expansion"></a>
-### brace-expansion v5.0.6
+### brace-expansion v5.0.7
 #### 
 
 ##### Paths
@@ -7093,7 +7071,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="engine.io"></a>
-### engine.io v6.5.5
+### engine.io v6.6.7
 #### 
 
 ##### Paths
@@ -11284,7 +11262,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="protobufjs"></a>
-### protobufjs v7.6.3
+### protobufjs v7.6.5
 #### 
 
 ##### Paths
