@@ -21,7 +21,7 @@
 
 ## State
 
-- Ready to commit and publish.
+- Complete; changes are committed, pushed, and available in draft PR #2962.
 
 ## Done
 
@@ -30,14 +30,15 @@
 - Updated the root override and lockfile to `@hono/node-server@2.0.10` without changing `minimumReleaseAgeExclude`.
 - Confirmed no vulnerable `@hono/node-server@2.0.5` resolution remains in the lockfile.
 - Passed `pnpm format`, `pnpm build-sdk`, `pnpm check-types`, `pnpm tidy`, and `pnpm test`.
+- Committed the fix as `fe847f6c9`, pushed the branch, and opened draft PR #2962 against `main`.
 
 ## Now
 
-- Commit and publish the verified fix.
+- N/A (complete).
 
 ## Next
 
-- Push the branch and create a draft PR against `main`.
+- N/A (complete).
 
 ## Open questions (UNCONFIRMED if needed)
 
@@ -48,3 +49,4 @@
 - `package.json`
 - `pnpm-lock.yaml`
 - Dependabot alert #271
+- `https://github.com/giselles-ai/giselle/pull/2962`
