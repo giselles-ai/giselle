@@ -22,7 +22,7 @@
 
 ## State
 
-- Implementation and verification complete; ready to publish.
+- Complete; changes are committed, pushed, and available in draft PR #2960.
 
 ## Done
 
@@ -30,14 +30,15 @@
 - Removed `next`, `@next/env`, and `@next/third-parties` from `minimumReleaseAgeExclude`.
 - Confirmed `pnpm install --frozen-lockfile` succeeds with the normal release-age gate and no lockfile changes.
 - Passed `pnpm format`, `pnpm build-sdk`, `pnpm check-types`, `pnpm tidy`, and `pnpm test`.
+- Committed the change as `3064070eb`, pushed the branch, and opened draft PR #2960 against `main`.
 
 ## Now
 
-- Commit and publish the verified change.
+- N/A (complete).
 
 ## Next
 
-- Commit, push, and open a draft PR against `main`.
+- N/A (complete).
 
 ## Open questions (UNCONFIRMED if needed)
 
@@ -48,3 +49,4 @@
 - `pnpm-workspace.yaml`
 - `.continuity/20260722-100842-agent__remove-next-release-age-exclusions.md`
 - `pnpm install --frozen-lockfile`
+- `https://github.com/giselles-ai/giselle/pull/2960`
