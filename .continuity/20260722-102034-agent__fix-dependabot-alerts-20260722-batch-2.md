@@ -23,7 +23,7 @@
 
 ## State
 
-- Implementation and verification complete; ready to publish.
+- Complete; changes are committed, pushed, and available in draft PR #2961.
 
 ## Done
 
@@ -33,14 +33,15 @@
 - Updated the direct `tar` catalog version in `pnpm-workspace.yaml`.
 - Regenerated `pnpm-lock.yaml` and confirmed all alert-affected resolutions use patched versions.
 - Passed `pnpm format`, `pnpm build-sdk`, `pnpm check-types`, `pnpm tidy`, and `pnpm test`.
+- Committed the fixes as `08d050a20`, pushed the branch, and opened draft PR #2961 against `main`.
 
 ## Now
 
-- Commit and publish the verified dependency updates.
+- N/A (complete).
 
 ## Next
 
-- Push the branch and open a draft PR against `main`.
+- N/A (complete).
 
 ## Open questions (UNCONFIRMED if needed)
 
@@ -52,3 +53,4 @@
 - `pnpm-lock.yaml`
 - `.continuity/20260722-102034-agent__fix-dependabot-alerts-20260722-batch-2.md`
 - Dependabot alerts #258–#270
+- `https://github.com/giselles-ai/giselle/pull/2961`
