@@ -4,6 +4,7 @@
 
 - Fix every open Dependabot alert in `giselles-ai/giselle`.
 - Verify the dependency remediation and create a pull request.
+- Assess the linked PR review comment and make a change only if the finding is valid.
 
 ## Goal (incl. success criteria)
 
@@ -13,7 +14,7 @@
 
 ## Constraints/Assumptions
 
-- Keep the patch limited to dependency manifests, the lockfile, and this ledger.
+- Keep the patch limited to dependency manifests, the lockfile, generated license inventory, and this ledger.
 - Follow the repository's "Less is more" principle.
 - Preserve existing application behavior and dependency topology.
 
@@ -34,10 +35,12 @@
 - Regenerated the lockfile and confirmed the vulnerable versions are absent.
 - Passed `pnpm format`, `pnpm build-sdk`, `pnpm check-types`, `pnpm tidy`, and `pnpm test`.
 - Opened draft PR https://github.com/giselles-ai/giselle/pull/2963.
+- Reviewed discussion `r3679401448`; no dependency change is needed because upgrading the unrelated AI SDK catalog to new major versions is outside this security remediation and would add compatibility risk.
+- Incorporated the automated `docs/packages-license.md` refresh from the remote PR branch.
 
 ## Now
 
-- Await PR review and CI.
+- PR checks are passing; the linked AI SDK upgrade suggestion is intentionally not applied.
 
 ## Next
 
