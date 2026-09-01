@@ -32,7 +32,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "catalog:",
-		"@changesets/cli": "^2.28.1",
+		"@changesets/cli": "^3.0.1",
 		"@types/node": "catalog:",
 		"knip": "5.85.0",
 		"turbo": "2.9.14",
