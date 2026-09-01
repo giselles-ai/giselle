@@ -20,7 +20,7 @@ jobs:
       this_month: ${{ steps.get_this_month.outputs.this_month }}
   create_issue:
     needs: get_date
-    uses: route06/actions/.github/workflows/create_gh_issue.yml@e41a5bcb66cf7087dbf00f33a3517d62cfde9a8f # v2
+    uses: route06/actions/.github/workflows/create_gh_issue.yml@5c9a07f1133331863a3313949862ebe648371e83 # v2
     permissions:
       contents: read
       issues: write
