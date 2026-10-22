@@ -24,7 +24,7 @@ Giselle is built to design and run AI workflows beyond prompt chains. Not a chat
 - Visual editor
 - Instant execution
 - No infra headaches
-- Open source — self-host or use our cloud
+- Open source — focused on local use and self-hosting
 
 ## Architecture
 
@@ -35,7 +35,7 @@ Giselle uses a **Turborepo monorepo** with pnpm workspaces, organized into four 
 ```
 /workspace
 ├── apps/                    # Deployable applications
-│   ├── studio.giselles.ai/  # Giselle Cloud (production)
+│   ├── studio.giselles.ai/  # Giselle Studio application
 │   └── ui.giselles.ai/      # UI component showcase
 ├── packages/                # Published SDK packages (@giselles-ai/*)
 ├── internal-packages/       # Internal shared packages (@giselle-internal/*)
@@ -106,11 +106,11 @@ pnpm build-sdk      # Build SDK packages (required before running apps)
 
 ```sh
 # Development
-pnpm dev:studio.giselles.ai  # Start Giselle Cloud
+pnpm dev:studio.giselles.ai  # Start Giselle Studio
 
 # Build
 pnpm build-sdk               # Build SDK packages
-pnpm -F studio.giselles.ai build  # Build Giselle Cloud
+pnpm -F studio.giselles.ai build  # Build Giselle Studio
 
 # Quality Checks
 pnpm format                  # Format code with Biome

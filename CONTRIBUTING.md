@@ -30,6 +30,4 @@ When filing a bug report, please try to make it:
 
 You're welcome to run Giselle locally for self-hosting or to explore the codebase.
 
-Giselle has both a Cloud version and a Self-hosting version, which can be found in the following directories:
-
-- Cloud: [apps/studio.giselles.ai/](apps/studio.giselles.ai/)
+Giselle focuses on open source, local use, and self-hosting. The Studio application source is in [apps/studio.giselles.ai/](apps/studio.giselles.ai/).

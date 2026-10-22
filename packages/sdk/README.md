@@ -1,6 +1,6 @@
 # @giselles-ai/sdk
 
-TypeScript SDK for running a Giselle App via the Studio public Runs API.
+TypeScript SDK for running a Giselle App via the public Runs API of your own Studio instance.
 
 ## Install
 
@@ -18,6 +18,7 @@ This SDK is intended for **server-side usage** (Node.js / server runtimes). Do n
 import Giselle from "@giselles-ai/sdk";
 
 const client = new Giselle({
+  baseUrl: "http://localhost:3000", // URL of your local or self-hosted Studio instance
   // Secret key token (format: "<apiKeyId>.<secret>")
   apiKey: process.env.GISELLE_API_KEY,
 });
@@ -48,6 +49,7 @@ import { readFile } from "node:fs/promises";
 import Giselle from "@giselles-ai/sdk";
 
 const client = new Giselle({
+	baseUrl: "http://localhost:3000", // URL of your local or self-hosted Studio instance
 	apiKey: process.env.GISELLE_API_KEY,
 });
 
@@ -76,7 +78,7 @@ main()
 ### `new Giselle(options?)`
 
 - `baseUrl?: string`
-  - Optional. Defaults to `https://studio.giselles.ai`.
+  - Set this to the URL of your local or self-hosted Studio instance. The SDK still has a legacy hosted default, but that service has been discontinued.
 - `apiKey?: string`
   - Required. Sent as `Authorization: Bearer <token>`.
 - `fetch?: typeof fetch`
