@@ -1,11 +1,12 @@
 # Giselle SDK
 
-With `@giselles-ai/sdk`, you can run Apps created on `studio.giselles.ai` with an API similar to the OpenAI SDK.
+With `@giselles-ai/sdk`, you can run Apps on your local or self-hosted Studio instance with an API similar to the OpenAI SDK.
 
 ```ts
 import Giselle from "@giselles-ai/sdk";
 
 const client = new Giselle({
+  baseUrl: "http://localhost:3000", // URL of your local or self-hosted Studio instance
   apiKey: process.env.GISELLE_API_KEY,
 });
 

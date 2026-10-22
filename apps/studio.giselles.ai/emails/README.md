@@ -171,7 +171,7 @@ Common footer (insert in all marketing emails - same structure as transactional 
 5. Explanation text: "You received this email because you signed up for Giselle—a platform for building AI agents."
 
 **Links:**
-- Product: `https://studio.giselles.ai`
+- Product: `https://giselles.ai`
 - Blog: `https://giselles.ai/blog`
 - Documentation: `https://docs.giselles.ai/en/guides/introduction`
 
@@ -224,11 +224,8 @@ interface NewsletterEmailProps {
   unsubscribeUrl?: string;
 }
 
-const baseUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.NODE_ENV === "development"
-    ? "http://localhost:3333"
-    : "https://studio.giselles.ai");
+// Set NEXT_PUBLIC_SITE_URL to the URL of your self-hosted instance.
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3333";
 
 export const NewsletterEmail = ({
   userName = "there",
