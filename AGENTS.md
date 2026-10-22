@@ -128,7 +128,6 @@ Run these commands in order:
 3. `pnpm check-types` — Verify types
 4. `pnpm tidy` — Check for unused code
 5. `pnpm test` — Run tests
-6. Update `.continuity/` per-branch ledger — Reflect the change immediately
 
 ### API addition rule (Giselle ↔ HTTP)
 
@@ -390,46 +389,6 @@ function MyComponent() {
 **Local development**: Set the environment variable (e.g., `MY_NEW_FEATURE_FLAG=true`) in `.env.local`.
 
 **Production**: Configure via Vercel Edge Config with key `flag__my-new-feature`.
-
-## Continuity (per-branch ledgers + batched summary)
-Keep “human intent” and session context in-repo for review **without frequent merge conflicts** by using a two-layer model:
-- `CONTINUITY.md`: a **batched snapshot** (low churn), updated occasionally.
-- `.continuity/`: **per-branch ledgers** (high churn), updated on every request / during work.
-
-### Agent behavior spec
-- Locate ledger (every user request):
-  - Determine current git branch name: `git rev-parse --abbrev-ref HEAD`.
-  - Sanitize branch by replacing `/` with `__`.
-- Find ledger file:
-  - In `.continuity/`, find files whose filename ends with `-<sanitizedBranch>.md` (suffix match).
-  - If multiple match, pick the latest by lexicographically greatest datetime prefix `YYYYMMDD-HHMMSS`.
-- Reuse / create:
-  - If one exists: read it first and update it as needed.
-  - If none exists: create `YYYYMMDD-HHMMSS-<sanitizedBranch>.md` initialized from `.continuity/template.md` and the current user request.
-
-### Notes on the two-layer model
-- Read **both** `CONTINUITY.md` and the current `.continuity/` branch ledger to understand context.
-- Write high-churn notes only to `.continuity/` (what changed, why, tradeoffs, open questions, working set).
-- Periodically batch-summarize `.continuity/*` into `CONTINUITY.md` (“as of <date>”).
-
-### `functions.update_plan` vs the Ledger
-- `functions.update_plan` is for short-term execution scaffolding while you work (a small 3–7 step plan with pending/in_progress/completed).
-- `CONTINUITY.md` is a batched summary; per-branch ledgers live in `.continuity/`.
-- Keep them consistent: summarize `.continuity/` into `CONTINUITY.md` periodically (not every micro-step).
-
-### In replies
-- Begin with a brief “Ledger Snapshot” based on the current per-branch ledger (Goal + Now/Next + Open Questions). Print the full ledger only when it materially changes or when the user asks.
-
-### `CONTINUITY.md` format (keep headings)
-- Goal (incl. success criteria):
-- Constraints/Assumptions:
-- Key decisions:
-- State:
-- Done:
-- Now:
-- Next:
-- Open questions (UNCONFIRMED if needed):
-- Working set (files/ids/commands):
 
 <!-- opensrc:start -->
 
