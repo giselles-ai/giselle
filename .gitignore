@@ -56,3 +56,7 @@ app/fonts/
 
 # opensrc - source code for packages
 opensrc/
+
+# Local agent session notes
+/.continuity/
+/CONTINUITY.md
