@@ -225,7 +225,13 @@ interface NewsletterEmailProps {
 }
 
 // Set NEXT_PUBLIC_SITE_URL to the URL of your self-hosted instance.
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3333";
+const baseUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.NODE_ENV === "development" ? "http://localhost:3333" : undefined);
+
+if (!baseUrl) {
+  throw new Error("Set NEXT_PUBLIC_SITE_URL to the URL of your self-hosted instance.");
+}
 
 export const NewsletterEmail = ({
   userName = "there",

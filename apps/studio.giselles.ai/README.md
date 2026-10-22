@@ -1,6 +1,6 @@
 # Giselle Studio
 
-The Studio application source for Giselle, an open source AI workflow tool focused on local use and self-hosting. The hosted cloud service has been discontinued.
+The Studio application source for Giselle, an open-source AI workflow tool focused on local use and self-hosting. The hosted cloud service has been discontinued.
 
 ## Getting Started
 

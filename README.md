@@ -30,7 +30,7 @@
 
 ## 👋 Introduction
 
-Giselle is an open source AI workflow tool focused on local and self-hosted use, enabling seamless human-AI collaboration.
+Giselle is an open-source AI workflow tool focused on local and self-hosted use, enabling seamless human-AI collaboration.
 
 
 
