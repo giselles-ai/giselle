@@ -21,7 +21,7 @@ export const EmailFooter = () => {
 					style={footerLogo}
 				/>
 				<Text style={footerLinksText}>
-					<Link href="https://studio.giselles.ai" style={footerLink}>
+					<Link href="https://giselles.ai" style={footerLink}>
 						Product
 					</Link>
 					{" / "}
