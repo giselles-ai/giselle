@@ -1,4 +1,3 @@
-import { get } from "@vercel/edge-config";
 import { flag } from "flags/next";
 
 function takeLocalEnv(localEnvironmentKey: string) {
@@ -42,15 +41,8 @@ export const webSearchActionFlag = flag<boolean>({
 
 export const layoutV3Flag = flag<boolean>({
 	key: "layout-v3",
-	async decide() {
-		if (process.env.NODE_ENV === "development") {
-			return takeLocalEnv("LAYOUT_V3_FLAG");
-		}
-		const edgeConfig = await get(`flag__${this.key}`);
-		if (edgeConfig === undefined) {
-			return false;
-		}
-		return edgeConfig === true || edgeConfig === "true";
+	decide() {
+		return process.env.LAYOUT_V3_FLAG === "true";
 	},
 	description: "Enable Layout V3",
 	options: [
@@ -61,15 +53,10 @@ export const layoutV3Flag = flag<boolean>({
 
 export const experimental_storageFlag = flag<boolean>({
 	key: "experimental-storage",
-	async decide() {
-		if (process.env.NODE_ENV === "development") {
-			return takeLocalEnv("EXPERIMENTAL_STORAGE_FLAG");
-		}
-		const edgeConfig = await get(`flag__${this.key}`);
-		if (edgeConfig === undefined) {
-			return true;
-		}
-		return edgeConfig === true || edgeConfig === "true";
+	decide() {
+		return process.env.EXPERIMENTAL_STORAGE_FLAG === undefined
+			? process.env.NODE_ENV !== "development"
+			: process.env.EXPERIMENTAL_STORAGE_FLAG === "true";
 	},
 	description: "Enable experimental storage",
 	options: [
@@ -80,15 +67,8 @@ export const experimental_storageFlag = flag<boolean>({
 
 export const stageV2Flag = flag<boolean>({
 	key: "stage-v2",
-	async decide() {
-		if (process.env.NODE_ENV === "development") {
-			return takeLocalEnv("STAGE_V2_FLAG");
-		}
-		const edgeConfig = await get(`flag__${this.key}`);
-		if (edgeConfig === undefined) {
-			return false;
-		}
-		return edgeConfig === true || edgeConfig === "true";
+	decide() {
+		return process.env.STAGE_V2_FLAG === "true";
 	},
 	description: "Enable stage showcase (Apps page)",
 	options: [
@@ -99,15 +79,8 @@ export const stageV2Flag = flag<boolean>({
 
 export const aiGatewayFlag = flag<boolean>({
 	key: "ai-gateway",
-	async decide() {
-		if (process.env.NODE_ENV === "development") {
-			return takeLocalEnv("AI_GATEWAY_FLAG");
-		}
-		const edgeConfig = await get(`flag__${this.key}`);
-		if (edgeConfig === undefined) {
-			return false;
-		}
-		return edgeConfig === true || edgeConfig === "true";
+	decide() {
+		return process.env.AI_GATEWAY_FLAG === "true";
 	},
 	description: "Enable AI Gateway",
 	options: [
@@ -118,15 +91,8 @@ export const aiGatewayFlag = flag<boolean>({
 
 export const aiGatewayUnsupportedModelsFlag = flag<boolean>({
 	key: "ai-gateway-unsupported-models",
-	async decide() {
-		if (process.env.NODE_ENV === "development") {
-			return takeLocalEnv("AI_GATEWAY_UNSUPPORTED_MODELS_FLAG");
-		}
-		const edgeConfig = await get(`flag__${this.key}`);
-		if (edgeConfig === undefined) {
-			return false;
-		}
-		return edgeConfig === true || edgeConfig === "true";
+	decide() {
+		return process.env.AI_GATEWAY_UNSUPPORTED_MODELS_FLAG === "true";
 	},
 	description: "Allow unsupported AI Gateway models",
 	options: [
@@ -138,15 +104,8 @@ export const aiGatewayUnsupportedModelsFlag = flag<boolean>({
 
 export const newEditorFlag = flag<boolean>({
 	key: "new-editor",
-	async decide() {
-		if (process.env.NODE_ENV === "development") {
-			return takeLocalEnv("NEW_EDITOR_FLAG");
-		}
-		const edgeConfig = await get(`flag__${this.key}`);
-		if (edgeConfig === undefined) {
-			return false;
-		}
-		return edgeConfig === true || edgeConfig === "true";
+	decide() {
+		return process.env.NEW_EDITOR_FLAG === "true";
 	},
 	description: "Enable new editor",
 	options: [
@@ -157,15 +116,8 @@ export const newEditorFlag = flag<boolean>({
 
 export const generateContentNodeFlag = flag<boolean>({
 	key: "generate-content-node",
-	async decide() {
-		if (process.env.NODE_ENV === "development") {
-			return takeLocalEnv("GENERATE_CONTENT_NODE_FLAG");
-		}
-		const edgeConfig = await get(`flag__${this.key}`);
-		if (edgeConfig === undefined) {
-			return false;
-		}
-		return edgeConfig === true || edgeConfig === "true";
+	decide() {
+		return process.env.GENERATE_CONTENT_NODE_FLAG === "true";
 	},
 	description: "Enable generate content node",
 	options: [
@@ -176,15 +128,8 @@ export const generateContentNodeFlag = flag<boolean>({
 
 export const privatePreviewToolsFlag = flag<boolean>({
 	key: "private-preview-tools",
-	async decide() {
-		if (process.env.NODE_ENV === "development") {
-			return takeLocalEnv("PRIVATE_PREVIEW_TOOLS_FLAG");
-		}
-		const edgeConfig = await get(`flag__${this.key}`);
-		if (edgeConfig === undefined) {
-			return false;
-		}
-		return edgeConfig === true || edgeConfig === "true";
+	decide() {
+		return process.env.PRIVATE_PREVIEW_TOOLS_FLAG === "true";
 	},
 	description: "Enable private preview tools (PostgreSQL, etc.)",
 	options: [

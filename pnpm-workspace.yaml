@@ -42,7 +42,6 @@ catalog:
   "@types/react-dom": 19.2.3
   "@types/turndown": 5.0.5
   "@urql/core": 5.1.1
-  "@vercel/edge-config": 1.4.0
   "@vercel/functions": 2.2.11
   "@xyflow/react": 12.9.0
   ai: 5.0.101

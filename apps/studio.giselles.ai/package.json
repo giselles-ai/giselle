@@ -61,7 +61,6 @@
 		"@supabase/ssr": "catalog:",
 		"@supabase/supabase-js": "catalog:",
 		"@trigger.dev/sdk": "catalog:",
-		"@vercel/edge-config": "catalog:",
 		"@vercel/functions": "catalog:",
 		"@vercel/postgres": "0.9.0",
 		"@vercel/speed-insights": "1.0.12",
