@@ -3,7 +3,7 @@
 
 ## Summary
 * 940 MIT
-* 192 Apache 2.0
+* 190 Apache 2.0
 * 43 ISC
 * 22 New BSD
 * 14 Simplified BSD
@@ -5236,28 +5236,6 @@ FSL-1.1-MIT manually approved
 * /home/runner/work/giselle/giselle
 
 <a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="@vercel/edge-config"></a>
-### @vercel/edge-config v1.4.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
-
-
-
-<a name="@vercel/edge-config-fs"></a>
-### @vercel/edge-config-fs v0.1.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
 
 
 
