@@ -117,9 +117,6 @@ catalogs:
     '@urql/core':
       specifier: 5.1.1
       version: 5.1.1
-    '@vercel/edge-config':
-      specifier: 1.4.0
-      version: 1.4.0
     '@vercel/functions':
       specifier: 2.2.11
       version: 2.2.11
@@ -447,9 +444,6 @@ importers:
       '@trigger.dev/sdk':
         specifier: 'catalog:'
         version: 4.4.4(ai@5.0.101(zod@4.1.12))(bufferutil@4.0.9)(utf-8-validate@6.0.5)(zod@4.1.12)
-      '@vercel/edge-config':
-        specifier: 'catalog:'
-        version: 1.4.0(@opentelemetry/api@1.9.0)
       '@vercel/functions':
         specifier: 'catalog:'
         version: 2.2.11(@aws-sdk/credential-provider-web-identity@3.972.3)
@@ -5152,18 +5146,6 @@ packages:
 
   '@urql/core@5.1.1':
     resolution: {integrity: sha512-aGh024z5v2oINGD/In6rAtVKTm4VmQ2TxKQBAtk2ZSME5dunZFcjltw4p5ENQg+5CBhZ3FHMzl0Oa+rwqiWqlg==}
-
-  '@vercel/edge-config-fs@0.1.0':
-    resolution: {integrity: sha512-NRIBwfcS0bUoUbRWlNGetqjvLSwgYH/BqKqDN7vK1g32p7dN96k0712COgaz6VFizAm9b0g6IG6hR6+hc0KCPg==}
-
-  '@vercel/edge-config@1.4.0':
-    resolution: {integrity: sha512-69Wg5gw9DzwnyUmnjToSeLRm1nm8mCPgN0kflX8EHRHyqvzH80wPem5A8rI2LXPb2Y9tJNoqN3vXPcQhS2Wh5g==}
-    engines: {node: '>=14.6'}
-    peerDependencies:
-      '@opentelemetry/api': ^1.7.0
-    peerDependenciesMeta:
-      '@opentelemetry/api':
-        optional: true
 
   '@vercel/functions@2.2.11':
     resolution: {integrity: sha512-NhbMW01IyepdcaQiYUt9XXodtq5SFr2gNiL7lmX/2cgjP7cKy6V+RYXKT15EbizqZ9o3j9gqdYScxd1tvY211w==}
@@ -12930,14 +12912,6 @@ snapshots:
       wonka: 6.3.5
     transitivePeerDependencies:
       - graphql
-
-  '@vercel/edge-config-fs@0.1.0': {}
-
-  '@vercel/edge-config@1.4.0(@opentelemetry/api@1.9.0)':
-    dependencies:
-      '@vercel/edge-config-fs': 0.1.0
-    optionalDependencies:
-      '@opentelemetry/api': 1.9.0
 
   '@vercel/functions@2.2.11(@aws-sdk/credential-provider-web-identity@3.972.3)':
     dependencies:

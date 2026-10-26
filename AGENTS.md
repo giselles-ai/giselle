@@ -313,15 +313,8 @@ Feature flags protect unreleased features, allowing safe merges to main and prod
 ```typescript
 export const myNewFeatureFlag = flag<boolean>({
   key: "my-new-feature",
-  async decide() {
-    if (process.env.NODE_ENV === "development") {
-      return takeLocalEnv("MY_NEW_FEATURE_FLAG");
-    }
-    const edgeConfig = await get(`flag__${this.key}`);
-    if (edgeConfig === undefined) {
-      return false;
-    }
-    return edgeConfig === true || edgeConfig === "true";
+  decide() {
+    return process.env.MY_NEW_FEATURE_FLAG === "true";
   },
   description: "Enable my new feature",
   options: [
@@ -388,7 +381,7 @@ function MyComponent() {
 
 **Local development**: Set the environment variable (e.g., `MY_NEW_FEATURE_FLAG=true`) in `.env.local`.
 
-**Production**: Configure via Vercel Edge Config with key `flag__my-new-feature`.
+**Production**: Set the same environment variable on the server. Only `"true"` enables the flag. Restart the server after changing configuration; rebuild when a flag is evaluated at build time.
 
 <!-- opensrc:start -->
 
