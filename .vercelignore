@@ -1,5 +1,4 @@
 *.md
-.changeset
 .claude
 .cursor
 .DS_Store
