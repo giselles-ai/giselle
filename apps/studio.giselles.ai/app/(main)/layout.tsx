@@ -1,5 +1,4 @@
 import { ToastProvider } from "@giselle-internal/ui/toast";
-import { SentryUserWrapper } from "@/components/sentry-user-wrapper";
 import { InternalGiselleClientProvider } from "./internal-giselle-client-provider";
 import { Header } from "./ui/header";
 import { Sidebar } from "./ui/sidebar";
@@ -7,7 +6,7 @@ import { TaskOverlay } from "./ui/task-overlay";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
 	return (
-		<SentryUserWrapper>
+		<>
 			<ToastProvider>
 				<InternalGiselleClientProvider>
 					<div className="h-screen flex flex-col bg-bg">
@@ -22,6 +21,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 					</div>
 				</InternalGiselleClientProvider>
 			</ToastProvider>
-		</SentryUserWrapper>
+		</>
 	);
 }

@@ -1,6 +1,5 @@
 "use server";
 
-import * as Sentry from "@sentry/nextjs";
 import { and, asc, count, desc, eq, gt, isNull, ne } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -708,8 +707,8 @@ export async function sendInvitationsAction(
 			if (result.status === "fulfilled") {
 				return result.value;
 			}
-			// Capture unexpected errors in Sentry
-			Sentry.captureException(result.reason);
+			// Log unexpected errors
+			console.error(result.reason);
 			const reason = result.reason as unknown;
 			const errorMessage =
 				reason instanceof Error

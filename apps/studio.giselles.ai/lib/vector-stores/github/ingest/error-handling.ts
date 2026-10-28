@@ -1,5 +1,3 @@
-import { captureException } from "@sentry/nextjs";
-
 interface IngestResultWithErrors {
 	totalDocuments: number;
 	successfulDocuments: number;
@@ -20,20 +18,5 @@ export function handleIngestErrors<T extends BaseIngestParams>(
 	if (result.errors && result.errors.length > 0) {
 		const errorMessage = `Failed to ingest ${result.failedDocuments} out of ${result.totalDocuments} ${documentType} documents for ${params.source.owner}/${params.source.repo}`;
 		console.error(errorMessage, result.errors);
-
-		const aggregatedError = new AggregateError(
-			result.errors.map((e) => e.error),
-			errorMessage,
-		);
-		captureException(aggregatedError, {
-			extra: {
-				...params.source,
-				teamDbId: params.teamDbId,
-				totalDocuments: result.totalDocuments,
-				successfulDocuments: result.successfulDocuments,
-				failedDocuments: result.failedDocuments,
-				failedDocumentKeys: result.errors.map((e) => e.document),
-			},
-		});
 	}
 }

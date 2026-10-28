@@ -2,7 +2,6 @@ import { fetchDefaultBranchHead } from "@giselles-ai/github-tool";
 import type { EmbeddingProfileId } from "@giselles-ai/protocol";
 import { DocumentLoaderError, RagError } from "@giselles-ai/rag";
 import { createId } from "@paralleldrive/cuid2";
-import { captureException } from "@sentry/nextjs";
 import { and, eq, max } from "drizzle-orm";
 import {
 	db,
@@ -227,19 +226,6 @@ export async function processRepository(
 			);
 
 			const errorInfo = extractErrorInfo(error);
-
-			captureException(error, {
-				extra: {
-					owner,
-					repo,
-					teamDbId,
-					contentType: contentStatus.contentType,
-					embeddingProfileId: contentStatus.embeddingProfileId,
-					...errorInfo,
-					errorContext:
-						error instanceof DocumentLoaderError ? error.context : undefined,
-				},
-			});
 
 			await updateContentStatus(
 				repositoryIndex.dbId,

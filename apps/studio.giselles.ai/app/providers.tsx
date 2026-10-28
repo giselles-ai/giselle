@@ -1,6 +1,5 @@
 "use client";
 
-import * as Sentry from "@sentry/nextjs";
 import posthog from "posthog-js";
 import { PostHogProvider } from "posthog-js/react";
 import { useEffect } from "react";
@@ -30,7 +29,7 @@ function PHProviderEnabled({ children }: { children: React.ReactNode }) {
 				capture_pageleave: true,
 			});
 		} catch (error) {
-			Sentry.captureException(error);
+			console.error(error);
 			if (process.env.NODE_ENV !== "production") {
 				console.error("PostHog:", error);
 			}

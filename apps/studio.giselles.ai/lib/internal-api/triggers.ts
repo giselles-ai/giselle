@@ -130,7 +130,7 @@ export async function executeDataQuery(input: {
 		await giselle.executeDataQuery(storedGeneration);
 	} catch (error) {
 		if (error instanceof DataQueryError) {
-			// User-caused errors (SQL syntax, connection issues, etc.) should not go to Sentry.
+			// User-caused errors are already recorded on the generation.
 			// The generation status is already persisted as "failed" by execute-data-query.ts.
 			return;
 		}

@@ -1,6 +1,5 @@
 "use server";
 
-import { captureException } from "@sentry/nextjs";
 import { redirect } from "next/navigation";
 import { createAuthError, createClient } from "@/lib/supabase";
 import { initializeAccount } from "@/services/accounts";
@@ -44,7 +43,7 @@ export async function verifyJoinEmail(formData: FormData) {
 		if (err instanceof JoinError) {
 			redirect(`/join/${encodeURIComponent(invitationToken)}`);
 		}
-		captureException(err);
+		console.error(err);
 		redirect(`/join/${encodeURIComponent(invitationToken)}`);
 	}
 	redirect("/join/success");

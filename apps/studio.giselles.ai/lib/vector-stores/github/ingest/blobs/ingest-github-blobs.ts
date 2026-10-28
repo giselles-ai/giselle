@@ -64,7 +64,7 @@ export async function ingestGitHubBlobs(params: {
 		`Ingested from ${result.totalDocuments} documents with success: ${result.successfulDocuments}, failure: ${result.failedDocuments}`,
 	);
 
-	// Capture errors to Sentry if any documents failed
+	// Report errors if any documents failed
 	handleIngestErrors(result, params, "blob");
 }
 
