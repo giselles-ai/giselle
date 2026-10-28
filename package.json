@@ -10,8 +10,6 @@
 		"format": "biome check --write .",
 		"clean": "turbo clean",
 		"dev:studio.giselles.ai": "NODE_NO_WARNINGS=1 turbo dev --filter studio.giselles.ai",
-		"changeset": "changeset",
-		"version": "changeset version",
 		"test": "turbo test",
 		"tidy": "knip --no-config-hints",
 		"strip-workspace": "pnpm -F strip-workspace strip-workspace",
@@ -32,7 +30,6 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "catalog:",
-		"@changesets/cli": "^3.0.1",
 		"@types/node": "catalog:",
 		"knip": "5.85.0",
 		"turbo": "2.9.14",
