@@ -1205,7 +1205,7 @@ MIT-0 permitted
 
 
 <a name="@img/sharp-libvips-linux-x64"></a>
-### @img/sharp-libvips-linux-x64 v1.3.0
+### @img/sharp-libvips-linux-x64 v1.3.4
 #### 
 
 ##### Paths
@@ -1216,7 +1216,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@img/sharp-libvips-linuxmusl-x64"></a>
-### @img/sharp-libvips-linuxmusl-x64 v1.3.0
+### @img/sharp-libvips-linuxmusl-x64 v1.3.4
 #### 
 
 ##### Paths
@@ -1227,7 +1227,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@img/sharp-linux-x64"></a>
-### @img/sharp-linux-x64 v0.35.0
+### @img/sharp-linux-x64 v0.35.5
 #### 
 
 ##### Paths
@@ -1238,7 +1238,7 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@img/sharp-linuxmusl-x64"></a>
-### @img/sharp-linuxmusl-x64 v0.35.0
+### @img/sharp-linuxmusl-x64 v0.35.5
 #### 
 
 ##### Paths
@@ -1458,7 +1458,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@next/bundle-analyzer"></a>
-### @next/bundle-analyzer v16.0.7
+### @next/bundle-analyzer v16.4.3
 #### 
 
 ##### Paths
@@ -1469,7 +1469,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@next/env"></a>
-### @next/env v16.2.11
+### @next/env v16.4.3
 #### 
 
 ##### Paths
@@ -1480,7 +1480,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@next/swc-linux-x64-gnu"></a>
-### @next/swc-linux-x64-gnu v16.2.11
+### @next/swc-linux-x64-gnu v16.4.3
 #### 
 
 ##### Paths
@@ -1491,7 +1491,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@next/third-parties"></a>
-### @next/third-parties v16.2.11
+### @next/third-parties v16.4.3
 #### 
 
 ##### Paths
@@ -3823,7 +3823,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@swc/helpers"></a>
-### @swc/helpers v0.5.15
+### @swc/helpers v0.5.23
 #### 
 
 ##### Paths
@@ -9305,7 +9305,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="next"></a>
-### next v16.2.11
+### next v16.4.3
 #### 
 
 ##### Paths
@@ -11010,7 +11010,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="semver"></a>
-### semver v7.7.2
+### semver v7.8.5
 #### 
 
 ##### Paths
@@ -11065,7 +11065,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="sharp"></a>
-### sharp v0.35.0
+### sharp v0.35.5
 #### 
 
 ##### Paths

@@ -102,7 +102,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "catalog:",
-		"@next/bundle-analyzer": "16.0.7",
+		"@next/bundle-analyzer": "16.4.3",
 		"@octokit/openapi-types": "catalog:",
 		"@playwright/test": "1.56.1",
 		"@react-email/preview-server": "5.0.5",
