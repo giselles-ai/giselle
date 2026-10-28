@@ -10031,7 +10031,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="proxy-addr"></a>
-### proxy-addr v2.0.7
+### proxy-addr v2.0.8
 #### 
 
 ##### Paths
