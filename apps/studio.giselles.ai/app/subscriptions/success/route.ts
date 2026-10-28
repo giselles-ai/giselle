@@ -1,4 +1,3 @@
-import { captureException } from "@sentry/nextjs";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { db, teams } from "@/db";
@@ -50,7 +49,7 @@ export async function GET(_request: Request) {
 		});
 	} catch (error) {
 		// fallback
-		captureException(error);
+		console.error(error);
 		await updateGiselleSession({ checkoutSessionId: undefined });
 	}
 

@@ -56,7 +56,6 @@
 		"@radix-ui/react-slot": "1.2.3",
 		"@radix-ui/react-tooltip": "1.2.8",
 		"@react-email/components": "1.0.1",
-		"@sentry/nextjs": "10.42.0",
 		"@supabase/auth-js": "catalog:",
 		"@supabase/ssr": "catalog:",
 		"@supabase/supabase-js": "catalog:",
@@ -121,8 +120,5 @@
 		"vite-tsconfig-paths": "6.1.0",
 		"vitest": "catalog:",
 		"webpack": "5.104.1"
-	},
-	"trustedDependencies": [
-		"@sentry/cli"
-	]
+	}
 }

@@ -1,5 +1,4 @@
 import { Octokit } from "@octokit/core";
-import * as Sentry from "@sentry/nextjs";
 import { refreshOauthCredential } from "@/app/(auth)/lib";
 
 // MARK: Factory method
@@ -14,18 +13,12 @@ export function buildGitHubUserClient(token: GitHubUserCredential) {
 		throw new Error("GITHUB_APP_CLIENT_SECRET is empty");
 	}
 
-	const loggerWithSentry = {
+	const logger = {
 		error: (error: Error) => {
-			if (process.env.NODE_ENV === "development") {
-				console.error(error);
-			}
-			Sentry.captureException(error);
+			console.error(error);
 		},
 		warning: (message: string) => {
-			if (process.env.NODE_ENV === "development") {
-				console.warn(message);
-			}
-			Sentry.captureMessage(message, "warning");
+			console.warn(message);
 		},
 		info: (message: string) => {
 			console.info(message);
@@ -37,7 +30,7 @@ export function buildGitHubUserClient(token: GitHubUserCredential) {
 		clientId,
 		clientSecret,
 		refreshOauthCredential,
-		loggerWithSentry,
+		logger,
 	);
 }
 

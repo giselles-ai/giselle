@@ -2,7 +2,6 @@ import { createRequire } from "node:module";
 import { join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import createBundleAnalyzer from "@next/bundle-analyzer";
-import type { SentryBuildOptions } from "@sentry/nextjs";
 import type { NextConfig } from "next";
 
 const moduleRequire = createRequire(import.meta.url);
@@ -106,62 +105,7 @@ const nextConfig: NextConfig = {
 	...pdfiumTracingConfig,
 };
 
-const sentryBuildOptions: SentryBuildOptions = {
-	// For all available options, see:
-	// https://www.npmjs.com/package/@sentry/webpack-plugin#options
-
-	// Source-map upload targets — read from env so deployments opt in by
-	// providing SENTRY_ORG / SENTRY_PROJECT / SENTRY_AUTH_TOKEN. Undefined
-	// values skip upload (plugin emits a warning, build continues).
-	org: process.env.SENTRY_ORG,
-	project: process.env.SENTRY_PROJECT,
-	authToken: process.env.SENTRY_AUTH_TOKEN,
-
-	// Only print logs for uploading source maps in CI
-	silent: !process.env.CI,
-
-	// For all available options, see:
-	// https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
-
-	// Upload a larger set of source maps for prettier stack traces (increases build time)
-	widenClientFileUpload: true,
-
-	// Automatically annotate React components to show their full name in breadcrumbs and session replay
-	reactComponentAnnotation: {
-		enabled: true,
-	},
-
-	// Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
-	// This can increase your server load as well as your hosting bill.
-	// Note: Check that the configured route will not match with your Next.js middleware, otherwise reporting of client-
-	// side errors will fail.
-	// Turn it off for now. Will reconsider if issues arise.
-	// tunnelRoute: "/monitoring",
-
-	// Hides source maps from generated client bundles
-	sourcemaps: {
-		deleteSourcemapsAfterUpload: true,
-	},
-
-	// Automatically tree-shake Sentry logger statements to reduce bundle size
-	disableLogger: true,
-
-	// Enables automatic instrumentation of Vercel Cron Monitors. (Does not yet work with App Router route handlers.)
-	// See the following for more information:
-	// https://docs.sentry.io/product/crons/
-	// https://vercel.com/docs/cron-jobs
-	automaticVercelMonitors: true,
-};
-
 const withAnalyzer = createBundleAnalyzer({
 	enabled: process.env.ANALYZE === "true",
 });
-export default async function () {
-	const isSentryEnabled = process.env.SENTRY_ENABLE === "true";
-	if (isSentryEnabled) {
-		return await import("@sentry/nextjs").then((mod) =>
-			withAnalyzer(mod.withSentryConfig(nextConfig, sentryBuildOptions)),
-		);
-	}
-	return withAnalyzer(nextConfig);
-}
+export default withAnalyzer(nextConfig);

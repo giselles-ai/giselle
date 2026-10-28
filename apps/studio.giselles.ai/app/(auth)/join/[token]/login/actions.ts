@@ -1,6 +1,5 @@
 "use server";
 
-import { captureException } from "@sentry/nextjs";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { JoinError } from "../errors";
@@ -23,7 +22,7 @@ export async function loginUser(formData: FormData) {
 		if (err instanceof JoinError) {
 			redirect(`/join/${encodeURIComponent(token)}`);
 		}
-		captureException(err);
+		console.error(err);
 		redirect(`/join/${encodeURIComponent(token)}`);
 	}
 	redirect("/join/success");
