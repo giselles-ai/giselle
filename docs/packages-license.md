@@ -10955,7 +10955,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="source-map-js"></a>
-### source-map-js v1.2.1
+### source-map-js v1.2.2
 #### 
 
 ##### Paths
