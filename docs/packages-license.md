@@ -5158,7 +5158,7 @@ Python-2.0 manually approved
 
 
 <a name="browserslist"></a>
-### browserslist v4.28.1
+### browserslist v4.28.7
 #### 
 
 ##### Paths
@@ -6093,7 +6093,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="electron-to-chromium"></a>
-### electron-to-chromium v1.5.302
+### electron-to-chromium v1.5.472
 #### 
 
 ##### Paths
@@ -9030,7 +9030,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="node-releases"></a>
-### node-releases v2.0.27
+### node-releases v2.0.63
 #### 
 
 ##### Paths
