@@ -8095,7 +8095,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="markdown-it"></a>
-### markdown-it v14.2.0
+### markdown-it v14.3.3
 #### 
 
 ##### Paths
