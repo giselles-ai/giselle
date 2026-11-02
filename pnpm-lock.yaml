@@ -229,8 +229,8 @@ catalogs:
       specifier: 4.1.18
       version: 4.1.18
     tar:
-      specifier: 7.5.19
-      version: 7.5.19
+      specifier: 7.5.21
+      version: 7.5.21
     tiktoken:
       specifier: 1.0.22
       version: 1.0.22
@@ -306,7 +306,7 @@ overrides:
   markdown-it@<=14.1.1: 14.2.0
   '@opentelemetry/core@<2.8.0': 2.8.0
   sharp@<0.35.0: 0.35.0
-  tar@<=7.5.18: 7.5.19
+  tar@<7.5.21: 7.5.21
 
 importers:
 
@@ -994,7 +994,7 @@ importers:
         version: 1.8.10(graphql@16.10.0)(typescript@5.7.3)
       tar:
         specifier: 'catalog:'
-        version: 7.5.19
+        version: 7.5.21
       urql:
         specifier: 'catalog:'
         version: 4.2.2(@urql/core@5.1.1(graphql@16.10.0))(react@19.2.1)
@@ -7515,8 +7515,8 @@ packages:
   tar-stream@3.1.7:
     resolution: {integrity: sha512-qJj60CXt7IU1Ffyc3NJMjh6EkuCFej46zUqJ4J7pqYlThyd9bO0XBTmcOIhSzZJVWfsLks0+nle/j538YAW9RQ==}
 
-  tar@7.5.19:
-    resolution: {integrity: sha512-4LeEWl96twnS2Q7Bz4MGqgazLqO+hJN63GZxXoIqh1T3VweYD997gbU1ItNsQafqqXTXd5WFyFdReLtwvRBNiw==}
+  tar@7.5.21:
+    resolution: {integrity: sha512-XdhtCvlMywwxpCW8YEq3lOXBJpUPTR2OHHcwLPO3HwsJqOHa2Ok/oJ7ruGzp+JrKoRPVCzJwAdEjqLW/vNRPHA==}
     engines: {node: '>=18'}
 
   tdigest@0.1.2:
@@ -14947,7 +14947,7 @@ snapshots:
       - bare-abort-controller
       - react-native-b4a
 
-  tar@7.5.19:
+  tar@7.5.21:
     dependencies:
       '@isaacs/fs-minipass': 4.0.1
       chownr: 3.0.0
