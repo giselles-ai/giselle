@@ -11274,7 +11274,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="systeminformation"></a>
-### systeminformation v5.31.7
+### systeminformation v5.33.16
 #### 
 
 ##### Paths
