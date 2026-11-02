@@ -4725,7 +4725,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@xmldom/xmldom"></a>
-### @xmldom/xmldom v0.8.13
+### @xmldom/xmldom v0.8.15
 #### 
 
 ##### Paths
