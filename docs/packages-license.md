@@ -12136,7 +12136,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="vite"></a>
-### vite v7.3.5
+### vite v7.3.7
 #### 
 
 ##### Paths
