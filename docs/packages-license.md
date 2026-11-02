@@ -6137,7 +6137,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="engine.io"></a>
-### engine.io v6.6.7
+### engine.io v6.6.10
 #### 
 
 ##### Paths
@@ -10922,7 +10922,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="socket.io-parser"></a>
-### socket.io-parser v4.2.6
+### socket.io-parser v4.2.7
 #### 
 
 ##### Paths
