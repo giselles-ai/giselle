@@ -285,7 +285,7 @@ overrides:
   systeminformation: 5.31.7
   socket.io-parser: 4.2.6
   undici@>=7.0.0 <7.30.1: 7.30.1
-  '@xmldom/xmldom': 0.8.13
+  '@xmldom/xmldom': 0.8.15
   path-to-regexp@>=8.0.0 <8.4.0: 8.4.2
   express-rate-limit: 8.2.2
   ip-address: 10.1.1
@@ -4707,8 +4707,8 @@ packages:
   '@webassemblyjs/wast-printer@1.14.1':
     resolution: {integrity: sha512-kPSSXE6De1XOR820C90RIo2ogvZG+c3KiHzqUoO/F34Y2shGzesfqv7o57xrxovZJH/MetF5UjroJ/R/3isoiw==}
 
-  '@xmldom/xmldom@0.8.13':
-    resolution: {integrity: sha512-KRYzxepc14G/CEpEGc3Yn+JKaAeT63smlDr+vjB8jRfgTBBI9wRj/nkQEO+ucV8p8I9bfKLWp37uHgFrbntPvw==}
+  '@xmldom/xmldom@0.8.15':
+    resolution: {integrity: sha512-/5NV/vDALVFDXgLmfsy9TRCBlKwO2LNBFzpzvb9iIj+jR+eSc6DLYYvVOdivT/jm7MtU6TebYuRmzEOI7w40UA==}
     engines: {node: '>=10.0.0'}
 
   '@xtuc/ieee754@1.2.0':
@@ -11636,7 +11636,7 @@ snapshots:
       '@webassemblyjs/ast': 1.14.1
       '@xtuc/long': 4.2.2
 
-  '@xmldom/xmldom@0.8.13':
+  '@xmldom/xmldom@0.8.15':
     optional: true
 
   '@xtuc/ieee754@1.2.0': {}
@@ -13123,7 +13123,7 @@ snapshots:
 
   mathml-to-latex@1.5.0:
     dependencies:
-      '@xmldom/xmldom': 0.8.13
+      '@xmldom/xmldom': 0.8.15
     optional: true
 
   mdast-util-find-and-replace@3.0.2:
