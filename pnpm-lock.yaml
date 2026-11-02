@@ -303,7 +303,7 @@ overrides:
   ws@>=7.0.0 <7.5.11: 7.5.11
   qs@>=6.11.1 <6.15.2: 6.15.2
   '@babel/core@<=7.29.0': 7.29.7
-  markdown-it@<=14.1.1: 14.2.0
+  markdown-it@<14.3.3: 14.3.3
   '@opentelemetry/core@<2.8.0': 2.8.0
   sharp@<0.35.0: 0.35.0
   tar@<7.5.21: 7.5.21
@@ -6195,8 +6195,8 @@ packages:
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
 
-  markdown-it@14.2.0:
-    resolution: {integrity: sha512-1TGiQiJVRQ3NPmZH6sx5Cfnmg6GQm9jvC1ch4TK511NjSJvjzKLzn5pPfZRNZkRPZP0HqCioSndqH8v2nRaWVQ==}
+  markdown-it@14.3.3:
+    resolution: {integrity: sha512-L//tDAkjTjJCU6pBUSBTgs3Kg4InVaZuUZog/b6V12UKhcDQ7S78877ibbCanRExwPuYP1CZD7Gd2dxSy1GXRg==}
     hasBin: true
 
   markdown-table@3.0.4:
@@ -13104,7 +13104,7 @@ snapshots:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  markdown-it@14.2.0:
+  markdown-it@14.3.3:
     dependencies:
       argparse: 2.0.1
       entities: 4.5.0
@@ -14090,7 +14090,7 @@ snapshots:
   prosemirror-markdown@1.13.1:
     dependencies:
       '@types/markdown-it': 14.1.2
-      markdown-it: 14.2.0
+      markdown-it: 14.3.3
       prosemirror-model: 1.24.1
 
   prosemirror-menu@1.2.4:
