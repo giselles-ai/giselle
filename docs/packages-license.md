@@ -7710,7 +7710,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="js-yaml"></a>
-### js-yaml v4.3.0
+### js-yaml v4.3.2
 #### 
 
 ##### Paths
