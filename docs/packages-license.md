@@ -9657,7 +9657,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="postcss"></a>
-### postcss v8.5.12
+### postcss v8.5.23
 #### 
 
 ##### Paths
