@@ -820,7 +820,7 @@ MIT-0 permitted
 
 
 <a name="@electric-sql/client"></a>
-### @electric-sql/client v1.0.10
+### @electric-sql/client v1.0.14
 #### 
 
 ##### Paths
@@ -1535,7 +1535,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/api-logs"></a>
-### @opentelemetry/api-logs v0.203.0
+### @opentelemetry/api-logs v0.218.0
 #### 
 
 ##### Paths
@@ -1546,7 +1546,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/context-async-hooks"></a>
-### @opentelemetry/context-async-hooks v2.0.1
+### @opentelemetry/context-async-hooks v2.7.1
 #### 
 
 ##### Paths
@@ -1568,7 +1568,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/exporter-logs-otlp-http"></a>
-### @opentelemetry/exporter-logs-otlp-http v0.203.0
+### @opentelemetry/exporter-logs-otlp-http v0.218.0
 #### 
 
 ##### Paths
@@ -1579,7 +1579,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/exporter-metrics-otlp-http"></a>
-### @opentelemetry/exporter-metrics-otlp-http v0.203.0
+### @opentelemetry/exporter-metrics-otlp-http v0.218.0
 #### 
 
 ##### Paths
@@ -1590,7 +1590,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/exporter-trace-otlp-http"></a>
-### @opentelemetry/exporter-trace-otlp-http v0.203.0
+### @opentelemetry/exporter-trace-otlp-http v0.218.0
 #### 
 
 ##### Paths
@@ -1601,7 +1601,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/host-metrics"></a>
-### @opentelemetry/host-metrics v0.37.0
+### @opentelemetry/host-metrics v0.38.3
 #### 
 
 ##### Paths
@@ -1612,7 +1612,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/instrumentation"></a>
-### @opentelemetry/instrumentation v0.203.0
+### @opentelemetry/instrumentation v0.218.0
 #### 
 
 ##### Paths
@@ -1623,7 +1623,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/otlp-exporter-base"></a>
-### @opentelemetry/otlp-exporter-base v0.203.0
+### @opentelemetry/otlp-exporter-base v0.218.0
 #### 
 
 ##### Paths
@@ -1634,7 +1634,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/otlp-transformer"></a>
-### @opentelemetry/otlp-transformer v0.203.0
+### @opentelemetry/otlp-transformer v0.218.0
 #### 
 
 ##### Paths
@@ -1645,7 +1645,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/resources"></a>
-### @opentelemetry/resources v2.0.1
+### @opentelemetry/resources v2.7.1
 #### 
 
 ##### Paths
@@ -1656,7 +1656,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/sdk-logs"></a>
-### @opentelemetry/sdk-logs v0.203.0
+### @opentelemetry/sdk-logs v0.218.0
 #### 
 
 ##### Paths
@@ -1667,7 +1667,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/sdk-metrics"></a>
-### @opentelemetry/sdk-metrics v2.0.1
+### @opentelemetry/sdk-metrics v2.7.1
 #### 
 
 ##### Paths
@@ -1678,7 +1678,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/sdk-trace-base"></a>
-### @opentelemetry/sdk-trace-base v2.0.1
+### @opentelemetry/sdk-trace-base v2.7.1
 #### 
 
 ##### Paths
@@ -1689,7 +1689,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/sdk-trace-node"></a>
-### @opentelemetry/sdk-trace-node v2.0.1
+### @opentelemetry/sdk-trace-node v2.7.1
 #### 
 
 ##### Paths
@@ -1700,7 +1700,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/semantic-conventions"></a>
-### @opentelemetry/semantic-conventions v1.36.0
+### @opentelemetry/semantic-conventions v1.41.1
 #### 
 
 ##### Paths
@@ -2822,7 +2822,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@s2-dev/streamstore"></a>
-### @s2-dev/streamstore v0.22.5
+### @s2-dev/streamstore v0.22.10
 #### 
 
 ##### Paths
@@ -3988,7 +3988,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@trigger.dev/core"></a>
-### @trigger.dev/core v4.4.4
+### @trigger.dev/core v4.5.6
 #### 
 
 ##### Paths
@@ -3999,7 +3999,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@trigger.dev/sdk"></a>
-### @trigger.dev/sdk v4.4.4
+### @trigger.dev/sdk v4.5.6
 #### 
 
 ##### Paths
@@ -10438,7 +10438,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="require-in-the-middle"></a>
-### require-in-the-middle v7.5.2
+### require-in-the-middle v8.0.1
 #### 
 
 ##### Paths
