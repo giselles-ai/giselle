@@ -9932,7 +9932,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="prosemirror-model"></a>
-### prosemirror-model v1.24.1
+### prosemirror-model v1.25.8
 #### 
 
 ##### Paths
@@ -10009,7 +10009,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="prosemirror-view"></a>
-### prosemirror-view v1.38.0
+### prosemirror-view v1.42.3
 #### 
 
 ##### Paths
