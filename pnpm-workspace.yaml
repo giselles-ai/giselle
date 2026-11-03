@@ -59,7 +59,7 @@ catalog:
   lowlight: 3.3.0
   lucide-react: 0.473.0
   motion: 12.23.24
-  nanoid: 5.0.9
+  nanoid: 5.1.16
   next: 16.4.3
   nuqs: 2.6.0
   openai: 5.11.0
