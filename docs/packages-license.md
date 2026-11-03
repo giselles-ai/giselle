@@ -5082,7 +5082,7 @@ Python-2.0 manually approved
 
 <a name="buffer-image-size"></a>
 ### buffer-image-size v0.6.4
-####
+#### 
 
 ##### Paths
 * /home/runner/work/giselle/giselle
