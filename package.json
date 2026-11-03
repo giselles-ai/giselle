@@ -41,7 +41,7 @@
 	},
 	"pnpm": {
 		"overrides": {
-			"@electric-sql/client": "1.0.10",
+			"@electric-sql/client@<1.0.10": "1.0.10",
 			"cookie": "1.0.2",
 			"@react-email/preview-server>next": "16.4.3",
 			"@babel/helpers": "7.26.10",

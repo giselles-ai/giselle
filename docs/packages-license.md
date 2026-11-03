@@ -2,16 +2,16 @@
 
 
 ## Summary
-* 868 MIT
-* 166 Apache 2.0
+* 864 MIT
+* 165 Apache 2.0
 * 41 ISC
-* 22 New BSD
 * 13 Simplified BSD
+* 12 New BSD
 * 10 BlueOak-1.0.0
 * 3 MIT OR Apache-2.0
 * 3 Mozilla Public License 2.0
-* 2 MIT-0
 * 2 LGPL-3.0-or-later
+* 2 MIT-0
 * 1 (Apache-2.0 AND BSD-3-Clause)
 * 1 Python-2.0
 * 1 CC-BY-4.0
@@ -820,7 +820,7 @@ MIT-0 permitted
 
 
 <a name="@electric-sql/client"></a>
-### @electric-sql/client v1.0.10
+### @electric-sql/client v1.0.14
 #### 
 
 ##### Paths
@@ -1535,7 +1535,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/api-logs"></a>
-### @opentelemetry/api-logs v0.203.0
+### @opentelemetry/api-logs v0.218.0
 #### 
 
 ##### Paths
@@ -1546,7 +1546,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/context-async-hooks"></a>
-### @opentelemetry/context-async-hooks v2.0.1
+### @opentelemetry/context-async-hooks v2.7.1
 #### 
 
 ##### Paths
@@ -1568,7 +1568,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/exporter-logs-otlp-http"></a>
-### @opentelemetry/exporter-logs-otlp-http v0.203.0
+### @opentelemetry/exporter-logs-otlp-http v0.218.0
 #### 
 
 ##### Paths
@@ -1579,7 +1579,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/exporter-metrics-otlp-http"></a>
-### @opentelemetry/exporter-metrics-otlp-http v0.203.0
+### @opentelemetry/exporter-metrics-otlp-http v0.218.0
 #### 
 
 ##### Paths
@@ -1590,7 +1590,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/exporter-trace-otlp-http"></a>
-### @opentelemetry/exporter-trace-otlp-http v0.203.0
+### @opentelemetry/exporter-trace-otlp-http v0.218.0
 #### 
 
 ##### Paths
@@ -1601,7 +1601,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/host-metrics"></a>
-### @opentelemetry/host-metrics v0.37.0
+### @opentelemetry/host-metrics v0.38.3
 #### 
 
 ##### Paths
@@ -1612,7 +1612,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/instrumentation"></a>
-### @opentelemetry/instrumentation v0.203.0
+### @opentelemetry/instrumentation v0.218.0
 #### 
 
 ##### Paths
@@ -1623,7 +1623,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/otlp-exporter-base"></a>
-### @opentelemetry/otlp-exporter-base v0.203.0
+### @opentelemetry/otlp-exporter-base v0.218.0
 #### 
 
 ##### Paths
@@ -1634,7 +1634,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/otlp-transformer"></a>
-### @opentelemetry/otlp-transformer v0.203.0
+### @opentelemetry/otlp-transformer v0.218.0
 #### 
 
 ##### Paths
@@ -1645,7 +1645,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/resources"></a>
-### @opentelemetry/resources v2.0.1
+### @opentelemetry/resources v2.7.1
 #### 
 
 ##### Paths
@@ -1656,7 +1656,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/sdk-logs"></a>
-### @opentelemetry/sdk-logs v0.203.0
+### @opentelemetry/sdk-logs v0.218.0
 #### 
 
 ##### Paths
@@ -1667,7 +1667,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/sdk-metrics"></a>
-### @opentelemetry/sdk-metrics v2.0.1
+### @opentelemetry/sdk-metrics v2.7.1
 #### 
 
 ##### Paths
@@ -1678,7 +1678,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/sdk-trace-base"></a>
-### @opentelemetry/sdk-trace-base v2.0.1
+### @opentelemetry/sdk-trace-base v2.7.1
 #### 
 
 ##### Paths
@@ -1689,7 +1689,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/sdk-trace-node"></a>
-### @opentelemetry/sdk-trace-node v2.0.1
+### @opentelemetry/sdk-trace-node v2.7.1
 #### 
 
 ##### Paths
@@ -1700,7 +1700,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@opentelemetry/semantic-conventions"></a>
-### @opentelemetry/semantic-conventions v1.36.0
+### @opentelemetry/semantic-conventions v1.41.1
 #### 
 
 ##### Paths
@@ -1784,105 +1784,6 @@ BlueOak-1.0.0 permitted
 * /home/runner/work/giselle/giselle
 
 (Apache-2.0 AND BSD-3-Clause) permitted
-
-
-
-<a name="@protobufjs/aspromise"></a>
-### @protobufjs/aspromise v1.1.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/BSD-3-Clause">New BSD</a> permitted
-
-
-
-<a name="@protobufjs/base64"></a>
-### @protobufjs/base64 v1.1.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/BSD-3-Clause">New BSD</a> permitted
-
-
-
-<a name="@protobufjs/codegen"></a>
-### @protobufjs/codegen v2.0.5
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/BSD-3-Clause">New BSD</a> permitted
-
-
-
-<a name="@protobufjs/eventemitter"></a>
-### @protobufjs/eventemitter v1.1.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/BSD-3-Clause">New BSD</a> permitted
-
-
-
-<a name="@protobufjs/fetch"></a>
-### @protobufjs/fetch v1.1.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/BSD-3-Clause">New BSD</a> permitted
-
-
-
-<a name="@protobufjs/float"></a>
-### @protobufjs/float v1.0.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/BSD-3-Clause">New BSD</a> permitted
-
-
-
-<a name="@protobufjs/path"></a>
-### @protobufjs/path v1.1.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/BSD-3-Clause">New BSD</a> permitted
-
-
-
-<a name="@protobufjs/pool"></a>
-### @protobufjs/pool v1.1.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/BSD-3-Clause">New BSD</a> permitted
-
-
-
-<a name="@protobufjs/utf8"></a>
-### @protobufjs/utf8 v1.1.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/BSD-3-Clause">New BSD</a> permitted
 
 
 
@@ -2822,7 +2723,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@s2-dev/streamstore"></a>
-### @s2-dev/streamstore v0.22.5
+### @s2-dev/streamstore v0.22.10
 #### 
 
 ##### Paths
@@ -3988,7 +3889,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@trigger.dev/core"></a>
-### @trigger.dev/core v4.4.4
+### @trigger.dev/core v4.5.6
 #### 
 
 ##### Paths
@@ -3999,7 +3900,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@trigger.dev/sdk"></a>
-### @trigger.dev/sdk v4.4.4
+### @trigger.dev/sdk v4.5.6
 #### 
 
 ##### Paths
@@ -7369,7 +7270,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="import-in-the-middle"></a>
-### import-in-the-middle v1.13.1
+### import-in-the-middle v2.0.2
 #### 
 
 ##### Paths
@@ -7458,17 +7359,6 @@ BlueOak-1.0.0 permitted
 
 <a name="is-alphanumerical"></a>
 ### is-alphanumerical v2.0.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="is-core-module"></a>
-### is-core-module v2.16.1
 #### 
 
 ##### Paths
@@ -8025,17 +7915,6 @@ BlueOak-1.0.0 permitted
 * /home/runner/work/giselle/giselle
 
 <a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="long"></a>
-### long v5.3.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
 
 
 
@@ -9359,17 +9238,6 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="path-parse"></a>
-### path-parse v1.0.7
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="path-scurry"></a>
 ### path-scurry v1.11.1
 #### 
@@ -10019,17 +9887,6 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="protobufjs"></a>
-### protobufjs v7.6.5
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/BSD-3-Clause">New BSD</a> permitted
-
-
-
 <a name="proxy-addr"></a>
 ### proxy-addr v2.0.8
 #### 
@@ -10438,18 +10295,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="require-in-the-middle"></a>
-### require-in-the-middle v7.5.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="resolve"></a>
-### resolve v1.22.10
+### require-in-the-middle v8.0.1
 #### 
 
 ##### Paths
@@ -11231,17 +11077,6 @@ BlueOak-1.0.0 permitted
 
 <a name="supports-color"></a>
 ### supports-color v8.1.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="supports-preserve-symlinks-flag"></a>
-### supports-preserve-symlinks-flag v1.0.0
 #### 
 
 ##### Paths
