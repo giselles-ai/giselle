@@ -506,8 +506,8 @@ importers:
         specifier: 0.3.0
         version: 0.3.0(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       nodemailer:
-        specifier: 9.0.1
-        version: 9.0.1
+        specifier: 10.0.6
+        version: 10.0.6
       nuqs:
         specifier: 'catalog:'
         version: 2.6.0(next@16.4.3(@opentelemetry/api@1.9.1)(@playwright/test@1.56.1)(@types/node@24.10.4)(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(react@19.2.1)
@@ -584,9 +584,6 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 24.10.4
-      '@types/nodemailer':
-        specifier: 8.0.1
-        version: 8.0.1
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.7
@@ -4521,9 +4518,6 @@ packages:
   '@types/node@25.3.0':
     resolution: {integrity: sha512-4K3bqJpXpqfg2XKGK9bpDTc6xO/xoUP/RBWS7AtRMug6zZFaRekiLzjVtAoZMquxoAbzBvy5nxQ7veS5eYzf8A==}
 
-  '@types/nodemailer@8.0.1':
-    resolution: {integrity: sha512-PxpaInm8V1JQDd4j0ds5HfvWQk8JupS1C0Picb96QJsrrRDjBH+DlK7L4ZdNSqNULhiZRQHc40nLVShaGxXAMw==}
-
   '@types/pg@8.11.6':
     resolution: {integrity: sha512-/2WmmBXHLsfRqzfHW7BNZ8SbYzE8OSk7i3WjFYvfgRHj7S1xj+16Je5fUKv3lVdVzk/zn9TXOqf+avFCFIE0yQ==}
 
@@ -6560,9 +6554,9 @@ packages:
     resolution: {integrity: sha512-6li2QanLsAXpIH2R6j77MzRyvOyrvdTqlKtO4CgBdHGNvN99ZZfyxszHc5o5+IZBWD5u6Hzwg83JoGXmqZNG9Q==}
     engines: {node: '>=18'}
 
-  nodemailer@9.0.1:
-    resolution: {integrity: sha512-Gwv8SQewT616ZM/URn0H54b8PWo/Wum7md3EW2aWy1lO27+WZCX+Xyak3J+NlmHUjDh5ME+uesJUDRbR3Ye8Bw==}
-    engines: {node: '>=6.0.0'}
+  nodemailer@10.0.6:
+    resolution: {integrity: sha512-2u7OHvEQVVGvPo9Yhw/eN3xMO2Gnj2U2fGDP0BDpnRwJR//65AfGRQDiJqxix28gFRBvMqi2USA13x6RrfWuGg==}
+    engines: {node: '>=20.0.0'}
 
   normalize-path@3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
@@ -11374,10 +11368,6 @@ snapshots:
     dependencies:
       undici-types: 7.18.2
 
-  '@types/nodemailer@8.0.1':
-    dependencies:
-      '@types/node': 25.3.0
-
   '@types/pg@8.11.6':
     dependencies:
       '@types/node': 25.3.0
@@ -13652,7 +13642,7 @@ snapshots:
 
   node-releases@2.0.63: {}
 
-  nodemailer@9.0.1: {}
+  nodemailer@10.0.6: {}
 
   normalize-path@3.0.0: {}
 

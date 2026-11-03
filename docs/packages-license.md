@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 864 MIT
+* 863 MIT
 * 165 Apache 2.0
 * 41 ISC
 * 13 Simplified BSD
@@ -4176,17 +4176,6 @@ BlueOak-1.0.0 permitted
 
 <a name="@types/node"></a>
 ### @types/node v24.10.4
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="@types/nodemailer"></a>
-### @types/nodemailer v8.0.1
 #### 
 
 ##### Paths
@@ -8920,7 +8909,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="nodemailer"></a>
-### nodemailer v9.0.1
+### nodemailer v10.0.6
 #### 
 
 ##### Paths
