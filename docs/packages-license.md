@@ -8953,7 +8953,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="nanoid"></a>
-### nanoid v3.3.8
+### nanoid v3.3.20
 #### 
 
 ##### Paths
