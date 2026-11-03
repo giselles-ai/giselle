@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 863 MIT
+* 864 MIT
 * 165 Apache 2.0
 * 41 ISC
 * 13 Simplified BSD
@@ -5080,6 +5080,17 @@ Python-2.0 manually approved
 
 
 
+<a name="buffer-image-size"></a>
+### buffer-image-size v0.6.4
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="bufferutil"></a>
 ### bufferutil v4.0.9
 #### 
@@ -6896,7 +6907,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="happy-dom"></a>
-### happy-dom v20.8.9
+### happy-dom v21.0.4
 #### 
 
 ##### Paths
