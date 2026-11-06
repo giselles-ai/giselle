@@ -263,6 +263,7 @@ catalogs:
       version: 5.0.8
 
 overrides:
+  '@giselles-ai/browser-tool>@modelcontextprotocol/sdk': 1.32.2
   '@electric-sql/client@<1.0.10': 1.0.10
   cookie: 1.0.2
   '@react-email/preview-server>next': 16.4.3
@@ -2440,8 +2441,8 @@ packages:
   '@mixmark-io/domino@2.2.0':
     resolution: {integrity: sha512-Y28PR25bHXUg88kCV7nivXrP2Nj2RueZ3/l/jdx6J9f8J4nsEGcgX0Qe6lt7Pa+J79+kPiJU3LguR6O/6zrLOw==}
 
-  '@modelcontextprotocol/sdk@1.26.0':
-    resolution: {integrity: sha512-Y5RmPncpiDtTXDbLKswIJzTqu2hyBKxTNsgKqKclDbhIgg1wgtf1fRuvxgTnRfcnxtvvgbIEcqUOzZrJ6iSReg==}
+  '@modelcontextprotocol/sdk@1.32.2':
+    resolution: {integrity: sha512-SWsVtH/0vULSQStoZ6xxH2K09Li8fXYTMC64ZeogCdpZ3XSi1eCPOByV1OpuJxuI3OcmHhosDWYyii07tpPsLw==}
     engines: {node: '>=18'}
     peerDependencies:
       '@cfworker/json-schema': ^4.1.1
@@ -8972,7 +8973,7 @@ snapshots:
 
   '@giselles-ai/browser-tool@0.1.27(ai@5.0.101(zod@4.1.12))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)':
     dependencies:
-      '@modelcontextprotocol/sdk': 1.26.0(zod@4.3.6)
+      '@modelcontextprotocol/sdk': 1.32.2(zod@4.3.6)
       ioredis: 5.9.3
       zod: 4.3.6
     optionalDependencies:
@@ -9166,7 +9167,7 @@ snapshots:
 
   '@mixmark-io/domino@2.2.0': {}
 
-  '@modelcontextprotocol/sdk@1.26.0(zod@4.3.6)':
+  '@modelcontextprotocol/sdk@1.32.2(zod@4.3.6)':
     dependencies:
       '@hono/node-server': 2.0.10(hono@4.12.27)
       ajv: 8.18.0
