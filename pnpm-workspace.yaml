@@ -46,7 +46,7 @@ catalog:
   "@xyflow/react": 12.9.0
   ai: 5.0.101
   clsx: 2.1.1
-  defuddle: 0.9.0
+  defuddle: 0.19.6
   drizzle-kit: 0.31.10
   drizzle-orm: 0.45.2
   fast-levenshtein: 3.0.0
