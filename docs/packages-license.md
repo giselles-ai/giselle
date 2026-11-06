@@ -3,9 +3,9 @@
 
 ## Summary
 * 864 MIT
-* 165 Apache 2.0
-* 41 ISC
-* 13 Simplified BSD
+* 166 Apache 2.0
+* 44 ISC
+* 15 Simplified BSD
 * 12 New BSD
 * 10 BlueOak-1.0.0
 * 3 MIT OR Apache-2.0
@@ -5003,6 +5003,17 @@ Python-2.0 manually approved
 
 
 
+<a name="boolbase"></a>
+### boolbase v2.0.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://en.wikipedia.org/wiki/ISC_license">ISC</a> permitted
+
+
+
 <a name="boring-avatars"></a>
 ### boring-avatars v1.11.1
 #### 
@@ -5575,6 +5586,17 @@ BlueOak-1.0.0 permitted
 
 
 
+<a name="css-select"></a>
+### css-select v7.0.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/bsd-license">Simplified BSD</a> permitted
+
+
+
 <a name="css-what"></a>
 ### css-what v6.1.0
 #### 
@@ -5583,6 +5605,17 @@ BlueOak-1.0.0 permitted
 * /home/runner/work/giselle/giselle
 
 <a href="http://opensource.org/licenses/bsd-license">Simplified BSD</a> permitted
+
+
+
+<a name="cssomnom"></a>
+### cssomnom v0.1.11
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
 
 
 
@@ -5796,7 +5829,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="defuddle"></a>
-### defuddle v0.9.0
+### defuddle v0.19.6
 #### 
 
 ##### Paths
@@ -7852,6 +7885,17 @@ BlueOak-1.0.0 permitted
 
 
 
+<a name="linkedom"></a>
+### linkedom v0.18.15
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://en.wikipedia.org/wiki/ISC_license">ISC</a> permitted
+
+
+
 <a name="linkify-it"></a>
 ### linkify-it v5.0.2
 #### 
@@ -8018,7 +8062,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="mathml-to-latex"></a>
-### mathml-to-latex v1.5.0
+### mathml-to-latex v1.8.0
 #### 
 
 ##### Paths
@@ -8949,6 +8993,17 @@ MIT-0 permitted
 * /home/runner/work/giselle/giselle
 
 <a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="nth-check"></a>
+### nth-check v3.0.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/bsd-license">Simplified BSD</a> permitted
 
 
 
@@ -11197,7 +11252,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="temml"></a>
-### temml v0.11.7
+### temml v0.13.5
 #### 
 
 ##### Paths
@@ -11644,6 +11699,17 @@ BlueOak-1.0.0 permitted
 * /home/runner/work/giselle/giselle
 
 <a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="uhyphen"></a>
+### uhyphen v0.2.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://en.wikipedia.org/wiki/ISC_license">ISC</a> permitted
 
 
 

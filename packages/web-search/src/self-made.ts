@@ -102,6 +102,15 @@ export async function scrapeUrl(
 			const Defuddle = (await import("defuddle/node")).Defuddle;
 			const result = await Defuddle(window, currentUrl, {
 				markdown: true,
+				fetch: (input, init) => {
+					const request = new Request(input, init);
+					return globalThis.fetch(request, {
+						signal: AbortSignal.any([
+							request.signal,
+							AbortSignal.timeout(10_000),
+						]),
+					});
+				},
 			});
 			markdown = result.content;
 		}
