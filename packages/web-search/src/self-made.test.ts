@@ -179,3 +179,52 @@ describe("scrapeUrl (redirect SSRF protection)", () => {
 		);
 	});
 });
+
+describe("scrapeUrl async extraction", () => {
+	it.each([false, true])(
+		"handles a timed-out auxiliary request: %s",
+		async (timesOut) => {
+			const html =
+				"<article><h1>Local article</h1><p>The downloaded article has useful local content for readers to use when the auxiliary service is unavailable.</p></article>";
+			mockFetch = vi.fn().mockResolvedValueOnce({
+				ok: true,
+				status: 200,
+				headers: { get: () => "text/html" },
+				text: () => Promise.resolve(html),
+			});
+			const controller = new AbortController();
+			const timeout = vi
+				.spyOn(AbortSignal, "timeout")
+				.mockReturnValue(controller.signal);
+			const auxiliary = vi
+				.spyOn(globalThis, "fetch")
+				.mockImplementation((_input, init) => {
+					if (timesOut) {
+						controller.abort(new DOMException("Timed out", "TimeoutError"));
+						init?.signal?.throwIfAborted();
+					}
+					return Promise.resolve(
+						new Response(
+							JSON.stringify({
+								text: "Auxiliary article content from the service",
+							}),
+							{ headers: { "content-type": "application/json" } },
+						),
+					);
+				});
+			try {
+				const result = await scrapeUrl("https://wiki.c2.com/?ExamplePage", [
+					"markdown",
+				]);
+				expect(timeout).toHaveBeenCalledWith(10_000);
+				expect(auxiliary).toHaveBeenCalled();
+				expect(result.markdown).toContain(
+					timesOut ? "useful local content" : "Auxiliary article content",
+				);
+			} finally {
+				auxiliary.mockRestore();
+				timeout.mockRestore();
+			}
+		},
+	);
+});
