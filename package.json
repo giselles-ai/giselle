@@ -71,7 +71,7 @@
 			"@xmldom/xmldom": "0.8.15",
 			"path-to-regexp@>=8.0.0 <8.4.0": "8.4.2",
 			"express-rate-limit": "8.2.2",
-			"ip-address": "10.3.1",
+			"ip-address": "10.7.6",
 			"picomatch@>=4.0.0 <4.0.4": "4.0.4",
 			"picomatch@<2.3.2": "2.3.2",
 			"yaml@>=2.0.0 <2.8.3": "2.8.3",
