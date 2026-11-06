@@ -1216,7 +1216,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@modelcontextprotocol/sdk"></a>
-### @modelcontextprotocol/sdk v1.26.0
+### @modelcontextprotocol/sdk v1.32.2
 #### 
 
 ##### Paths
