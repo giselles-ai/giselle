@@ -4373,7 +4373,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@vitest/expect"></a>
-### @vitest/expect v4.1.8
+### @vitest/expect v4.1.12
 #### 
 
 ##### Paths
@@ -4384,7 +4384,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@vitest/mocker"></a>
-### @vitest/mocker v4.1.8
+### @vitest/mocker v4.1.12
 #### 
 
 ##### Paths
@@ -4395,7 +4395,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@vitest/pretty-format"></a>
-### @vitest/pretty-format v4.1.8
+### @vitest/pretty-format v4.1.12
 #### 
 
 ##### Paths
@@ -4406,7 +4406,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@vitest/runner"></a>
-### @vitest/runner v4.1.8
+### @vitest/runner v4.1.12
 #### 
 
 ##### Paths
@@ -4417,7 +4417,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@vitest/snapshot"></a>
-### @vitest/snapshot v4.1.8
+### @vitest/snapshot v4.1.12
 #### 
 
 ##### Paths
@@ -4428,7 +4428,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@vitest/spy"></a>
-### @vitest/spy v4.1.8
+### @vitest/spy v4.1.12
 #### 
 
 ##### Paths
@@ -4439,7 +4439,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@vitest/utils"></a>
-### @vitest/utils v4.1.8
+### @vitest/utils v4.1.12
 #### 
 
 ##### Paths
@@ -12059,7 +12059,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="vitest"></a>
-### vitest v4.1.8
+### vitest v4.1.12
 #### 
 
 ##### Paths
