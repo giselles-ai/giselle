@@ -6500,7 +6500,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="fast-uri"></a>
-### fast-uri v3.1.7
+### fast-uri v3.1.9
 #### 
 
 ##### Paths
