@@ -9052,7 +9052,7 @@ MIT-0 permitted
 
 
 <a name="object-inspect"></a>
-### object-inspect v1.13.3
+### object-inspect v1.13.4
 #### 
 
 ##### Paths
@@ -9987,7 +9987,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="qs"></a>
-### qs v6.15.2
+### qs v6.17.1
 #### 
 
 ##### Paths
@@ -10680,7 +10680,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="side-channel"></a>
-### side-channel v1.1.0
+### side-channel v1.1.1
 #### 
 
 ##### Paths
@@ -10691,7 +10691,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="side-channel-list"></a>
-### side-channel-list v1.0.0
+### side-channel-list v1.0.1
 #### 
 
 ##### Paths
