@@ -6577,7 +6577,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="fflate"></a>
-### fflate v0.4.8
+### fflate v0.4.9
 #### 
 
 ##### Paths
