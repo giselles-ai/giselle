@@ -4949,7 +4949,7 @@ Python-2.0 manually approved
 
 
 <a name="baseline-browser-mapping"></a>
-### baseline-browser-mapping v2.10.0
+### baseline-browser-mapping v2.11.34
 #### 
 
 ##### Paths
