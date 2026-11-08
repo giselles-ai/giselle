@@ -281,7 +281,7 @@ overrides:
   ajv@>=6.0.0 <7.0.0: 6.14.0
   js-yaml@>=3.0.0 <4.0.0: 3.15.0
   js-yaml@>=4.0.0 <4.3.2: 4.3.2
-  smol-toml@>=1.0.0 <1.7.1: 1.7.1
+  smol-toml@>=1.0.0 <1.9.1: 1.9.1
   '@esbuild-kit/core-utils>esbuild': 0.28.1
   esbuild@>=0.17.0 <0.28.1: 0.28.1
   serialize-javascript: 7.0.5
@@ -7340,8 +7340,8 @@ packages:
   slug@6.1.0:
     resolution: {integrity: sha512-x6vLHCMasg4DR2LPiyFGI0gJJhywY6DTiGhCrOMzb3SOk/0JVLIaL4UhyFSHu04SD3uAavrKY/K3zZ3i6iRcgA==}
 
-  smol-toml@1.7.1:
-    resolution: {integrity: sha512-PPlsspAZ4jbMBu5DMFhfUGDQLu/vrL4SyBROVS37x8ynnVmFIs1VPBz1Co8Xks3TvpIaZXmU85y4DrQ+UyVFoQ==}
+  smol-toml@1.9.1:
+    resolution: {integrity: sha512-j7WyPdf0CJoutMzMoPLF/bVXHtKZIT9Rb4eGeEbWw8X2t5oirjPgpL+OpaENZrILYaXqYwnVH+qgUwVbl+pUJQ==}
     engines: {node: '>= 18'}
 
   socket.io-adapter@2.5.5:
@@ -13028,7 +13028,7 @@ snapshots:
       oxc-resolver: 11.18.0
       picocolors: 1.1.1
       picomatch: 4.0.4
-      smol-toml: 1.7.1
+      smol-toml: 1.9.1
       strip-json-comments: 5.0.3
       typescript: 5.7.3
       zod: 4.6.7
@@ -14717,7 +14717,7 @@ snapshots:
 
   slug@6.1.0: {}
 
-  smol-toml@1.7.1: {}
+  smol-toml@1.9.1: {}
 
   socket.io-adapter@2.5.5(bufferutil@4.0.9)(utf-8-validate@6.0.5):
     dependencies:
