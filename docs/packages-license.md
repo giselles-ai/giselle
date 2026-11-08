@@ -5037,7 +5037,7 @@ Python-2.0 manually approved
 
 
 <a name="brace-expansion"></a>
-### brace-expansion v5.0.11
+### brace-expansion v5.0.12
 #### 
 
 ##### Paths
