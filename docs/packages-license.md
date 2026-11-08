@@ -6423,7 +6423,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="fast-copy"></a>
-### fast-copy v3.0.2
+### fast-copy v3.1.0
 #### 
 
 ##### Paths
