@@ -8964,7 +8964,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="nodemailer"></a>
-### nodemailer v10.0.6
+### nodemailer v10.4.0
 #### 
 
 ##### Paths
