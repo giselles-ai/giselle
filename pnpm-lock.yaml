@@ -508,8 +508,8 @@ importers:
         specifier: 0.3.0
         version: 0.3.0(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       nodemailer:
-        specifier: 10.0.6
-        version: 10.0.6
+        specifier: 10.4.0
+        version: 10.4.0
       nuqs:
         specifier: 'catalog:'
         version: 2.6.0(next@16.4.3(@opentelemetry/api@1.9.1)(@playwright/test@1.56.1)(@types/node@24.10.4)(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(react@19.2.1)
@@ -6609,8 +6609,8 @@ packages:
     resolution: {integrity: sha512-6li2QanLsAXpIH2R6j77MzRyvOyrvdTqlKtO4CgBdHGNvN99ZZfyxszHc5o5+IZBWD5u6Hzwg83JoGXmqZNG9Q==}
     engines: {node: '>=18'}
 
-  nodemailer@10.0.6:
-    resolution: {integrity: sha512-2u7OHvEQVVGvPo9Yhw/eN3xMO2Gnj2U2fGDP0BDpnRwJR//65AfGRQDiJqxix28gFRBvMqi2USA13x6RrfWuGg==}
+  nodemailer@10.4.0:
+    resolution: {integrity: sha512-fyy6r4Q5euRJ9Qr3Cts9K7SZrfe9zmz9oLOYiAR02MEJRDRci+99y0OoYBYBgpLffOqkkjXrB/d26VfiMje/kA==}
     engines: {node: '>=20.0.0'}
 
   normalize-path@3.0.0:
@@ -13731,7 +13731,7 @@ snapshots:
 
   node-releases@2.0.63: {}
 
-  nodemailer@10.0.6: {}
+  nodemailer@10.4.0: {}
 
   normalize-path@3.0.0: {}
 
