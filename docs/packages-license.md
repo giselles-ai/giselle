@@ -10779,7 +10779,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="smol-toml"></a>
-### smol-toml v1.7.1
+### smol-toml v1.9.1
 #### 
 
 ##### Paths
