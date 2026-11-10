@@ -1,5 +1,5 @@
 import type { fetch } from "undici";
-import { describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import { scrapeUrl } from "./self-made";
 
 const TEST_UPPERCASE_TXT_URL = "https://example.com/TEST.TXT";
@@ -181,6 +181,10 @@ describe("scrapeUrl (redirect SSRF protection)", () => {
 });
 
 describe("scrapeUrl async extraction", () => {
+	beforeAll(async () => {
+		await Promise.all([import("happy-dom"), import("defuddle/node")]);
+	});
+
 	it.each([false, true])(
 		"handles a timed-out auxiliary request: %s",
 		async (timesOut) => {
