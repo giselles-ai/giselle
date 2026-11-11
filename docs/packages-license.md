@@ -105,7 +105,7 @@
 
 
 <a name="@ai-sdk/provider-utils"></a>
-### @ai-sdk/provider-utils v3.0.17
+### @ai-sdk/provider-utils v3.0.28
 #### 
 
 ##### Paths
