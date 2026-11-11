@@ -41,6 +41,7 @@
 	},
 	"pnpm": {
 		"overrides": {
+			"@ai-sdk/provider-utils@>=3.0.0 <3.0.28": "3.0.28",
 			"zod@>=4.0.0 <4.6.7": "4.6.7",
 			"@giselles-ai/browser-tool>@modelcontextprotocol/sdk": "1.32.2",
 			"@electric-sql/client@<1.0.10": "1.0.10",
