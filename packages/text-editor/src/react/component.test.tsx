@@ -150,6 +150,8 @@ it("preserves editing, toolbar state, Source insertion and undo/redo", async () 
 		});
 		if (!editor) throw new Error("Editor was not mounted");
 		const instance = editor;
+		// jsdom has no layout APIs; scrolling is outside this editing-state test.
+		instance.view.setProps({ handleScrollToSelection: () => true });
 		expect(instance.getJSON()).toEqual(initial);
 		expect(onValueChange).not.toHaveBeenCalled();
 		await update(() => {
@@ -212,6 +214,11 @@ it("preserves editing, toolbar state, Source insertion and undo/redo", async () 
 		});
 		expect(instance.getHTML()).toContain('data-path="answer"');
 		expect(container.textContent).toContain("Input / Text / answer");
+		await act(async () => {
+			await new Promise<void>((resolve) =>
+				requestAnimationFrame(() => resolve()),
+			);
+		});
 		await update(() => {
 			instance.commands.undo();
 		});
