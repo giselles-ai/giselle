@@ -1,4 +1,5 @@
 @import "../../ui/style.css";
+@import "katex/dist/katex.min.css";
 @source "../node_modules/streamdown/dist/*.js";
 
 .mask-fill {

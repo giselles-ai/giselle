@@ -53,6 +53,7 @@
 			"jws": "4.0.1",
 			"glob@>=11.0.0 <11.1.0": "11.1.0",
 			"fast-xml-parser": "5.12.0",
+			"katex@<0.18.2": "0.18.2",
 			"fast-uri": "3.1.9",
 			"protobufjs": "7.6.5",
 			"hono": "4.13.17",
@@ -95,6 +96,9 @@
 			"@opentelemetry/core@<2.8.0": "2.8.0",
 			"sharp@<0.35.0": "0.35.0",
 			"tar@<7.5.21": "7.5.21"
+		},
+		"patchedDependencies": {
+			"streamdown@2.0.1": "patches/streamdown@2.0.1.patch"
 		}
 	}
 }
