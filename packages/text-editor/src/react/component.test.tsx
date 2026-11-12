@@ -26,6 +26,31 @@ async function update(callback: () => void) {
 	});
 }
 
+it("keeps Tab and Shift-Tab list indentation without the new ListKeymap", () => {
+	const editor = new CoreEditor({
+		extensions,
+		content: "<ul><li><p>One</p></li><li><p>Two</p></li></ul>",
+	});
+	try {
+		const original = editor.getJSON();
+		editor.state.doc.descendants((node, position) => {
+			if (node.isText && node.text === "Two") {
+				editor.commands.setTextSelection(position);
+			}
+		});
+		expect(editor.commands.keyboardShortcut("Tab")).toBe(true);
+		const list = editor.getJSON().content?.[0];
+		expect(list?.content).toHaveLength(1);
+		expect(list?.content?.[0]).toMatchObject({
+			content: [{ type: "paragraph" }, { type: "bulletList" }],
+		});
+		expect(editor.commands.keyboardShortcut("Shift-Tab")).toBe(true);
+		expect(editor.getJSON()).toEqual(original);
+	} finally {
+		editor.destroy();
+	}
+});
+
 it("round trips connected Source clipboard HTML and rejects disconnected references", () => {
 	const node = TextNode.parse({
 		id: NodeId.generate(),
