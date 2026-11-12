@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 864 MIT
+* 866 MIT
 * 166 Apache 2.0
 * 44 ISC
 * 15 Simplified BSD
@@ -1293,7 +1293,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@nodable/entities"></a>
-### @nodable/entities v2.1.0
+### @nodable/entities v3.1.0
 #### 
 
 ##### Paths
@@ -4823,6 +4823,17 @@ BlueOak-1.0.0 permitted
 
 
 
+<a name="anynum"></a>
+### anynum v1.0.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="argparse"></a>
 ### argparse v2.0.1
 #### 
@@ -6511,7 +6522,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="fast-xml-builder"></a>
-### fast-xml-builder v1.2.0
+### fast-xml-builder v1.3.1
 #### 
 
 ##### Paths
@@ -6522,7 +6533,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="fast-xml-parser"></a>
-### fast-xml-parser v5.7.3
+### fast-xml-parser v5.12.0
 #### 
 
 ##### Paths
@@ -7535,6 +7546,17 @@ BlueOak-1.0.0 permitted
 
 <a name="is-unicode-supported"></a>
 ### is-unicode-supported v1.3.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="is-unsafe"></a>
+### is-unsafe v2.0.3
 #### 
 
 ##### Paths
@@ -9272,7 +9294,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="path-expression-matcher"></a>
-### path-expression-matcher v1.5.0
+### path-expression-matcher v1.6.2
 #### 
 
 ##### Paths
@@ -11054,7 +11076,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="strnum"></a>
-### strnum v2.2.3
+### strnum v2.5.1
 #### 
 
 ##### Paths
@@ -12323,7 +12345,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="xml-naming"></a>
-### xml-naming v0.1.0
+### xml-naming v0.3.0
 #### 
 
 ##### Paths

@@ -52,7 +52,7 @@
 			"vite": "7.3.7",
 			"jws": "4.0.1",
 			"glob@>=11.0.0 <11.1.0": "11.1.0",
-			"fast-xml-parser": "5.7.3",
+			"fast-xml-parser": "5.12.0",
 			"fast-uri": "3.1.9",
 			"protobufjs": "7.6.5",
 			"hono": "4.13.17",
