@@ -2,9 +2,9 @@
 
 
 ## Summary
-* 866 MIT
+* 860 MIT
 * 166 Apache 2.0
-* 44 ISC
+* 40 ISC
 * 15 Simplified BSD
 * 12 New BSD
 * 10 BlueOak-1.0.0
@@ -1073,17 +1073,6 @@ LGPL-3.0-or-later permitted
 
 
 <a name="@isaacs/cliui"></a>
-### @isaacs/cliui v8.0.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://en.wikipedia.org/wiki/ISC_license">ISC</a> permitted
-
-
-
-<a name="@isaacs/cliui"></a>
 ### @isaacs/cliui v9.0.0
 #### 
 
@@ -1102,6 +1091,17 @@ BlueOak-1.0.0 permitted
 * /home/runner/work/giselle/giselle
 
 <a href="http://en.wikipedia.org/wiki/ISC_license">ISC</a> permitted
+
+
+
+<a name="@isaacs/nonrecursive-glob-match"></a>
+### @isaacs/nonrecursive-glob-match v1.1.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+BlueOak-1.0.0 permitted
 
 
 
@@ -1723,17 +1723,6 @@ BlueOak-1.0.0 permitted
 
 <a name="@paralleldrive/cuid2"></a>
 ### @paralleldrive/cuid2 v2.2.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="@pkgjs/parseargs"></a>
-### @pkgjs/parseargs v0.11.0
 #### 
 
 ##### Paths
@@ -4791,18 +4780,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="ansi-regex"></a>
-### ansi-regex v5.0.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="ansi-styles"></a>
-### ansi-styles v4.3.0
+### ansi-regex v6.1.0
 #### 
 
 ##### Paths
@@ -5396,28 +5374,6 @@ BlueOak-1.0.0 permitted
 * /home/runner/work/giselle/giselle
 
 <a href="http://www.apache.org/licenses/LICENSE-2.0.txt">Apache 2.0</a> permitted
-
-
-
-<a name="color-convert"></a>
-### color-convert v2.0.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="color-name"></a>
-### color-name v1.1.4
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
 
 
 
@@ -6049,7 +6005,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="emoji-regex"></a>
-### emoji-regex v8.0.0
+### emoji-regex v10.6.0
 #### 
 
 ##### Paths
@@ -6642,17 +6598,6 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="foreground-child"></a>
-### foreground-child v3.3.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://en.wikipedia.org/wiki/ISC_license">ISC</a> permitted
-
-
-
 <a name="formatly"></a>
 ### formatly v0.3.0
 #### 
@@ -6797,18 +6742,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="glob"></a>
-### glob v10.5.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://en.wikipedia.org/wiki/ISC_license">ISC</a> permitted
-
-
-
-<a name="glob"></a>
-### glob v11.1.0
+### glob v14.0.5
 #### 
 
 ##### Paths
@@ -7434,17 +7368,6 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="is-fullwidth-code-point"></a>
-### is-fullwidth-code-point v3.0.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="is-glob"></a>
 ### is-glob v4.0.3
 #### 
@@ -7589,7 +7512,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="jackspeak"></a>
-### jackspeak v3.4.3
+### jackspeak v4.2.3
 #### 
 
 ##### Paths
@@ -8744,24 +8667,13 @@ BlueOak-1.0.0 permitted
 
 
 <a name="minimatch"></a>
-### minimatch v10.2.4
+### minimatch v11.0.8
 #### 
 
 ##### Paths
 * /home/runner/work/giselle/giselle
 
 BlueOak-1.0.0 permitted
-
-
-
-<a name="minimatch"></a>
-### minimatch v9.0.8
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://en.wikipedia.org/wiki/ISC_license">ISC</a> permitted
 
 
 
@@ -9238,17 +9150,6 @@ MIT-0 permitted
 
 
 
-<a name="package-json-from-dist"></a>
-### package-json-from-dist v1.0.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-BlueOak-1.0.0 permitted
-
-
-
 <a name="parse-entities"></a>
 ### parse-entities v4.0.2
 #### 
@@ -9316,7 +9217,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="path-scurry"></a>
-### path-scurry v1.11.1
+### path-scurry v3.0.0
 #### 
 
 ##### Paths
@@ -10999,7 +10900,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="string-width"></a>
-### string-width v4.2.3
+### string-width v7.2.0
 #### 
 
 ##### Paths
@@ -11021,7 +10922,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="strip-ansi"></a>
-### strip-ansi v6.0.1
+### strip-ansi v7.1.0
 #### 
 
 ##### Paths
@@ -12269,17 +12170,6 @@ BlueOak-1.0.0 permitted
 
 <a name="wonka"></a>
 ### wonka v6.3.5
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="wrap-ansi"></a>
-### wrap-ansi v7.0.0
 #### 
 
 ##### Paths
