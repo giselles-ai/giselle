@@ -94,7 +94,7 @@
 			"@babel/core@<=7.29.0": "7.29.7",
 			"markdown-it@<14.3.3": "14.3.3",
 			"prosemirror-view@>=1.0.0 <1.42.3": "1.42.3",
-			"prosemirror-model@>=1.0.0 <1.25.8": "1.25.8",
+			"prosemirror-model@>=1.0.0 <1.25.13": "1.25.13",
 			"@opentelemetry/core@<2.8.0": "2.8.0",
 			"sharp@<0.35.0": "0.35.0",
 			"tar@<7.5.21": "7.5.21"

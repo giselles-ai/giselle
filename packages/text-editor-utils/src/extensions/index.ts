@@ -15,6 +15,10 @@ lowlight.register("ts", ts);
 export const extensions = [
 	StarterKit.configure({
 		blockquote: false,
+		link: false,
+		underline: false,
+		listKeymap: false,
+		trailingNode: false,
 		codeBlock: false,
 		hardBreak: false,
 		heading: false,

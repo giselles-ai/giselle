@@ -83,6 +83,12 @@ interface SourceExtensionReactStorage {
 	nodes: NodeLike[];
 }
 
+declare module "@tiptap/core" {
+	interface Storage {
+		Source: SourceExtensionReactStorage;
+	}
+}
+
 export const SourceExtensionReact = SourceExtension.extend<
 	SourceExtensionReactOptions,
 	SourceExtensionReactStorage
