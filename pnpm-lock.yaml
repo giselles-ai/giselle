@@ -275,6 +275,7 @@ overrides:
   jws: 4.0.1
   glob@>=11.0.0 <11.1.0: 11.1.0
   fast-xml-parser: 5.12.0
+  katex@<0.18.2: 0.18.2
   fast-uri: 3.1.9
   protobufjs: 7.6.5
   hono: 4.13.17
@@ -317,6 +318,11 @@ overrides:
   '@opentelemetry/core@<2.8.0': 2.8.0
   sharp@<0.35.0: 0.35.0
   tar@<7.5.21: 7.5.21
+
+patchedDependencies:
+  streamdown@2.0.1:
+    hash: 9df048f8063291b97336e2255ae38946aa52c6067de3eab92fb08e6973f01570
+    path: patches/streamdown@2.0.1.patch
 
 importers:
 
@@ -754,6 +760,9 @@ importers:
       fast-levenshtein:
         specifier: 'catalog:'
         version: 3.0.0
+      katex:
+        specifier: 0.18.2
+        version: 0.18.2
       lucide-react:
         specifier: 'catalog:'
         version: 0.473.0(react@19.2.1)
@@ -777,7 +786,7 @@ importers:
         version: 2.1.7(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       streamdown:
         specifier: 'catalog:'
-        version: 2.0.1(@types/mdast@4.0.4)(micromark-util-types@2.0.1)(micromark@4.0.1)(react@19.2.1)
+        version: 2.0.1(patch_hash=9df048f8063291b97336e2255ae38946aa52c6067de3eab92fb08e6973f01570)(@types/mdast@4.0.4)(micromark-util-types@2.0.1)(micromark@4.0.1)(react@19.2.1)
       swr:
         specifier: 'catalog:'
         version: 2.3.6(react@19.2.1)
@@ -6085,8 +6094,8 @@ packages:
   jws@4.0.1:
     resolution: {integrity: sha512-EKI/M/yqPncGUUh44xz0PxSidXFr/+r0pA70+gIYhjv+et7yxM+s29Y+VGDkovRofQem0fs7Uvf4+YmAdyRduA==}
 
-  katex@0.16.27:
-    resolution: {integrity: sha512-aeQoDkuRWSqQN6nSvVCEFvfXdqo1OQiCmmW1kc9xSdjutPv7BGO7pqY9sQRJpMOGrEdfDgF2TfRXe5eUAD2Waw==}
+  katex@0.18.2:
+    resolution: {integrity: sha512-3snve4y0SXTMequLim1FMiPvLGElySam0blN5xQZBqEY3lOJz1TnuaaiugnBZBqHzlSAGmFTYL7MCQkORuLKCA==}
     hasBin: true
 
   kleur@3.0.3:
@@ -13011,7 +13020,7 @@ snapshots:
       jwa: 2.0.1
       safe-buffer: 5.2.1
 
-  katex@0.16.27:
+  katex@0.18.2:
     dependencies:
       commander: 8.3.0
 
@@ -13457,7 +13466,7 @@ snapshots:
     dependencies:
       '@types/katex': 0.16.7
       devlop: 1.1.0
-      katex: 0.16.27
+      katex: 0.18.2
       micromark-factory-space: 2.0.1
       micromark-util-character: 2.1.1
       micromark-util-symbol: 2.0.1
@@ -14370,7 +14379,7 @@ snapshots:
       '@types/katex': 0.16.7
       hast-util-from-html-isomorphic: 2.0.0
       hast-util-to-text: 4.0.2
-      katex: 0.16.27
+      katex: 0.18.2
       unist-util-visit-parents: 6.0.1
       vfile: 6.0.3
 
@@ -14806,13 +14815,13 @@ snapshots:
 
   stdin-discarder@0.2.2: {}
 
-  streamdown@2.0.1(@types/mdast@4.0.4)(micromark-util-types@2.0.1)(micromark@4.0.1)(react@19.2.1):
+  streamdown@2.0.1(patch_hash=9df048f8063291b97336e2255ae38946aa52c6067de3eab92fb08e6973f01570)(@types/mdast@4.0.4)(micromark-util-types@2.0.1)(micromark@4.0.1)(react@19.2.1):
     dependencies:
       clsx: 2.1.1
       esbuild: 0.28.1
       hast-util-to-jsx-runtime: 2.3.6
       html-url-attributes: 3.0.1
-      katex: 0.16.27
+      katex: 0.18.2
       marked: 17.0.1
       react: 19.2.1
       rehype-harden: 1.1.7

@@ -7787,7 +7787,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="katex"></a>
-### katex v0.16.27
+### katex v0.18.2
 #### 
 
 ##### Paths

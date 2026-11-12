@@ -7,7 +7,7 @@
 		"clean": "rm -rf node_modules",
 		"check-types": "tsc --noEmit",
 		"format": "biome check --write .",
-		"test": "vitest"
+		"test": "vitest run"
 	},
 	"exports": {
 		".": "./src/index.ts"
@@ -30,6 +30,7 @@
 		"boring-avatars": "1.11.1",
 		"clsx": "catalog:",
 		"fast-levenshtein": "catalog:",
+		"katex": "0.18.2",
 		"lucide-react": "catalog:",
 		"motion": "catalog:",
 		"next": "catalog:",
