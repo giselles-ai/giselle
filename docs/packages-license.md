@@ -6,7 +6,7 @@
 * 166 Apache 2.0
 * 40 ISC
 * 15 Simplified BSD
-* 12 New BSD
+* 13 New BSD
 * 10 BlueOak-1.0.0
 * 3 MIT OR Apache-2.0
 * 3 Mozilla Public License 2.0
@@ -2635,7 +2635,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@react-email/render"></a>
-### @react-email/render v2.0.0
+### @react-email/render v2.3.1
 #### 
 
 ##### Paths
@@ -2723,7 +2723,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@selderee/plugin-htmlparser2"></a>
-### @selderee/plugin-htmlparser2 v0.11.0
+### @selderee/plugin-htmlparser2 v0.12.0
 #### 
 
 ##### Paths
@@ -5784,14 +5784,14 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="deepmerge"></a>
-### deepmerge v4.3.1
+<a name="deepmerge-ts"></a>
+### deepmerge-ts v8.0.2
 #### 
 
 ##### Paths
 * /home/runner/work/giselle/giselle
 
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+<a href="http://opensource.org/licenses/BSD-3-Clause">New BSD</a> permitted
 
 
 
@@ -7138,7 +7138,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="html-to-text"></a>
-### html-to-text v9.0.5
+### html-to-text v10.0.1
 #### 
 
 ##### Paths
@@ -7170,8 +7170,19 @@ BlueOak-1.0.0 permitted
 
 
 
+<a name="html5parser"></a>
+### html5parser v3.0.0
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
 <a name="htmlparser2"></a>
-### htmlparser2 v8.0.2
+### htmlparser2 v10.1.0
 #### 
 
 ##### Paths
@@ -7765,7 +7776,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="leac"></a>
-### leac v0.6.0
+### leac v0.7.0
 #### 
 
 ##### Paths
@@ -9173,7 +9184,7 @@ MIT-0 permitted
 
 
 <a name="parseley"></a>
-### parseley v0.12.1
+### parseley v0.13.1
 #### 
 
 ##### Paths
@@ -9250,7 +9261,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="peberminta"></a>
-### peberminta v0.9.0
+### peberminta v0.10.0
 #### 
 
 ##### Paths
@@ -10493,7 +10504,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="selderee"></a>
-### selderee v0.11.0
+### selderee v0.12.0
 #### 
 
 ##### Paths
