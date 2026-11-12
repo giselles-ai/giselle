@@ -2,7 +2,7 @@
 
 
 ## Summary
-* 860 MIT
+* 847 MIT
 * 166 Apache 2.0
 * 40 ISC
 * 15 Simplified BSD
@@ -1754,17 +1754,6 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="@popperjs/core"></a>
-### @popperjs/core v2.11.8
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="@protobuf-ts/runtime"></a>
 ### @protobuf-ts/runtime v2.11.1
 #### 
@@ -2689,17 +2678,6 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="@remirror/core-constants"></a>
-### @remirror/core-constants v3.0.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="@rollup/rollup-linux-x64-gnu"></a>
 ### @rollup/rollup-linux-x64-gnu v4.59.0
 #### 
@@ -3548,7 +3526,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@tiptap/core"></a>
-### @tiptap/core v2.11.5
+### @tiptap/core v3.33.1
 #### 
 
 ##### Paths
@@ -3559,7 +3537,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@tiptap/extension-blockquote"></a>
-### @tiptap/extension-blockquote v2.12.0
+### @tiptap/extension-blockquote v3.33.1
 #### 
 
 ##### Paths
@@ -3570,7 +3548,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@tiptap/extension-bold"></a>
-### @tiptap/extension-bold v2.11.5
+### @tiptap/extension-bold v3.33.1
 #### 
 
 ##### Paths
@@ -3581,7 +3559,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@tiptap/extension-bubble-menu"></a>
-### @tiptap/extension-bubble-menu v2.11.5
+### @tiptap/extension-bubble-menu v3.33.1
 #### 
 
 ##### Paths
@@ -3592,7 +3570,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@tiptap/extension-bullet-list"></a>
-### @tiptap/extension-bullet-list v2.11.5
+### @tiptap/extension-bullet-list v3.33.1
 #### 
 
 ##### Paths
@@ -3603,7 +3581,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@tiptap/extension-code"></a>
-### @tiptap/extension-code v2.11.5
+### @tiptap/extension-code v3.33.1
 #### 
 
 ##### Paths
@@ -3614,7 +3592,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@tiptap/extension-code-block"></a>
-### @tiptap/extension-code-block v2.11.5
+### @tiptap/extension-code-block v3.33.1
 #### 
 
 ##### Paths
@@ -3625,7 +3603,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@tiptap/extension-code-block-lowlight"></a>
-### @tiptap/extension-code-block-lowlight v2.11.5
+### @tiptap/extension-code-block-lowlight v3.33.1
 #### 
 
 ##### Paths
@@ -3636,7 +3614,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@tiptap/extension-document"></a>
-### @tiptap/extension-document v2.11.5
+### @tiptap/extension-document v3.33.1
 #### 
 
 ##### Paths
@@ -3647,7 +3625,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@tiptap/extension-dropcursor"></a>
-### @tiptap/extension-dropcursor v2.12.0
+### @tiptap/extension-dropcursor v3.33.1
 #### 
 
 ##### Paths
@@ -3658,7 +3636,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@tiptap/extension-floating-menu"></a>
-### @tiptap/extension-floating-menu v2.11.5
+### @tiptap/extension-floating-menu v3.33.1
 #### 
 
 ##### Paths
@@ -3669,7 +3647,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@tiptap/extension-gapcursor"></a>
-### @tiptap/extension-gapcursor v2.12.0
+### @tiptap/extension-gapcursor v3.33.1
 #### 
 
 ##### Paths
@@ -3680,7 +3658,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@tiptap/extension-hard-break"></a>
-### @tiptap/extension-hard-break v2.12.0
+### @tiptap/extension-hard-break v3.33.1
 #### 
 
 ##### Paths
@@ -3691,18 +3669,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@tiptap/extension-heading"></a>
-### @tiptap/extension-heading v2.12.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="@tiptap/extension-history"></a>
-### @tiptap/extension-history v2.11.5
+### @tiptap/extension-heading v3.33.1
 #### 
 
 ##### Paths
@@ -3713,7 +3680,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@tiptap/extension-horizontal-rule"></a>
-### @tiptap/extension-horizontal-rule v2.12.0
+### @tiptap/extension-horizontal-rule v3.33.1
 #### 
 
 ##### Paths
@@ -3724,7 +3691,29 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@tiptap/extension-italic"></a>
-### @tiptap/extension-italic v2.11.5
+### @tiptap/extension-italic v3.33.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@tiptap/extension-link"></a>
+### @tiptap/extension-link v3.33.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@tiptap/extension-list"></a>
+### @tiptap/extension-list v3.33.1
 #### 
 
 ##### Paths
@@ -3735,7 +3724,18 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@tiptap/extension-list-item"></a>
-### @tiptap/extension-list-item v2.11.5
+### @tiptap/extension-list-item v3.33.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@tiptap/extension-list-keymap"></a>
+### @tiptap/extension-list-keymap v3.33.1
 #### 
 
 ##### Paths
@@ -3746,7 +3746,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@tiptap/extension-mention"></a>
-### @tiptap/extension-mention v2.11.5
+### @tiptap/extension-mention v3.33.1
 #### 
 
 ##### Paths
@@ -3757,7 +3757,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@tiptap/extension-ordered-list"></a>
-### @tiptap/extension-ordered-list v2.11.5
+### @tiptap/extension-ordered-list v3.33.1
 #### 
 
 ##### Paths
@@ -3768,7 +3768,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@tiptap/extension-paragraph"></a>
-### @tiptap/extension-paragraph v2.11.5
+### @tiptap/extension-paragraph v3.33.1
 #### 
 
 ##### Paths
@@ -3779,7 +3779,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@tiptap/extension-placeholder"></a>
-### @tiptap/extension-placeholder v2.11.5
+### @tiptap/extension-placeholder v3.33.1
 #### 
 
 ##### Paths
@@ -3790,7 +3790,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@tiptap/extension-strike"></a>
-### @tiptap/extension-strike v2.11.5
+### @tiptap/extension-strike v3.33.1
 #### 
 
 ##### Paths
@@ -3801,7 +3801,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@tiptap/extension-text"></a>
-### @tiptap/extension-text v2.11.5
+### @tiptap/extension-text v3.33.1
 #### 
 
 ##### Paths
@@ -3811,8 +3811,19 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="@tiptap/extension-text-style"></a>
-### @tiptap/extension-text-style v2.12.0
+<a name="@tiptap/extension-underline"></a>
+### @tiptap/extension-underline v3.33.1
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="@tiptap/extensions"></a>
+### @tiptap/extensions v3.33.1
 #### 
 
 ##### Paths
@@ -3823,7 +3834,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@tiptap/html"></a>
-### @tiptap/html v2.11.5
+### @tiptap/html v3.33.1
 #### 
 
 ##### Paths
@@ -3834,7 +3845,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@tiptap/pm"></a>
-### @tiptap/pm v2.11.5
+### @tiptap/pm v3.33.1
 #### 
 
 ##### Paths
@@ -3845,7 +3856,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@tiptap/react"></a>
-### @tiptap/react v2.11.5
+### @tiptap/react v3.33.1
 #### 
 
 ##### Paths
@@ -3856,7 +3867,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@tiptap/starter-kit"></a>
-### @tiptap/starter-kit v2.11.5
+### @tiptap/starter-kit v3.33.1
 #### 
 
 ##### Paths
@@ -3867,7 +3878,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@tiptap/suggestion"></a>
-### @tiptap/suggestion v2.11.5
+### @tiptap/suggestion v3.33.1
 #### 
 
 ##### Paths
@@ -4108,41 +4119,8 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="@types/linkify-it"></a>
-### @types/linkify-it v5.0.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="@types/markdown-it"></a>
-### @types/markdown-it v14.1.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="@types/mdast"></a>
 ### @types/mdast v4.0.4
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="@types/mdurl"></a>
-### @types/mdurl v2.0.0
 #### 
 
 ##### Paths
@@ -5520,17 +5498,6 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="crelt"></a>
-### crelt v1.0.6
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="cronstrue"></a>
 ### cronstrue v2.59.0
 #### 
@@ -5565,7 +5532,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="css-what"></a>
-### css-what v6.1.0
+### css-what v8.0.0
 #### 
 
 ##### Paths
@@ -6402,6 +6369,17 @@ BlueOak-1.0.0 permitted
 
 <a name="fast-deep-equal"></a>
 ### fast-deep-equal v3.1.3
+#### 
+
+##### Paths
+* /home/runner/work/giselle/giselle
+
+<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
+
+
+
+<a name="fast-equals"></a>
+### fast-equals v5.4.5
 #### 
 
 ##### Paths
@@ -7852,8 +7830,8 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="linkify-it"></a>
-### linkify-it v5.0.2
+<a name="linkifyjs"></a>
+### linkifyjs v4.4.0
 #### 
 
 ##### Paths
@@ -7964,17 +7942,6 @@ BlueOak-1.0.0 permitted
 
 <a name="magic-string"></a>
 ### magic-string v0.30.21
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="markdown-it"></a>
-### markdown-it v14.3.3
 #### 
 
 ##### Paths
@@ -8195,17 +8162,6 @@ BlueOak-1.0.0 permitted
 
 <a name="mdast-util-to-string"></a>
 ### mdast-util-to-string v4.0.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="mdurl"></a>
-### mdurl v2.0.0
 #### 
 
 ##### Paths
@@ -9679,18 +9635,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="prosemirror-changeset"></a>
-### prosemirror-changeset v2.2.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="prosemirror-collab"></a>
-### prosemirror-collab v1.3.1
+### prosemirror-changeset v2.4.6
 #### 
 
 ##### Paths
@@ -9701,7 +9646,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="prosemirror-commands"></a>
-### prosemirror-commands v1.6.2
+### prosemirror-commands v1.7.2
 #### 
 
 ##### Paths
@@ -9712,7 +9657,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="prosemirror-dropcursor"></a>
-### prosemirror-dropcursor v1.8.1
+### prosemirror-dropcursor v1.8.4
 #### 
 
 ##### Paths
@@ -9723,7 +9668,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="prosemirror-gapcursor"></a>
-### prosemirror-gapcursor v1.3.2
+### prosemirror-gapcursor v1.4.1
 #### 
 
 ##### Paths
@@ -9734,7 +9679,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="prosemirror-history"></a>
-### prosemirror-history v1.4.1
+### prosemirror-history v1.5.1
 #### 
 
 ##### Paths
@@ -9745,7 +9690,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="prosemirror-inputrules"></a>
-### prosemirror-inputrules v1.4.0
+### prosemirror-inputrules v1.5.1
 #### 
 
 ##### Paths
@@ -9756,29 +9701,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="prosemirror-keymap"></a>
-### prosemirror-keymap v1.2.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="prosemirror-markdown"></a>
-### prosemirror-markdown v1.13.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="prosemirror-menu"></a>
-### prosemirror-menu v1.2.4
+### prosemirror-keymap v1.2.3
 #### 
 
 ##### Paths
@@ -9789,18 +9712,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="prosemirror-model"></a>
-### prosemirror-model v1.25.8
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="prosemirror-schema-basic"></a>
-### prosemirror-schema-basic v1.2.3
+### prosemirror-model v1.25.13
 #### 
 
 ##### Paths
@@ -9811,7 +9723,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="prosemirror-schema-list"></a>
-### prosemirror-schema-list v1.5.0
+### prosemirror-schema-list v1.6.0
 #### 
 
 ##### Paths
@@ -9822,7 +9734,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="prosemirror-state"></a>
-### prosemirror-state v1.4.3
+### prosemirror-state v1.4.4
 #### 
 
 ##### Paths
@@ -9833,18 +9745,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="prosemirror-tables"></a>
-### prosemirror-tables v1.6.4
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="prosemirror-trailing-node"></a>
-### prosemirror-trailing-node v3.0.0
+### prosemirror-tables v1.8.5
 #### 
 
 ##### Paths
@@ -9855,7 +9756,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="prosemirror-transform"></a>
-### prosemirror-transform v1.10.2
+### prosemirror-transform v1.12.5
 #### 
 
 ##### Paths
@@ -9900,17 +9801,6 @@ BlueOak-1.0.0 permitted
 
 <a name="punycode"></a>
 ### punycode v2.3.1
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="punycode.js"></a>
-### punycode.js v2.3.1
 #### 
 
 ##### Paths
@@ -11339,17 +11229,6 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="tippy.js"></a>
-### tippy.js v6.3.7
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="title-case"></a>
 ### title-case v4.3.2
 #### 
@@ -11614,17 +11493,6 @@ BlueOak-1.0.0 permitted
 
 
 
-<a name="uc.micro"></a>
-### uc.micro v2.1.0
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
 <a name="ufo"></a>
 ### ufo v1.6.3
 #### 
@@ -11883,7 +11751,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="use-sync-external-store"></a>
-### use-sync-external-store v1.4.0
+### use-sync-external-store v1.6.0
 #### 
 
 ##### Paths
@@ -12302,17 +12170,6 @@ BlueOak-1.0.0 permitted
 
 <a name="yoctocolors"></a>
 ### yoctocolors v2.1.2
-#### 
-
-##### Paths
-* /home/runner/work/giselle/giselle
-
-<a href="http://opensource.org/licenses/mit-license">MIT</a> permitted
-
-
-
-<a name="zeed-dom"></a>
-### zeed-dom v0.15.1
 #### 
 
 ##### Paths

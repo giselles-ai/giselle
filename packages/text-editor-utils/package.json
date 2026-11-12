@@ -9,7 +9,8 @@
 		"build": "tsup",
 		"check-types": "tsc --noEmit",
 		"clean": "rm -rf .turbo dist node_modules",
-		"format": "biome check --write ."
+		"format": "biome check --write .",
+		"test": "vitest run"
 	},
 	"exports": {
 		"./package.json": "./package.json",
@@ -22,7 +23,8 @@
 	"devDependencies": {
 		"@giselles-ai/tsconfig": "workspace:*",
 		"@types/turndown": "catalog:",
-		"tsup": "catalog:"
+		"tsup": "catalog:",
+		"vitest": "catalog:"
 	},
 	"dependencies": {
 		"@giselles-ai/protocol": "workspace:*",
@@ -34,5 +36,11 @@
 		"highlight.js": "catalog:",
 		"lowlight": "catalog:",
 		"turndown": "catalog:"
+	},
+	"imports": {
+		"#tiptap-html": {
+			"node": "@tiptap/html/server",
+			"default": "@tiptap/html"
+		}
 	}
 }

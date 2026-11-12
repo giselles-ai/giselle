@@ -1,6 +1,6 @@
-import { generateHTML } from "@tiptap/html";
 import type { JSONContent } from "@tiptap/react";
 import TurndownService from "turndown";
+import { generateHTML } from "#tiptap-html";
 import { extensions, SourceExtension } from "./extensions";
 
 export function jsonContentToText(jsonContent: JSONContent) {

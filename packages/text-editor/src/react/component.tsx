@@ -8,6 +8,7 @@ import {
 	EditorProvider,
 	type EditorProviderProps,
 	useCurrentEditor,
+	useEditorState,
 } from "@tiptap/react";
 import clsx from "clsx/lite";
 import {
@@ -24,6 +25,7 @@ import { createSuggestion } from "./suggestion";
 
 function Toolbar({ tools }: { tools?: (editor: Editor) => ReactNode }) {
 	const { editor } = useCurrentEditor();
+	useEditorState({ editor, selector: ({ editor }) => editor?.state });
 	if (!editor) {
 		return null;
 	}
