@@ -1238,7 +1238,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@next/bundle-analyzer"></a>
-### @next/bundle-analyzer v16.4.3
+### @next/bundle-analyzer v16.4.5
 #### 
 
 ##### Paths
@@ -1249,7 +1249,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@next/env"></a>
-### @next/env v16.4.3
+### @next/env v16.4.5
 #### 
 
 ##### Paths
@@ -1260,7 +1260,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@next/swc-linux-x64-gnu"></a>
-### @next/swc-linux-x64-gnu v16.4.3
+### @next/swc-linux-x64-gnu v16.4.5
 #### 
 
 ##### Paths
@@ -1271,7 +1271,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="@next/third-parties"></a>
-### @next/third-parties v16.4.3
+### @next/third-parties v16.4.5
 #### 
 
 ##### Paths
@@ -5136,7 +5136,7 @@ Python-2.0 manually approved
 
 
 <a name="caniuse-lite"></a>
-### caniuse-lite v1.0.30001774
+### caniuse-lite v1.0.30001820
 #### 
 
 ##### Paths
@@ -8810,7 +8810,7 @@ BlueOak-1.0.0 permitted
 
 
 <a name="next"></a>
-### next v16.4.3
+### next v16.4.5
 #### 
 
 ##### Paths
