@@ -6,12 +6,18 @@ import type {
 	GitHubIntegrationUnauthorizedState,
 } from "@giselles-ai/giselle";
 import { db, type githubIntegrationSettings } from "@/db";
+import { isLocalStudio } from "@/lib/local-studio";
 import { getGitHubIdentityState } from "@/services/accounts";
 import { gitHubAppInstallURL } from "@/services/external/github";
 
 export async function getGitHubIntegrationState(
 	agentDbId: number,
 ): Promise<GitHubIntegrationState> {
+	if (isLocalStudio)
+		return {
+			status: "error",
+			errorMessage: "GitHub integration is unavailable in local Studio.",
+		};
 	const identityState = await getGitHubIdentityState();
 	if (identityState.status === "unauthorized") {
 		return {

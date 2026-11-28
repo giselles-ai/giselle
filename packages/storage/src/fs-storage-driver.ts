@@ -1,5 +1,5 @@
 import { promises as fs } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, isAbsolute, join, resolve, sep } from "node:path";
 import type * as z from "zod/v4";
 import type {
 	BlobLike,
@@ -17,11 +17,39 @@ async function ensureDir(filePath: string): Promise<void> {
 }
 
 export function fsStorageDriver(config: FsStorageDriverConfig): GiselleStorage {
+	const root = resolve(config.root);
+
+	async function checkedPath(key: string, allowRoot = false): Promise<string> {
+		const parts = key
+			.split(sep === "/" ? "/" : /[\\/]/)
+			.filter((part) => part !== "" && part !== ".");
+		if (
+			isAbsolute(key) ||
+			parts.includes("..") ||
+			(!allowRoot && parts.length === 0)
+		) {
+			throw new Error("Expected a relative path inside the storage root");
+		}
+
+		let current = root;
+		for (const part of ["", ...parts]) {
+			current = join(current, part);
+			try {
+				if ((await fs.lstat(current)).isSymbolicLink()) {
+					throw new Error("Symbolic links are not allowed in storage paths");
+				}
+			} catch (error) {
+				if ((error as NodeJS.ErrnoException).code === "ENOENT") break;
+				throw error;
+			}
+		}
+		return join(root, ...parts);
+	}
 	return {
 		async getJson<T extends z.ZodType>(
 			params: GetJsonParams<T>,
 		): Promise<z.infer<T>> {
-			const fullPath = join(config.root, params.path);
+			const fullPath = await checkedPath(params.path);
 
 			await fs.access(fullPath);
 
@@ -54,7 +82,7 @@ export function fsStorageDriver(config: FsStorageDriverConfig): GiselleStorage {
 		async setJson<T extends z.ZodType>(
 			params: SetJsonParams<T>,
 		): Promise<void> {
-			const fullPath = join(config.root, params.path);
+			const fullPath = await checkedPath(params.path);
 			await ensureDir(fullPath);
 			const data = params.schema
 				? params.schema.parse(params.data)
@@ -66,7 +94,7 @@ export function fsStorageDriver(config: FsStorageDriverConfig): GiselleStorage {
 			path: string,
 			options?: { range?: { start: number; end?: number } },
 		): Promise<Uint8Array> {
-			const fullPath = join(config.root, path);
+			const fullPath = await checkedPath(path);
 
 			if (!options?.range) {
 				const buffer = await fs.readFile(fullPath);
@@ -106,26 +134,26 @@ export function fsStorageDriver(config: FsStorageDriverConfig): GiselleStorage {
 		},
 
 		async setBlob(path: string, data: BlobLike): Promise<void> {
-			const fullPath = join(config.root, path);
+			const fullPath = await checkedPath(path);
 			await ensureDir(fullPath);
 			const uint8Array = new Uint8Array(data);
 			await fs.writeFile(fullPath, uint8Array);
 		},
 
 		async copy(source: string, destination: string): Promise<void> {
-			const srcPath = join(config.root, source);
-			const destPath = join(config.root, destination);
+			const srcPath = await checkedPath(source);
+			const destPath = await checkedPath(destination);
 			await ensureDir(destPath);
 			await fs.copyFile(srcPath, destPath);
 		},
 
 		async remove(path: string): Promise<void> {
-			const fullPath = join(config.root, path);
+			const fullPath = await checkedPath(path);
 			await fs.rm(fullPath, { recursive: true, force: true });
 		},
 
 		async exists(path: string): Promise<boolean> {
-			const fullPath = join(config.root, path);
+			const fullPath = await checkedPath(path);
 			try {
 				await fs.access(fullPath);
 				return true;
@@ -135,7 +163,7 @@ export function fsStorageDriver(config: FsStorageDriverConfig): GiselleStorage {
 		},
 
 		async contentLength(path: string): Promise<number> {
-			const fullPath = join(config.root, path);
+			const fullPath = await checkedPath(path);
 			const stats = await fs.stat(fullPath);
 			return stats.size;
 		},
@@ -160,8 +188,7 @@ export function fsStorageDriver(config: FsStorageDriverConfig): GiselleStorage {
 			}[] = [];
 
 			const walk = async (relativeDir: string): Promise<void> => {
-				const absoluteDir =
-					relativeDir.length > 0 ? join(config.root, relativeDir) : config.root;
+				const absoluteDir = await checkedPath(relativeDir, true);
 
 				let entries: import("node:fs").Dirent[];
 				try {
@@ -203,7 +230,7 @@ export function fsStorageDriver(config: FsStorageDriverConfig): GiselleStorage {
 							continue;
 						}
 
-						const stats = await fs.stat(join(config.root, entryPath));
+						const stats = await fs.stat(await checkedPath(entryPath));
 						collected.push({
 							pathname: entryPath,
 							size: stats.size,

@@ -2,6 +2,14 @@
 
 The Studio application source for Giselle, an open-source AI workflow tool focused on local use and self-hosting. The hosted cloud service has been discontinued.
 
+## Local single-user Studio on macOS
+
+Start Docker Desktop, install the repository dependencies with `pnpm install --frozen-lockfile`, then run `pnpm dev:local` from the repository root. Open [Workspaces](http://127.0.0.1:3100/workspaces) to create, edit, and reopen a workflow. Supabase credentials are optional for this mode.
+
+The launcher starts a dedicated PostgreSQL container, runs migrations, and provisions a local user and team. Workspace metadata lives in the Docker volume `giselle-studio-local_postgres`; workflow documents live in `~/.giselle/studio-local/workflows`. Keep both when moving or backing up your work. The database password is generated once under `~/.giselle/studio-local`.
+
+Press Ctrl-C to stop Studio. To stop PostgreSQL as well, run `docker stop giselle-studio-local-postgres-1`. Run `pnpm dev:local` again to reopen your work. The launcher binds Studio and PostgreSQL to loopback. GitHub integration and stored secrets are unavailable in this mode. Model generation still requires the engine’s configured AI gateway.
+
 ## Getting Started
 
 > [!WARNING]

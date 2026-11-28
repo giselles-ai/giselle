@@ -1,7 +1,8 @@
-import { NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
+import { isLocalStudio } from "./lib/local-studio";
 import { supabaseMiddleware } from "./lib/supabase";
 
-export const proxy = supabaseMiddleware((user, request) => {
+const authenticatedProxy = supabaseMiddleware((user, request) => {
 	if (process.env.MAINTENANCE_MODE === "true") {
 		request.nextUrl.pathname = "/maintenance";
 
@@ -18,6 +19,11 @@ export const proxy = supabaseMiddleware((user, request) => {
 	}
 	return Promise.resolve(undefined);
 });
+
+export function proxy(request: NextRequest) {
+	if (isLocalStudio) return NextResponse.next();
+	return authenticatedProxy(request);
+}
 
 export const config = {
 	matcher: [

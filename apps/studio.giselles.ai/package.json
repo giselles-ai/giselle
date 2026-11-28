@@ -7,6 +7,7 @@
 	},
 	"private": true,
 	"scripts": {
+		"dev:local": "node scripts/local-studio.mjs",
 		"dev": "next dev",
 		"dev-debug": "LOGLEVEL=debug pnpm run dev",
 		"email:dev": "email dev --dir emails --port 3333",
@@ -40,6 +41,7 @@
 		"@giselles-ai/protocol": "workspace:*",
 		"@giselles-ai/rag": "workspace:*",
 		"@giselles-ai/react": "workspace:*",
+		"@giselles-ai/storage": "workspace:*",
 		"@giselles-ai/supabase-driver": "workspace:*",
 		"@giselles-ai/utils": "workspace:*",
 		"@icons-pack/react-simple-icons": "10.0.0",

@@ -9,6 +9,7 @@
 		"check-types": "turbo check-types",
 		"format": "biome check --write .",
 		"clean": "turbo clean",
+		"dev:local": "pnpm build-sdk && pnpm -F studio.giselles.ai dev:local",
 		"dev:studio.giselles.ai": "NODE_NO_WARNINGS=1 turbo dev --filter studio.giselles.ai",
 		"test": "turbo test",
 		"tidy": "knip --no-config-hints",
