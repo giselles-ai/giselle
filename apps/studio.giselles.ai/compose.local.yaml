@@ -1,0 +1,18 @@
+name: giselle-studio-local
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_DB: giselle_local
+      POSTGRES_PASSWORD: ${GISELLE_LOCAL_DB_PASSWORD:?Start with pnpm dev:local}
+    ports:
+      - "127.0.0.1:55439:5432"
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d giselle_local"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+volumes:
+  postgres:

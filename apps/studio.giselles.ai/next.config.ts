@@ -31,6 +31,11 @@ const pdfiumTracingConfig = {
 	},
 };
 
+if (
+	process.env.GISELLE_LOCAL_STUDIO === "1" &&
+	!process.argv[1]?.endsWith("/scripts/local-studio.mjs")
+)
+	throw new Error("Use pnpm dev:local to start local Studio on loopback");
 const nextConfig: NextConfig = {
 	outputFileTracingRoot: join(__dirname, "../../"),
 	turbopack: {
@@ -62,7 +67,10 @@ const nextConfig: NextConfig = {
 		return [
 			{
 				source: "/",
-				destination: "/playground",
+				destination:
+					process.env.GISELLE_LOCAL_STUDIO === "1"
+						? "/workspaces"
+						: "/playground",
 				permanent: false,
 			},
 		];

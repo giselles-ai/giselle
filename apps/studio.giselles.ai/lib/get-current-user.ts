@@ -1,8 +1,16 @@
 import { cache } from "react";
 import { db } from "@/db";
+import { isLocalStudio } from "./local-studio";
 import { getUser } from "./supabase";
 
 async function _getCurrentUser() {
+	if (isLocalStudio) {
+		const user = await db.query.users.findFirst({
+			where: (users, { eq }) => eq(users.id, "usr_local"),
+		});
+		if (!user) throw new Error("Local user has not been initialized");
+		return user;
+	}
 	const supabaseUser = await getUser();
 	const supabaseUserWithUser = await db.query.supabaseUserMappings.findFirst({
 		where: (supabaseUserMappings, { eq }) =>

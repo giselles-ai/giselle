@@ -8,6 +8,7 @@ import { traceEmbedding } from "@giselles-ai/langfuse";
 import { getRequestId, NextGiselle } from "@giselles-ai/nextjs/internal";
 import { type RunningGeneration, WorkspaceId } from "@giselles-ai/protocol";
 import type { EmbeddingMetrics } from "@giselles-ai/rag";
+import { fsStorageDriver } from "@giselles-ai/storage";
 import {
 	supabaseStorageDriver as experimental_supabaseStorageDriver,
 	supabaseVaultDriver,
@@ -17,6 +18,7 @@ import { eq } from "drizzle-orm";
 import { apps, db, tasks } from "@/db";
 import { generateContentNodeFlag } from "@/flags";
 import { GenerationMetadata } from "@/lib/generation-metadata";
+import { isLocalStudio, localStudioSetting } from "@/lib/local-studio";
 import { logger } from "@/lib/logger";
 import { traceGenerationForTeam } from "@/lib/trace";
 import { getWorkspaceTeam } from "@/lib/workspaces/get-workspace-team";
@@ -33,18 +35,24 @@ import {
 } from "../lib/vector-stores/github";
 import type { generateContentJob } from "../trigger/generate-content-job";
 
-export const storage = experimental_supabaseStorageDriver({
-	endpoint: process.env.SUPABASE_STORAGE_URL ?? "",
-	region: process.env.SUPABASE_STORAGE_REGION ?? "",
-	accessKeyId: process.env.SUPABASE_STORAGE_ACCESS_KEY_ID ?? "",
-	secretAccessKey: process.env.SUPABASE_STORAGE_SECRET_ACCESS_KEY ?? "",
-	bucket: "app",
-});
+export const storage = isLocalStudio
+	? fsStorageDriver({ root: localStudioSetting("GISELLE_DATA_DIR") })
+	: experimental_supabaseStorageDriver({
+			endpoint: process.env.SUPABASE_STORAGE_URL ?? "",
+			region: process.env.SUPABASE_STORAGE_REGION ?? "",
+			accessKeyId: process.env.SUPABASE_STORAGE_ACCESS_KEY_ID ?? "",
+			secretAccessKey: process.env.SUPABASE_STORAGE_SECRET_ACCESS_KEY ?? "",
+			bucket: "app",
+		});
 
-const vault = supabaseVaultDriver({
-	url: process.env.SUPABASE_URL ?? "",
-	serviceKey: process.env.SUPABASE_SERVICE_KEY ?? "",
-});
+const unavailableSecret = () =>
+	Promise.reject(new Error("Stored secrets are unavailable in local Studio"));
+const vault = isLocalStudio
+	? { encrypt: unavailableSecret, decrypt: unavailableSecret }
+	: supabaseVaultDriver({
+			url: process.env.SUPABASE_URL ?? "",
+			serviceKey: process.env.SUPABASE_SERVICE_KEY ?? "",
+		});
 
 let sampleAppWorkspaceIds: WorkspaceId[] | undefined;
 if (process.env.SAMPLE_APP_WORKSPACE_IDS) {
@@ -69,14 +77,38 @@ const githubAppClientId = process.env.GITHUB_APP_CLIENT_ID;
 const githubAppClientSecret = process.env.GITHUB_APP_CLIENT_SECRET;
 const githubAppWebhookSecret = process.env.GITHUB_APP_WEBHOOK_SECRET;
 
-if (
-	githubAppId === undefined ||
-	githubAppPrivateKey === undefined ||
-	githubAppClientId === undefined ||
-	githubAppClientSecret === undefined ||
-	githubAppWebhookSecret === undefined
-) {
-	throw new Error("missing github credentials");
+function githubConfig() {
+	if (isLocalStudio) return undefined;
+	if (
+		githubAppId === undefined ||
+		githubAppPrivateKey === undefined ||
+		githubAppClientId === undefined ||
+		githubAppClientSecret === undefined ||
+		githubAppWebhookSecret === undefined
+	) {
+		throw new Error("missing github credentials");
+	}
+
+	return {
+		github: {
+			auth: {
+				strategy: "app-installation" as const,
+				appId: "",
+				privateKey: "",
+				resolver: {
+					installationIdForRepo: () => 1234,
+					installationIds: () => [1234],
+				},
+			},
+			authV2: {
+				appId: githubAppId,
+				privateKey: githubAppPrivateKey,
+				clientId: githubAppClientId,
+				clientSecret: githubAppClientSecret,
+				webhookSecret: githubAppWebhookSecret,
+			},
+		},
+	};
 }
 
 type TeamForPlan = Pick<
@@ -459,26 +491,7 @@ export const giselle = NextGiselle({
 	onConsumeAgentTime,
 	fetchUsageLimitsFn: fetchUsageLimits,
 	sampleAppWorkspaceIds,
-	integrationConfigs: {
-		github: {
-			auth: {
-				strategy: "app-installation",
-				appId: "",
-				privateKey: "",
-				resolver: {
-					installationIdForRepo: () => 1234,
-					installationIds: () => [1234],
-				},
-			},
-			authV2: {
-				appId: githubAppId,
-				privateKey: githubAppPrivateKey,
-				clientId: githubAppClientId,
-				clientSecret: githubAppClientSecret,
-				webhookSecret: githubAppWebhookSecret,
-			},
-		},
-	},
+	integrationConfigs: githubConfig(),
 	vault,
 	vectorStoreQueryServices: {
 		github: gitHubQueryService,
